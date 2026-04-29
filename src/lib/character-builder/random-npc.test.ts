@@ -7,7 +7,7 @@ import {
   getQuickNpcClassIds,
 } from '@/lib/character-builder/random-npc';
 import { CLASS_SOURCES } from '@/lib/sources/classes';
-import { RACE_SOURCES } from '@/lib/sources/races';
+import { SPECIES_SOURCES } from '@/lib/sources/species';
 import { DND_ALIGNMENTS } from '@/lib/dnd-helpers';
 import type { ClassSource } from '@/types/sources';
 
@@ -77,25 +77,30 @@ describe('generateRandomNpcBasics', () => {
     expect(result.suggestedBackground).toBe('soldier');
     // gender: pick(['male','female'], rng=0) → index 0 → 'male'
     expect(result.gender).toBe('male');
-    // race: pick(RACE_SOURCES, rng=0) → index 0
-    expect(result.race).toBe(RACE_SOURCES[0].id);
+    // species: pick(eligibleSpecies, rng=0) → index 0 → human (first in SPECIES_SOURCES with name data)
+    expect(result.species).toBe(SPECIES_SOURCES[0].id);
     // alignment: pick(DND_ALIGNMENTS, rng=0) → index 0
     expect(result.alignment).toBe(DND_ALIGNMENTS[0].id);
   });
 
-  it('with rng=()=>0.999 picks dex=15 (last element of ["str","dex"])', () => {
-    const result = generateRandomNpcBasics('fighter', () => 0.999);
+  it('with rng=()=>0.65 picks dex=15 (last element of ["str","dex"]) via gnome', () => {
+    // rng=()=>0.65: gender=female (idx 1), species=gnome (eligible idx 4 of 7, has names),
+    // alignment=cn (idx 5), name picks from gnome data, highestAbility=dex (idx 1 of 2)
+    const result = generateRandomNpcBasics('fighter', () => 0.65);
     expect(result).not.toBeNull();
     if (!result || result.targetStep !== 'skills') return;
     expect(result.baseAbilities.dex).toBe(15);
   });
 
-  it('with default Math.random returns a valid result within expected pools', () => {
-    const result = generateRandomNpcBasics('fighter');
+  it('with rng=()=>0.3 returns a valid result within expected pools via dwarf', () => {
+    // rng=()=>0.3: gender=male (idx 0), species=dwarf (eligible idx 2 of 7, has names),
+    // alignment=cg (idx 2), highestAbility=str (idx 0 of 2)
+    // Eligible species excludes aasimar/goliath/orc (no name data), leaving 7 choices.
+    const result = generateRandomNpcBasics('fighter', () => 0.3);
     expect(result).not.toBeNull();
     if (!result) return;
     expect(['male', 'female']).toContain(result.gender);
-    expect(RACE_SOURCES.map((r) => r.id)).toContain(result.race);
+    expect(SPECIES_SOURCES.map((r) => r.id)).toContain(result.species);
     expect(DND_ALIGNMENTS.map((a) => a.id)).toContain(result.alignment);
     expect(result.name).toContain(' ');
     // baseAbilities values should be a permutation of STANDARD_ARRAY
@@ -141,5 +146,12 @@ describe('generateRandomNpcBasicsDetailed', () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.basics.targetStep).toBe('skills');
+  });
+
+  it('returns ok=true for rng=()=>0.95 now that stub species are filtered out', () => {
+    // With eligible-species filtering, aasimar/goliath/orc (no name data) are excluded.
+    // rng=()=>0.95: eligible[floor(0.95*7)=6] → tiefling, which has name data → success.
+    const result = generateRandomNpcBasicsDetailed('fighter', () => 0.95);
+    expect(result.ok).toBe(true);
   });
 });

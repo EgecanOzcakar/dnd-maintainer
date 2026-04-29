@@ -12,7 +12,7 @@ import type { ResolvedCharacter } from '@/types/resolved';
 import type { ClassId } from '@/lib/dnd-helpers';
 import type { GrantBundle, SubclassId } from '@/types/sources';
 import { reconstructBuild } from '@/lib/build-reconstruction';
-import { collectBundles, getRaceSource } from '@/lib/sources/index';
+import { collectBundles, getSpeciesSource } from '@/lib/sources/index';
 import { CLASS_SOURCES } from '@/lib/sources/classes';
 import { resolveCharacter, type PersistedItem } from '@/lib/resolver/index';
 import { toast } from 'sonner';
@@ -65,7 +65,7 @@ const CharacterContext = createContext<CharacterContextValue | null>(null);
  * Determine which row sequence a choice key belongs to.
  *
  * Key format: `category:origin:id:index`
- * Keys with `:race:` or `:background:` go to sequence-0.
+ * Keys with `:species:` or `:background:` go to sequence-0.
  * Keys with `:class:` go to the matching level row (by class_id embedded in the key).
  * Unknown origins cause `parseChoiceKey` to throw.
  * Also throws if origin is 'class' but no active level row exists for the specified class.
@@ -73,7 +73,7 @@ const CharacterContext = createContext<CharacterContextValue | null>(null);
 export function resolveChoiceSequence(choiceKey: string, rows: readonly BuildLevelRow[]): number {
   const { origin, id: classId } = parseChoiceKey(choiceKey);
 
-  if (origin === 'race' || origin === 'background') {
+  if (origin === 'species' || origin === 'background') {
     return 0;
   }
 
@@ -154,7 +154,7 @@ function applyDecisionToRows(rows: BuildLevelRow[], choiceKey: ChoiceKey, decisi
 
   const { origin, id: classId } = parseChoiceKey(choiceKey);
   let targetSeq: number;
-  if (origin === 'race' || origin === 'background') {
+  if (origin === 'species' || origin === 'background') {
     targetSeq = 0;
   } else {
     const levelRow = rows.find((r) => r.sequence !== 0 && r.class_id === classId && r.deleted_at == null);
@@ -347,11 +347,11 @@ export function CharacterProvider({
   const updateCharacter = useCallback((updates: Readonly<Partial<Character>>) => {
     setCharacter((prev) => {
       const next = { ...prev, ...updates };
-      // When race changes, also set size from race source
+      // When race changes, also set size from species source
       if ('race' in updates && updates.race !== prev.race && updates.race) {
-        const raceSource = getRaceSource(updates.race);
-        if (raceSource) {
-          next.size = raceSource.defaultSize;
+        const speciesSource = getSpeciesSource(updates.race);
+        if (speciesSource) {
+          next.size = speciesSource.defaultSize;
         }
       }
       return next;

@@ -5,7 +5,7 @@ import type {
   ToolProficiencyId,
   LanguageId,
   ClassId,
-  RaceId,
+  SpeciesId,
   BackgroundId,
 } from '@/lib/dnd-helpers';
 import type { SubclassId } from '@/types/sources';
@@ -13,11 +13,11 @@ import type { AbilityScores } from '@/types/database';
 
 /**
  * Choice key format: `category:origin:id:index`
- * - origin: 'race' | 'background' | 'class'
+ * - origin: 'species' | 'background' | 'class'
  * - Determines which build row (sequence) stores the decision
- * - e.g. "skill-choice:class:fighter:0", "language-choice:race:human:0"
+ * - e.g. "skill-choice:class:fighter:0", "language-choice:species:human:0"
  */
-const CHOICE_ORIGINS = ['race', 'background', 'class'] as const;
+const CHOICE_ORIGINS = ['species', 'background', 'class'] as const;
 export type ChoiceOrigin = (typeof CHOICE_ORIGINS)[number];
 
 const CHOICE_CATEGORIES = [
@@ -101,7 +101,7 @@ export interface BuildLevel {
 }
 
 export interface CharacterBuild {
-  readonly raceId: RaceId;
+  readonly speciesId: SpeciesId;
   readonly backgroundId: BackgroundId | null;
   readonly baseAbilities: AbilityScores;
   readonly abilityMethod: 'standard-array' | 'point-buy' | 'rolling';

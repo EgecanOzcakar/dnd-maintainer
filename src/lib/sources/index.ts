@@ -1,4 +1,4 @@
-import { isBackgroundId, type SpeciesId, type ClassId, type BackgroundId } from '@/lib/dnd-helpers';
+import { isBackgroundId, type SpeciesId, type ClassId, type BackgroundId, type FeatId } from '@/lib/dnd-helpers';
 import { getLogger } from '@/lib/logger';
 
 const logger = getLogger('sources');
@@ -63,9 +63,12 @@ export function getBackgroundSource(id: BackgroundId): BackgroundSource | undefi
   return BACKGROUND_SOURCES.find((b) => b.id === id);
 }
 
-export function getFeatSource(id: string): FeatSource | undefined {
+export function getFeatSource(id: FeatId): FeatSource | undefined {
   return FEAT_SOURCES.find((f) => f.id === id);
 }
+
+export { FEAT_CATEGORIES } from '@/types/sources';
+export type { FeatCategory } from '@/types/sources';
 
 export function getItemSource(id: string): ItemSource | undefined {
   return ITEM_SOURCES.find((i) => i.id === id);
@@ -214,7 +217,27 @@ export function collectBundles(build: CharacterBuild): CollectBundlesResult {
     }
   }
 
-  // Feats
+  // Expand FeatGrant grants embedded in already-collected bundles (e.g. background origin feats).
+  // Snapshot current length to avoid iterating bundles we add in this pass.
+  const preFeatExpansionLength = bundles.length;
+  for (let i = 0; i < preFeatExpansionLength; i++) {
+    const bundle = bundles[i];
+    for (const grant of bundle.grants) {
+      if (grant.type === 'feat') {
+        const featSource = getFeatSource(grant.featId);
+        if (featSource) {
+          const tag: SourceTag = { origin: 'feat', id: grant.featId };
+          bundles.push({ source: tag, grants: featSource.grants });
+        } else {
+          const msg = `No source data found for feat "${grant.featId}" — feat grants will be empty`;
+          warnings.push(msg);
+          logger.warn(msg);
+        }
+      }
+    }
+  }
+
+  // Feats explicitly listed in the build (manually chosen at level-up)
   for (const featId of build.feats) {
     const featSource = getFeatSource(featId);
     if (featSource) {

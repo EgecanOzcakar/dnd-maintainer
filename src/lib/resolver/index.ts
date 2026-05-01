@@ -163,9 +163,9 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     }
   }
 
-  // Unresolved feat grants — not yet implemented; log each for diagnostics
+  // Diagnostic: any feat grant that reaches the resolver was not expanded by collectBundles — this is a bug
   for (const { grant } of collectGrantsByType(bundles, 'feat')) {
-    logger.warn(`FeatGrant "${grant.featId}" is not yet implemented — skipping (see issue #5)`);
+    logger.warn(`BUG: unexpanded FeatGrant "${grant.featId}" reached resolver — nested feat grants are not supported`);
   }
 
   // Unresolved or invalid fighting-style-choice grants (single pass)

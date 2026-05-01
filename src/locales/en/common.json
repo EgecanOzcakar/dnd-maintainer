@@ -179,7 +179,6 @@
       "chooseRace": "Choose a race",
       "chooseClass": "Choose a class",
       "chooseBackground": "Choose a background",
-      "enterCustomBackground": "Enter your custom background...",
       "describeBackground": "Describe your background briefly",
       "personalityTraits": "Describe personality traits...",
       "ideals": "What ideals does your character hold...",
@@ -228,7 +227,13 @@
       "increaseScore_plural": "Increase score, spend {{count}} points",
       "maximumScore": "Maximum score",
       "notEnoughPoints": "Not enough points",
-      "racialBonus": "{{race}} Racial Bonus: {{bonuses}}"
+      "racialBonus": "{{race}} Racial Bonus: {{bonuses}}",
+      "backgroundAsi": "Background bonus",
+      "backgroundBonus": "{{background}} bonus",
+      "anyAbility": "any ability",
+      "backgroundAsiHint": "{{background}} provides {{points}} points to distribute across {{abilities}}.",
+      "backgroundAsiRemaining": "({{count}} point remaining)",
+      "backgroundAsiRemaining_plural": "({{count}} points remaining)"
     },
     "skills": {
       "selectClassFirst": "Please select a class in the Basics step before choosing skills.",

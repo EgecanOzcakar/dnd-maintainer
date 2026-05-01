@@ -6,7 +6,7 @@ import type { PendingChoice, ResolvedCharacter } from '@/types/resolved';
 import type { ChoiceKey, ChoiceDecision } from '@/types/choices';
 import { useTranslation } from 'react-i18next';
 
-const ABILITY_KEYS: readonly AbilityKey[] = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+const ALL_ABILITY_KEYS: readonly AbilityKey[] = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
 
 interface AsiAllocatorProps {
   readonly choice: Extract<PendingChoice, { type: 'asi' }>;
@@ -22,8 +22,14 @@ export function AsiAllocator({ choice, abilities, currentDecision, onDecide, onC
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
 
+  const abilityKeys = choice.from ?? ALL_ABILITY_KEYS;
+
   const existingAllocation: Partial<Record<AbilityKey, number>> =
-    currentDecision?.type === 'asi' ? { ...currentDecision.allocation } : {};
+    currentDecision?.type === 'asi'
+      ? Object.fromEntries(
+          Object.entries(currentDecision.allocation).filter(([k]) => (abilityKeys as readonly string[]).includes(k))
+        )
+      : {};
   const [allocation, setAllocation] = useState<Partial<Record<AbilityKey, number>>>(existingAllocation);
   const hasExistingDecision = currentDecision?.type === 'asi';
 
@@ -75,7 +81,7 @@ export function AsiAllocator({ choice, abilities, currentDecision, onDecide, onC
           {tc('characterSheet.asi.asiPointsRemaining', { points: pointsRemaining })}
         </div>
 
-        {ABILITY_KEYS.map((ability) => {
+        {abilityKeys.map((ability) => {
           const currentAlloc = allocation[ability] ?? 0;
           const currentTotal = abilities[ability].total;
           const newTotal = currentTotal + currentAlloc;

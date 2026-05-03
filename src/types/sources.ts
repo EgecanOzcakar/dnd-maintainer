@@ -1,19 +1,9 @@
 import type { SpeciesId, ClassId, BackgroundId, SizeId, AbilityKey, FeatId } from '@/lib/dnd-helpers';
 import type { Grant } from '@/types/grants';
+import type { SubclassId } from '@/lib/sources/subclasses';
 
-export const SUBCLASS_IDS = [
-  'champion',
-  'battlemaster',
-  'eldritchknight',
-  'thief',
-  'assassin',
-  'arcanetrickster',
-] as const;
-export type SubclassId = (typeof SUBCLASS_IDS)[number];
-
-export function isSubclassId(s: string): s is SubclassId {
-  return (SUBCLASS_IDS as readonly string[]).includes(s);
-}
+export type { SubclassId } from '@/lib/sources/subclasses';
+export { isSubclassId } from '@/lib/sources/subclasses';
 
 export type SourceTag =
   | { readonly origin: 'species'; readonly id: SpeciesId }
@@ -88,8 +78,6 @@ export interface SubclassFeature {
 }
 
 export interface SubclassSource {
-  readonly id: SubclassId;
-  readonly classId: ClassId;
   readonly features: readonly SubclassFeature[];
 }
 

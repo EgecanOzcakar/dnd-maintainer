@@ -1,15 +1,43 @@
 import { describe, it, expect } from 'vitest';
 import { getSubclassSource } from '@/lib/sources';
-import type { SubclassId } from '@/types/sources';
+import type { SubclassId } from '@/lib/sources/subclasses';
+
+describe('assassin skill-expertise grant', () => {
+  it('assassin level 9 has exactly 2 grants: feature and skill-expertise: deception', () => {
+    const source = getSubclassSource('assassin');
+    const level9 = source?.features.find((f) => f.classLevel === 9);
+    expect(level9).toBeDefined();
+    expect(level9!.grants).toHaveLength(2);
+    expect(level9!.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'feature',
+          feature: expect.objectContaining({ id: 'assassin-infiltration-expertise' }),
+        }),
+        expect.objectContaining({ type: 'skill-expertise', skill: 'deception' }),
+      ])
+    );
+  });
+});
+
+describe('thief skill-expertise grant', () => {
+  it('thief level 9 has exactly 2 grants: feature and skill-expertise: stealth', () => {
+    const source = getSubclassSource('thief');
+    const level9 = source?.features.find((f) => f.classLevel === 9);
+    expect(level9).toBeDefined();
+    expect(level9!.grants).toHaveLength(2);
+    expect(level9!.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'feature', feature: expect.objectContaining({ id: 'thief-supreme-sneak' }) }),
+        expect.objectContaining({ type: 'skill-expertise', skill: 'stealth' }),
+      ])
+    );
+  });
+});
 
 describe('getSubclassSource — Champion', () => {
   it('returns defined for champion', () => {
     expect(getSubclassSource('champion')).toBeDefined();
-  });
-
-  it('champion has classId fighter', () => {
-    const source = getSubclassSource('champion');
-    expect(source?.classId).toBe('fighter');
   });
 
   it('champion has 5 features', () => {

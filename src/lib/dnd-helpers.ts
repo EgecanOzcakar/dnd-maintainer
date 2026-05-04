@@ -154,28 +154,6 @@ export function getSpellSlots(className: string, level: number): number[] {
       19: [4, 3, 3, 3, 3, 2, 1, 1, 1],
       20: [4, 3, 3, 3, 3, 2, 2, 1, 1],
     },
-    warlock: {
-      1: [1],
-      2: [2],
-      3: [2, 2],
-      4: [2, 2],
-      5: [2, 2, 2],
-      6: [2, 2, 2],
-      7: [2, 2, 2, 2],
-      8: [2, 2, 2, 2],
-      9: [2, 2, 2, 2, 2],
-      10: [2, 2, 2, 2, 2],
-      11: [3, 3, 3, 3, 3],
-      12: [3, 3, 3, 3, 3],
-      13: [3, 3, 3, 3, 3],
-      14: [3, 3, 3, 3, 3],
-      15: [3, 3, 3, 3, 3],
-      16: [3, 3, 3, 3, 3],
-      17: [4, 4, 4, 4, 4],
-      18: [4, 4, 4, 4, 4],
-      19: [4, 4, 4, 4, 4],
-      20: [4, 4, 4, 4, 4],
-    },
     wizard: {
       1: [2],
       2: [3],
@@ -201,6 +179,40 @@ export function getSpellSlots(className: string, level: number): number[] {
   };
 
   return spellcasters[className.toLowerCase()]?.[level] || [];
+}
+
+const PACT_MAGIC_PROGRESSION: Readonly<Record<number, { readonly count: number; readonly slotLevel: number }>> = {
+  1: { count: 1, slotLevel: 1 },
+  2: { count: 2, slotLevel: 1 },
+  3: { count: 2, slotLevel: 2 },
+  4: { count: 2, slotLevel: 2 },
+  5: { count: 2, slotLevel: 3 },
+  6: { count: 2, slotLevel: 3 },
+  7: { count: 2, slotLevel: 4 },
+  8: { count: 2, slotLevel: 4 },
+  9: { count: 2, slotLevel: 5 },
+  10: { count: 2, slotLevel: 5 },
+  11: { count: 3, slotLevel: 5 },
+  12: { count: 3, slotLevel: 5 },
+  13: { count: 3, slotLevel: 5 },
+  14: { count: 3, slotLevel: 5 },
+  15: { count: 3, slotLevel: 5 },
+  16: { count: 3, slotLevel: 5 },
+  17: { count: 4, slotLevel: 5 },
+  18: { count: 4, slotLevel: 5 },
+  19: { count: 4, slotLevel: 5 },
+  20: { count: 4, slotLevel: 5 },
+};
+
+export function getPactMagicSlots(level: number): { readonly count: number; readonly slotLevel: number } {
+  return PACT_MAGIC_PROGRESSION[level] ?? { count: 0, slotLevel: 0 };
+}
+
+const PREPARED_CASTER_CLASSES: ReadonlySet<string> = new Set(['cleric', 'druid', 'wizard', 'paladin', 'ranger']);
+
+export function getPreparedSpellCount(classId: string, classLevel: number, abilityMod: number): number {
+  if (!PREPARED_CASTER_CLASSES.has(classId)) return 0;
+  return Math.max(1, classLevel + abilityMod);
 }
 
 export interface DndSpecies {

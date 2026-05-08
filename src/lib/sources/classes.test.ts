@@ -32,14 +32,19 @@ describe('Fighter class levels 2–10 grant structures', () => {
     }
   });
 
-  it('level 4 grants an ASI with 2 points', () => {
+  it('level 4 grants an ASI with 2 points and a weapon mastery choice', () => {
     const level4 = source?.levels[3];
-    expect(level4?.grants).toHaveLength(1);
-    const grant = level4?.grants[0];
-    expect(grant?.type).toBe('asi');
-    if (grant?.type === 'asi') {
-      expect(grant.points).toBe(2);
-      expect(grant.key).toBe(createChoiceKey('asi', 'class', 'fighter', 0));
+    expect(level4?.grants).toHaveLength(2);
+    const asiGrant = level4?.grants.find((g) => g.type === 'asi');
+    expect(asiGrant?.type).toBe('asi');
+    if (asiGrant?.type === 'asi') {
+      expect(asiGrant.points).toBe(2);
+      expect(asiGrant.key).toBe(createChoiceKey('asi', 'class', 'fighter', 0));
+    }
+    const masteryGrant = level4?.grants.find((g) => g.type === 'weapon-mastery-choice');
+    expect(masteryGrant?.type).toBe('weapon-mastery-choice');
+    if (masteryGrant?.type === 'weapon-mastery-choice') {
+      expect(masteryGrant.count).toBe(1);
     }
   });
 
@@ -90,14 +95,30 @@ describe('Fighter class levels 2–10 grant structures', () => {
     }
   });
 
-  it('level 10 has no class-level grants (subclass features injected separately)', () => {
+  it('level 10 grants a weapon mastery choice', () => {
     const level10 = source?.levels[9];
-    expect(level10?.grants).toHaveLength(0);
+    expect(level10?.grants).toHaveLength(1);
+    const grant = level10?.grants[0];
+    expect(grant?.type).toBe('weapon-mastery-choice');
+    if (grant?.type === 'weapon-mastery-choice') {
+      expect(grant.count).toBe(1);
+    }
   });
 
   it('level 11 and beyond have no grants (empty stubs)', () => {
     const level11 = source?.levels[10];
     expect(level11?.grants).toHaveLength(0);
+  });
+
+  it('level 16 grants a weapon mastery choice (index 3)', () => {
+    const level16 = source?.levels[15];
+    expect(level16?.grants).toHaveLength(1);
+    const grant = level16?.grants[0];
+    expect(grant?.type).toBe('weapon-mastery-choice');
+    if (grant?.type === 'weapon-mastery-choice') {
+      expect(grant.count).toBe(1);
+      expect(grant.key).toBe(createChoiceKey('weapon-mastery-choice', 'class', 'fighter', 3));
+    }
   });
 
   it('still has 20 levels total', () => {
@@ -149,6 +170,15 @@ describe('Rogue class grant structures', () => {
     const featureIds = features?.map((g) => (g.type === 'feature' ? g.feature.id : ''));
     expect(featureIds).toContain('rogue-sneak-attack');
     expect(featureIds).toContain('rogue-thieves-cant');
+  });
+
+  it('level 1 has a weapon-mastery-choice grant with count 2', () => {
+    const grant = source?.levels[0].grants.find((g) => g.type === 'weapon-mastery-choice');
+    expect(grant?.type).toBe('weapon-mastery-choice');
+    if (grant?.type === 'weapon-mastery-choice') {
+      expect(grant.count).toBe(2);
+      expect(grant.key).toBe(createChoiceKey('weapon-mastery-choice', 'class', 'rogue', 0));
+    }
   });
 
   it('level 2 grants cunning action feature', () => {
@@ -372,12 +402,30 @@ describe('Barbarian class grant structures', () => {
     }
   });
 
+  it('level 4 has a weapon-mastery-choice grant with count 1', () => {
+    const grant = source?.levels[3].grants.find((g) => g.type === 'weapon-mastery-choice');
+    expect(grant?.type).toBe('weapon-mastery-choice');
+    if (grant?.type === 'weapon-mastery-choice') {
+      expect(grant.count).toBe(1);
+      expect(grant.key).toBe(createChoiceKey('weapon-mastery-choice', 'class', 'barbarian', 1));
+    }
+  });
+
   it('level 5 has extra-attack and fast-movement features', () => {
     const featureIds = source?.levels[4].grants
       .filter((g) => g.type === 'feature')
       .map((g) => (g.type === 'feature' ? g.feature.id : ''));
     expect(featureIds).toContain('barbarian-extra-attack');
     expect(featureIds).toContain('barbarian-fast-movement');
+  });
+
+  it('level 10 has a weapon-mastery-choice grant with count 1', () => {
+    const grant = source?.levels[9].grants.find((g) => g.type === 'weapon-mastery-choice');
+    expect(grant?.type).toBe('weapon-mastery-choice');
+    if (grant?.type === 'weapon-mastery-choice') {
+      expect(grant.count).toBe(1);
+      expect(grant.key).toBe(createChoiceKey('weapon-mastery-choice', 'class', 'barbarian', 2));
+    }
   });
 
   it('level 20 has primal-champion feature', () => {
@@ -674,6 +722,15 @@ describe('Paladin class grant structures', () => {
     expect(featureIds).toContain('paladin-divine-sense');
   });
 
+  it('level 1 has a weapon-mastery-choice grant with count 2', () => {
+    const grant = source?.levels[0].grants.find((g) => g.type === 'weapon-mastery-choice');
+    expect(grant?.type).toBe('weapon-mastery-choice');
+    if (grant?.type === 'weapon-mastery-choice') {
+      expect(grant.count).toBe(2);
+      expect(grant.key).toBe(createChoiceKey('weapon-mastery-choice', 'class', 'paladin', 0));
+    }
+  });
+
   it('level 3 has subclass grant for paladin', () => {
     const grant = source?.levels[2].grants.find((g) => g.type === 'subclass');
     expect(grant?.type).toBe('subclass');
@@ -725,6 +782,15 @@ describe('Ranger class grant structures', () => {
     }
     const spellcasting = source?.levels[0].grants.find((g) => g.type === 'spellcasting');
     expect(spellcasting).toBeUndefined();
+  });
+
+  it('level 1 has a weapon-mastery-choice grant with count 2', () => {
+    const grant = source?.levels[0].grants.find((g) => g.type === 'weapon-mastery-choice');
+    expect(grant?.type).toBe('weapon-mastery-choice');
+    if (grant?.type === 'weapon-mastery-choice') {
+      expect(grant.count).toBe(2);
+      expect(grant.key).toBe(createChoiceKey('weapon-mastery-choice', 'class', 'ranger', 0));
+    }
   });
 
   it('level 2 has spellcasting with wis and fighting-style-choice', () => {

@@ -37,3 +37,4 @@ supabase/.temp
 *.sln
 *.sw?
 /coverage
+.claude/worktrees

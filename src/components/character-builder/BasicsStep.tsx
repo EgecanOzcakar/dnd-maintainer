@@ -1,5 +1,6 @@
 import { getLogger } from '@/lib/logger';
 import { AutocompleteInput } from '@/components/ui/autocomplete-input';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { GenderToggle } from '@/components/ui/gender-toggle';
 import { Input } from '@/components/ui/input';
@@ -9,7 +10,6 @@ import { Switch } from '@/components/ui/switch';
 import { useCharacterContext } from '@/hooks/useCharacterContext';
 import { usePlayerNames } from '@/hooks/useCharacters';
 import {
-  DND_BACKGROUNDS,
   DND_CLASSES,
   DND_SPECIES,
   generateCharacterName,
@@ -18,6 +18,11 @@ import {
   type DndGender,
   type SpeciesId,
 } from '@/lib/dnd-helpers';
+import { collectGrantsByType } from '@/lib/resolver/helpers';
+import { LINEAGE_GRANTS_REGISTRY, SPECIES_SOURCES } from '@/lib/sources/species';
+import type { ChoiceDecision, ChoiceKey } from '@/types/choices';
+import type { GrantBundle } from '@/types/sources';
+import type { PendingChoice } from '@/types/resolved';
 import {
   generateRandomNpcBasicsDetailed,
   getQuickNpcClassIds,
@@ -26,6 +31,7 @@ import {
 import type { StepType } from '@/types/character-builder';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Dices, Wand2 } from 'lucide-react';
+import { ChoicePicker } from './ChoicePicker';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +39,54 @@ import { useTranslation } from 'react-i18next';
 const logger = getLogger('basics-step');
 
 const PENDING_ADVANCE_TIMEOUT_MS = 3000;
+
+// ---------------------------------------------------------------------------
+// File-local LineagePicker helper
+// ---------------------------------------------------------------------------
+
+interface LineagePickerProps {
+  readonly race: SpeciesId;
+  readonly bundles: readonly GrantBundle[];
+  readonly build: { choices: Record<ChoiceKey, ChoiceDecision> } | null;
+  readonly makeChoice: (key: ChoiceKey, decision: ChoiceDecision) => void;
+  readonly clearChoice: (key: ChoiceKey) => void;
+}
+
+function LineagePicker({ race, bundles, build, makeChoice, clearChoice }: LineagePickerProps) {
+  const { t: tc } = useTranslation('common');
+
+  if (!(race in LINEAGE_GRANTS_REGISTRY)) return null;
+
+  const lineageGrantTags = collectGrantsByType(bundles, 'lineage-choice').filter(
+    (tg) => tg.source.origin === 'species'
+  );
+  const lineageTag = lineageGrantTags[0];
+
+  if (!lineageTag) {
+    // Species has lineages but bundles haven't caught up yet
+    return <p className="text-sm text-muted-foreground">{tc('characterBuilder.hints.loadingLineage')}</p>;
+  }
+
+  const lineageChoice: PendingChoice & { type: 'lineage-choice' } = {
+    type: 'lineage-choice',
+    choiceKey: lineageTag.grant.key,
+    source: lineageTag.source,
+    speciesId: race,
+    from: lineageTag.grant.from,
+  };
+  const decision = build?.choices[lineageTag.grant.key];
+
+  return (
+    <div className="mt-2">
+      <ChoicePicker
+        choice={lineageChoice}
+        currentDecision={decision as ChoiceDecision | undefined}
+        onDecide={(key, d) => makeChoice(key, d)}
+        onClear={(key) => clearChoice(key)}
+      />
+    </div>
+  );
+}
 
 // Map [ethic moral] to alignment ID — avoids looking up by .name on D&D data objects
 const ALIGNMENT_GRID: Readonly<Record<string, AlignmentId>> = {
@@ -63,7 +117,6 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
   const name = character.name ?? '';
   const playerName = character.player_name ?? '';
   const race = (character.species ?? '') as SpeciesId | '';
-  const background = character.background ?? '';
   const alignment = character.alignment ?? '';
   const gender = character.gender ?? '';
 
@@ -116,7 +169,7 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
     clearWatchdog();
   };
 
-  const handleRaceChange = (value: SpeciesId) => {
+  const handleSpeciesChange = (value: SpeciesId) => {
     cancelPendingAdvance();
     context.updateCharacter({ species: value });
   };
@@ -134,11 +187,6 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
     // levelUp adds a row, replaceLevel swaps in-place — either way, level is at least 1
     const newLevel = levelRows.length === 0 ? 1 : levelRows.length;
     context.updateCharacter({ class: value, level: newLevel });
-  };
-
-  const handleBackgroundChange = (value: string) => {
-    cancelPendingAdvance();
-    context.updateCharacter({ background: value });
   };
 
   const toastForFailure = (failure: RandomNpcFailure | null) => {
@@ -361,9 +409,17 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
               {tc('characterBuilder.fields.species')}
               <span className="text-destructive">*</span>
             </Label>
+            {race && !SPECIES_SOURCES.some((s) => s.id === race) ? (
+              <div className="space-y-1">
+                <Badge variant="destructive" className="text-xs">
+                  {tc('characterBuilder.hints.legacySpecies')}
+                </Badge>
+                <p className="text-xs text-muted-foreground">{race}</p>
+              </div>
+            ) : null}
             <Select
               value={race || null}
-              onValueChange={(value) => value && handleRaceChange(value as SpeciesId)}
+              onValueChange={(value) => value && handleSpeciesChange(value as SpeciesId)}
               items={DND_SPECIES.map((s) => ({ value: s.id, label: t(`species.${s.id}`) }))}
             >
               <SelectTrigger className="w-full">
@@ -377,6 +433,15 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
                 ))}
               </SelectContent>
             </Select>
+            {race && SPECIES_SOURCES.some((s) => s.id === race) && (
+              <LineagePicker
+                race={race as SpeciesId}
+                bundles={context.bundles}
+                build={context.build}
+                makeChoice={context.makeChoice}
+                clearChoice={context.clearChoice}
+              />
+            )}
           </div>
 
           <div className="space-y-2">
@@ -396,29 +461,6 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
                 {DND_CLASSES.map((cls) => (
                   <SelectItem key={cls.id} value={cls.id}>
                     {t(`classes.${cls.id}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>{tc('characterBuilder.fields.background')}</Label>
-            <Select
-              value={background || null}
-              onValueChange={(value) => {
-                if (!value) return;
-                handleBackgroundChange(value);
-              }}
-              items={DND_BACKGROUNDS.map((b) => ({ value: b.id, label: t(`backgrounds.${b.id}`) }))}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={tc('characterBuilder.placeholders.chooseBackground')} />
-              </SelectTrigger>
-              <SelectContent>
-                {DND_BACKGROUNDS.map((bg) => (
-                  <SelectItem key={bg.id} value={bg.id}>
-                    {t(`backgrounds.${bg.id}`)}
                   </SelectItem>
                 ))}
               </SelectContent>

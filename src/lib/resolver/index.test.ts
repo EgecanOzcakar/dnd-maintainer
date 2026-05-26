@@ -1,8 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { resolveCharacter } from '@/lib/resolver';
 import type { ResolverInput } from '@/lib/resolver';
-import type { AbilityKey, ClassId } from '@/lib/dnd-helpers';
+import type { AbilityKey, ClassId, FeatId } from '@/lib/dnd-helpers';
 import { DND_SKILLS } from '@/lib/dnd-helpers';
+import { getLogger } from '@/lib/logger';
 import { collectBundles } from '@/lib/sources';
 import type { CharacterBuild, ChoiceDecision, ChoiceKey } from '@/types/choices';
 import { createChoiceKey } from '@/types/choices';
@@ -1055,6 +1056,52 @@ describe('FeatGrant passthrough behavior', () => {
       },
     ];
     expect(() => resolveCharacter({ ...baseInput, bundles })).not.toThrow();
+  });
+
+  it('emits logger.warn for unexpanded feat grant when not in expandedFeats', () => {
+    const resolverLogger = getLogger('resolver');
+    const warnSpy = vi.spyOn(resolverLogger, 'warn').mockImplementation(() => {});
+    const bundles: readonly GrantBundle[] = [
+      {
+        source: { origin: 'background', id: 'soldier' },
+        grants: [{ type: 'feat', featId: 'savage-attacker' }],
+      },
+    ];
+    resolveCharacter({ ...baseInput, bundles });
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('savage-attacker'));
+  });
+});
+
+describe('FeatGrant diagnostic not fired for expanded feats', () => {
+  it('no logger.warn when feat grant is in expandedFeats', () => {
+    const resolverLogger = getLogger('resolver');
+    const warnSpy = vi.spyOn(resolverLogger, 'warn').mockImplementation(() => {});
+    const bundles: readonly GrantBundle[] = [
+      {
+        source: { origin: 'background', id: 'soldier' },
+        grants: [{ type: 'feat', featId: 'savage-attacker' }],
+      },
+    ];
+    resolveCharacter({ ...baseInput, bundles, expandedFeats: new Set<FeatId>(['savage-attacker' as FeatId]) });
+    expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining('savage-attacker'));
+  });
+
+  it('logger.warn fires for inner nested feat not in expandedFeats, not for outer expanded feat', () => {
+    const resolverLogger = getLogger('resolver');
+    const warnSpy = vi.spyOn(resolverLogger, 'warn').mockImplementation(() => {});
+    const bundles: readonly GrantBundle[] = [
+      {
+        source: { origin: 'background', id: 'soldier' },
+        grants: [{ type: 'feat', featId: 'outer-feat' as FeatId }],
+      },
+      {
+        source: { origin: 'feat', id: 'outer-feat' as FeatId },
+        grants: [{ type: 'feat', featId: 'inner-nested' as FeatId }],
+      },
+    ];
+    resolveCharacter({ ...baseInput, bundles, expandedFeats: new Set<FeatId>(['outer-feat' as FeatId]) });
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('inner-nested'));
+    expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining('outer-feat'));
   });
 });
 

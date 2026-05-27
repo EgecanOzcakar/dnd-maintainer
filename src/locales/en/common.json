@@ -62,7 +62,8 @@
     "settings": "Settings",
     "selectCampaign": "Select Campaign",
     "noCampaigns": "No campaigns",
-    "campaign": "Campaign"
+    "campaign": "Campaign",
+    "openMenu": "Open menu"
   },
   "app": {
     "title": "D&D Keeper",
@@ -96,10 +97,11 @@
     "title": "Create New Character",
     "steps": {
       "basics": "Basics",
-      "background": "Background",
+      "class": "Class",
+      "origin": "Origin",
       "abilities": "Abilities",
+      "details": "Details",
       "skills": "Skills",
-      "classFeatures": "Class Features",
       "proficiencies": "Proficiencies",
       "equipment": "Equipment",
       "backstory": "Backstory"
@@ -125,7 +127,7 @@
       "eyeColor": "Eye Color",
       "hairColor": "Hair Color",
       "skinColor": "Skin Color",
-      "quickNpcLabel": "Quick Random NPC"
+      "quickNpcLabel": "Random NPC by Class"
     },
     "backstory": {
       "physicals": {
@@ -204,10 +206,11 @@
       "selectSpeciesAndGender": "Select species and gender first",
       "generateRandomName": "Generate random name",
       "legacySpecies": "This character uses a legacy species ID. Select a 2024 species to update.",
+      "hasLaterChoices": "This option requires additional choices in a later step.",
       "selectSpeciesFirst": "Select a species to see lineage options.",
       "loadingLineage": "Loading lineage options...",
       "couldNotLoadPlayerNames": "Could not load player name suggestions",
-      "quickNpcDescription": "Create a random NPC of this class and jump ahead in the wizard",
+      "quickNpcDescription": "Click a class icon to create a random NPC of that class and jump ahead in the wizard",
       "quickNpcButton": "Random {{class}} NPC",
       "quickNpcFailed": "Could not generate NPC — name data missing for selected species",
       "quickNpcUnknownClass": "Could not generate NPC — unknown class",
@@ -242,7 +245,9 @@
       "anyAbility": "any ability",
       "backgroundAsiHint": "{{background}} provides {{points}} points to distribute across {{abilities}}.",
       "backgroundAsiRemaining": "({{count}} point remaining)",
-      "backgroundAsiRemaining_plural": "({{count}} points remaining)"
+      "backgroundAsiRemaining_plural": "({{count}} points remaining)",
+      "backgroundAsiLabel": "Background ASI",
+      "backgroundAsiHelp": "Distribute 3 points across your eligible abilities (maximum +2 per ability)."
     },
     "skills": {
       "selectClassFirst": "Please select a class in the Basics step before choosing skills.",
@@ -294,7 +299,8 @@
       "originFeatGranted": "Granted by {{background}}",
       "toolProficiencyTitle": "Tool Proficiency",
       "languageTitle": "Language",
-      "noBackground": "Select a background to see its benefits."
+      "noBackground": "Select a background to see its benefits.",
+      "selectBackgroundInBasics": "Pick a background in the Basics step to see its sub-choices."
     },
     "equipment": {
       "equipped": "Equipped",

@@ -4,13 +4,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   AbilitiesStep,
-  BackgroundStep,
   BackstoryStep,
   BasicsStep,
-  ClassFeaturesStep,
+  ClassStep,
+  DetailsStep,
   EquipmentStep,
-  ProficienciesStep,
-  SkillsStep,
+  OriginStep,
 } from '@/components/character-builder';
 import { CharacterProvider, useCharacterContext } from '@/hooks/useCharacterContext';
 import { useBuilderAutosave } from '@/hooks/useBuilderAutosave';
@@ -18,6 +17,7 @@ import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
 import { useCharacterBuildLevels, useCharacterItems } from '@/hooks/useCharacterBuild';
 import { useCharacter } from '@/hooks/useCharacters';
 import { useCampaignContext } from '@/hooks/useCampaignContext';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import type { Character } from '@/types/database';
 import { ChevronLeft, ChevronRight, Save, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactElement } from 'react';
@@ -31,11 +31,10 @@ const logger = getLogger('character-builder');
 
 const STEPS: { id: StepType }[] = [
   { id: 'basics' },
-  { id: 'background' },
+  { id: 'class' },
+  { id: 'origin' },
   { id: 'abilities' },
-  { id: 'skills' },
-  { id: 'classFeatures' },
-  { id: 'proficiencies' },
+  { id: 'details' },
   { id: 'equipment' },
   { id: 'backstory' },
 ];
@@ -44,16 +43,14 @@ function renderStep(step: StepType, goToStep: (s: StepType) => void): ReactEleme
   switch (step) {
     case 'basics':
       return <BasicsStep onRequestAdvance={goToStep} />;
-    case 'background':
-      return <BackgroundStep />;
+    case 'class':
+      return <ClassStep />;
+    case 'origin':
+      return <OriginStep />;
     case 'abilities':
       return <AbilitiesStep />;
-    case 'skills':
-      return <SkillsStep />;
-    case 'classFeatures':
-      return <ClassFeaturesStep />;
-    case 'proficiencies':
-      return <ProficienciesStep />;
+    case 'details':
+      return <DetailsStep />;
     case 'equipment':
       return <EquipmentStep />;
     case 'backstory':
@@ -130,6 +127,8 @@ function CharacterBuilderInner() {
   const context = useCharacterContext();
   const { character, rows, resolved, buildError, isDirty, markSaved } = context;
 
+  usePageTitle(t('characterBuilder.title'));
+
   useEffect(() => {
     if (saveStatus !== 'saved') return;
     const timer = setTimeout(() => clearStatus(), 2000);
@@ -141,7 +140,8 @@ function CharacterBuilderInner() {
   latestPayloadRef.current = { character, rows, resolved };
 
   // Required fields before any draft can be saved
-  const hasRequiredFields = !!character.name && !!character.species && !!character.class && !!character.alignment;
+  const hasRequiredFields =
+    !!character.name && !!character.species && !!character.class && !!character.background && !!character.alignment;
 
   // Autosave when isDirty changes to true — debounced 500ms, only if required fields present
   useEffect(() => {
@@ -261,7 +261,7 @@ function CharacterBuilderInner() {
   return (
     <div className="min-h-screen bg-background">
       <div className="page-container">
-        <h1 className="page-title mb-8">{t('characterBuilder.title')}</h1>
+        <h1 className="page-title mb-8 hidden md:block">{t('characterBuilder.title')}</h1>
 
         {/* Step Indicator */}
         <div className="mb-8">
@@ -369,34 +369,36 @@ function CharacterBuilderInner() {
             </ul>
           </div>
         )}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={goPrevStep} disabled={currentStepIndex === 0}>
-              <ChevronLeft size={16} />
-              {t('buttons.previous')}
+        {/*
+          Tab order is Previous → Next → Finalize → Abandon (DOM order).
+          Flex `order-*` keeps the visual layout: Previous and Abandon on the left,
+          status + Next + Finalize on the right (pushed by the order-3 spacer).
+        */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <Button variant="outline" onClick={goPrevStep} disabled={currentStepIndex === 0} className="order-1">
+            <ChevronLeft size={16} />
+            {t('buttons.previous')}
+          </Button>
+          <div className="order-3 flex-1" />
+          {saveStatus === 'saving' && (
+            <span className="order-4 text-sm text-muted-foreground">{t('characterBuilder.status.saving')}</span>
+          )}
+          {saveStatus === 'saved' && (
+            <span className="order-4 text-sm text-muted-foreground">{t('characterBuilder.status.draftSaved')}</span>
+          )}
+          {currentStepIndex < STEPS.length - 1 && (
+            <Button onClick={goNextStep} disabled={currentStepIndex === 0 && !canLeaveBasics} className="order-5">
+              {t('buttons.next')} <ChevronRight size={16} />
             </Button>
-            <Button variant="destructive" onClick={() => setConfirmAbandon(true)}>
-              <Trash2 className="size-4" />
-              {t('buttons.abandonCharacter')}
-            </Button>
-          </div>
-          <div className="flex items-center gap-3">
-            {saveStatus === 'saving' && (
-              <span className="text-sm text-muted-foreground">{t('characterBuilder.status.saving')}</span>
-            )}
-            {saveStatus === 'saved' && (
-              <span className="text-sm text-muted-foreground">{t('characterBuilder.status.draftSaved')}</span>
-            )}
-            {currentStepIndex < STEPS.length - 1 && (
-              <Button onClick={goNextStep} disabled={currentStepIndex === 0 && !canLeaveBasics}>
-                {t('buttons.next')} <ChevronRight size={16} />
-              </Button>
-            )}
-            <Button onClick={handleFinalize} disabled={!isReadyToFinalize} pending={isFinalizing}>
-              <Save className="size-4" />
-              {isFinalizing ? t('buttons.finalizing') : t('buttons.finalizeCharacter')}
-            </Button>
-          </div>
+          )}
+          <Button onClick={handleFinalize} disabled={!isReadyToFinalize} pending={isFinalizing} className="order-6">
+            <Save className="size-4" />
+            {isFinalizing ? t('buttons.finalizing') : t('buttons.finalizeCharacter')}
+          </Button>
+          <Button variant="destructive" onClick={() => setConfirmAbandon(true)} className="order-2">
+            <Trash2 className="size-4" />
+            {t('buttons.abandonCharacter')}
+          </Button>
         </div>
 
         {confirmAbandon && (

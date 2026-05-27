@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { useCharacterContext } from '@/hooks/useCharacterContext';
 import { usePlayerNames } from '@/hooks/useCharacters';
 import {
+  DND_BACKGROUNDS,
   DND_CLASSES,
   DND_SPECIES,
   generateCharacterName,
@@ -18,11 +19,7 @@ import {
   type DndGender,
   type SpeciesId,
 } from '@/lib/dnd-helpers';
-import { collectGrantsByType } from '@/lib/resolver/helpers';
-import { LINEAGE_GRANTS_REGISTRY, SPECIES_SOURCES } from '@/lib/sources/species';
-import type { ChoiceDecision, ChoiceKey } from '@/types/choices';
-import type { GrantBundle } from '@/types/sources';
-import type { PendingChoice } from '@/types/resolved';
+import { SPECIES_SOURCES } from '@/lib/sources/species';
 import {
   generateRandomNpcBasicsDetailed,
   getQuickNpcClassIds,
@@ -30,8 +27,14 @@ import {
 } from '@/lib/character-builder/random-npc';
 import type { StepType } from '@/types/character-builder';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Dices, Wand2 } from 'lucide-react';
-import { ChoicePicker } from './ChoicePicker';
+import { MoreHorizontal, Wand2 } from 'lucide-react';
+import { CLASS_ICONS } from '@/lib/class-icons';
+import type { BackgroundId } from '@/lib/dnd-helpers';
+import {
+  backgroundHasLaterChoices,
+  classHasLaterChoices,
+  speciesHasLaterChoices,
+} from '@/lib/character-builder/has-later-choices';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -40,52 +43,8 @@ const logger = getLogger('basics-step');
 
 const PENDING_ADVANCE_TIMEOUT_MS = 3000;
 
-// ---------------------------------------------------------------------------
-// File-local LineagePicker helper
-// ---------------------------------------------------------------------------
-
-interface LineagePickerProps {
-  readonly race: SpeciesId;
-  readonly bundles: readonly GrantBundle[];
-  readonly build: { choices: Record<ChoiceKey, ChoiceDecision> } | null;
-  readonly makeChoice: (key: ChoiceKey, decision: ChoiceDecision) => void;
-  readonly clearChoice: (key: ChoiceKey) => void;
-}
-
-function LineagePicker({ race, bundles, build, makeChoice, clearChoice }: LineagePickerProps) {
-  const { t: tc } = useTranslation('common');
-
-  if (!(race in LINEAGE_GRANTS_REGISTRY)) return null;
-
-  const lineageGrantTags = collectGrantsByType(bundles, 'lineage-choice').filter(
-    (tg) => tg.source.origin === 'species'
-  );
-  const lineageTag = lineageGrantTags[0];
-
-  if (!lineageTag) {
-    // Species has lineages but bundles haven't caught up yet
-    return <p className="text-sm text-muted-foreground">{tc('characterBuilder.hints.loadingLineage')}</p>;
-  }
-
-  const lineageChoice: PendingChoice & { type: 'lineage-choice' } = {
-    type: 'lineage-choice',
-    choiceKey: lineageTag.grant.key,
-    source: lineageTag.source,
-    speciesId: race,
-    from: lineageTag.grant.from,
-  };
-  const decision = build?.choices[lineageTag.grant.key];
-
-  return (
-    <div className="mt-2">
-      <ChoicePicker
-        choice={lineageChoice}
-        currentDecision={decision as ChoiceDecision | undefined}
-        onDecide={(key, d) => makeChoice(key, d)}
-        onClear={(key) => clearChoice(key)}
-      />
-    </div>
-  );
+function HasLaterChoicesIcon({ tooltip }: { tooltip: string }) {
+  return <MoreHorizontal className="ml-2 inline size-3.5 text-muted-foreground" aria-label={tooltip} />;
 }
 
 // Map [ethic moral] to alignment ID — avoids looking up by .name on D&D data objects
@@ -119,6 +78,7 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
   const race = (character.species ?? '') as SpeciesId | '';
   const alignment = character.alignment ?? '';
   const gender = character.gender ?? '';
+  const background = character.background ?? '';
 
   // Derive class from level rows (first non-creation row)
   const levelRows = rows.filter((r) => r.sequence !== 0);
@@ -151,8 +111,8 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
     if (!target) return;
     const basicsReady = !!character.name && !!character.species && !!character.class && !!character.alignment;
     if (!basicsReady) return;
-    // If targeting 'skills', also wait until base_abilities have committed.
-    if (target === 'skills') {
+    // If targeting 'class' (Quick NPC with quickBuild data), also wait until base_abilities have committed.
+    if (target === 'class') {
       const creation = rows.find((r) => r.sequence === 0);
       const hasAbilities =
         !!creation?.base_abilities &&
@@ -238,9 +198,9 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
         name: basics.name,
         class: classId,
         level: 1,
-        ...(basics.targetStep === 'skills' ? { background: basics.suggestedBackground } : {}),
+        ...(basics.targetStep === 'class' ? { background: basics.suggestedBackground } : {}),
       });
-      const asiDecision = basics.targetStep === 'skills' ? basics.backgroundAsiDecision : undefined;
+      const asiDecision = basics.targetStep === 'class' ? basics.backgroundAsiDecision : undefined;
       const choices = {
         ...(asiDecision
           ? {
@@ -260,7 +220,7 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
           : {}),
       };
       const hasChoices = Object.keys(choices).length > 0;
-      if (basics.targetStep === 'skills') {
+      if (basics.targetStep === 'class') {
         context.updateCreation({
           base_abilities: basics.baseAbilities,
           ...(hasChoices ? { choices } : {}),
@@ -310,12 +270,23 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
         <Label>{tc('characterBuilder.fields.quickNpcLabel')}</Label>
         <p className="text-xs text-muted-foreground">{tc('characterBuilder.hints.quickNpcDescription')}</p>
         <div className="flex flex-wrap gap-2">
-          {getQuickNpcClassIds().map((classId) => (
-            <Button key={classId} type="button" variant="outline" size="sm" onClick={() => handleQuickNpc(classId)}>
-              <Dices className="size-4" />
-              {tc('characterBuilder.hints.quickNpcButton', { class: t(`classes.${classId}`) })}
-            </Button>
-          ))}
+          {getQuickNpcClassIds().map((classId) => {
+            const Icon = CLASS_ICONS[classId];
+            const label = tc('characterBuilder.hints.quickNpcButton', { class: t(`classes.${classId}`) });
+            return (
+              <Button
+                key={classId}
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => handleQuickNpc(classId)}
+                title={label}
+                aria-label={label}
+              >
+                <Icon className="size-4" />
+              </Button>
+            );
+          })}
         </div>
       </div>
 
@@ -442,19 +413,13 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
                 {DND_SPECIES.map((s) => (
                   <SelectItem key={s.id} value={s.id}>
                     {t(`species.${s.id}`)}
+                    {speciesHasLaterChoices(s.id) && (
+                      <HasLaterChoicesIcon tooltip={tc('characterBuilder.hints.hasLaterChoices')} />
+                    )}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {race && SPECIES_SOURCES.some((s) => s.id === race) && (
-              <LineagePicker
-                race={race as SpeciesId}
-                bundles={context.bundles}
-                build={context.build}
-                makeChoice={context.makeChoice}
-                clearChoice={context.clearChoice}
-              />
-            )}
           </div>
 
           <div className="space-y-2">
@@ -474,6 +439,32 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
                 {DND_CLASSES.map((cls) => (
                   <SelectItem key={cls.id} value={cls.id}>
                     {t(`classes.${cls.id}`)}
+                    {classHasLaterChoices(cls.id) && (
+                      <HasLaterChoicesIcon tooltip={tc('characterBuilder.hints.hasLaterChoices')} />
+                    )}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>{tc('characterBuilder.fields.background')}</Label>
+            <Select
+              value={background || null}
+              onValueChange={(value) => value && context.updateCharacter({ background: value })}
+              items={DND_BACKGROUNDS.map((b) => ({ value: b.id, label: t(`backgrounds.${b.id}`) }))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={tc('characterBuilder.placeholders.chooseBackground')} />
+              </SelectTrigger>
+              <SelectContent>
+                {DND_BACKGROUNDS.map((b) => (
+                  <SelectItem key={b.id} value={b.id}>
+                    {t(`backgrounds.${b.id}`)}
+                    {backgroundHasLaterChoices(b.id as BackgroundId) && (
+                      <HasLaterChoicesIcon tooltip={tc('characterBuilder.hints.hasLaterChoices')} />
+                    )}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -539,7 +530,11 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
                 {tc('buttons.cancel')}
               </Button>
               <Button variant="destructive" onClick={handleOverwriteConfirm}>
-                <Dices className="size-4" />
+                {pendingOverwriteClassId &&
+                  (() => {
+                    const Icon = CLASS_ICONS[pendingOverwriteClassId];
+                    return <Icon className="size-4" />;
+                  })()}
                 {tc('characterBuilder.hints.quickNpcButton', { class: t(`classes.${pendingOverwriteClassId}`) })}
               </Button>
             </DialogFooter>

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { BasicsStep } from '@/components/character-builder/BasicsStep';
 import { CLASS_SOURCES } from '@/lib/sources/classes';
-import { LINEAGE_GRANTS_REGISTRY, SPECIES_SOURCES } from '@/lib/sources/species';
+import { SPECIES_SOURCES } from '@/lib/sources/species';
 import * as randomNpcModule from '@/lib/character-builder/random-npc';
 import type { Character, AbilityScores } from '@/types/database';
 import type { BuildLevelRow, CreationRow, LevelRow } from '@/lib/build-reconstruction';
@@ -225,7 +225,7 @@ describe('BasicsStep', () => {
 
     rerender(<BasicsStep onRequestAdvance={onRequestAdvance} />);
 
-    await waitFor(() => expect(onRequestAdvance).toHaveBeenCalledWith('skills'));
+    await waitFor(() => expect(onRequestAdvance).toHaveBeenCalledWith('class'));
     expect(onRequestAdvance).toHaveBeenCalledTimes(1);
   });
 
@@ -275,7 +275,7 @@ describe('BasicsStep', () => {
         classId: 'fighter',
         baseAbilities: { str: 15, dex: 13, con: 14, int: 12, wis: 10, cha: 8 },
         suggestedBackground: 'soldier',
-        targetStep: 'skills',
+        targetStep: 'class',
         lineageDecision: { key: 'lineage-choice:species:tiefling:0', lineageId: 'infernal' },
       },
     });
@@ -302,7 +302,7 @@ describe('BasicsStep', () => {
         classId: 'fighter',
         baseAbilities: { str: 15, dex: 13, con: 14, int: 12, wis: 10, cha: 8 },
         suggestedBackground: 'soldier',
-        targetStep: 'skills',
+        targetStep: 'class',
         // No backgroundAsiDecision, no lineageDecision
       },
     });
@@ -391,7 +391,7 @@ describe('BasicsStep', () => {
     const onRequestAdvance = vi.fn();
     const { rerender } = render(<BasicsStep onRequestAdvance={onRequestAdvance} />);
 
-    // First click → Fighter (quickBuild → targetStep='skills')
+    // First click → Fighter (quickBuild → targetStep='class')
     fireEvent.click(screen.getByRole('button', { name: /fighter/i }));
 
     // Before any state lands, second click with a no-quickBuild class (targetStep='abilities')
@@ -426,7 +426,7 @@ describe('BasicsStep', () => {
 
     await waitFor(() => expect(onRequestAdvance).toHaveBeenCalledWith('abilities'));
     expect(onRequestAdvance).toHaveBeenCalledTimes(1);
-    expect(onRequestAdvance).not.toHaveBeenCalledWith('skills');
+    expect(onRequestAdvance).not.toHaveBeenCalledWith('class');
   });
 
   it('surfaces a distinct toast for unknown-class failures', () => {
@@ -506,7 +506,7 @@ describe('BasicsStep', () => {
     contextRows = [buildCreationRow({ str: 15, dex: 13, con: 14, int: 12, wis: 10, cha: 8 }), buildLevelRow('fighter')];
     rerender(<BasicsStep onRequestAdvance={onRequestAdvance} />);
 
-    await waitFor(() => expect(onRequestAdvance).toHaveBeenCalledWith('skills'));
+    await waitFor(() => expect(onRequestAdvance).toHaveBeenCalledWith('class'));
     expect(onRequestAdvance).toHaveBeenCalledTimes(1);
   });
 
@@ -545,15 +545,15 @@ describe('BasicsStep', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: /fighter/i }));
     contextRows = [buildCreationRow({ str: 15, dex: 13, con: 14, int: 12, wis: 10, cha: 8 }), buildLevelRow('fighter')];
     rerender(<BasicsStep onRequestAdvance={onRequestAdvance} />);
-    await waitFor(() => expect(onRequestAdvance).toHaveBeenCalledWith('skills'));
+    await waitFor(() => expect(onRequestAdvance).toHaveBeenCalledWith('class'));
   });
 
   // ---------------------------------------------------------------------------
-  // IMPORTANT #7 — lineage picker, legacy-species badge, background removal
+  // IMPORTANT #7 — legacy-species badge, background removal, lineage non-rendering
+  // (lineage picker moved to OriginStep — see OriginStep.test.tsx)
   // ---------------------------------------------------------------------------
 
-  it('shows lineage picker when species is in LINEAGE_GRANTS_REGISTRY and bundles have caught up', () => {
-    // elf has lineages: ['drow', 'high-elf', 'wood-elf']
+  it('does not render a lineage picker in BasicsStep (moved to OriginStep)', () => {
     contextCharacter = buildSeedCharacter({ species: 'elf' });
     contextBundles = [
       {
@@ -571,37 +571,9 @@ describe('BasicsStep', () => {
 
     render(<BasicsStep />);
 
-    // ChoicePicker renders radio buttons for each lineage option
-    const radios = screen.getAllByRole('radio') as HTMLInputElement[];
-    // Should have at least one radio for a lineage option
-    expect(radios.length).toBeGreaterThan(0);
-  });
-
-  it('shows loading hint when species is in LINEAGE_GRANTS_REGISTRY but bundles have not caught up', () => {
-    // elf has lineages, but bundles is empty (hasn't resolved yet)
-    contextCharacter = buildSeedCharacter({ species: 'elf' });
-    contextBundles = [];
-
-    render(<BasicsStep />);
-
-    expect(screen.getByText('loadingLineage')).toBeTruthy();
-  });
-
-  it('hides lineage picker for a species without lineages (e.g. dwarf)', () => {
-    contextCharacter = buildSeedCharacter({ species: 'dwarf' });
-    contextBundles = [
-      {
-        source: { origin: 'species', id: 'dwarf' },
-        grants: [],
-      },
-    ] as readonly GrantBundle[];
-
-    render(<BasicsStep />);
-
-    // dwarf is NOT in LINEAGE_GRANTS_REGISTRY, so no loading hint and no lineage radios
+    // No lineage radios, no loading hint
     expect(screen.queryByText('loadingLineage')).toBeNull();
-    // Confirm dwarf is indeed not in the registry
-    expect('dwarf' in LINEAGE_GRANTS_REGISTRY).toBe(false);
+    expect(screen.queryAllByRole('radio')).toHaveLength(0);
   });
 
   it('shows legacy-species warning badge when character.species is not in SPECIES_SOURCES', () => {
@@ -621,13 +593,9 @@ describe('BasicsStep', () => {
     expect(screen.queryByText('legacySpecies')).toBeNull();
   });
 
-  it('does not render a Background <Select> in BasicsStep (background was moved to BackgroundStep)', () => {
+  it('renders a Background <Select> in BasicsStep (top-level ID pick — sub-choices live in OriginStep)', () => {
     render(<BasicsStep />);
 
-    // The comboboxes present are Species and Class — no Background combobox
-    const combos = screen.getAllByRole('combobox') as HTMLElement[];
-    // None of them should have a background-related accessible description or placeholder
-    const hasBackground = combos.some((c) => c.textContent?.toLowerCase().includes('background'));
-    expect(hasBackground).toBe(false);
+    expect(screen.getByText('chooseBackground')).toBeTruthy();
   });
 });

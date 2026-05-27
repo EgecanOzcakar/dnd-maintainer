@@ -60,7 +60,8 @@ export function resolveSpeed(bundles: readonly GrantBundle[]): Readonly<Partial<
 export function resolveAc(
   bundles: readonly GrantBundle[],
   dexModifier: number,
-  equippedArmor?: { readonly totalBase: number | null; readonly shieldBonus: number } | null
+  equippedArmor?: { readonly totalBase: number | null; readonly shieldBonus: number } | null,
+  bardicDieSize?: 6 | 8 | 10 | 12 | null
 ): ResolvedArmorClass {
   const acGrants = collectGrantsByType(bundles, 'armor-class');
   const acBonusGrants = collectGrantsByType(bundles, 'ac-bonus');
@@ -83,10 +84,26 @@ export function resolveAc(
       case 'natural':
         calculations.push({ mode: 'natural', baseValue: calc.baseAc, source });
         break;
-      case 'unarmored':
-        // Unarmored: 10 + DEX modifier. TODO: barbarian formula should add CON modifier, monk should add WIS modifier.
-        calculations.push({ mode: 'unarmored', baseValue: 10 + dexModifier, source });
+      case 'unarmored': {
+        let baseValue = 10 + dexModifier;
+        switch (calc.formula) {
+          case 'dance':
+            if (bardicDieSize != null) baseValue += bardicDieSize;
+            break;
+          case 'barbarian':
+            // TODO: add CON modifier when ability scores are threaded through here
+            break;
+          case 'monk':
+            // TODO: add WIS modifier when ability scores are threaded through here
+            break;
+          default: {
+            const _exhaustive: never = calc.formula;
+            throw new Error(`Unhandled unarmored formula: ${JSON.stringify(_exhaustive)}`);
+          }
+        }
+        calculations.push({ mode: 'unarmored', baseValue, source });
         break;
+      }
       default: {
         const _exhaustive: never = calc;
         throw new Error(`Unhandled AC calculation mode: ${JSON.stringify(_exhaustive)}`);
@@ -114,4 +131,46 @@ export function resolveAc(
   const effective = baseAc + bonusTotal;
 
   return { calculations, bonuses, effective };
+}
+
+const BARDIC_DIE_BY_LEVEL: ReadonlyArray<6 | 8 | 10 | 12> = [
+  6,
+  6,
+  6,
+  6, // levels 1-4
+  8,
+  8,
+  8,
+  8,
+  8, // levels 5-9
+  10,
+  10,
+  10,
+  10,
+  10, // levels 10-14
+  12,
+  12,
+  12,
+  12,
+  12,
+  12, // levels 15-20
+];
+
+export function resolveBardicInspiration(
+  bundles: readonly GrantBundle[],
+  bardLevel: number,
+  chaModifier: number
+): { readonly dieSize: 6 | 8 | 10 | 12; readonly uses: number } | null {
+  const hasBardicInspiration = collectGrantsByType(bundles, 'feature').some(
+    ({ grant }) => grant.feature.id === 'bard-bardic-inspiration'
+  );
+  if (!hasBardicInspiration) return null;
+  if (bardLevel < 1) return null;
+  const clampedLevel = Math.min(20, bardLevel);
+  const dieSize = BARDIC_DIE_BY_LEVEL[clampedLevel - 1];
+  // clampedLevel is guaranteed to be in [1, 20] and BARDIC_DIE_BY_LEVEL has 20 entries,
+  // so dieSize is structurally always defined — if this throws, the invariant was broken.
+  if (dieSize === undefined) throw new Error(`Bardic die lookup failed at level ${bardLevel}`);
+  const uses = Math.max(1, chaModifier);
+  return { dieSize, uses };
 }

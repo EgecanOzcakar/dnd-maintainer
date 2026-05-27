@@ -119,7 +119,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Inspirational Dance: use Bardic Inspiration die for unarmed strike damage
           { type: 'feature', feature: { id: 'collegedance-inspirational-dance' } },
-          // Unarmored Defense: AC = 10 + DEX mod + Bardic Inspiration die (dynamic; no static ac-bonus)
+          // Unarmored Defense: AC = 10 + DEX mod + Bardic Inspiration die
+          { type: 'armor-class', calculation: { mode: 'unarmored', formula: 'dance' } },
           { type: 'feature', feature: { id: 'collegedance-unarmored-defense' } },
           // Frolicking Steps: Dash lets you move through hostile creature spaces
           { type: 'feature', feature: { id: 'collegedance-frolicking-steps' } },
@@ -157,7 +158,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           {
             type: 'proficiency-choice',
             category: 'skill',
-            key: createChoiceKey('skill-choice', 'class', 'collegelore', 0),
+            key: createChoiceKey('skill-choice', 'subclass', 'collegelore', 0),
             count: 3,
             from: null,
           },
@@ -662,7 +663,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           {
             type: 'proficiency-choice',
             category: 'skill',
-            key: createChoiceKey('skill-choice', 'class', 'feywanderer', 0),
+            key: createChoiceKey('skill-choice', 'subclass', 'feywanderer', 0),
             count: 1,
             from: ['deception', 'performance', 'persuasion'],
           },
@@ -996,7 +997,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           {
             type: 'proficiency-choice',
             category: 'skill',
-            key: createChoiceKey('skill-choice', 'class', 'greatoldonepatron', 1),
+            key: createChoiceKey('skill-choice', 'subclass', 'greatoldonepatron', 1),
             count: 1,
             from: ['arcana', 'history', 'intimidation', 'nature', 'religion', 'survival'],
           },

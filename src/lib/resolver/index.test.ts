@@ -2042,3 +2042,146 @@ describe('bardicInspiration resolver integration', () => {
     expect(result.armorClass.effective).toBe(18); // dance (18) > unequipped armored (12)
   });
 });
+
+describe('Cleric feature-choice integration (Divine Order)', () => {
+  const divineOrderKey = createChoiceKey('feature-choice', 'class', 'cleric', 0);
+
+  const baseBuild: CharacterBuild = {
+    speciesId: 'human' as const,
+    backgroundId: 'acolyte',
+    baseAbilities: { str: 13, dex: 10, con: 14, int: 8, wis: 15, cha: 12 },
+    abilityMethod: 'standard-array',
+    levels: [{ classId: 'cleric' as ClassId, classLevel: 1, hpRoll: null }],
+    choices: {},
+    feats: [],
+    activeItems: [],
+  };
+
+  it('emits a pending feature-choice with both options when no decision is recorded', () => {
+    const { bundles } = collectBundles(baseBuild);
+    const result = resolveCharacter({
+      baseAbilities: baseBuild.baseAbilities,
+      level: 1,
+      bundles,
+      choices: baseBuild.choices,
+    });
+    const pending = result.pendingChoices.find((c) => c.type === 'feature-choice');
+    expect(pending).toBeDefined();
+    if (pending?.type === 'feature-choice') {
+      expect(pending.choiceKey).toBe(divineOrderKey);
+      const optionIds = pending.options.map((o) => o.optionId);
+      expect(optionIds).toEqual(['protector', 'thaumaturge']);
+      const protectorOption = pending.options.find((o) => o.optionId === 'protector');
+      expect(protectorOption?.featureId).toBe('cleric-divine-order-protector');
+    }
+  });
+
+  it('does not emit a pending choice once a valid option is selected', () => {
+    const build: CharacterBuild = {
+      ...baseBuild,
+      choices: { [divineOrderKey]: { type: 'feature-choice' as const, optionId: 'protector' } },
+    };
+    const { bundles } = collectBundles(build);
+    const result = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 1,
+      bundles,
+      choices: build.choices,
+    });
+    const pending = result.pendingChoices.find((c) => c.type === 'feature-choice');
+    expect(pending).toBeUndefined();
+  });
+
+  it('Protector grants martial weapon + heavy armor proficiencies on the resolved character', () => {
+    const build: CharacterBuild = {
+      ...baseBuild,
+      choices: { [divineOrderKey]: { type: 'feature-choice' as const, optionId: 'protector' } },
+    };
+    const { bundles } = collectBundles(build);
+    const result = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 1,
+      bundles,
+      choices: build.choices,
+    });
+    const weaponProfValues = result.weaponProficiencies.map((p) => p.value);
+    expect(weaponProfValues).toContain('martial');
+    const armorProfValues = result.armorProficiencies.map((p) => p.value);
+    expect(armorProfValues).toContain('heavy');
+  });
+
+  it('Thaumaturge does NOT grant Protector’s martial weapon proficiency', () => {
+    const build: CharacterBuild = {
+      ...baseBuild,
+      choices: { [divineOrderKey]: { type: 'feature-choice' as const, optionId: 'thaumaturge' } },
+    };
+    const { bundles } = collectBundles(build);
+    const result = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 1,
+      bundles,
+      choices: build.choices,
+    });
+    const weaponProfValues = result.weaponProficiencies.map((p) => p.value);
+    expect(weaponProfValues).not.toContain('martial');
+  });
+
+  it('chosen variant feature appears in the resolved features list', () => {
+    const build: CharacterBuild = {
+      ...baseBuild,
+      choices: { [divineOrderKey]: { type: 'feature-choice' as const, optionId: 'protector' } },
+    };
+    const { bundles } = collectBundles(build);
+    const result = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 1,
+      bundles,
+      choices: build.choices,
+    });
+    const featureIds = result.features.map((f) => f.feature.id);
+    expect(featureIds).toContain('cleric-divine-order-protector');
+  });
+
+  it('re-emits a pending feature-choice when the decision references an unknown optionId', () => {
+    const build: CharacterBuild = {
+      ...baseBuild,
+      choices: { [divineOrderKey]: { type: 'feature-choice' as const, optionId: 'unknown' } },
+    };
+    const { bundles } = collectBundles(build);
+    const result = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 1,
+      bundles,
+      choices: build.choices,
+    });
+    const pending = result.pendingChoices.find((c) => c.type === 'feature-choice');
+    expect(pending).toBeDefined();
+    if (pending?.type === 'feature-choice') {
+      expect(pending.choiceKey).toBe(divineOrderKey);
+      const optionIds = pending.options.map((o) => o.optionId);
+      expect(optionIds).toEqual(['protector', 'thaumaturge']);
+    }
+    const featureIds = result.features.map((f) => f.feature.id);
+    expect(featureIds).not.toContain('cleric-divine-order-protector');
+    expect(featureIds).not.toContain('cleric-divine-order-thaumaturge');
+  });
+
+  it('re-emits pending when the decision under the feature-choice key has a wrong type', () => {
+    const build: CharacterBuild = {
+      ...baseBuild,
+      choices: { [divineOrderKey]: { type: 'skill-choice' as const, skills: [] } },
+    };
+    const { bundles } = collectBundles(build);
+    const result = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 1,
+      bundles,
+      choices: build.choices,
+    });
+    const pending = result.pendingChoices.find((c) => c.type === 'feature-choice');
+    expect(pending).toBeDefined();
+    const featureIds = result.features.map((f) => f.feature.id);
+    expect(featureIds).not.toContain('cleric-divine-order-protector');
+    expect(featureIds).not.toContain('cleric-divine-order-thaumaturge');
+  });
+});

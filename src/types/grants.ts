@@ -241,6 +241,19 @@ export interface BundleChoiceGrant {
   readonly bundleIds: readonly string[];
 }
 
+/** `featureId` must have matching `features.${featureId}.name`/`.description` keys in gamedata.json. */
+export interface FeatureChoiceOption {
+  readonly optionId: string;
+  readonly featureId: string;
+  readonly grants: readonly Grant[];
+}
+
+export interface FeatureChoiceGrant {
+  readonly type: 'feature-choice';
+  readonly key: ChoiceKey;
+  readonly options: readonly [FeatureChoiceOption, ...FeatureChoiceOption[]];
+}
+
 export interface LineageChoiceGrant {
   readonly type: 'lineage-choice';
   readonly key: ChoiceKey;
@@ -273,4 +286,5 @@ export type Grant =
   | EquipmentGrant
   | BundleChoiceGrant
   | LineageChoiceGrant
+  | FeatureChoiceGrant
   | FeatGrant;

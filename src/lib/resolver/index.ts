@@ -9,6 +9,7 @@ import type { GrantBundle, SourceTag } from '@/types/sources';
 import type { ChoiceKey, ChoiceDecision } from '@/types/choices';
 import type { ResolvedCharacter, PendingChoice, ResolvedSkill } from '@/types/resolved';
 import type { HitDie, ExpertiseChoiceGrant } from '@/types/grants';
+import { mapNonEmpty } from '@/lib/non-empty';
 import type { WeaponMasteryId } from '@/types/items';
 import { collectGrantsByType } from '@/lib/resolver/helpers';
 import { resolveAbilities } from '@/lib/resolver/abilities';
@@ -277,6 +278,21 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
   const weaponMasteries: readonly { readonly weaponId: string; readonly masteryId: WeaponMasteryId }[] = Array.from(
     weaponMasteriesMap.entries()
   ).map(([weaponId, masteryId]) => ({ weaponId, masteryId }));
+
+  // Unresolved feature-choice grants
+  for (const { grant, source } of collectGrantsByType(bundles, 'feature-choice')) {
+    const decision = choices[grant.key];
+    const validOption =
+      decision?.type === 'feature-choice' ? grant.options.find((o) => o.optionId === decision.optionId) : undefined;
+    if (!validOption) {
+      pendingChoices.push({
+        type: 'feature-choice',
+        choiceKey: grant.key,
+        source,
+        options: mapNonEmpty(grant.options, (o) => ({ optionId: o.optionId, featureId: o.featureId })),
+      });
+    }
+  }
 
   // Unresolved lineage-choice grants
   for (const { grant, source } of collectGrantsByType(bundles, 'lineage-choice')) {

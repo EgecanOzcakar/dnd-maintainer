@@ -284,6 +284,21 @@ describe('reconstructBuild', () => {
     });
   });
 
+  it('round-trips a feature-choice decision from creation-row JSONB', () => {
+    const featureChoiceKey = createChoiceKey('feature-choice', 'class', 'cleric', 0);
+    const creationWithFeatureChoice: BuildLevelRow = {
+      ...creationRow,
+      choices: {
+        [featureChoiceKey]: { type: 'feature-choice', optionId: 'protector' },
+      } as BuildLevelRow['choices'],
+    };
+    const buildReconstructionLogger = getLogger('build-reconstruction');
+    const warnSpy = vi.spyOn(buildReconstructionLogger, 'warn').mockImplementation(() => {});
+    const result = reconstructBuild(identity, [creationWithFeatureChoice], []);
+    expect(result.choices[featureChoiceKey]).toEqual({ type: 'feature-choice', optionId: 'protector' });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
   it('skips malformed choice keys in JSONB without crashing', () => {
     const creationWithBadChoices: BuildLevelRow = {
       ...creationRow,
@@ -294,6 +309,19 @@ describe('reconstructBuild', () => {
     const result = reconstructBuild(identity, [creationWithBadChoices], []);
     expect(result.choices).toEqual({});
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('bad'), expect.any(Error));
+  });
+
+  it('forwards skipped-choice messages to the onWarning callback for UI surfacing', () => {
+    const creationWithBadChoices: BuildLevelRow = {
+      ...creationRow,
+      choices: { bad: { type: 'unknown' } } as unknown as BuildLevelRow['choices'],
+    };
+    const buildReconstructionLogger = getLogger('build-reconstruction');
+    vi.spyOn(buildReconstructionLogger, 'warn').mockImplementation(() => {});
+    const surfaced: string[] = [];
+    reconstructBuild(identity, [creationWithBadChoices], [], (msg) => surfaced.push(msg));
+    expect(surfaced).toHaveLength(1);
+    expect(surfaced[0]).toContain('bad');
   });
 
   it('throws when level row is missing class_id', () => {

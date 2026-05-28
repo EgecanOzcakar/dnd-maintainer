@@ -8,6 +8,7 @@ import { SubclassPicker } from '@/components/character-sheet/SubclassPicker';
 import { ChoicePicker } from '@/components/character-builder/ChoicePicker';
 import { useCharacterContext } from '@/hooks/useCharacterContext';
 import { collectGrantsByType } from '@/lib/resolver/helpers';
+import { mapNonEmpty } from '@/lib/non-empty';
 import { WEAPON_CATALOG } from '@/lib/sources/items';
 import type { PendingChoice, ResolvedCharacter } from '@/types/resolved';
 import type { ChoiceDecision, ChoiceKey } from '@/types/choices';
@@ -192,6 +193,16 @@ function useAllChoiceGrants() {
         source,
         speciesId: grant.speciesId,
         from: grant.from,
+      });
+    }
+
+    // feature-choice grants
+    for (const { grant, source } of collectGrantsByType(bundles, 'feature-choice')) {
+      allGrants.push({
+        type: 'feature-choice',
+        choiceKey: grant.key,
+        source,
+        options: mapNonEmpty(grant.options, (o) => ({ optionId: o.optionId, featureId: o.featureId })),
       });
     }
 

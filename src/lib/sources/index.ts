@@ -18,6 +18,7 @@ import type {
   FightingStyleChoiceGrant,
   LineageChoiceGrant,
   DamageTypeChoiceGrant,
+  FeatureChoiceGrant,
 } from '@/types/grants';
 import type { CharacterBuild } from '@/types/choices';
 import { SPECIES_SOURCES, LINEAGE_GRANTS_REGISTRY } from '@/lib/sources/species';
@@ -211,6 +212,42 @@ export function collectBundles(build: CharacterBuild): CollectBundlesResult {
           source,
           grants: [{ type: 'feature', feature: { id: `${grant.featureIdPrefix}-${damageType}` } }],
         });
+      }
+    }
+  }
+
+  // Feature-choice grants
+  const allFeatureChoiceGrants: { grant: FeatureChoiceGrant; source: SourceTag }[] = [];
+  for (const bundle of bundles) {
+    for (const grant of bundle.grants) {
+      if (grant.type === 'feature-choice') {
+        allFeatureChoiceGrants.push({ grant: grant as FeatureChoiceGrant, source: bundle.source });
+      }
+    }
+  }
+
+  for (const { grant, source } of allFeatureChoiceGrants) {
+    // Today only ClassStep dispatches feature-choice pending choices through the builder UI.
+    // A non-class origin would silently strand the user on an undisplayable pending choice;
+    // surface as a warning so the CharacterBuilder amber banner shows it instead of failing silently.
+    if (source.origin !== 'class') {
+      const msg = `feature-choice "${grant.key}" has non-class origin "${source.origin}" — no builder UI exists for this origin, choice will be invisible`;
+      warnings.push(msg);
+      logger.warn(msg);
+    }
+
+    const decision = build.choices[grant.key];
+    if (decision?.type === 'feature-choice') {
+      const option = grant.options.find((o) => o.optionId === decision.optionId);
+      if (option) {
+        bundles.push({
+          source,
+          grants: [{ type: 'feature', feature: { id: option.featureId } }, ...option.grants],
+        });
+      } else {
+        const msg = `feature-choice "${grant.key}" decision references unknown option "${decision.optionId}"`;
+        warnings.push(msg);
+        logger.warn(msg);
       }
     }
   }

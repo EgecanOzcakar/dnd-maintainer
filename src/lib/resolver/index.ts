@@ -11,13 +11,14 @@ import type { ResolvedCharacter, PendingChoice, ResolvedSkill } from '@/types/re
 import type { HitDie, ExpertiseChoiceGrant } from '@/types/grants';
 import { mapNonEmpty } from '@/lib/non-empty';
 import type { WeaponMasteryId } from '@/types/items';
-import { collectGrantsByType } from '@/lib/resolver/helpers';
+import { collectGrantsByType, getClassLevel } from '@/lib/resolver/helpers';
 import { resolveAbilities } from '@/lib/resolver/abilities';
 import { resolveSavingThrows, resolveSkills, resolveProficiencies } from '@/lib/resolver/proficiencies';
 import { resolveFeatures } from '@/lib/resolver/features';
 import { resolveHp, resolveSpeed, resolveAc, resolveBardicInspiration } from '@/lib/resolver/combat';
 import { resolveSpellcasting } from '@/lib/resolver/spellcasting';
 import { resolveEquipment, resolveAttacks, resolveEquippedArmorAc } from '@/lib/resolver/equipment';
+import { resolveResourcePools } from '@/lib/resolver/resource-pools';
 import { getItemDef, WEAPON_CATALOG } from '@/lib/sources/items';
 
 export interface PersistedItem {
@@ -64,7 +65,7 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
   const savingThrows = resolveSavingThrows(abilities, bundles, proficiencyBonus);
   const skills = resolveSkills(abilities, bundles, proficiencyBonus, choices);
   const proficiencies = resolveProficiencies(bundles, choices);
-  const features = resolveFeatures(bundles);
+  const features = resolveFeatures(bundles, abilities, proficiencyBonus);
   const hitPoints = resolveHp(bundles, hpRolls, conModifier, level);
   const speed = resolveSpeed(bundles);
   const spellcasting = resolveSpellcasting(bundles, abilities, proficiencyBonus, level);
@@ -75,8 +76,7 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
       ? resolveEquipmentFromPersisted(input.persistedItems)
       : resolveEquipment(bundles, choices, equippedItemIds);
   const equippedArmorAc = resolveEquippedArmorAc(equipmentResult.items, dexModifier);
-  const BARD_CLASS_ID = 'bard' satisfies ClassId;
-  const bardLevel = bundles.filter((b) => b.source.origin === 'class' && b.source.id === BARD_CLASS_ID).length;
+  const bardLevel = getClassLevel(bundles, 'bard' satisfies ClassId);
   const chaModifier = abilities.cha.modifier;
   const bardicInspiration = resolveBardicInspiration(bundles, bardLevel, chaModifier);
   const bardicDieSize = bardicInspiration?.dieSize ?? null;
@@ -382,6 +382,7 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     bardicInspiration,
     pendingChoices,
     weaponMasteries,
+    resourcePools: resolveResourcePools(bundles),
   };
 }
 

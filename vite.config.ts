@@ -2,7 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { defineConfig } from 'vitest/config';
+import { defaultExclude, defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [
@@ -26,6 +26,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['src/test/setup.ts'],
     restoreMocks: true,
+    exclude: [...defaultExclude, '**/.claude/worktrees/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],

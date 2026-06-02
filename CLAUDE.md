@@ -21,6 +21,9 @@ D&D 5.5e (2024 PHB) Campaign Manager — a React SPA for managing campaigns, cha
 - `npm run test` — run Vitest unit tests
 - `npm run test:watch` — run tests in watch mode
 - `npm run test:coverage` — run tests with v8 coverage report
+- `npm run test:bdd` — run the Cucumber BDD suite (default profile, stays green). See `docs/bdd.md`.
+- `npm run test:bdd:future` — run spec-ahead BDD scenarios (`@future` profile, expected to fail). See `docs/bdd.md`.
+- `npm run coverage:matrix` — regenerate `docs/coverage-matrix.md` from `src/lib/sources/coverage-matrix.ts`
 
 ### Formatting
 
@@ -28,7 +31,7 @@ Prettier + `eslint --fix` run automatically on every file Claude writes or edits
 
 ## Tech Stack
 
-- **React 19** with TypeScript (strict mode), Vite 7, React Router v7
+- **React 19** with TypeScript (strict mode), Vite 8, React Router v7
 - **Supabase** for backend (Postgres DB, client in `src/lib/supabase.ts`)
 - **TanStack React Query v5** for server state (client in `src/lib/query-client.ts`)
 - **Tailwind CSS v4** via `@tailwindcss/vite` plugin (no tailwind.config — uses CSS-first config in `src/index.css`)
@@ -36,7 +39,9 @@ Prettier + `eslint --fix` run automatically on every file Claude writes or edits
 - **Sonner** for toast notifications
 - **react-i18next** for internationalization (config in `src/lib/i18n.ts`)
 - **ESLint 9** flat config with `eslint-plugin-i18next` to catch untranslated literal strings
+- **Zod** (`zod` v4) for runtime schema validation
 - **Vitest** with jsdom and `@testing-library/react` for unit and hook tests
+- **Cucumber.js** (with `tsx`) for spec-first BDD acceptance tests in `features/` (see `docs/bdd.md`)
 
 ## Architecture
 
@@ -100,6 +105,10 @@ Three color themes (Default/gold, Sylvan/green, Arcane/purple) with light and da
 - **Shared CRUD helpers** (`src/test/hook-test-helpers.ts`): `describeListQuery`, `describeSingleQuery`, `describeCreateMutation`, `describeUpdateMutation`, `describeDeleteMutation` — cover standard success/error/disabled cases. Write inline tests for behavior unique to a hook.
 - **Lib function tests**: Co-locate test file; use `it.each` for pure input/output functions; mock `Math.random` via `vi.spyOn` for random-dependent functions.
 - **Coverage**: v8 provider; includes `src/lib/**` and `src/hooks/**`; excludes `query-client.ts`, `i18n.ts`.
+
+#### BDD (Cucumber)
+
+Spec-first acceptance tests live in `features/`, run via `npm run test:bdd` (and `npm run test:bdd:future` for spec-ahead scenarios). The suite **drives** development — never edit `src/` or `supabase/migrations/` to force a scenario green; tag genuinely-missing functionality `@future` instead. Full guide — tag taxonomy, the two binding seams (resolver vs. render-app), and run-time gotchas — is in **`docs/bdd.md`**.
 
 ## Environment Variables
 

@@ -20,6 +20,11 @@ import {
   getFeatSource,
   getItemSource,
   collectBundles,
+  SPECIES_SOURCES,
+  CLASS_SOURCES,
+  SUBCLASS_SOURCES,
+  BACKGROUND_SOURCES,
+  FEAT_SOURCES,
 } from '@/lib/sources';
 import { resolveCharacter } from '@/lib/resolver';
 import type { CharacterBuild } from '@/types/choices';
@@ -580,5 +585,142 @@ describe('Magic Initiate pipeline integration (acolyte → cleric spells)', () =
     expect(magicInitiateChoice, 'no pending magic-initiate choice should exist').toBeUndefined();
     // No warnings about background feat expansion
     expect(warnings.some((w) => w.includes('magic-initiate'))).toBe(false);
+  });
+});
+
+describe('feat-origin feature-choice pipeline (build.feats: magic-initiate)', () => {
+  // Use soldier background (grants savage-attacker feat) — no magic-initiate collision.
+  // Acolyte/guide/sage grant feat-magic-initiate-cleric/druid/wizard as a *direct feature* (PR #177),
+  // so using them here would create a second feat-magic-initiate-cleric from two sources.
+  const magicInitiateKey = createChoiceKey('feature-choice', 'feat', 'magic-initiate', 0);
+
+  const buildWithDecision: CharacterBuild = {
+    speciesId: 'human' as SpeciesId,
+    backgroundId: 'soldier' as BackgroundId,
+    baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+    abilityMethod: 'standard-array',
+    levels: [{ classId: 'fighter' as ClassId, classLevel: 1, hpRoll: null }],
+    choices: {
+      [magicInitiateKey]: { type: 'feature-choice' as const, optionId: 'cleric' },
+    },
+    feats: ['magic-initiate' as FeatId],
+    activeItems: [],
+  };
+
+  const buildWithoutDecision: CharacterBuild = {
+    ...buildWithDecision,
+    choices: {},
+  };
+
+  it('with decision: feat-magic-initiate-cleric appears exactly once in resolved features', () => {
+    const { bundles, expandedFeats } = collectBundles(buildWithDecision);
+    const result = resolveCharacter({
+      baseAbilities: buildWithDecision.baseAbilities,
+      level: buildWithDecision.levels.length,
+      bundles,
+      choices: buildWithDecision.choices,
+      levels: buildWithDecision.levels,
+      expandedFeats,
+    });
+    const clericFeatures = result.features.filter((f) => f.feature.id === 'feat-magic-initiate-cleric');
+    expect(clericFeatures, 'feat-magic-initiate-cleric should appear exactly once').toHaveLength(1);
+    const pendingMagicInitiate = result.pendingChoices.find(
+      (c) => 'choiceKey' in c && String(c.choiceKey).includes('magic-initiate')
+    );
+    expect(pendingMagicInitiate, 'no pending magic-initiate choice after resolution').toBeUndefined();
+  });
+
+  it('without decision: a pending feature-choice for magic-initiate is emitted', () => {
+    const { bundles, expandedFeats } = collectBundles(buildWithoutDecision);
+    const result = resolveCharacter({
+      baseAbilities: buildWithoutDecision.baseAbilities,
+      level: buildWithoutDecision.levels.length,
+      bundles,
+      choices: buildWithoutDecision.choices,
+      levels: buildWithoutDecision.levels,
+      expandedFeats,
+    });
+    const pendingMagicInitiate = result.pendingChoices.find(
+      (c) => c.type === 'feature-choice' && String(c.choiceKey).includes('magic-initiate')
+    );
+    expect(pendingMagicInitiate, 'pending feature-choice for magic-initiate should be emitted').toBeDefined();
+    expect(pendingMagicInitiate?.type).toBe('feature-choice');
+  });
+
+  it('with decision: no origin-mismatch warning fires for a resolved feat-origin choice', () => {
+    const { warnings } = collectBundles(buildWithDecision);
+    const originMismatch = warnings.find((w) => w.includes('non-class origin') && w.includes('feat'));
+    expect(originMismatch, 'no origin-mismatch warning for resolved feat-origin feature-choice').toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Single-pass safety invariant
+// ---------------------------------------------------------------------------
+// collectBundles expands feature-choice options in a single pass (not a fixpoint).
+// This means any option grant of type 'feat', 'lineage-choice', or 'feature-choice'
+// would be silently dropped. The invariant test below iterates every feature-choice
+// grant across ALL sources and asserts no option contains such a grant.
+// If this test goes red, promote the expansion to a fixpoint loop before merging.
+
+describe('feature-choice single-pass safety invariant', () => {
+  it('no feature-choice option grant has type feat, lineage-choice, or feature-choice across all sources', () => {
+    const FORBIDDEN_GRANT_TYPES = new Set(['feat', 'lineage-choice', 'feature-choice']);
+
+    // Collect all feature-choice grants from every source collection.
+    // Classes: levels[].grants; Subclasses: features[].grants; others: .grants
+    const violations: string[] = [];
+
+    function checkGrants(sourceLabel: string, grants: readonly { type: string }[]) {
+      for (const grant of grants) {
+        if (grant.type === 'feature-choice') {
+          const fcGrant = grant as {
+            type: 'feature-choice';
+            options: readonly { optionId: string; grants: readonly { type: string }[] }[];
+            key: string;
+          };
+          for (const option of fcGrant.options) {
+            for (const optionGrant of option.grants) {
+              if (FORBIDDEN_GRANT_TYPES.has(optionGrant.type)) {
+                violations.push(
+                  `${sourceLabel} feature-choice key="${String(fcGrant.key)}" option="${option.optionId}" has forbidden grant type "${optionGrant.type}"`
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+
+    for (const source of SPECIES_SOURCES) {
+      checkGrants(`species:${source.id}`, source.grants);
+    }
+
+    for (const source of CLASS_SOURCES) {
+      for (const [i, level] of source.levels.entries()) {
+        checkGrants(`class:${source.id}:level${i + 1}`, level.grants);
+      }
+    }
+
+    for (const [subclassId, source] of Object.entries(SUBCLASS_SOURCES)) {
+      for (const feature of source.features) {
+        checkGrants(`subclass:${subclassId}:classLevel${feature.classLevel}`, feature.grants);
+      }
+    }
+
+    for (const source of BACKGROUND_SOURCES) {
+      checkGrants(`background:${source.id}`, source.grants);
+    }
+
+    for (const source of FEAT_SOURCES) {
+      checkGrants(`feat:${source.id}`, source.grants);
+    }
+
+    expect(
+      violations,
+      'feature-choice option grants must not contain feat, lineage-choice, or feature-choice — ' +
+        'collectBundles expands options in a single pass and would silently drop these. ' +
+        'Promote to a fixpoint loop before adding such an option.'
+    ).toHaveLength(0);
   });
 });

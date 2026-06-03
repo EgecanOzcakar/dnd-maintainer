@@ -15,6 +15,7 @@ import { ProficienciesPanel } from '@/components/character-sheet/ProficienciesPa
 import { ResourcePoolsPanel } from '@/components/character-sheet/ResourcePoolsPanel';
 import { SkillsPanel } from '@/components/character-sheet/SkillsPanel';
 import { BACKGROUND_SOURCES } from '@/lib/sources/backgrounds';
+import { deriveOriginFeatInfo } from '@/lib/character-builder/origin-feat-info';
 import { getGrantIcon, getSourceDisplayName } from '@/lib/class-icons';
 import { getItemDef, getItemNameKey } from '@/lib/sources/items';
 import { useCharacter, useCharacterMutations } from '@/hooks/useCharacters';
@@ -222,12 +223,13 @@ function CharacterSheetInner({
     return decision.type === 'lineage-choice' ? decision.lineageId : null;
   })();
 
-  // Origin feat: find the feat granted by the character's background source
-  const originFeatId: string | null = (() => {
+  // Origin feat: derive badge info from the background source's grants.
+  // deriveOriginFeatInfo handles both shapes (feat grant and direct feat-magic-initiate-* feature).
+  const originFeatInfo = (() => {
     if (!character.background || !isBackgroundId(character.background)) return null;
     const bg = BACKGROUND_SOURCES.find((s) => s.id === character.background);
-    const featGrant = bg?.grants.find((g) => g.type === 'feat');
-    return featGrant && 'featId' in featGrant ? featGrant.featId : null;
+    if (!bg) return null;
+    return deriveOriginFeatInfo(bg.grants);
   })();
 
   return (
@@ -314,9 +316,15 @@ function CharacterSheetInner({
                     : character.background
                   : ''}
               </p>
-              {originFeatId && (
+              {originFeatInfo && (
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {t(`feats.${originFeatId}.name`, { defaultValue: originFeatId })}
+                  {originFeatInfo.namespace === 'features'
+                    ? t(`features.${originFeatInfo.id}.name` as `features.${string}.name`, {
+                        defaultValue: originFeatInfo.id,
+                      })
+                    : t(`feats.${originFeatInfo.id}.name` as `feats.${string}.name`, {
+                        defaultValue: originFeatInfo.id,
+                      })}
                 </p>
               )}
             </div>

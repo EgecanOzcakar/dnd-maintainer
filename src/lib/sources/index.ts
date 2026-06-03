@@ -216,42 +216,6 @@ export function collectBundles(build: CharacterBuild): CollectBundlesResult {
     }
   }
 
-  // Feature-choice grants
-  const allFeatureChoiceGrants: { grant: FeatureChoiceGrant; source: SourceTag }[] = [];
-  for (const bundle of bundles) {
-    for (const grant of bundle.grants) {
-      if (grant.type === 'feature-choice') {
-        allFeatureChoiceGrants.push({ grant: grant as FeatureChoiceGrant, source: bundle.source });
-      }
-    }
-  }
-
-  for (const { grant, source } of allFeatureChoiceGrants) {
-    // Today only ClassStep dispatches feature-choice pending choices through the builder UI.
-    // A non-class origin would silently strand the user on an undisplayable pending choice;
-    // surface as a warning so the CharacterBuilder amber banner shows it instead of failing silently.
-    if (source.origin !== 'class') {
-      const msg = `feature-choice "${grant.key}" has non-class origin "${source.origin}" — no builder UI exists for this origin, choice will be invisible`;
-      warnings.push(msg);
-      logger.warn(msg);
-    }
-
-    const decision = build.choices[grant.key];
-    if (decision?.type === 'feature-choice') {
-      const option = grant.options.find((o) => o.optionId === decision.optionId);
-      if (option) {
-        bundles.push({
-          source,
-          grants: [{ type: 'feature', feature: { id: option.featureId } }, ...option.grants],
-        });
-      } else {
-        const msg = `feature-choice "${grant.key}" decision references unknown option "${decision.optionId}"`;
-        warnings.push(msg);
-        logger.warn(msg);
-      }
-    }
-  }
-
   // Lineage choices — expand chosen lineage into grant bundles
   const allLineageChoiceGrants: { grant: LineageChoiceGrant; source: SourceTag }[] = [];
   for (const bundle of bundles) {
@@ -332,6 +296,52 @@ export function collectBundles(build: CharacterBuild): CollectBundlesResult {
       const msg = `No source data found for item "${itemId}" — item grants will be empty`;
       warnings.push(msg);
       logger.warn(msg);
+    }
+  }
+
+  // Feature-choice expansion — runs AFTER all sources (species, class, subclass, background, feat, item)
+  // are pushed into bundles so feat-origin feature-choices (e.g. magic-initiate, elemental-adept,
+  // resilient) are visible here.
+  //
+  // SINGLE-PASS SAFETY ASSUMPTION: expansion runs exactly once (not to a fixpoint) AND runs after
+  // the feat and lineage expansion passes, so a chosen option whose own grants contain a grant of
+  // type 'feat', 'lineage-choice', or 'feature-choice' would be silently dropped. This is safe ONLY
+  // because all current feature-choice options expand to terminal grants (proficiency, feature, etc.)
+  // — none nests another feat, lineage-choice, or feature-choice. The invariant is enforced by a
+  // companion test in index.test.ts; if that test goes red, promote this to a fixpoint loop before
+  // adding the new option.
+  const allFeatureChoiceGrants: { grant: FeatureChoiceGrant; source: SourceTag }[] = [];
+  for (const bundle of bundles) {
+    for (const grant of bundle.grants) {
+      if (grant.type === 'feature-choice') {
+        allFeatureChoiceGrants.push({ grant: grant as FeatureChoiceGrant, source: bundle.source });
+      }
+    }
+  }
+
+  for (const { grant, source } of allFeatureChoiceGrants) {
+    // ClassStep and OriginStep handle their respective origins in the builder UI.
+    // Any other origin (e.g. 'item', 'subclass') would produce an invisible pending choice;
+    // surface as a warning so the CharacterBuilder amber banner shows it instead of failing silently.
+    if (source.origin !== 'class' && source.origin !== 'feat') {
+      const msg = `feature-choice "${grant.key}" has non-class origin "${source.origin}" — no builder UI exists for this origin, choice will be invisible`;
+      warnings.push(msg);
+      logger.warn(msg);
+    }
+
+    const decision = build.choices[grant.key];
+    if (decision?.type === 'feature-choice') {
+      const option = grant.options.find((o) => o.optionId === decision.optionId);
+      if (option) {
+        bundles.push({
+          source,
+          grants: [{ type: 'feature', feature: { id: option.featureId } }, ...option.grants],
+        });
+      } else {
+        const msg = `feature-choice "${grant.key}" decision references unknown option "${decision.optionId}"`;
+        warnings.push(msg);
+        logger.warn(msg);
+      }
     }
   }
 

@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { getSubclassSource } from '@/lib/sources';
+import { getSubclassSource, collectBundles } from '@/lib/sources';
 import type { SubclassId } from '@/lib/sources/subclasses';
 import { createChoiceKey } from '@/types/choices';
+import type { CharacterBuild } from '@/types/choices';
+import type { ClassId, SpeciesId, BackgroundId } from '@/lib/dnd-helpers';
+import { resolveCharacter } from '@/lib/resolver';
 
 describe('assassin skill-expertise grant', () => {
   it('assassin level 9 has exactly 2 grants: feature and skill-expertise: deception', () => {
@@ -507,17 +510,17 @@ describe('getSubclassSource — Life Domain', () => {
     expect(getSubclassSource('lifedomain')).toBeDefined();
   });
 
-  it('lifedomain has 2 feature levels (L3, L6)', () => {
+  it('lifedomain has 5 feature levels (L3, L5, L6, L7, L9)', () => {
     const source = getSubclassSource('lifedomain');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(5);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9]);
   });
 
-  it('lifedomain level 3 grants heavy armor proficiency, disciple-of-life, preserve-life, and domain-spells', () => {
+  it('lifedomain level 3 grants heavy armor, disciple-of-life, preserve-life, and 4 domain spell grants', () => {
     const source = getSubclassSource('lifedomain');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(4);
+    expect(level3?.grants).toHaveLength(7);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ type: 'proficiency', category: 'armor', id: 'heavy' }),
@@ -529,10 +532,32 @@ describe('getSubclassSource — Life Domain', () => {
           type: 'feature',
           feature: expect.objectContaining({ id: 'lifedomain-preserve-life' }),
         }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'lifedomain-domain-spells' }),
-        }),
+        expect.objectContaining({ type: 'spell', spellId: 'aid', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'bless', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'cure-wounds', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'lesser-restoration', alwaysPrepared: true }),
+      ])
+    );
+  });
+
+  it('lifedomain level 3 has no domain-spells inert feature grant', () => {
+    const source = getSubclassSource('lifedomain');
+    const level3 = source?.features.find((f) => f.classLevel === 3);
+    const inertGrant = level3?.grants.find(
+      (g) => g.type === 'feature' && 'feature' in g && g.feature.id === 'lifedomain-domain-spells'
+    );
+    expect(inertGrant).toBeUndefined();
+  });
+
+  it('lifedomain level 5 grants mass-healing-word and revivify (alwaysPrepared)', () => {
+    const source = getSubclassSource('lifedomain');
+    const level5 = source?.features.find((f) => f.classLevel === 5);
+    expect(level5).toBeDefined();
+    expect(level5?.grants).toHaveLength(2);
+    expect(level5?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'mass-healing-word', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'revivify', alwaysPrepared: true }),
       ])
     );
   });
@@ -547,6 +572,32 @@ describe('getSubclassSource — Life Domain', () => {
       feature: { id: 'lifedomain-blessed-healer' },
     });
   });
+
+  it('lifedomain level 7 grants aura-of-life and death-ward (alwaysPrepared)', () => {
+    const source = getSubclassSource('lifedomain');
+    const level7 = source?.features.find((f) => f.classLevel === 7);
+    expect(level7).toBeDefined();
+    expect(level7?.grants).toHaveLength(2);
+    expect(level7?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'aura-of-life', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'death-ward', alwaysPrepared: true }),
+      ])
+    );
+  });
+
+  it('lifedomain level 9 grants greater-restoration and mass-cure-wounds (alwaysPrepared)', () => {
+    const source = getSubclassSource('lifedomain');
+    const level9 = source?.features.find((f) => f.classLevel === 9);
+    expect(level9).toBeDefined();
+    expect(level9?.grants).toHaveLength(2);
+    expect(level9?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'greater-restoration', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'mass-cure-wounds', alwaysPrepared: true }),
+      ])
+    );
+  });
 });
 
 describe('getSubclassSource — Light Domain', () => {
@@ -554,23 +605,20 @@ describe('getSubclassSource — Light Domain', () => {
     expect(getSubclassSource('lightdomain')).toBeDefined();
   });
 
-  it('lightdomain has 2 feature levels (L3, L6)', () => {
+  it('lightdomain has 5 feature levels (L3, L5, L6, L7, L9)', () => {
     const source = getSubclassSource('lightdomain');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(5);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9]);
   });
 
-  it('lightdomain level 3 grants bonus-cantrip, warding-flare, radiance-of-the-dawn, and domain-spells', () => {
+  it('lightdomain level 3 grants light cantrip, warding-flare, radiance-of-the-dawn, and 4 domain spell grants', () => {
     const source = getSubclassSource('lightdomain');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(4);
+    expect(level3?.grants).toHaveLength(7);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'lightdomain-bonus-cantrip' }),
-        }),
+        expect.objectContaining({ type: 'spell', spellId: 'light', alwaysPrepared: false }),
         expect.objectContaining({
           type: 'feature',
           feature: expect.objectContaining({ id: 'lightdomain-warding-flare' }),
@@ -579,10 +627,41 @@ describe('getSubclassSource — Light Domain', () => {
           type: 'feature',
           feature: expect.objectContaining({ id: 'lightdomain-radiance-of-the-dawn' }),
         }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'lightdomain-domain-spells' }),
-        }),
+        expect.objectContaining({ type: 'spell', spellId: 'burning-hands', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'faerie-fire', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'scorching-ray', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'see-invisibility', alwaysPrepared: true }),
+      ])
+    );
+  });
+
+  it('lightdomain level 3 has no bonus-cantrip inert feature grant', () => {
+    const source = getSubclassSource('lightdomain');
+    const level3 = source?.features.find((f) => f.classLevel === 3);
+    const inertGrant = level3?.grants.find(
+      (g) => g.type === 'feature' && 'feature' in g && g.feature.id === 'lightdomain-bonus-cantrip'
+    );
+    expect(inertGrant).toBeUndefined();
+  });
+
+  it('lightdomain level 3 has no domain-spells inert feature grant', () => {
+    const source = getSubclassSource('lightdomain');
+    const level3 = source?.features.find((f) => f.classLevel === 3);
+    const inertGrant = level3?.grants.find(
+      (g) => g.type === 'feature' && 'feature' in g && g.feature.id === 'lightdomain-domain-spells'
+    );
+    expect(inertGrant).toBeUndefined();
+  });
+
+  it('lightdomain level 5 grants daylight and fireball (alwaysPrepared)', () => {
+    const source = getSubclassSource('lightdomain');
+    const level5 = source?.features.find((f) => f.classLevel === 5);
+    expect(level5).toBeDefined();
+    expect(level5?.grants).toHaveLength(2);
+    expect(level5?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'daylight', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'fireball', alwaysPrepared: true }),
       ])
     );
   });
@@ -597,6 +676,32 @@ describe('getSubclassSource — Light Domain', () => {
       feature: { id: 'lightdomain-improved-warding-flare' },
     });
   });
+
+  it('lightdomain level 7 grants arcane-eye and wall-of-fire (alwaysPrepared)', () => {
+    const source = getSubclassSource('lightdomain');
+    const level7 = source?.features.find((f) => f.classLevel === 7);
+    expect(level7).toBeDefined();
+    expect(level7?.grants).toHaveLength(2);
+    expect(level7?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'arcane-eye', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'wall-of-fire', alwaysPrepared: true }),
+      ])
+    );
+  });
+
+  it('lightdomain level 9 grants flame-strike and scrying (alwaysPrepared)', () => {
+    const source = getSubclassSource('lightdomain');
+    const level9 = source?.features.find((f) => f.classLevel === 9);
+    expect(level9).toBeDefined();
+    expect(level9?.grants).toHaveLength(2);
+    expect(level9?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'flame-strike', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'scrying', alwaysPrepared: true }),
+      ])
+    );
+  });
 });
 
 describe('getSubclassSource — Trickery Domain', () => {
@@ -604,17 +709,17 @@ describe('getSubclassSource — Trickery Domain', () => {
     expect(getSubclassSource('trickerydomain')).toBeDefined();
   });
 
-  it('trickerydomain has 2 feature levels (L3, L6)', () => {
+  it('trickerydomain has 5 feature levels (L3, L5, L6, L7, L9)', () => {
     const source = getSubclassSource('trickerydomain');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(5);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9]);
   });
 
-  it('trickerydomain level 3 grants blessing-of-the-trickster, invoke-duplicity, and domain-spells', () => {
+  it('trickerydomain level 3 grants blessing-of-the-trickster, invoke-duplicity, and 4 domain spell grants', () => {
     const source = getSubclassSource('trickerydomain');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(3);
+    expect(level3?.grants).toHaveLength(6);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -625,10 +730,32 @@ describe('getSubclassSource — Trickery Domain', () => {
           type: 'feature',
           feature: expect.objectContaining({ id: 'trickerydomain-invoke-duplicity' }),
         }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'trickerydomain-domain-spells' }),
-        }),
+        expect.objectContaining({ type: 'spell', spellId: 'charm-person', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'disguise-self', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'invisibility', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'pass-without-trace', alwaysPrepared: true }),
+      ])
+    );
+  });
+
+  it('trickerydomain level 3 has no domain-spells inert feature grant', () => {
+    const source = getSubclassSource('trickerydomain');
+    const level3 = source?.features.find((f) => f.classLevel === 3);
+    const inertGrant = level3?.grants.find(
+      (g) => g.type === 'feature' && 'feature' in g && g.feature.id === 'trickerydomain-domain-spells'
+    );
+    expect(inertGrant).toBeUndefined();
+  });
+
+  it('trickerydomain level 5 grants hypnotic-pattern and nondetection (alwaysPrepared)', () => {
+    const source = getSubclassSource('trickerydomain');
+    const level5 = source?.features.find((f) => f.classLevel === 5);
+    expect(level5).toBeDefined();
+    expect(level5?.grants).toHaveLength(2);
+    expect(level5?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'hypnotic-pattern', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'nondetection', alwaysPrepared: true }),
       ])
     );
   });
@@ -643,6 +770,32 @@ describe('getSubclassSource — Trickery Domain', () => {
       feature: { id: 'trickerydomain-tricksters-transposition' },
     });
   });
+
+  it('trickerydomain level 7 grants confusion and dimension-door (alwaysPrepared)', () => {
+    const source = getSubclassSource('trickerydomain');
+    const level7 = source?.features.find((f) => f.classLevel === 7);
+    expect(level7).toBeDefined();
+    expect(level7?.grants).toHaveLength(2);
+    expect(level7?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'confusion', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'dimension-door', alwaysPrepared: true }),
+      ])
+    );
+  });
+
+  it('trickerydomain level 9 grants dominate-person and modify-memory (alwaysPrepared)', () => {
+    const source = getSubclassSource('trickerydomain');
+    const level9 = source?.features.find((f) => f.classLevel === 9);
+    expect(level9).toBeDefined();
+    expect(level9?.grants).toHaveLength(2);
+    expect(level9?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'dominate-person', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'modify-memory', alwaysPrepared: true }),
+      ])
+    );
+  });
 });
 
 describe('getSubclassSource — War Domain', () => {
@@ -650,17 +803,17 @@ describe('getSubclassSource — War Domain', () => {
     expect(getSubclassSource('wardomain')).toBeDefined();
   });
 
-  it('wardomain has 2 feature levels (L3, L6)', () => {
+  it('wardomain has 5 feature levels (L3, L5, L6, L7, L9)', () => {
     const source = getSubclassSource('wardomain');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(5);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9]);
   });
 
-  it('wardomain level 3 grants heavy armor, martial weapons proficiencies, war-priest, guided-strike, and domain-spells', () => {
+  it('wardomain level 3 grants heavy armor, martial weapons, war-priest, guided-strike, and 4 domain spell grants', () => {
     const source = getSubclassSource('wardomain');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(5);
+    expect(level3?.grants).toHaveLength(8);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ type: 'proficiency', category: 'armor', id: 'heavy' }),
@@ -670,10 +823,32 @@ describe('getSubclassSource — War Domain', () => {
           type: 'feature',
           feature: expect.objectContaining({ id: 'wardomain-guided-strike' }),
         }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'wardomain-domain-spells' }),
-        }),
+        expect.objectContaining({ type: 'spell', spellId: 'guiding-bolt', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'magic-weapon', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'shield-of-faith', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'spiritual-weapon', alwaysPrepared: true }),
+      ])
+    );
+  });
+
+  it('wardomain level 3 has no domain-spells inert feature grant', () => {
+    const source = getSubclassSource('wardomain');
+    const level3 = source?.features.find((f) => f.classLevel === 3);
+    const inertGrant = level3?.grants.find(
+      (g) => g.type === 'feature' && 'feature' in g && g.feature.id === 'wardomain-domain-spells'
+    );
+    expect(inertGrant).toBeUndefined();
+  });
+
+  it('wardomain level 5 grants crusaders-mantle and spirit-guardians (alwaysPrepared)', () => {
+    const source = getSubclassSource('wardomain');
+    const level5 = source?.features.find((f) => f.classLevel === 5);
+    expect(level5).toBeDefined();
+    expect(level5?.grants).toHaveLength(2);
+    expect(level5?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'crusaders-mantle', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'spirit-guardians', alwaysPrepared: true }),
       ])
     );
   });
@@ -687,6 +862,32 @@ describe('getSubclassSource — War Domain', () => {
       type: 'feature',
       feature: { id: 'wardomain-war-gods-blessing' },
     });
+  });
+
+  it('wardomain level 7 grants fire-shield and freedom-of-movement (alwaysPrepared)', () => {
+    const source = getSubclassSource('wardomain');
+    const level7 = source?.features.find((f) => f.classLevel === 7);
+    expect(level7).toBeDefined();
+    expect(level7?.grants).toHaveLength(2);
+    expect(level7?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'fire-shield', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'freedom-of-movement', alwaysPrepared: true }),
+      ])
+    );
+  });
+
+  it('wardomain level 9 grants hold-monster and steel-wind-strike (alwaysPrepared)', () => {
+    const source = getSubclassSource('wardomain');
+    const level9 = source?.features.find((f) => f.classLevel === 9);
+    expect(level9).toBeDefined();
+    expect(level9?.grants).toHaveLength(2);
+    expect(level9?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'spell', spellId: 'hold-monster', alwaysPrepared: true }),
+        expect.objectContaining({ type: 'spell', spellId: 'steel-wind-strike', alwaysPrepared: true }),
+      ])
+    );
   });
 });
 
@@ -2181,5 +2382,160 @@ describe('getSubclassSource — Illusionist', () => {
 describe('getSubclassSource — unknown', () => {
   it('returns undefined for unknown subclass', () => {
     expect(getSubclassSource('unknown-subclass' as SubclassId)).toBeUndefined();
+  });
+});
+
+// ── Resolver integration: domain spell level-gating ──────────────────────────
+
+describe('Cleric Life Domain resolver integration', () => {
+  const subclassKey = createChoiceKey('subclass', 'class', 'cleric', 0);
+
+  function makeLifeDomainBuild(classLevels: number): CharacterBuild {
+    const levels = Array.from({ length: classLevels }, (_, i) => ({
+      classId: 'cleric' as ClassId,
+      classLevel: i + 1,
+      hpRoll: i === 0 ? null : 6,
+    }));
+    return {
+      speciesId: 'human' as SpeciesId,
+      backgroundId: 'acolyte' as BackgroundId,
+      baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 16, cha: 10 },
+      abilityMethod: 'standard-array',
+      levels,
+      choices: {
+        [subclassKey]: { type: 'subclass' as const, subclassId: 'lifedomain' as SubclassId },
+      },
+      feats: [],
+      activeItems: [],
+    };
+  }
+
+  it('Cleric L5 Life Domain: alwaysPreparedSpells includes mass-healing-word and revivify', () => {
+    const build = makeLifeDomainBuild(5);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 5,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting).not.toBeNull();
+    expect(resolved.spellcasting!.alwaysPreparedSpells).toContain('mass-healing-word');
+    expect(resolved.spellcasting!.alwaysPreparedSpells).toContain('revivify');
+  });
+
+  it('Cleric L5 Life Domain: alwaysPreparedSpells does NOT include aura-of-life (L7 spell)', () => {
+    const build = makeLifeDomainBuild(5);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 5,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).not.toContain('aura-of-life');
+  });
+
+  it('Cleric L5 Life Domain: alwaysPreparedSpells includes all L3 domain spells', () => {
+    const build = makeLifeDomainBuild(5);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 5,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    const prepared = resolved.spellcasting!.alwaysPreparedSpells;
+    expect(prepared).toContain('aid');
+    expect(prepared).toContain('bless');
+    expect(prepared).toContain('cure-wounds');
+    expect(prepared).toContain('lesser-restoration');
+  });
+
+  it('Cleric L7 Life Domain: alwaysPreparedSpells includes aura-of-life and death-ward', () => {
+    const build = makeLifeDomainBuild(7);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 7,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).toContain('aura-of-life');
+    expect(resolved.spellcasting!.alwaysPreparedSpells).toContain('death-ward');
+  });
+
+  it('Cleric L9 Life Domain: alwaysPreparedSpells includes greater-restoration and mass-cure-wounds', () => {
+    const build = makeLifeDomainBuild(9);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 9,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).toContain('greater-restoration');
+    expect(resolved.spellcasting!.alwaysPreparedSpells).toContain('mass-cure-wounds');
+  });
+});
+
+describe('Cleric Light Domain resolver integration', () => {
+  const subclassKey = createChoiceKey('subclass', 'class', 'cleric', 0);
+
+  function makeLightDomainBuild(classLevels: number): CharacterBuild {
+    const levels = Array.from({ length: classLevels }, (_, i) => ({
+      classId: 'cleric' as ClassId,
+      classLevel: i + 1,
+      hpRoll: i === 0 ? null : 6,
+    }));
+    return {
+      speciesId: 'human' as SpeciesId,
+      backgroundId: 'acolyte' as BackgroundId,
+      baseAbilities: { str: 10, dex: 10, con: 10, int: 10, wis: 16, cha: 10 },
+      abilityMethod: 'standard-array',
+      levels,
+      choices: {
+        [subclassKey]: { type: 'subclass' as const, subclassId: 'lightdomain' as SubclassId },
+      },
+      feats: [],
+      activeItems: [],
+    };
+  }
+
+  it('Cleric L3 Light Domain: light is in spellcasting.cantrips (not alwaysPreparedSpells)', () => {
+    const build = makeLightDomainBuild(3);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 3,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting).not.toBeNull();
+    expect(resolved.spellcasting!.cantrips).toContain('light');
+    expect(resolved.spellcasting!.alwaysPreparedSpells).not.toContain('light');
+  });
+
+  it('Cleric L3 Light Domain: L3 leveled domain spells are in alwaysPreparedSpells', () => {
+    const build = makeLightDomainBuild(3);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 3,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    const prepared = resolved.spellcasting!.alwaysPreparedSpells;
+    expect(prepared).toContain('burning-hands');
+    expect(prepared).toContain('faerie-fire');
+    expect(prepared).toContain('scorching-ray');
+    expect(prepared).toContain('see-invisibility');
   });
 });

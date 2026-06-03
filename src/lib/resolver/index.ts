@@ -20,6 +20,7 @@ import { resolveSpellcasting } from '@/lib/resolver/spellcasting';
 import { resolveEquipment, resolveAttacks, resolveEquippedArmorAc } from '@/lib/resolver/equipment';
 import { resolveResourcePools } from '@/lib/resolver/resource-pools';
 import { getItemDef, WEAPON_CATALOG } from '@/lib/sources/items';
+import { getFeatSource } from '@/lib/sources';
 
 export interface PersistedItem {
   readonly itemId: string;
@@ -304,6 +305,21 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
         source,
         speciesId: grant.speciesId,
         from: grant.from,
+      });
+    }
+  }
+
+  // Unresolved feat-choice grants (or decided with an unresolvable featId — invalid/corrupted decision)
+  for (const { grant, source } of collectGrantsByType(bundles, 'feat-choice')) {
+    const decision = choices[grant.key];
+    const resolvedFeat = decision?.type === 'feat-choice' ? getFeatSource(decision.featId) : undefined;
+    if (!decision || decision.type !== 'feat-choice' || !resolvedFeat) {
+      pendingChoices.push({
+        type: 'feat-choice',
+        choiceKey: grant.key,
+        source,
+        from: grant.from,
+        category: grant.category,
       });
     }
   }

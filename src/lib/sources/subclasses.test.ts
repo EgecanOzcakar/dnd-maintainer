@@ -902,21 +902,23 @@ describe('getSubclassSource — Circle of the Land', () => {
     expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10]);
   });
 
-  it('circleland level 3 grants 3 features: lands-aid, bonus-cantrip, bonus-spells', () => {
+  it('circleland level 3 grants lands-aid and terrain feature-choice (2024 PHB — no bonus-cantrip)', () => {
     const source = getSubclassSource('circleland');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(3);
+    expect(level3?.grants).toHaveLength(2);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ type: 'feature', feature: expect.objectContaining({ id: 'circleland-lands-aid' }) }),
         expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'circleland-bonus-cantrip' }),
-        }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'circleland-bonus-spells' }),
+          type: 'feature-choice',
+          key: 'feature-choice:subclass:circleland:0',
+          options: expect.arrayContaining([
+            expect.objectContaining({ optionId: 'arid', featureId: 'circleland-land-arid' }),
+            expect.objectContaining({ optionId: 'polar', featureId: 'circleland-land-polar' }),
+            expect.objectContaining({ optionId: 'temperate', featureId: 'circleland-land-temperate' }),
+            expect.objectContaining({ optionId: 'tropical', featureId: 'circleland-land-tropical' }),
+          ]),
         }),
       ])
     );

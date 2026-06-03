@@ -18,6 +18,8 @@ import { BACKGROUND_SOURCES } from '@/lib/sources/backgrounds';
 import { deriveOriginFeatInfo } from '@/lib/character-builder/origin-feat-info';
 import { getGrantIcon, getSourceDisplayName } from '@/lib/class-icons';
 import { getItemDef, getItemNameKey } from '@/lib/sources/items';
+import { isSpellId } from '@/lib/sources/spells';
+import { getSpellDisplayMeta } from '@/lib/spell-display';
 import { useCharacter, useCharacterMutations } from '@/hooks/useCharacters';
 import { useCharacterBuildLevels, useCharacterItems } from '@/hooks/useCharacterBuild';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -629,25 +631,53 @@ function CharacterSheetInner({
             )}
 
             {/* Spells */}
-            {resolved?.spellcasting && resolved.spellcasting.cantrips.length > 0 && (
-              <div className="bg-card border border-purple-200 rounded-lg p-6">
-                <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.spells')}</h2>
-                <div className="space-y-3">
-                  <div>
-                    <div className="text-xs font-bold text-muted-foreground mb-2">
-                      {tc('characterSheet.sections.cantrips')}
-                    </div>
-                    <div className="space-y-1">
-                      {resolved.spellcasting.cantrips.map((cantrip, i) => (
-                        <div key={i} className="text-sm text-foreground">
-                          &bull; {cantrip}
+            {/* knownSpells is not yet rendered — no UI surface exists for it.
+                When leveled known-spell grants land, extend this guard to include
+                resolved.spellcasting.knownSpells.length > 0 as well. */}
+            {resolved?.spellcasting &&
+              (resolved.spellcasting.cantrips.length > 0 || resolved.spellcasting.alwaysPreparedSpells.length > 0) && (
+                <div className="bg-card border border-purple-200 rounded-lg p-6">
+                  <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.spells')}</h2>
+                  <div className="space-y-3">
+                    {resolved.spellcasting.cantrips.length > 0 && (
+                      <div>
+                        <div className="text-xs font-bold text-muted-foreground mb-2">
+                          {tc('characterSheet.sections.cantrips')}
                         </div>
-                      ))}
-                    </div>
+                        <div className="space-y-1">
+                          {resolved.spellcasting.cantrips.map((cantrip, i) => (
+                            <div key={i} className="text-sm text-foreground">
+                              &bull; {cantrip}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {resolved.spellcasting.alwaysPreparedSpells.length > 0 && (
+                      <div>
+                        <div className="text-xs font-bold text-muted-foreground mb-2">
+                          {tc('characterSheet.sections.alwaysPrepared')}
+                        </div>
+                        <div className="space-y-1">
+                          {resolved.spellcasting.alwaysPreparedSpells.map((id, i) => {
+                            const meta = getSpellDisplayMeta(id);
+                            return (
+                              <div key={i} className="text-sm text-foreground">
+                                &bull; {isSpellId(id) ? t(`spells.${id}.name`) : id}
+                                {meta && (
+                                  <span className="text-xs text-muted-foreground ml-2">
+                                    {`(lvl ${meta.level} ${meta.school})`}
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Personality */}
             {(character.personality_traits || character.ideals || character.bonds || character.flaws) && (

@@ -1,3 +1,4 @@
+import { createChoiceKey } from '@/types/choices';
 import type { FeatSource } from '@/types/sources';
 
 export const FEAT_SOURCES: readonly FeatSource[] = [
@@ -27,22 +28,48 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     grants: [{ type: 'feature', feature: { id: 'feat-lucky' } }],
   },
   {
-    id: 'magic-initiate-cleric',
+    id: 'magic-initiate',
     category: 'origin',
     prerequisites: [],
-    grants: [{ type: 'feature', feature: { id: 'feat-magic-initiate-cleric' } }],
-  },
-  {
-    id: 'magic-initiate-druid',
-    category: 'origin',
-    prerequisites: [],
-    grants: [{ type: 'feature', feature: { id: 'feat-magic-initiate-druid' } }],
-  },
-  {
-    id: 'magic-initiate-wizard',
-    category: 'origin',
-    prerequisites: [],
-    grants: [{ type: 'feature', feature: { id: 'feat-magic-initiate-wizard' } }],
+    repeatable: true,
+    grants: [
+      {
+        type: 'feature-choice',
+        key: createChoiceKey('feature-choice', 'feat', 'magic-initiate', 0),
+        options: [
+          {
+            optionId: 'bard',
+            featureId: 'feat-magic-initiate-bard',
+            grants: [],
+          },
+          {
+            optionId: 'cleric',
+            featureId: 'feat-magic-initiate-cleric',
+            grants: [],
+          },
+          {
+            optionId: 'druid',
+            featureId: 'feat-magic-initiate-druid',
+            grants: [],
+          },
+          {
+            optionId: 'sorcerer',
+            featureId: 'feat-magic-initiate-sorcerer',
+            grants: [],
+          },
+          {
+            optionId: 'warlock',
+            featureId: 'feat-magic-initiate-warlock',
+            grants: [],
+          },
+          {
+            optionId: 'wizard',
+            featureId: 'feat-magic-initiate-wizard',
+            grants: [],
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'musician',
@@ -115,6 +142,30 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     prerequisites: [],
     grants: [{ type: 'feature', feature: { id: 'fighting-style-two-weapon-fighting' } }],
   },
+  {
+    id: 'blind-fighting',
+    category: 'fightingStyle',
+    prerequisites: [],
+    grants: [{ type: 'feature', feature: { id: 'fighting-style-blind-fighting' } }],
+  },
+  {
+    id: 'interception',
+    category: 'fightingStyle',
+    prerequisites: [],
+    grants: [{ type: 'feature', feature: { id: 'fighting-style-interception' } }],
+  },
+  {
+    id: 'thrown-weapon-fighting',
+    category: 'fightingStyle',
+    prerequisites: [],
+    grants: [{ type: 'feature', feature: { id: 'fighting-style-thrown-weapon-fighting' } }],
+  },
+  {
+    id: 'unarmed-fighting',
+    category: 'fightingStyle',
+    prerequisites: [],
+    grants: [{ type: 'feature', feature: { id: 'fighting-style-unarmed-fighting' } }],
+  },
 
   // General feats — level 4+ prerequisite
   {
@@ -166,46 +217,49 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     grants: [{ type: 'feature', feature: { id: 'feat-dual-wielder' } }],
   },
   {
-    id: 'dungeon-delver',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-dungeon-delver' } }],
-  },
-  {
     id: 'durable',
     category: 'general',
     prerequisites: [{ type: 'level-minimum', level: 4 }],
     grants: [{ type: 'feature', feature: { id: 'feat-durable' } }],
   },
   {
-    id: 'elemental-adept-acid',
+    id: 'elemental-adept',
     category: 'general',
     prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-elemental-adept-acid' } }],
-  },
-  {
-    id: 'elemental-adept-cold',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-elemental-adept-cold' } }],
-  },
-  {
-    id: 'elemental-adept-fire',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-elemental-adept-fire' } }],
-  },
-  {
-    id: 'elemental-adept-lightning',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-elemental-adept-lightning' } }],
-  },
-  {
-    id: 'elemental-adept-thunder',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-elemental-adept-thunder' } }],
+    repeatable: true,
+    grants: [
+      {
+        type: 'feature-choice',
+        key: createChoiceKey('feature-choice', 'feat', 'elemental-adept', 0),
+        options: [
+          {
+            optionId: 'acid',
+            featureId: 'feat-elemental-adept-acid',
+            grants: [],
+          },
+          {
+            optionId: 'cold',
+            featureId: 'feat-elemental-adept-cold',
+            grants: [],
+          },
+          {
+            optionId: 'fire',
+            featureId: 'feat-elemental-adept-fire',
+            grants: [],
+          },
+          {
+            optionId: 'lightning',
+            featureId: 'feat-elemental-adept-lightning',
+            grants: [],
+          },
+          {
+            optionId: 'thunder',
+            featureId: 'feat-elemental-adept-thunder',
+            grants: [],
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'fey-touched',
@@ -262,24 +316,6 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     grants: [{ type: 'feature', feature: { id: 'feat-mage-slayer' } }],
   },
   {
-    id: 'magic-initiate-bard',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-magic-initiate-bard' } }],
-  },
-  {
-    id: 'magic-initiate-sorcerer',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-magic-initiate-sorcerer' } }],
-  },
-  {
-    id: 'magic-initiate-warlock',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-magic-initiate-warlock' } }],
-  },
-  {
     id: 'medium-armor-master',
     category: 'general',
     prerequisites: [{ type: 'level-minimum', level: 4 }],
@@ -322,34 +358,48 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     grants: [{ type: 'feature', feature: { id: 'feat-polearm-master' } }],
   },
   {
-    id: 'resilient-constitution',
+    id: 'resilient',
     category: 'general',
     prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-resilient-constitution' } }],
-  },
-  {
-    id: 'resilient-dexterity',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-resilient-dexterity' } }],
-  },
-  {
-    id: 'resilient-intelligence',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-resilient-intelligence' } }],
-  },
-  {
-    id: 'resilient-strength',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-resilient-strength' } }],
-  },
-  {
-    id: 'resilient-wisdom',
-    category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-resilient-wisdom' } }],
+    repeatable: true,
+    grants: [
+      {
+        type: 'feature-choice',
+        key: createChoiceKey('feature-choice', 'feat', 'resilient', 0),
+        options: [
+          {
+            optionId: 'strength',
+            featureId: 'feat-resilient-strength',
+            grants: [],
+          },
+          {
+            optionId: 'dexterity',
+            featureId: 'feat-resilient-dexterity',
+            grants: [],
+          },
+          {
+            optionId: 'constitution',
+            featureId: 'feat-resilient-constitution',
+            grants: [],
+          },
+          {
+            optionId: 'intelligence',
+            featureId: 'feat-resilient-intelligence',
+            grants: [],
+          },
+          {
+            optionId: 'wisdom',
+            featureId: 'feat-resilient-wisdom',
+            grants: [],
+          },
+          {
+            optionId: 'charisma',
+            featureId: 'feat-resilient-charisma',
+            grants: [],
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'ritual-caster',
@@ -435,6 +485,12 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     prerequisites: [{ type: 'level-minimum', level: 4 }],
     grants: [{ type: 'feature', feature: { id: 'feat-weapon-master' } }],
   },
+  {
+    id: 'martial-weapon-training',
+    category: 'general',
+    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    grants: [{ type: 'feature', feature: { id: 'feat-martial-weapon-training' } }],
+  },
 
   // Epic Boon feats — level 19+ prerequisite
   {
@@ -472,12 +528,6 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     category: 'epicBoon',
     prerequisites: [{ type: 'level-minimum', level: 19 }],
     grants: [{ type: 'feature', feature: { id: 'feat-boon-of-irresistible-offense' } }],
-  },
-  {
-    id: 'boon-of-luck',
-    category: 'epicBoon',
-    prerequisites: [{ type: 'level-minimum', level: 19 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-boon-of-luck' } }],
   },
   {
     id: 'boon-of-night-spirit',

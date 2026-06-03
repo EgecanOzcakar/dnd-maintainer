@@ -60,7 +60,7 @@ export const BACKGROUND_SOURCES: readonly BackgroundSource[] = [
         count: 1,
         from: null,
       },
-      { type: 'feat', featId: 'magic-initiate-cleric' },
+      { type: 'feature', feature: { id: 'feat-magic-initiate-cleric' } },
     ],
   },
   {
@@ -232,7 +232,7 @@ export const BACKGROUND_SOURCES: readonly BackgroundSource[] = [
         count: 1,
         from: null,
       },
-      { type: 'feat', featId: 'magic-initiate-druid' },
+      { type: 'feature', feature: { id: 'feat-magic-initiate-druid' } },
     ],
   },
   {
@@ -326,7 +326,7 @@ export const BACKGROUND_SOURCES: readonly BackgroundSource[] = [
         count: 1,
         from: null,
       },
-      { type: 'feat', featId: 'magic-initiate-wizard' },
+      { type: 'feature', feature: { id: 'feat-magic-initiate-wizard' } },
     ],
   },
   {

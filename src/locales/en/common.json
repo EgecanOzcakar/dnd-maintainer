@@ -379,7 +379,22 @@
       "attacks": "Attacks",
       "resourcePools": "Resource Pools",
       "conditions": "Conditions",
-      "saveDC": "Save DC"
+      "saveDC": "Save DC",
+      "hitDice": "Hit Dice",
+      "spellSlots": "Spell Slots"
+    },
+    "hitDice": {
+      "dieLabel": "d{{die}} × {{count}}",
+      "available": "{{available}} / {{max}} available",
+      "spend": "Spend"
+    },
+    "spellSlots": {
+      "levelLabel": "Level {{level}}",
+      "pactLabel": "Pact (L{{slotLevel}})",
+      "useSlot": "Use level {{level}} spell slot",
+      "recoverSlot": "Recover level {{level}} spell slot",
+      "usePact": "Use Pact Magic slot",
+      "recoverPact": "Recover Pact Magic slot"
     },
     "fields": {
       "class": "Class",
@@ -539,6 +554,8 @@
       "cloneFailed": "Failed to clone character. Please try again."
     },
     "actions": {
+      "shortRest": "Short Rest",
+      "longRest": "Long Rest",
       "archiveTitle": "Archive Character",
       "archiveConfirm": "Are you sure you want to archive {{name}}? The character will be hidden from the active list but can be restored later.",
       "deleteTitle": "Delete Character",

@@ -20,6 +20,7 @@ import type {
   DamageTypeChoiceGrant,
   FeatureChoiceGrant,
   FeatChoiceGrant,
+  SpellChoiceGrant,
 } from '@/types/grants';
 import type { CharacterBuild } from '@/types/choices';
 import { SPECIES_SOURCES, LINEAGE_GRANTS_REGISTRY } from '@/lib/sources/species';
@@ -29,6 +30,7 @@ import { BACKGROUND_SOURCES } from '@/lib/sources/backgrounds';
 import { FEAT_SOURCES } from '@/lib/sources/feats';
 import { ITEM_SOURCES } from '@/lib/sources/items';
 import { FIGHTING_STYLE_SOURCES, getFightingStyleSource } from '@/lib/sources/fighting-styles';
+import { getSpellsForList } from '@/lib/sources/spells';
 import type { FightingStyleId } from '@/lib/dnd-helpers';
 
 export type {
@@ -189,6 +191,36 @@ export function collectBundles(build: CharacterBuild): CollectBundlesResult {
           warnings.push(msg);
           logger.warn(msg);
         }
+      }
+    }
+  }
+
+  // Spell-choice decisions — expand chosen spellIds into individual spell grants so the
+  // resolver's collectGrantsByType('spell') loop picks them up.
+  const allSpellChoiceGrants: { grant: SpellChoiceGrant; source: SourceTag }[] = [];
+  for (const bundle of bundles) {
+    for (const grant of bundle.grants) {
+      if (grant.type === 'spell-choice') {
+        allSpellChoiceGrants.push({ grant: grant as SpellChoiceGrant, source: bundle.source });
+      }
+    }
+  }
+
+  for (const { grant, source } of allSpellChoiceGrants) {
+    const decision = build.choices[grant.key];
+    if (decision?.type === 'spell-choice') {
+      const pool = getSpellsForList(grant.spellList, grant.spellLevel);
+      for (const spellId of decision.spellIds) {
+        if (!pool.some((s) => s.id === spellId)) {
+          const msg = `spell-choice "${grant.key}" decision references spell "${spellId}" not in ${grant.spellList} list at level ${grant.spellLevel}`;
+          warnings.push(msg);
+          logger.warn(msg);
+          continue;
+        }
+        bundles.push({
+          source,
+          grants: [{ type: 'spell', spellId, alwaysPrepared: false }],
+        });
       }
     }
   }

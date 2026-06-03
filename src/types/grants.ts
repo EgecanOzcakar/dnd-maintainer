@@ -13,6 +13,7 @@ import type {
 import type { ChoiceKey } from '@/types/choices';
 import type { BundleCategory } from '@/types/items';
 import type { FeatCategory } from '@/types/sources';
+import type { SpellDef } from '@/types/spells';
 
 // Supporting types
 
@@ -287,6 +288,14 @@ export interface ResourcePoolGrant {
   readonly regen: ResourcePoolRegen;
 }
 
+export interface SpellChoiceGrant {
+  readonly type: 'spell-choice';
+  readonly key: ChoiceKey;
+  readonly count: number;
+  readonly spellList: ClassId;
+  readonly spellLevel: SpellDef['level'];
+}
+
 export type Grant =
   | AbilityBonusGrant
   | AbilityChoiceGrant
@@ -315,4 +324,5 @@ export type Grant =
   | FeatChoiceGrant
   | FeatureChoiceGrant
   | FeatGrant
-  | ResourcePoolGrant;
+  | ResourcePoolGrant
+  | SpellChoiceGrant;

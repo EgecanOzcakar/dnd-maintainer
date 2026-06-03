@@ -21,6 +21,7 @@ import { resolveEquipment, resolveAttacks, resolveEquippedArmorAc } from '@/lib/
 import { resolveResourcePools } from '@/lib/resolver/resource-pools';
 import { getItemDef, WEAPON_CATALOG } from '@/lib/sources/items';
 import { getFeatSource } from '@/lib/sources';
+import { getSpellsForList } from '@/lib/sources/spells';
 
 export interface PersistedItem {
   readonly itemId: string;
@@ -320,6 +321,24 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
         source,
         from: grant.from,
         category: grant.category,
+      });
+    }
+  }
+
+  // Unresolved or underfilled spell-choice grants
+  for (const { grant, source } of collectGrantsByType(bundles, 'spell-choice')) {
+    const decision = choices[grant.key];
+    const chosenIds = decision?.type === 'spell-choice' ? decision.spellIds : [];
+    const inPool = getSpellsForList(grant.spellList, grant.spellLevel);
+    const validDistinct = new Set(chosenIds.filter((id) => inPool.some((s) => s.id === id)));
+    if (!decision || decision.type !== 'spell-choice' || validDistinct.size < grant.count) {
+      pendingChoices.push({
+        type: 'spell-choice',
+        choiceKey: grant.key,
+        source,
+        count: grant.count,
+        spellList: grant.spellList,
+        spellLevel: grant.spellLevel,
       });
     }
   }

@@ -567,10 +567,6 @@
       "name": "Psionic Sorcery",
       "description": "When you cast a spell from your Aberrant Sorcery expanded spell list, you can expend Sorcery Points equal to the spell's level to cast it without any Verbal or Material components, provided you have no Concentration on a spell."
     },
-    "aberrantsorcery-subclass-spells": {
-      "name": "Aberrant Sorcery Spells",
-      "description": "You have access to additional spells from your aberrant connection. These spells are always prepared and don't count against your Spells Prepared total."
-    },
     "aberrantsorcery-psychic-defenses": {
       "name": "Psychic Defenses",
       "description": "You gain Resistance to Psychic damage, and you have Advantage on saving throws to avoid or end the Charmed or Frightened condition."
@@ -583,25 +579,53 @@
       "name": "Trance of Order",
       "description": "As a Bonus Action, you enter a state of clockwork consciousness for 1 minute. While in this trance, attack rolls against you can't benefit from Advantage, and whenever you make an attack roll, ability check, or saving throw and roll a 9 or lower on the d20, you can treat the d20 as a 10. This feature ends early if you are incapacitated. Once you use it, you can't use it again until you finish a Long Rest, unless you spend 5 Sorcery Points to use it again."
     },
-    "clockworksorcery-subclass-spells": {
-      "name": "Clockwork Sorcery Spells",
-      "description": "You have access to additional spells from your clockwork connection. These spells are always prepared and don't count against your Spells Prepared total."
-    },
     "clockworksorcery-bastion-of-law": {
       "name": "Bastion of Law",
       "description": "As a Magic action, you can expend 1–5 Sorcery Points to create a shimmering ward on a creature you can see within 30 feet of you, including yourself. The ward is represented by a number of d8s equal to the Sorcery Points spent. When the warded creature takes damage, it can expend any number of those dice, rolling them and reducing the damage taken by the total rolled. The ward lasts until you finish a Long Rest or until all dice are expended."
     },
-    "draconicsorcery-dragon-ancestor": {
-      "name": "Dragon Ancestor",
-      "description": "Choose one type of dragon as your ancestor: Black (Acid), Blue (Lightning), Brass (Fire), Bronze (Lightning), Copper (Acid), Gold (Fire), Green (Poison), Red (Fire), Silver (Cold), or White (Cold). Your choice determines the damage type for several of your other features. You also gain the ability to speak, read, and write Draconic, and you have Advantage on Charisma checks made to interact with dragons."
-    },
-    "draconicsorcery-subclass-spells": {
-      "name": "Draconic Sorcery Spells",
-      "description": "You have access to additional spells from your draconic bloodline. These spells are always prepared and don't count against your Spells Prepared total."
-    },
     "draconicsorcery-elemental-affinity": {
       "name": "Elemental Affinity",
       "description": "When you cast a spell that deals damage of the type associated with your Dragon Ancestor, you can add your Charisma modifier to one damage roll of that spell. In addition, you can spend 1 Sorcery Point to gain Resistance to that damage type for 1 hour."
+    },
+    "draconicsorcery-dragon-ancestor-black": {
+      "name": "Dragon Ancestor: Black",
+      "description": "Your draconic ancestor is a Black dragon. Your damage type is Acid."
+    },
+    "draconicsorcery-dragon-ancestor-blue": {
+      "name": "Dragon Ancestor: Blue",
+      "description": "Your draconic ancestor is a Blue dragon. Your damage type is Lightning."
+    },
+    "draconicsorcery-dragon-ancestor-brass": {
+      "name": "Dragon Ancestor: Brass",
+      "description": "Your draconic ancestor is a Brass dragon. Your damage type is Fire."
+    },
+    "draconicsorcery-dragon-ancestor-bronze": {
+      "name": "Dragon Ancestor: Bronze",
+      "description": "Your draconic ancestor is a Bronze dragon. Your damage type is Lightning."
+    },
+    "draconicsorcery-dragon-ancestor-copper": {
+      "name": "Dragon Ancestor: Copper",
+      "description": "Your draconic ancestor is a Copper dragon. Your damage type is Acid."
+    },
+    "draconicsorcery-dragon-ancestor-gold": {
+      "name": "Dragon Ancestor: Gold",
+      "description": "Your draconic ancestor is a Gold dragon. Your damage type is Fire."
+    },
+    "draconicsorcery-dragon-ancestor-green": {
+      "name": "Dragon Ancestor: Green",
+      "description": "Your draconic ancestor is a Green dragon. Your damage type is Poison."
+    },
+    "draconicsorcery-dragon-ancestor-red": {
+      "name": "Dragon Ancestor: Red",
+      "description": "Your draconic ancestor is a Red dragon. Your damage type is Fire."
+    },
+    "draconicsorcery-dragon-ancestor-silver": {
+      "name": "Dragon Ancestor: Silver",
+      "description": "Your draconic ancestor is a Silver dragon. Your damage type is Cold."
+    },
+    "draconicsorcery-dragon-ancestor-white": {
+      "name": "Dragon Ancestor: White",
+      "description": "Your draconic ancestor is a White dragon. Your damage type is Cold."
     },
     "wildmagicsorcery-wild-magic-surge": {
       "name": "Wild Magic Surge",
@@ -610,10 +634,6 @@
     "wildmagicsorcery-tides-of-chaos": {
       "name": "Tides of Chaos",
       "description": "You can manipulate the forces of chance to gain Advantage on one attack roll, ability check, or saving throw. Once you do so, you must finish a Long Rest before you can use this feature again. If you use Wild Magic Surge before you regain use of this feature, you immediately regain use of it."
-    },
-    "wildmagicsorcery-subclass-spells": {
-      "name": "Wild Magic Sorcery Spells",
-      "description": "You have access to additional spells tied to the wild, unpredictable magic that flows through you. These spells are always prepared and don't count against your Spells Prepared total."
     },
     "wildmagicsorcery-bend-luck": {
       "name": "Bend Luck",
@@ -2414,6 +2434,10 @@
     "focus-points": {
       "name": "Focus Points",
       "description": "Fuel Monk techniques. Regain on a Short Rest."
+    },
+    "sorcery-points": {
+      "name": "Sorcery Points",
+      "description": "Fuel Metamagic and subclass features. Regain on a Long Rest; maximum equals your Sorcerer level."
     }
   },
   "spells": {
@@ -2816,6 +2840,90 @@
     "seeming": {
       "name": "Seeming",
       "description": "You change the appearance of any number of creatures that you can see within range. Each target receives an illusory disguise for the duration. A creature can make an Investigation check against your Spell Save DC to discern the illusion."
+    },
+    "arms-of-hadar": {
+      "name": "Arms of Hadar",
+      "description": "Tendrils of dark energy erupt from you in a 10-foot-radius sphere. Each creature in the area must succeed on a Strength save or take 2d6 Necrotic damage and lose its Reaction until its next turn."
+    },
+    "calm-emotions": {
+      "name": "Calm Emotions",
+      "description": "Each Humanoid in a 20-foot-radius sphere centered on a point you choose must succeed on a Charisma save or have its Charmed or Frightened condition suppressed, or become indifferent about creatures it is hostile to, for the duration."
+    },
+    "detect-thoughts": {
+      "name": "Detect Thoughts",
+      "description": "You can read the surface thoughts of creatures within 30 feet. As an action you can probe deeper, requiring a Wisdom save, or you can search for a particular creature's thoughts."
+    },
+    "dissonant-whispers": {
+      "name": "Dissonant Whispers",
+      "description": "A creature you choose within 60 feet must succeed on a Wisdom save or take 3d6 Psychic damage and move away from you using its Reaction, provoking opportunity attacks."
+    },
+    "mind-sliver": {
+      "name": "Mind Sliver",
+      "description": "You drive a disorienting spike of psychic energy into the mind of one creature you can see within 60 feet. The target must succeed on an Intelligence save or take 1d6 Psychic damage and subtract 1d4 from its next saving throw."
+    },
+    "hunger-of-hadar": {
+      "name": "Hunger of Hadar",
+      "description": "A 20-foot-radius sphere of blackness and bitter cold appears centered on a point within range. Creatures inside are Blinded and take cold or acid damage at the start and end of each turn for the duration."
+    },
+    "sending": {
+      "name": "Sending",
+      "description": "You send a short message of twenty-five words or fewer to a creature you are familiar with. The target can reply with a message of twenty-five words or fewer."
+    },
+    "evards-black-tentacles": {
+      "name": "Evard's Black Tentacles",
+      "description": "Squirming tentacles fill a 20-foot square within range. Creatures in the area must succeed on a Dexterity save or take 3d6 Bludgeoning damage and have the Restrained condition while in the area."
+    },
+    "summon-aberration": {
+      "name": "Summon Aberration",
+      "description": "You call forth an aberrant spirit. Choose Beholderkin, Slaad, or Star Spawn. The creature obeys your commands and acts on your initiative for the duration."
+    },
+    "rarys-telepathic-bond": {
+      "name": "Rary's Telepathic Bond",
+      "description": "You forge a telepathic link among up to eight willing creatures you can see within range. While linked, they can communicate telepathically with each other regardless of language."
+    },
+    "telekinesis": {
+      "name": "Telekinesis",
+      "description": "You gain the ability to move or manipulate creatures or objects by thought. Each turn you can move one Large-or-smaller creature or object up to 30 feet."
+    },
+    "alarm": {
+      "name": "Alarm",
+      "description": "You set an alarm against unwanted intrusion. When a creature of Tiny or larger size enters the warded area, the alarm sounds — either mentally or audibly."
+    },
+    "summon-construct": {
+      "name": "Summon Construct",
+      "description": "You call forth a construct spirit. Choose Clay, Metal, or Stone. The creature obeys your commands and acts on your initiative for the duration."
+    },
+    "wall-of-force": {
+      "name": "Wall of Force",
+      "description": "An invisible wall of force springs into existence at a point you choose within range. The wall is immune to all damage and can't be dispelled by Dispel Magic."
+    },
+    "alter-self": {
+      "name": "Alter Self",
+      "description": "You alter your appearance. Choose Aquatic Adaptation, Change Appearance, or Natural Weapons. You can change which option you have as a Magic action."
+    },
+    "chromatic-orb": {
+      "name": "Chromatic Orb",
+      "description": "You hurl a 4-inch-diameter sphere of energy at a creature. Choose acid, cold, fire, lightning, poison, or thunder. The target must succeed on a Dexterity save or take 3d8 damage of the chosen type."
+    },
+    "command": {
+      "name": "Command",
+      "description": "You speak a one-word command to a creature within 60 feet. It must succeed on a Wisdom save or follow that command on its next turn. Commands include Approach, Drop, Flee, Grovel, and Halt."
+    },
+    "dragons-breath": {
+      "name": "Dragon's Breath",
+      "description": "You imbue a willing creature's mouth with the destructive power of a dragon. Until the spell ends, the creature can exhale a 15-foot cone dealing 3d6 damage of a chosen type (acid, cold, fire, lightning, or poison)."
+    },
+    "fly": {
+      "name": "Fly",
+      "description": "You touch a willing creature. The target gains a Fly Speed of 60 feet for the duration. When the spell ends, the target falls if it is still aloft."
+    },
+    "charm-monster": {
+      "name": "Charm Monster",
+      "description": "You attempt to charm a creature you can see within 30 feet. It must succeed on a Wisdom save or have the Charmed condition for 1 hour or until you or your companions harm it."
+    },
+    "summon-dragon": {
+      "name": "Summon Dragon",
+      "description": "You call forth a draconic spirit. Choose Chromatic, Metallic, or Gem. The creature obeys your commands and acts on your initiative for the duration."
     }
   }
 }

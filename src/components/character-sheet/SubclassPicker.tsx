@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SUBCLASS_SOURCES, SUBCLASS_IDS_BY_CLASS } from '@/lib/sources/subclasses';
@@ -7,6 +8,7 @@ import type { ChoiceKey, ChoiceDecision } from '@/types/choices';
 import type { SubclassId } from '@/lib/sources/subclasses';
 import { isSubclassId } from '@/lib/sources/subclasses';
 import { useTranslation } from 'react-i18next';
+import type { SubclassSource } from '@/types/sources';
 
 interface SubclassPickerProps {
   readonly choice: Extract<PendingChoice, { type: 'subclass' }>;
@@ -15,9 +17,22 @@ interface SubclassPickerProps {
   readonly onClear?: (key: ChoiceKey) => void;
   /** When true, calls onDecide immediately on selection and hides the confirm button. */
   readonly autoCommit?: boolean;
+  /**
+   * Optional filtered subclass map from useGameData. Only subclasses present in
+   * this map are shown, PLUS the currently selected subclass (no-data-loss union).
+   * Falls back to the full SUBCLASS_SOURCES when undefined.
+   */
+  readonly allowedSubclasses?: Readonly<Partial<Record<SubclassId, SubclassSource>>>;
 }
 
-export function SubclassPicker({ choice, currentDecision, onDecide, onClear, autoCommit }: SubclassPickerProps) {
+export function SubclassPicker({
+  choice,
+  currentDecision,
+  onDecide,
+  onClear,
+  autoCommit,
+  allowedSubclasses,
+}: SubclassPickerProps) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
 
@@ -28,7 +43,14 @@ export function SubclassPicker({ choice, currentDecision, onDecide, onClear, aut
   const [selected, setSelected] = useState<SubclassId | null>(existingSubclassId);
   const hasExistingDecision = existingSubclassId !== null;
 
+  // Use the provided allowed map or fall back to the full registry.
+  const sourceMap = allowedSubclasses ?? SUBCLASS_SOURCES;
+
+  // Filter to ids that are present in sourceMap (visibility) OR are the currently selected id
+  // (no-data-loss: keep the selection visible even when its book is disabled).
+  // Data always comes from the full SUBCLASS_SOURCES registry so features are never undefined.
   const subclasses = SUBCLASS_IDS_BY_CLASS[choice.classId]
+    .filter((id) => id in sourceMap || id === existingSubclassId)
     .map((id) => ({ id, ...SUBCLASS_SOURCES[id] }))
     .sort((a, b) => t(`subclasses.${a.id}.name`).localeCompare(t(`subclasses.${b.id}.name`)));
   const className = t(`classes.${choice.classId}`, { defaultValue: choice.classId });
@@ -64,6 +86,7 @@ export function SubclassPicker({ choice, currentDecision, onDecide, onClear, aut
         )}
         {subclasses.map((sc) => {
           const isSelected = selected === sc.id;
+          const isDisabledBook = sc.id === existingSubclassId && !(sc.id in sourceMap);
 
           return (
             <button
@@ -74,8 +97,13 @@ export function SubclassPicker({ choice, currentDecision, onDecide, onClear, aut
                 isSelected ? 'border-primary bg-primary/5' : 'border-border bg-muted/20'
               }`}
             >
-              <div className={`text-sm text-foreground ${isSelected ? 'font-semibold' : ''}`}>
+              <div className={`flex items-center gap-2 text-sm text-foreground ${isSelected ? 'font-semibold' : ''}`}>
                 {t(`subclasses.${sc.id}.name`)}
+                {isDisabledBook && (
+                  <Badge variant="destructive" className="text-xs">
+                    {tc('characterBuilder.hints.disabledSourceBook')}
+                  </Badge>
+                )}
               </div>
               <p className="text-xs text-muted-foreground mt-1">{t(`subclasses.${sc.id}.description`)}</p>
               {isSelected && (

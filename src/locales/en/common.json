@@ -224,7 +224,8 @@
       "quickNpcCommitFailed": "Could not apply NPC — please try again",
       "quickNpcAdvanceTimeout": "NPC was created but the step did not advance — please navigate manually",
       "quickNpcOverwriteTitle": "Replace your current work?",
-      "quickNpcOverwriteConfirm": "This will overwrite the data you have already entered. Continue?"
+      "quickNpcOverwriteConfirm": "This will overwrite the data you have already entered. Continue?",
+      "disabledSourceBook": "This option is from a source book not enabled for this campaign."
     },
     "abilities": {
       "standardArray": "Standard Array",
@@ -724,7 +725,12 @@
       "title": "Campaign Toolkit"
     },
     "theme": "Campaign Theme",
-    "themeDescription": "Customize the color theme for this campaign"
+    "themeDescription": "Customize the color theme for this campaign",
+    "sourceBooks": {
+      "title": "Source Books",
+      "description": "Choose which rulebooks are available for character creation in this campaign.",
+      "lastBookWarning": "At least one source book must be enabled."
+    }
   },
   "characterType": {
     "pc": "PC",

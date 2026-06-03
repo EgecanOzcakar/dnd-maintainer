@@ -968,8 +968,15 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           },
           // Otherworldly Glamour (WIS-to-CHA bonus): inert feature grant; no modifier-substitution grant exists
           { type: 'feature', feature: { id: 'feywanderer-otherworldly-glamour' } },
-          // TODO #93: model Fey Wanderer subclass spells as spell grants when spell id system is available
-          { type: 'feature', feature: { id: 'feywanderer-subclass-spells' } },
+          // Fey Wanderer Spells — L3 tier (2024 PHB)
+          { type: 'spell', spellId: 'charm-person', alwaysPrepared: true },
+        ],
+      },
+      {
+        classLevel: 5,
+        grants: [
+          // Fey Wanderer Spells — L5 tier
+          { type: 'spell', spellId: 'misty-step', alwaysPrepared: true },
         ],
       },
       {
@@ -978,6 +985,27 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           // Beguiling Twist: you and allies within 30 ft have Advantage on Charmed/Frightened saves;
           // Reaction to redirect a failed Charmed/Frightened save to another creature within range
           { type: 'feature', feature: { id: 'feywanderer-beguiling-twist' } },
+        ],
+      },
+      {
+        classLevel: 9,
+        grants: [
+          // Fey Wanderer Spells — L9 tier
+          { type: 'spell', spellId: 'summon-fey', alwaysPrepared: true },
+        ],
+      },
+      {
+        classLevel: 13,
+        grants: [
+          // Fey Wanderer Spells — L13 tier
+          { type: 'spell', spellId: 'dimension-door', alwaysPrepared: true },
+        ],
+      },
+      {
+        classLevel: 17,
+        grants: [
+          // Fey Wanderer Spells — L17 tier
+          { type: 'spell', spellId: 'mislead', alwaysPrepared: true },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -992,17 +1020,45 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'gloomstalker-dread-ambusher' } },
           // Umbral Sight: Darkvision 60 ft (or +30 to existing); invisible to creatures relying on Darkvision
           { type: 'feature', feature: { id: 'gloomstalker-umbral-sight' } },
-          // TODO #93: model Gloom Stalker subclass spells as spell grants when spell id system is available
-          { type: 'feature', feature: { id: 'gloomstalker-subclass-spells' } },
+          // Gloom Stalker Spells — L3 tier (2024 PHB)
+          { type: 'spell', spellId: 'disguise-self', alwaysPrepared: true },
+        ],
+      },
+      {
+        classLevel: 5,
+        grants: [
+          // Gloom Stalker Spells — L5 tier
+          { type: 'spell', spellId: 'rope-trick', alwaysPrepared: true },
         ],
       },
       {
         classLevel: 7,
         grants: [
-          // Iron Mind: gain proficiency in WIS, INT, or CHA saving throw of your choice
-          // ProficiencyChoiceGrant does not support category: 'saving-throw'; modeled as inert feature grant
-          // (same pattern as wildheart-rage-of-the-wilds, zealot-divine-fury, etc.)
+          // Iron Mind (2024 PHB): grants Wisdom saving throw proficiency.
+          // 2024 Iron Mind grants flat Wisdom saving-throw proficiency.
           { type: 'feature', feature: { id: 'gloomstalker-iron-mind' } },
+          { type: 'proficiency', category: 'saving-throw', id: 'wis' },
+        ],
+      },
+      {
+        classLevel: 9,
+        grants: [
+          // Gloom Stalker Spells — L9 tier
+          { type: 'spell', spellId: 'fear', alwaysPrepared: true },
+        ],
+      },
+      {
+        classLevel: 13,
+        grants: [
+          // Gloom Stalker Spells — L13 tier
+          { type: 'spell', spellId: 'greater-invisibility', alwaysPrepared: true },
+        ],
+      },
+      {
+        classLevel: 17,
+        grants: [
+          // Gloom Stalker Spells — L17 tier
+          { type: 'spell', spellId: 'seeming', alwaysPrepared: true },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1014,17 +1070,45 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Hunter's Lore: when you mark a creature with Hunter's Mark, you learn its damage resistances/immunities
           { type: 'feature', feature: { id: 'hunter-hunters-lore' } },
-          // Hunter's Prey: one-time choice of Colossus Slayer or Horde Breaker
-          // No pending-choice mechanism for free-form options; collapsed to inert feature grant
-          { type: 'feature', feature: { id: 'hunter-hunters-prey' } },
+          // Hunter's Prey: choose Colossus Slayer or Horde Breaker (2024 PHB)
+          {
+            type: 'feature-choice',
+            key: createChoiceKey('feature-choice', 'subclass', 'hunter', 0),
+            options: [
+              {
+                optionId: 'colossus-slayer',
+                featureId: 'hunter-hunters-prey-colossus-slayer',
+                grants: [],
+              },
+              {
+                optionId: 'horde-breaker',
+                featureId: 'hunter-hunters-prey-horde-breaker',
+                grants: [],
+              },
+            ],
+          },
         ],
       },
       {
         classLevel: 7,
         grants: [
-          // Defensive Tactics: one-time choice of Escape the Horde, Multiattack Defense, or Steel Will
-          // No pending-choice mechanism for free-form options; collapsed to inert feature grant
-          { type: 'feature', feature: { id: 'hunter-defensive-tactics' } },
+          // Defensive Tactics: choose Escape the Horde or Multiattack Defense (2024 PHB)
+          {
+            type: 'feature-choice',
+            key: createChoiceKey('feature-choice', 'subclass', 'hunter', 1),
+            options: [
+              {
+                optionId: 'escape-the-horde',
+                featureId: 'hunter-defensive-tactics-escape-the-horde',
+                grants: [],
+              },
+              {
+                optionId: 'multiattack-defense',
+                featureId: 'hunter-defensive-tactics-multiattack-defense',
+                grants: [],
+              },
+            ],
+          },
         ],
       },
     ] satisfies readonly SubclassFeature[],

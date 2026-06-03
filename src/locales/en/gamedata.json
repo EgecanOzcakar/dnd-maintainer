@@ -1535,10 +1535,6 @@
       "name": "Otherworldly Glamour",
       "description": "Whenever you make a Charisma check, you can add your Wisdom modifier to the roll. (Skill proficiency choice — Deception, Performance, or Persuasion — is tracked separately.)"
     },
-    "feywanderer-subclass-spells": {
-      "name": "Fey Wanderer Spells",
-      "description": "You always have certain spells prepared based on your Fey Wanderer subclass. (Spell grant system pending — see TODO #93.)"
-    },
     "feywanderer-beguiling-twist": {
       "name": "Beguiling Twist",
       "description": "The magic of the Feywild guards your mind. You and each creature within 30 feet of you have Advantage on saving throws against being Charmed or Frightened. In addition, whenever a creature within 30 feet of you that you can see succeeds on a saving throw against being Charmed or Frightened, you can use your Reaction to force a different creature you can see within 30 feet to make a WIS saving throw (DC = 8 + your Proficiency Bonus + your WIS modifier). If that creature fails the save, it has the Charmed or Frightened condition (your choice) for 1 minute. The condition ends if the target takes any damage."
@@ -1551,13 +1547,9 @@
       "name": "Umbral Sight",
       "description": "You gain Darkvision to a range of 60 feet. If you already have Darkvision, its range increases by 30 feet. You are also naturally adept at hiding from creatures that rely on Darkvision — you are invisible to creatures with Darkvision when they try to detect you using that sense."
     },
-    "gloomstalker-subclass-spells": {
-      "name": "Gloom Stalker Spells",
-      "description": "You always have certain spells prepared based on your Gloom Stalker subclass. (Spell grant system pending — see TODO #93.)"
-    },
     "gloomstalker-iron-mind": {
       "name": "Iron Mind",
-      "description": "You have honed your ability to resist the mind-altering powers of your prey. You gain proficiency in Wisdom, Intelligence, or Charisma saving throws (your choice). (One-time choice at level 7; no pending-choice mechanism — modeled as inert feature grant.)"
+      "description": "You gain proficiency in Wisdom saving throws."
     },
     "hunter-hunters-lore": {
       "name": "Hunter's Lore",
@@ -1565,11 +1557,27 @@
     },
     "hunter-hunters-prey": {
       "name": "Hunter's Prey",
-      "description": "You gain one of the following features of your choice. Colossus Slayer: once per turn, your weapon attack deals an extra 1d8 damage if the target has fewer Hit Points than its Hit Point maximum. Horde Breaker: once on each of your turns when you make an attack with a weapon as part of the Attack action, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target and within your weapon's range."
+      "description": "You gain one of the following features of your choice: Colossus Slayer or Horde Breaker."
+    },
+    "hunter-hunters-prey-colossus-slayer": {
+      "name": "Colossus Slayer",
+      "description": "Once per turn, your weapon attack deals an extra 1d8 damage if the target has fewer Hit Points than its Hit Point maximum."
+    },
+    "hunter-hunters-prey-horde-breaker": {
+      "name": "Horde Breaker",
+      "description": "Once on each of your turns when you make an attack with a weapon as part of the Attack action, you can make another attack with the same weapon against a different creature within 5 feet of the original target and within your weapon's range."
     },
     "hunter-defensive-tactics": {
       "name": "Defensive Tactics",
-      "description": "You gain one of the following features of your choice. Escape the Horde: Opportunity Attacks against you are made with Disadvantage. Multiattack Defense: when a creature hits you with an attack roll, you gain a +4 bonus to AC against all subsequent attacks made by that creature for the rest of the current turn. Steel Will: you have Advantage on saving throws against the Frightened condition."
+      "description": "You gain one of the following features of your choice: Escape the Horde or Multiattack Defense."
+    },
+    "hunter-defensive-tactics-escape-the-horde": {
+      "name": "Escape the Horde",
+      "description": "Opportunity Attacks against you are made with Disadvantage."
+    },
+    "hunter-defensive-tactics-multiattack-defense": {
+      "name": "Multiattack Defense",
+      "description": "When a creature hits you with an attack roll, that creature has Disadvantage on all other attack rolls against you this turn."
     },
     "ranger-favored-enemy": {
       "name": "Favored Enemy",
@@ -2784,6 +2792,30 @@
     "banishment": {
       "name": "Banishment",
       "description": "One creature that you can see within range must succeed on a Charisma saving throw or be transported to a harmless demiplane for the duration. While there, the target has the Incapacitated condition. When the spell ends, the target reappears in the space it left or in the nearest unoccupied space if that space is occupied."
+    },
+    "rope-trick": {
+      "name": "Rope Trick",
+      "description": "You touch a length of rope up to 60 feet long. One end of the rope rises into the air until the rope hangs perpendicular, with its upper end fixed in place. Up to eight creatures can climb up the rope and into the extradimensional space at the top, which is invisible from outside."
+    },
+    "fear": {
+      "name": "Fear",
+      "description": "You project a phantasmal image of a creature's worst fears. Each creature in a 30-foot cone must succeed on a Wisdom saving throw or drop whatever it is holding and have the Frightened condition for the duration. While Frightened, it must take the Dash action and move away from you on each of its turns."
+    },
+    "summon-fey": {
+      "name": "Summon Fey",
+      "description": "You call forth a fey spirit. It manifests in an unoccupied space within range in a form you choose: Fuming, Mirthful, or Tricksy. The creature disappears when it drops to 0 Hit Points or when the spell ends. The summoned creature is friendly to you and your companions for the duration."
+    },
+    "greater-invisibility": {
+      "name": "Greater Invisibility",
+      "description": "A creature you touch has the Invisible condition until the spell ends. Unlike Invisibility, this spell doesn't end if the target attacks or casts a spell."
+    },
+    "mislead": {
+      "name": "Mislead",
+      "description": "You become Invisible and simultaneously cause an illusory double of yourself to appear. You can use a Bonus Action to move the illusion up to twice your Speed. Through the illusion's senses, you can perceive its surroundings; you are Blinded and Deafened while doing so."
+    },
+    "seeming": {
+      "name": "Seeming",
+      "description": "You change the appearance of any number of creatures that you can see within range. Each target receives an illusory disguise for the duration. A creature can make an Investigation check against your Spell Save DC to discern the illusion."
     }
   }
 }

@@ -1752,13 +1752,13 @@ describe('getSubclassSource — Fey Wanderer', () => {
     expect(getSubclassSource('feywanderer')).toBeDefined();
   });
 
-  it('feywanderer has 2 feature levels (L3, L7)', () => {
+  it('feywanderer has 6 feature levels (L3, L5, L7, L9, L13, L17)', () => {
     const source = getSubclassSource('feywanderer');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 7]);
+    expect(source?.features).toHaveLength(6);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 7, 9, 13, 17]);
   });
 
-  it('feywanderer level 3 grants 4 items: dreadful-strikes, skill proficiency-choice, otherworldly-glamour, subclass-spells', () => {
+  it('feywanderer level 3 grants 4 items: dreadful-strikes, skill proficiency-choice, otherworldly-glamour, charm-person', () => {
     const source = getSubclassSource('feywanderer');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
@@ -1779,12 +1779,18 @@ describe('getSubclassSource — Fey Wanderer', () => {
           type: 'feature',
           feature: expect.objectContaining({ id: 'feywanderer-otherworldly-glamour' }),
         }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'feywanderer-subclass-spells' }),
-        }),
+        expect.objectContaining({ type: 'spell', spellId: 'charm-person', alwaysPrepared: true }),
       ])
     );
+  });
+
+  it('feywanderer level 3 has no inert subclass-spells feature grant', () => {
+    const source = getSubclassSource('feywanderer');
+    const level3 = source?.features.find((f) => f.classLevel === 3);
+    const inertGrant = level3?.grants.find(
+      (g) => g.type === 'feature' && 'feature' in g && g.feature.id === 'feywanderer-subclass-spells'
+    );
+    expect(inertGrant).toBeUndefined();
   });
 
   it('feywanderer level 3 proficiency-choice from list contains exactly deception, performance, persuasion', () => {
@@ -1806,6 +1812,14 @@ describe('getSubclassSource — Fey Wanderer', () => {
     expect((profChoice as { key: string }).key).toBe(createChoiceKey('skill-choice', 'subclass', 'feywanderer', 0));
   });
 
+  it('feywanderer level 5 grants misty-step (alwaysPrepared)', () => {
+    const source = getSubclassSource('feywanderer');
+    const level5 = source?.features.find((f) => f.classLevel === 5);
+    expect(level5).toBeDefined();
+    expect(level5?.grants).toHaveLength(1);
+    expect(level5?.grants[0]).toMatchObject({ type: 'spell', spellId: 'misty-step', alwaysPrepared: true });
+  });
+
   it('feywanderer level 7 grants 1 feature: beguiling-twist', () => {
     const source = getSubclassSource('feywanderer');
     const level7 = source?.features.find((f) => f.classLevel === 7);
@@ -1816,6 +1830,30 @@ describe('getSubclassSource — Fey Wanderer', () => {
       feature: { id: 'feywanderer-beguiling-twist' },
     });
   });
+
+  it('feywanderer level 9 grants summon-fey (alwaysPrepared)', () => {
+    const source = getSubclassSource('feywanderer');
+    const level9 = source?.features.find((f) => f.classLevel === 9);
+    expect(level9).toBeDefined();
+    expect(level9?.grants).toHaveLength(1);
+    expect(level9?.grants[0]).toMatchObject({ type: 'spell', spellId: 'summon-fey', alwaysPrepared: true });
+  });
+
+  it('feywanderer level 13 grants dimension-door (alwaysPrepared)', () => {
+    const source = getSubclassSource('feywanderer');
+    const level13 = source?.features.find((f) => f.classLevel === 13);
+    expect(level13).toBeDefined();
+    expect(level13?.grants).toHaveLength(1);
+    expect(level13?.grants[0]).toMatchObject({ type: 'spell', spellId: 'dimension-door', alwaysPrepared: true });
+  });
+
+  it('feywanderer level 17 grants mislead (alwaysPrepared)', () => {
+    const source = getSubclassSource('feywanderer');
+    const level17 = source?.features.find((f) => f.classLevel === 17);
+    expect(level17).toBeDefined();
+    expect(level17?.grants).toHaveLength(1);
+    expect(level17?.grants[0]).toMatchObject({ type: 'spell', spellId: 'mislead', alwaysPrepared: true });
+  });
 });
 
 describe('getSubclassSource — Gloom Stalker', () => {
@@ -1823,13 +1861,13 @@ describe('getSubclassSource — Gloom Stalker', () => {
     expect(getSubclassSource('gloomstalker')).toBeDefined();
   });
 
-  it('gloomstalker has 2 feature levels (L3, L7)', () => {
+  it('gloomstalker has 6 feature levels (L3, L5, L7, L9, L13, L17)', () => {
     const source = getSubclassSource('gloomstalker');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 7]);
+    expect(source?.features).toHaveLength(6);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 7, 9, 13, 17]);
   });
 
-  it('gloomstalker level 3 grants 3 features: dread-ambusher, umbral-sight, subclass-spells', () => {
+  it('gloomstalker level 3 grants 3 items: dread-ambusher, umbral-sight, disguise-self', () => {
     const source = getSubclassSource('gloomstalker');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
@@ -1844,23 +1882,66 @@ describe('getSubclassSource — Gloom Stalker', () => {
           type: 'feature',
           feature: expect.objectContaining({ id: 'gloomstalker-umbral-sight' }),
         }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'gloomstalker-subclass-spells' }),
-        }),
+        expect.objectContaining({ type: 'spell', spellId: 'disguise-self', alwaysPrepared: true }),
       ])
     );
   });
 
-  it('gloomstalker level 7 grants 1 feature: iron-mind', () => {
+  it('gloomstalker level 3 has no inert subclass-spells feature grant', () => {
+    const source = getSubclassSource('gloomstalker');
+    const level3 = source?.features.find((f) => f.classLevel === 3);
+    const inertGrant = level3?.grants.find(
+      (g) => g.type === 'feature' && 'feature' in g && g.feature.id === 'gloomstalker-subclass-spells'
+    );
+    expect(inertGrant).toBeUndefined();
+  });
+
+  it('gloomstalker level 5 grants rope-trick (alwaysPrepared)', () => {
+    const source = getSubclassSource('gloomstalker');
+    const level5 = source?.features.find((f) => f.classLevel === 5);
+    expect(level5).toBeDefined();
+    expect(level5?.grants).toHaveLength(1);
+    expect(level5?.grants[0]).toMatchObject({ type: 'spell', spellId: 'rope-trick', alwaysPrepared: true });
+  });
+
+  it('gloomstalker level 7 grants iron-mind feature and WIS saving-throw proficiency', () => {
     const source = getSubclassSource('gloomstalker');
     const level7 = source?.features.find((f) => f.classLevel === 7);
     expect(level7).toBeDefined();
-    expect(level7?.grants).toHaveLength(1);
-    expect(level7?.grants[0]).toMatchObject({
-      type: 'feature',
-      feature: { id: 'gloomstalker-iron-mind' },
-    });
+    expect(level7?.grants).toHaveLength(2);
+    expect(level7?.grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'feature',
+          feature: expect.objectContaining({ id: 'gloomstalker-iron-mind' }),
+        }),
+        expect.objectContaining({ type: 'proficiency', category: 'saving-throw', id: 'wis' }),
+      ])
+    );
+  });
+
+  it('gloomstalker level 9 grants fear (alwaysPrepared)', () => {
+    const source = getSubclassSource('gloomstalker');
+    const level9 = source?.features.find((f) => f.classLevel === 9);
+    expect(level9).toBeDefined();
+    expect(level9?.grants).toHaveLength(1);
+    expect(level9?.grants[0]).toMatchObject({ type: 'spell', spellId: 'fear', alwaysPrepared: true });
+  });
+
+  it('gloomstalker level 13 grants greater-invisibility (alwaysPrepared)', () => {
+    const source = getSubclassSource('gloomstalker');
+    const level13 = source?.features.find((f) => f.classLevel === 13);
+    expect(level13).toBeDefined();
+    expect(level13?.grants).toHaveLength(1);
+    expect(level13?.grants[0]).toMatchObject({ type: 'spell', spellId: 'greater-invisibility', alwaysPrepared: true });
+  });
+
+  it('gloomstalker level 17 grants seeming (alwaysPrepared)', () => {
+    const source = getSubclassSource('gloomstalker');
+    const level17 = source?.features.find((f) => f.classLevel === 17);
+    expect(level17).toBeDefined();
+    expect(level17?.grants).toHaveLength(1);
+    expect(level17?.grants[0]).toMatchObject({ type: 'spell', spellId: 'seeming', alwaysPrepared: true });
   });
 });
 
@@ -1875,34 +1956,63 @@ describe('getSubclassSource — Hunter', () => {
     expect(source?.features.map((f) => f.classLevel)).toEqual([3, 7]);
   });
 
-  it('hunter level 3 grants 2 features: hunters-lore and hunters-prey', () => {
+  it('hunter level 3 grants 2 items: hunters-lore and hunters-prey feature-choice', () => {
     const source = getSubclassSource('hunter');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
     expect(level3?.grants).toHaveLength(2);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
+        expect.objectContaining({ type: 'feature', feature: expect.objectContaining({ id: 'hunter-hunters-lore' }) }),
         expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'hunter-hunters-lore' }),
-        }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'hunter-hunters-prey' }),
+          type: 'feature-choice',
+          key: createChoiceKey('feature-choice', 'subclass', 'hunter', 0),
+          options: expect.arrayContaining([
+            expect.objectContaining({ optionId: 'colossus-slayer', featureId: 'hunter-hunters-prey-colossus-slayer' }),
+            expect.objectContaining({ optionId: 'horde-breaker', featureId: 'hunter-hunters-prey-horde-breaker' }),
+          ]),
         }),
       ])
     );
   });
 
-  it('hunter level 7 grants 1 feature: defensive-tactics', () => {
+  it('hunter level 3 has no inert hunters-prey feature grant', () => {
+    const source = getSubclassSource('hunter');
+    const level3 = source?.features.find((f) => f.classLevel === 3);
+    const inertGrant = level3?.grants.find(
+      (g) => g.type === 'feature' && 'feature' in g && g.feature.id === 'hunter-hunters-prey'
+    );
+    expect(inertGrant).toBeUndefined();
+  });
+
+  it('hunter level 7 grants 1 item: defensive-tactics feature-choice (escape-the-horde / multiattack-defense)', () => {
     const source = getSubclassSource('hunter');
     const level7 = source?.features.find((f) => f.classLevel === 7);
     expect(level7).toBeDefined();
     expect(level7?.grants).toHaveLength(1);
     expect(level7?.grants[0]).toMatchObject({
-      type: 'feature',
-      feature: { id: 'hunter-defensive-tactics' },
+      type: 'feature-choice',
+      key: createChoiceKey('feature-choice', 'subclass', 'hunter', 1),
+      options: expect.arrayContaining([
+        expect.objectContaining({
+          optionId: 'escape-the-horde',
+          featureId: 'hunter-defensive-tactics-escape-the-horde',
+        }),
+        expect.objectContaining({
+          optionId: 'multiattack-defense',
+          featureId: 'hunter-defensive-tactics-multiattack-defense',
+        }),
+      ]),
     });
+  });
+
+  it('hunter level 7 has no inert defensive-tactics feature grant', () => {
+    const source = getSubclassSource('hunter');
+    const level7 = source?.features.find((f) => f.classLevel === 7);
+    const inertGrant = level7?.grants.find(
+      (g) => g.type === 'feature' && 'feature' in g && g.feature.id === 'hunter-defensive-tactics'
+    );
+    expect(inertGrant).toBeUndefined();
   });
 });
 
@@ -2757,5 +2867,211 @@ describe('Cleric Light Domain resolver integration', () => {
     expect(prepared).toContain('faerie-fire');
     expect(prepared).toContain('scorching-ray');
     expect(prepared).toContain('see-invisibility');
+  });
+});
+
+// ── Resolver integration: Ranger subclasses ──────────────────────────────────
+
+describe('Ranger Fey Wanderer resolver integration', () => {
+  const subclassKey = createChoiceKey('subclass', 'class', 'ranger', 0);
+
+  function makeFeyWandererBuild(classLevels: number): CharacterBuild {
+    const levels = Array.from({ length: classLevels }, (_, i) => ({
+      classId: 'ranger' as ClassId,
+      classLevel: i + 1,
+      hpRoll: i === 0 ? null : 6,
+    }));
+    return {
+      speciesId: 'human' as SpeciesId,
+      backgroundId: 'acolyte' as BackgroundId,
+      baseAbilities: { str: 10, dex: 14, con: 10, int: 10, wis: 14, cha: 10 },
+      abilityMethod: 'standard-array',
+      levels,
+      choices: {
+        [subclassKey]: { type: 'subclass' as const, subclassId: 'feywanderer' as SubclassId },
+      },
+      feats: [],
+      activeItems: [],
+    };
+  }
+
+  it('Ranger L9 Fey Wanderer: alwaysPreparedSpells has L3 charm-person', () => {
+    const build = makeFeyWandererBuild(9);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 9,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).toContain('charm-person');
+  });
+
+  it('Ranger L9 Fey Wanderer: alwaysPreparedSpells has L5 misty-step', () => {
+    const build = makeFeyWandererBuild(9);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 9,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).toContain('misty-step');
+  });
+
+  it('Ranger L9 Fey Wanderer: alwaysPreparedSpells has L9 summon-fey', () => {
+    const build = makeFeyWandererBuild(9);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 9,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).toContain('summon-fey');
+  });
+
+  it('Ranger L9 Fey Wanderer: alwaysPreparedSpells does NOT include L13 dimension-door', () => {
+    const build = makeFeyWandererBuild(9);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 9,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).not.toContain('dimension-door');
+  });
+
+  it('Ranger L9 Fey Wanderer: alwaysPreparedSpells does NOT include L17 mislead', () => {
+    const build = makeFeyWandererBuild(9);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 9,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).not.toContain('mislead');
+  });
+});
+
+describe('Ranger Gloom Stalker resolver integration', () => {
+  const subclassKey = createChoiceKey('subclass', 'class', 'ranger', 0);
+
+  function makeGloomStalkerBuild(classLevels: number): CharacterBuild {
+    const levels = Array.from({ length: classLevels }, (_, i) => ({
+      classId: 'ranger' as ClassId,
+      classLevel: i + 1,
+      hpRoll: i === 0 ? null : 6,
+    }));
+    return {
+      speciesId: 'human' as SpeciesId,
+      backgroundId: 'acolyte' as BackgroundId,
+      baseAbilities: { str: 10, dex: 14, con: 10, int: 10, wis: 14, cha: 10 },
+      abilityMethod: 'standard-array',
+      levels,
+      choices: {
+        [subclassKey]: { type: 'subclass' as const, subclassId: 'gloomstalker' as SubclassId },
+      },
+      feats: [],
+      activeItems: [],
+    };
+  }
+
+  it('Ranger L7 Gloom Stalker: savingThrows.wis.proficient is true (Iron Mind WIS save grant)', () => {
+    const build = makeGloomStalkerBuild(7);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 7,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.savingThrows.wis.proficient).toBe(true);
+  });
+
+  it('Ranger L7 Gloom Stalker: alwaysPreparedSpells has L3 disguise-self', () => {
+    const build = makeGloomStalkerBuild(7);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 7,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).toContain('disguise-self');
+  });
+
+  it('Ranger L7 Gloom Stalker: alwaysPreparedSpells has L5 rope-trick', () => {
+    const build = makeGloomStalkerBuild(7);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 7,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).toContain('rope-trick');
+  });
+
+  it('Ranger L7 Gloom Stalker: alwaysPreparedSpells does NOT include fear (L9 spell)', () => {
+    const build = makeGloomStalkerBuild(7);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 7,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).not.toContain('fear');
+  });
+
+  it('Ranger L7 Gloom Stalker: alwaysPreparedSpells does NOT include greater-invisibility (L13 spell)', () => {
+    const build = makeGloomStalkerBuild(7);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 7,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).not.toContain('greater-invisibility');
+  });
+
+  it('Ranger L7 Gloom Stalker: alwaysPreparedSpells does NOT include seeming (L17 spell)', () => {
+    const build = makeGloomStalkerBuild(7);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 7,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.spellcasting!.alwaysPreparedSpells).not.toContain('seeming');
+  });
+
+  it('Ranger L6 Gloom Stalker: savingThrows.wis.proficient is false (Iron Mind not yet granted)', () => {
+    const build = makeGloomStalkerBuild(6);
+    const { bundles, expandedFeats } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 6,
+      bundles,
+      choices: build.choices,
+      expandedFeats,
+    });
+    expect(resolved.savingThrows.wis.proficient).toBe(false);
   });
 });

@@ -88,7 +88,9 @@ enabled = false
 [studio]
 enabled = true
 # Port to use for Supabase Studio.
-port = 54323
+# 54323 sits inside a Windows WinNAT-reserved TCP range (54323-54422) on WSL2,
+# which Docker cannot expose. Moved below the api/db ports to a free port.
+port = 54310
 # External URL of the API server that frontend connects to.
 api_url = "http://127.0.0.1"
 # OpenAI API Key to use for Supabase AI in the Supabase Studio.

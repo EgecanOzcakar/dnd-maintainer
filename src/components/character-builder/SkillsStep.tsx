@@ -3,12 +3,18 @@ import { Badge } from '@/components/ui/badge';
 import { ExpertiseChoicePicker } from '@/components/character-sheet/ExpertiseChoicePicker';
 import { useCharacterContext } from '@/hooks/useCharacterContext';
 import { getChoiceSourceName } from '@/lib/character-builder/choice-source-name';
+import { pickMostRestrictiveChoiceWithRoom } from '@/lib/character-builder/route-choice';
 import { SourceIcon, getSourceDisplayName } from '@/lib/class-icons';
 import type { ChoiceKey } from '@/types/choices';
 import type { SourceTag } from '@/types/sources';
 import { ABILITY_ABBREVIATIONS, DND_SKILLS, type SkillId, type ToolProficiencyId } from '@/lib/dnd-helpers';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+/** Stable identity for a grant source, so multiple grants from the same source dedupe to one icon. */
+function sourceKey(source: SourceTag): string {
+  return `${source.origin}:${'id' in source ? source.id : source.description}`;
+}
 
 interface SkillChoiceInfo {
   readonly choiceKey: ChoiceKey;
@@ -122,7 +128,12 @@ export function SkillsStep() {
           // Every choice this skill is eligible for (could be multiple sources, e.g. Elf + Barbarian)
           const eligibleChoices = skillChoices.filter((sc) => sc.from.includes(skill.id));
           const choiceHoldingSkill = eligibleChoices.find((sc) => getSelectedSkills(sc.choiceKey).includes(skill.id));
-          const choiceWithRoom = eligibleChoices.find((sc) => getSelectedSkills(sc.choiceKey).length < sc.count);
+          // Route a new selection to the most restrictive eligible grant with room (smallest pool),
+          // so e.g. Athletics consumes the narrow Barbarian list before the "any skill" Human grant.
+          const choiceWithRoom = pickMostRestrictiveChoiceWithRoom(
+            eligibleChoices,
+            (sc) => getSelectedSkills(sc.choiceKey).length
+          );
 
           let checkbox: React.ReactNode = null;
           if (eligibleChoices.length > 0) {
@@ -183,17 +194,27 @@ export function SkillsStep() {
                 {t(`skills.${skill.id}`)}
                 <span className="text-xs text-muted-foreground ml-1">({abbrev})</span>
               </label>
-              {/* Source icons — one per eligible grant, hover to see the source name */}
+              {/* Source icons — one per DISTINCT source, hover to see the source name.
+                  A single source can grant more than one skill-choice (e.g. Barbarian's
+                  level-1 list plus the level-3 Primal Knowledge pick), so dedupe by source
+                  to avoid rendering two identical icons on the same skill row. */}
               {eligibleChoices.length > 0 && (
                 <div className="flex items-center gap-1 shrink-0">
-                  {eligibleChoices.map((sc) => {
-                    const sourceName = getSourceDisplayName(sc.source, t);
-                    return (
-                      <span key={sc.choiceKey} title={sourceName} aria-label={sourceName} className="inline-flex">
-                        <SourceIcon source={sc.source} className="size-3.5 text-muted-foreground" />
-                      </span>
-                    );
-                  })}
+                  {Array.from(new Map(eligibleChoices.map((sc) => [sourceKey(sc.source), sc.source])).values()).map(
+                    (source) => {
+                      const sourceName = getSourceDisplayName(source, t);
+                      return (
+                        <span
+                          key={sourceKey(source)}
+                          title={sourceName}
+                          aria-label={sourceName}
+                          className="inline-flex"
+                        >
+                          <SourceIcon source={source} className="size-3.5 text-muted-foreground" />
+                        </span>
+                      );
+                    }
+                  )}
                 </div>
               )}
             </div>

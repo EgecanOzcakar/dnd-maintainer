@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { act, waitFor } from '@testing-library/react';
+import { QueryClient } from '@tanstack/react-query';
 import {
   setupMockReset,
   withSuppressedRejections,
@@ -128,8 +129,8 @@ describe('useBuilderAutosave', () => {
       // Clear call tracking so we can detect the second call type
       vi.mocked(supabase.insert).mockClear();
       vi.mocked(supabase.update).mockClear();
-      // Update doesn't need to return data
-      mockQueryResult.data = null;
+      // Update must return a row so the zero-row guard does not fire
+      mockQueryResult.data = [{ id: 'char-existing' }];
 
       // Second call — should update, not insert
       await act(async () => {
@@ -141,6 +142,62 @@ describe('useBuilderAutosave', () => {
 
       expect(supabase.insert).not.toHaveBeenCalled();
       expect(supabase.update).toHaveBeenCalled();
+    });
+
+    it('updates (not inserts) when no init id is seeded but the payload carries one (defensive fallback path)', async () => {
+      // Covers the defensive fallback: a caller mounts the hook with no init-id arg but passes
+      // an id-bearing payload. The production /edit resume route is covered by the adjacent
+      // seeded-id test — CharacterBuilder always passes existingCharacterId to seed the ref.
+      mockQueryResult.data = [{ id: 'existing-draft-id' }]; // update returns a row
+
+      const { result } = renderHook(() => useBuilderAutosave(), { wrapper: createWrapper() });
+
+      await act(async () => {
+        await result.current.saveDraft({
+          ...basePayload,
+          character: { ...basePayload.character, id: 'existing-draft-id' },
+        });
+      });
+
+      expect(supabase.insert).not.toHaveBeenCalled();
+      expect(supabase.update).toHaveBeenCalled();
+      expect(supabase.eq).toHaveBeenCalledWith('id', 'existing-draft-id');
+    });
+
+    it('seeds the characterId from the init arg so the first save updates (not inserts)', async () => {
+      // Threading existingCharacterId (as CharacterSheet and the fixed CharacterBuilder do)
+      // seeds characterIdRef, so the very first save and abandon target the right row.
+      mockQueryResult.data = [{ id: 'seeded-id' }]; // update returns a row
+
+      const { result } = renderHook(() => useBuilderAutosave('seeded-id'), { wrapper: createWrapper() });
+
+      await act(async () => {
+        await result.current.saveDraft(basePayload);
+      });
+
+      expect(supabase.insert).not.toHaveBeenCalled();
+      expect(supabase.update).toHaveBeenCalled();
+      expect(supabase.eq).toHaveBeenCalledWith('id', 'seeded-id');
+    });
+
+    it('throws and sets saveStatus to error when UPDATE matches zero rows (phantom id)', async () => {
+      expect.assertions(2);
+      // Simulate a since-deleted draft: UPDATE returns no error but empty data (zero rows matched).
+      // The zero-row guard must catch this and throw rather than silently marking 'saved'.
+      mockQueryResult.data = null;
+      mockQueryResult.error = null;
+
+      const { result } = renderHook(() => useBuilderAutosave('phantom-id'), { wrapper: createWrapper() });
+
+      await withSuppressedRejections(async () => {
+        await act(async () => {
+          await result.current.saveDraft(basePayload).catch((err: Error) => {
+            expect(err.message).toMatch(/Update matched no character row/);
+          });
+        });
+
+        expect(result.current.saveStatus).toBe<SaveStatus>('error');
+      });
     });
 
     it('sets saveStatus to error when supabase returns an error', async () => {
@@ -547,6 +604,59 @@ describe('useBuilderAutosave', () => {
       });
 
       expect(result.current.saveStatus).toBe<SaveStatus>('idle');
+    });
+  });
+
+  describe('abandon', () => {
+    // Contract test for the load-bearing prop wiring in CharacterBuilder: abandon() has no payload
+    // to fall back on, so resume-then-abandon (delete before any save) works ONLY because the init
+    // arg seeds characterIdRef. If that wiring regresses, abandon silently no-ops on a resumed draft.
+    it('deletes the row seeded from the init arg, even before any save (resume-then-abandon, #247)', async () => {
+      const { result } = renderHook(() => useBuilderAutosave('seeded-id'), { wrapper: createWrapper() });
+
+      await act(async () => {
+        await result.current.abandon('camp-1');
+      });
+
+      expect(supabase.delete).toHaveBeenCalled();
+      expect(supabase.eq).toHaveBeenCalledWith('id', 'seeded-id');
+    });
+
+    it('no-ops when there is no characterId (nothing to delete yet)', async () => {
+      const { result } = renderHook(() => useBuilderAutosave(), { wrapper: createWrapper() });
+
+      await act(async () => {
+        await result.current.abandon('camp-1');
+      });
+
+      expect(supabase.delete).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('campaign-drafts invalidation', () => {
+    it('invalidates campaign-drafts on finalize so the resume banner reflects the removed draft', async () => {
+      const invalidateSpy = vi.spyOn(QueryClient.prototype, 'invalidateQueries');
+      mockQueryResult.data = { id: 'char-new', slug: 'hero-draft' };
+
+      const { result } = renderHook(() => useBuilderAutosave(), { wrapper: createWrapper() });
+
+      await act(async () => {
+        await result.current.finalize(basePayload);
+      });
+
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['campaign-drafts', 'camp-1'] });
+    });
+
+    it('invalidates campaign-drafts on abandon so the resume banner reflects the deleted draft', async () => {
+      const invalidateSpy = vi.spyOn(QueryClient.prototype, 'invalidateQueries');
+
+      const { result } = renderHook(() => useBuilderAutosave('seeded-id'), { wrapper: createWrapper() });
+
+      await act(async () => {
+        await result.current.abandon('camp-1');
+      });
+
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['campaign-drafts', 'camp-1'] });
     });
   });
 });

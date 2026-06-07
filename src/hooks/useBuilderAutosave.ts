@@ -101,13 +101,24 @@ export function useBuilderAutosave(existingCharacterId?: string) {
 
           let savedId: string;
 
-          if (characterIdRef.current) {
-            const { error } = await supabase
+          // Decide UPDATE vs INSERT. The seeded characterIdRef (from the existingCharacterId arg)
+          // is load-bearing for the /edit route — CharacterBuilder.tsx always passes the resumed
+          // draft's id as the hook arg so saves UPDATE the right row. The character.id fallback is
+          // a defensive secondary guard for callers that mount the hook with no arg but pass an
+          // id-bearing payload; without it those callers would INSERT a duplicate (#247).
+          const existingId = characterIdRef.current ?? (character.id || null);
+
+          if (existingId) {
+            const { data, error } = await supabase
               .from('characters')
               .update(characterPayload as unknown as TablesUpdate<'characters'>)
-              .eq('id', characterIdRef.current);
+              .eq('id', existingId)
+              .select('id');
             if (error) throw error;
-            savedId = characterIdRef.current;
+            if (!data || (Array.isArray(data) && data.length === 0))
+              throw new Error('Update matched no character row — the draft may no longer exist');
+            characterIdRef.current = existingId;
+            savedId = existingId;
           } else {
             const insertPayload = { ...characterPayload, status: 'draft' as const };
             const { data, error } = await supabase
@@ -239,6 +250,7 @@ export function useBuilderAutosave(existingCharacterId?: string) {
         if (!data?.slug) throw new Error('Finalize succeeded but no character slug was returned');
         queryClient.invalidateQueries({ queryKey: ['character'] });
         queryClient.invalidateQueries({ queryKey: ['characters', payload.character.campaign_id] });
+        queryClient.invalidateQueries({ queryKey: ['campaign-drafts', payload.character.campaign_id] });
         queryClient.invalidateQueries({ queryKey: ['character-build-levels', id] });
         queryClient.invalidateQueries({ queryKey: ['character-items', id] });
         return (data as { slug: string }).slug;
@@ -274,6 +286,7 @@ export function useBuilderAutosave(existingCharacterId?: string) {
       if (error) throw error;
       characterIdRef.current = null;
       queryClient.invalidateQueries({ queryKey: ['characters', campaignId] });
+      queryClient.invalidateQueries({ queryKey: ['campaign-drafts', campaignId] });
     },
     [queryClient]
   );

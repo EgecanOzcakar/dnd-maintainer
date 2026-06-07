@@ -16,14 +16,14 @@ import { CharacterProvider, useCharacterContext } from '@/hooks/useCharacterCont
 import { useBuilderAutosave } from '@/hooks/useBuilderAutosave';
 import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
 import { useCharacterBuildLevels, useCharacterItems } from '@/hooks/useCharacterBuild';
-import { useCharacter } from '@/hooks/useCharacters';
+import { useCharacter, useCampaignDrafts } from '@/hooks/useCharacters';
 import { useCampaignContext } from '@/hooks/useCampaignContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import type { Character } from '@/types/database';
 import { ChevronLeft, ChevronRight, Save, Trash2 } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { DND_SPECIES, DND_CLASSES, isBackgroundId } from '@/lib/dnd-helpers';
 import { collectClassBundleKeys } from '@/lib/gold-equipment';
@@ -116,7 +116,7 @@ function buildSeedCharacter(campaignId: string): Character {
   };
 }
 
-function CharacterBuilderInner() {
+function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: string }) {
   const { t } = useTranslation('common');
   const { t: tg } = useTranslation('gamedata');
   const { campaignSlug } = useParams<{ campaignSlug: string }>();
@@ -131,7 +131,10 @@ function CharacterBuilderInner() {
   const [finalizeError, setFinalizeError] = useState<string | null>(null);
   const [confirmAbandon, setConfirmAbandon] = useState(false);
   const [isAbandoning, setIsAbandoning] = useState(false);
-  const { saveStatus, saveDraft, finalize, clearStatus, abandon, markSaveError } = useBuilderAutosave();
+  // Seed the autosave hook with the resumed draft's id so saves UPDATE (not duplicate) it and
+  // abandon deletes the right row. On a fresh build this is undefined → first save INSERTs (#247).
+  const { saveStatus, saveDraft, finalize, clearStatus, abandon, markSaveError } =
+    useBuilderAutosave(existingCharacterId);
 
   // Buy-with-gold equipment state (ephemeral — not persisted in draft saves, only materialized at finalize)
   type EquipmentMode = 'starting-equipment' | 'buy-with-gold';
@@ -349,7 +352,11 @@ function CharacterBuilderInner() {
                   >
                     {index + 1}
                   </button>
-                  <span className="text-xs text-muted-foreground mt-2">{t(`characterBuilder.steps.${step.id}`)}</span>
+                  {/* Labels are hidden on the narrowest viewports so all 7 steps fit (#243.1);
+                      the numbered circles + the step content heading convey position there. */}
+                  <span className="hidden text-xs text-muted-foreground mt-2 sm:block">
+                    {t(`characterBuilder.steps.${step.id}`)}
+                  </span>
                 </div>
                 {index < STEPS.length - 1 && (
                   <div
@@ -506,6 +513,7 @@ export default function CharacterBuilder() {
   const { campaignId } = useCampaignContext();
   const { t } = useTranslation('common');
 
+  const navigate = useNavigate();
   const isNew = !characterSlug;
   const {
     data: existingCharacter,
@@ -518,6 +526,14 @@ export default function CharacterBuilder() {
   const { data: itemsData = [], isLoading: itemsLoading } = useCharacterItems(
     isNew ? undefined : existingCharacter?.id
   );
+
+  // On a fresh build, offer to resume the most recent in-progress draft instead of silently
+  // starting blank (#242). useCampaignDrafts is frozen (staleTime: Infinity) under a key autosave
+  // doesn't invalidate, so the banner reflects drafts that existed when the builder opened and
+  // never points at the new draft autosave creates for this build. Disabled when not new.
+  const [resumeDismissed, setResumeDismissed] = useState(false);
+  const { data: campaignDrafts } = useCampaignDrafts(isNew ? (campaignId ?? '') : '');
+  const resumableDraft = isNew ? campaignDrafts?.[0] : undefined;
 
   if (!campaignId || !campaignSlug) {
     return (
@@ -553,6 +569,13 @@ export default function CharacterBuilder() {
     );
   }
 
+  // Guard: if the /edit route was reached but the character is no longer a draft (e.g. a stale
+  // cached draft list navigated to a now-finalized character), redirect to the character sheet
+  // instead of opening the builder and inadvertently autosaving over the finalized row.
+  if (!isNew && existingCharacter && existingCharacter.status !== 'draft') {
+    return <Navigate to={`/campaign/${campaignSlug}/character/${existingCharacter.slug}`} replace />;
+  }
+
   const initialCharacter = isNew ? buildSeedCharacter(campaignId) : existingCharacter!;
   const initialRows = isNew ? [] : buildRows;
   const initialEquippedItems: string[] = isNew
@@ -562,13 +585,35 @@ export default function CharacterBuilder() {
         .map((item: { item_id?: string }) => item.item_id ?? '');
 
   return (
-    <CharacterProvider
-      key={characterSlug ?? 'new'}
-      initialCharacter={initialCharacter}
-      initialRows={initialRows}
-      initialEquippedItems={initialEquippedItems}
-    >
-      <CharacterBuilderInner />
-    </CharacterProvider>
+    <>
+      {resumableDraft && !resumeDismissed && (
+        <div className="page-container pt-4">
+          <div className="flex flex-col gap-3 rounded-lg border border-amber-500/50 bg-amber-500/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-foreground">
+              {t('characterBuilder.resumeDraft.message', { name: resumableDraft.name })}
+            </p>
+            <div className="flex shrink-0 gap-2">
+              <Button
+                size="sm"
+                onClick={() => navigate(`/campaign/${campaignSlug}/character/${resumableDraft.slug}/edit`)}
+              >
+                {t('characterBuilder.resumeDraft.resume')}
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setResumeDismissed(true)}>
+                {t('characterBuilder.resumeDraft.dismiss')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      <CharacterProvider
+        key={characterSlug ?? 'new'}
+        initialCharacter={initialCharacter}
+        initialRows={initialRows}
+        initialEquippedItems={initialEquippedItems}
+      >
+        <CharacterBuilderInner existingCharacterId={initialCharacter.id || undefined} />
+      </CharacterProvider>
+    </>
   );
 }

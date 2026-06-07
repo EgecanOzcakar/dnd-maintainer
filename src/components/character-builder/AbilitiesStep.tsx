@@ -298,11 +298,21 @@ export function AbilitiesStep() {
                   +{bgBonus} {tc('characterBuilder.abilities.backgroundBonusSuffix')}
                 </Badge>
               )}
-              <span className="text-sm font-bold">{totalScore}</span>
-              <span className={`text-lg font-bold ${modifier >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {modifier >= 0 ? '+' : ''}
-                {modifier}
-              </span>
+              <div className="flex flex-col items-center leading-none">
+                <span className="text-[9px] uppercase tracking-wide text-muted-foreground">
+                  {tc('characterBuilder.abilities.totalLabel')}
+                </span>
+                <span className="text-sm font-bold">{totalScore}</span>
+              </div>
+              <div className="flex flex-col items-center leading-none">
+                <span className="text-[9px] uppercase tracking-wide text-muted-foreground">
+                  {tc('characterBuilder.abilities.modLabel')}
+                </span>
+                <span className={`text-lg font-bold ${modifier >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {modifier >= 0 ? '+' : ''}
+                  {modifier}
+                </span>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -405,7 +415,7 @@ export function AbilitiesStep() {
               })}
             </div>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {abilityKeys.map((ability) => renderAbilityCard(ability, renderAssignmentSelect(ability, STANDARD_ARRAY)))}
           </div>
         </TabsContent>
@@ -425,7 +435,7 @@ export function AbilitiesStep() {
               <span className="text-sm text-muted-foreground">/ {POINT_BUY_TOTAL}</span>
             </div>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {abilityKeys.map((ability) => {
               const score = baseAbilities[ability];
               const canIncrement = score < 15 && pointsRemaining >= getPointBuyIncrementCost(score);
@@ -531,7 +541,7 @@ export function AbilitiesStep() {
                   })}
             </div>
           )}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {abilityKeys.map((ability) =>
               renderAbilityCard(
                 ability,

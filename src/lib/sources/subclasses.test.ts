@@ -2161,10 +2161,10 @@ describe('getSubclassSource — Aberrant Sorcery', () => {
     expect(getSubclassSource('aberrantsorcery')).toBeDefined();
   });
 
-  it('aberrantsorcery has 5 feature levels (L3, L5, L6, L7, L9)', () => {
+  it('aberrantsorcery has 7 feature levels (L3, L5, L6, L7, L9, L14, L18)', () => {
     const source = getSubclassSource('aberrantsorcery');
-    expect(source?.features).toHaveLength(5);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9]);
+    expect(source?.features).toHaveLength(7);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9, 14, 18]);
   });
 
   it('aberrantsorcery level 3 grants telepathic-speech feature and 4 L3 spell grants (no subclass-spells stub)', () => {
@@ -2256,6 +2256,28 @@ describe('getSubclassSource — Aberrant Sorcery', () => {
       ])
     );
   });
+
+  it('aberrantsorcery level 14 grants revelation-in-flesh feature', () => {
+    const source = getSubclassSource('aberrantsorcery');
+    const level14 = source?.features.find((f) => f.classLevel === 14);
+    expect(level14).toBeDefined();
+    expect(level14?.grants).toHaveLength(1);
+    expect(level14?.grants[0]).toMatchObject({
+      type: 'feature',
+      feature: { id: 'aberrantsorcery-revelation-in-flesh' },
+    });
+  });
+
+  it('aberrantsorcery level 18 grants warping-implosion feature', () => {
+    const source = getSubclassSource('aberrantsorcery');
+    const level18 = source?.features.find((f) => f.classLevel === 18);
+    expect(level18).toBeDefined();
+    expect(level18?.grants).toHaveLength(1);
+    expect(level18?.grants[0]).toMatchObject({
+      type: 'feature',
+      feature: { id: 'aberrantsorcery-warping-implosion' },
+    });
+  });
 });
 
 describe('getSubclassSource — Clockwork Sorcery', () => {
@@ -2263,10 +2285,10 @@ describe('getSubclassSource — Clockwork Sorcery', () => {
     expect(getSubclassSource('clockworksorcery')).toBeDefined();
   });
 
-  it('clockworksorcery has 6 feature levels (L3, L5, L6, L7, L9, L14)', () => {
+  it('clockworksorcery has 7 feature levels (L3, L5, L6, L7, L9, L14, L18)', () => {
     const source = getSubclassSource('clockworksorcery');
-    expect(source?.features).toHaveLength(6);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9, 14]);
+    expect(source?.features).toHaveLength(7);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9, 14, 18]);
   });
 
   it('clockworksorcery level 3 grants restore-balance feature and 4 L3 spell grants (no subclass-spells stub, no trance-of-order)', () => {
@@ -2356,6 +2378,17 @@ describe('getSubclassSource — Clockwork Sorcery', () => {
       feature: { id: 'clockworksorcery-trance-of-order' },
     });
   });
+
+  it('clockworksorcery level 18 grants clockwork-cavalcade feature', () => {
+    const source = getSubclassSource('clockworksorcery');
+    const level18 = source?.features.find((f) => f.classLevel === 18);
+    expect(level18).toBeDefined();
+    expect(level18?.grants).toHaveLength(1);
+    expect(level18?.grants[0]).toMatchObject({
+      type: 'feature',
+      feature: { id: 'clockworksorcery-clockwork-cavalcade' },
+    });
+  });
 });
 
 describe('getSubclassSource — Draconic Sorcery', () => {
@@ -2363,10 +2396,10 @@ describe('getSubclassSource — Draconic Sorcery', () => {
     expect(getSubclassSource('draconicsorcery')).toBeDefined();
   });
 
-  it('draconicsorcery has 5 feature levels (L3, L5, L6, L7, L9)', () => {
+  it('draconicsorcery has 7 feature levels (L3, L5, L6, L7, L9, L14, L18)', () => {
     const source = getSubclassSource('draconicsorcery');
-    expect(source?.features).toHaveLength(5);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9]);
+    expect(source?.features).toHaveLength(7);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9, 14, 18]);
   });
 
   it('draconicsorcery level 3 grants 8 items: hp-bonus, armor-class, draconic language, 10-option feature-choice, 4 spell grants (no inert stubs)', () => {
@@ -2447,6 +2480,28 @@ describe('getSubclassSource — Draconic Sorcery', () => {
       feature: { id: 'draconicsorcery-elemental-affinity' },
     });
   });
+
+  it('draconicsorcery level 14 grants dragon-wings feature', () => {
+    const source = getSubclassSource('draconicsorcery');
+    const level14 = source?.features.find((f) => f.classLevel === 14);
+    expect(level14).toBeDefined();
+    expect(level14?.grants).toHaveLength(1);
+    expect(level14?.grants[0]).toMatchObject({
+      type: 'feature',
+      feature: { id: 'draconicsorcery-dragon-wings' },
+    });
+  });
+
+  it('draconicsorcery level 18 grants dragon-companion feature', () => {
+    const source = getSubclassSource('draconicsorcery');
+    const level18 = source?.features.find((f) => f.classLevel === 18);
+    expect(level18).toBeDefined();
+    expect(level18?.grants).toHaveLength(1);
+    expect(level18?.grants[0]).toMatchObject({
+      type: 'feature',
+      feature: { id: 'draconicsorcery-dragon-companion' },
+    });
+  });
 });
 
 describe('getSubclassSource — Wild Magic Sorcery', () => {
@@ -2454,10 +2509,10 @@ describe('getSubclassSource — Wild Magic Sorcery', () => {
     expect(getSubclassSource('wildmagicsorcery')).toBeDefined();
   });
 
-  it('wildmagicsorcery has 2 feature levels (L3, L6)', () => {
+  it('wildmagicsorcery has 4 feature levels (L3, L6, L14, L18)', () => {
     const source = getSubclassSource('wildmagicsorcery');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 14, 18]);
   });
 
   it('wildmagicsorcery level 3 grants 2 features: wild-magic-surge and tides-of-chaos (no subclass spells, no subclass-spells stub)', () => {
@@ -2493,6 +2548,28 @@ describe('getSubclassSource — Wild Magic Sorcery', () => {
     expect(level6?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'wildmagicsorcery-bend-luck' },
+    });
+  });
+
+  it('wildmagicsorcery level 14 grants controlled-chaos feature', () => {
+    const source = getSubclassSource('wildmagicsorcery');
+    const level14 = source?.features.find((f) => f.classLevel === 14);
+    expect(level14).toBeDefined();
+    expect(level14?.grants).toHaveLength(1);
+    expect(level14?.grants[0]).toMatchObject({
+      type: 'feature',
+      feature: { id: 'wildmagicsorcery-controlled-chaos' },
+    });
+  });
+
+  it('wildmagicsorcery level 18 grants tamed-surge feature', () => {
+    const source = getSubclassSource('wildmagicsorcery');
+    const level18 = source?.features.find((f) => f.classLevel === 18);
+    expect(level18).toBeDefined();
+    expect(level18?.grants).toHaveLength(1);
+    expect(level18?.grants[0]).toMatchObject({
+      type: 'feature',
+      feature: { id: 'wildmagicsorcery-tamed-surge' },
     });
   });
 });

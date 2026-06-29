@@ -177,6 +177,7 @@
       "missingSpecies": "Species is required",
       "missingClass": "Class is required",
       "missingBackground": "Background is required",
+      "missingAlignment": "Alignment is required",
       "pendingChoice": "Pending {{type}} ({{key}})"
     },
     "status": {
@@ -402,6 +403,7 @@
       "appearance": "Appearance",
       "cantrips": "CANTRIPS",
       "alwaysPrepared": "ALWAYS PREPARED",
+      "knownSpells": "SPELLS KNOWN",
       "physicalTraits": "Physical Traits",
       "proficiencies": "Proficiencies",
       "attacks": "Attacks",
@@ -442,6 +444,19 @@
       "speedConditions": {
         "not-enclosed": "while not in an enclosed space"
       },
+      "speedModes": {
+        "fly": "Fly",
+        "climb": "Climb",
+        "swim": "Swim",
+        "burrow": "Burrow"
+      },
+      "passivePerception": "Passive Perception",
+      "spellcastingAbility": "Spellcasting Ability",
+      "spellSaveDC": "Spell Save DC",
+      "spellAttackBonus": "Spell Attack Bonus",
+      "spellLevelLabel": "Level {{level}}",
+      "spellLevelUnknown": "Unknown level",
+      "chosenOfTarget": "{{chosen}}/{{target}}",
       "source": "Source: {{source}}",
       "maxHp": "Max HP",
       "currentHp": "Current HP",
@@ -530,7 +545,10 @@
       "combat": "Unable to compute combat stats: {{message}}"
     },
     "levelUp": {
-      "abilitiesUnavailable": "Unable to allocate ability scores. Please fix any build errors first."
+      "abilitiesUnavailable": "Unable to allocate ability scores. Please fix any build errors first.",
+      "chooseAsi": "Ability Score Improvement",
+      "chooseFeat": "Feat",
+      "asiOrFeatPrompt": "Increase ability scores or take a feat"
     },
     "levelManagement": {
       "levelUp": "Level Up",

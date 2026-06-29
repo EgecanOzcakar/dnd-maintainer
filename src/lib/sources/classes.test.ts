@@ -35,14 +35,21 @@ describe('Fighter class levels 2–10 grant structures', () => {
     }
   });
 
-  it('level 4 grants an ASI with 2 points and a weapon mastery choice', () => {
+  it('level 4 grants an ASI, a companion feat-choice, and a weapon mastery choice', () => {
     const level4 = source?.levels[3];
-    expect(level4?.grants).toHaveLength(2);
+    // ASI + companion feat-choice + weapon-mastery-choice = 3 grants
+    expect(level4?.grants).toHaveLength(3);
     const asiGrant = level4?.grants.find((g) => g.type === 'asi');
     expect(asiGrant?.type).toBe('asi');
     if (asiGrant?.type === 'asi') {
       expect(asiGrant.points).toBe(2);
       expect(asiGrant.key).toBe(createChoiceKey('asi', 'class', 'fighter', 0));
+    }
+    const featChoiceGrant = level4?.grants.find((g) => g.type === 'feat-choice');
+    expect(featChoiceGrant?.type).toBe('feat-choice');
+    if (featChoiceGrant?.type === 'feat-choice') {
+      expect(featChoiceGrant.key).toBe(createChoiceKey('feat-choice', 'class', 'fighter', 0));
+      expect(featChoiceGrant.category).toBe('general');
     }
     const masteryGrant = level4?.grants.find((g) => g.type === 'weapon-mastery-choice');
     expect(masteryGrant?.type).toBe('weapon-mastery-choice');
@@ -61,14 +68,20 @@ describe('Fighter class levels 2–10 grant structures', () => {
     }
   });
 
-  it('level 6 grants an ASI with 2 points (index 1)', () => {
+  it('level 6 grants an ASI with 2 points (index 1) and companion feat-choice', () => {
     const level6 = source?.levels[5];
-    expect(level6?.grants).toHaveLength(1);
-    const grant = level6?.grants[0];
-    expect(grant?.type).toBe('asi');
-    if (grant?.type === 'asi') {
-      expect(grant.points).toBe(2);
-      expect(grant.key).toBe(createChoiceKey('asi', 'class', 'fighter', 1));
+    // ASI + companion feat-choice = 2 grants
+    expect(level6?.grants).toHaveLength(2);
+    const asiGrant = level6?.grants.find((g) => g.type === 'asi');
+    expect(asiGrant?.type).toBe('asi');
+    if (asiGrant?.type === 'asi') {
+      expect(asiGrant.points).toBe(2);
+      expect(asiGrant.key).toBe(createChoiceKey('asi', 'class', 'fighter', 1));
+    }
+    const featChoiceGrant = level6?.grants.find((g) => g.type === 'feat-choice');
+    expect(featChoiceGrant?.type).toBe('feat-choice');
+    if (featChoiceGrant?.type === 'feat-choice') {
+      expect(featChoiceGrant.key).toBe(createChoiceKey('feat-choice', 'class', 'fighter', 1));
     }
   });
 
@@ -77,14 +90,20 @@ describe('Fighter class levels 2–10 grant structures', () => {
     expect(level7?.grants).toHaveLength(0);
   });
 
-  it('level 8 grants an ASI with 2 points (index 2)', () => {
+  it('level 8 grants an ASI with 2 points (index 2) and companion feat-choice', () => {
     const level8 = source?.levels[7];
-    expect(level8?.grants).toHaveLength(1);
-    const grant = level8?.grants[0];
-    expect(grant?.type).toBe('asi');
-    if (grant?.type === 'asi') {
-      expect(grant.points).toBe(2);
-      expect(grant.key).toBe(createChoiceKey('asi', 'class', 'fighter', 2));
+    // ASI + companion feat-choice = 2 grants
+    expect(level8?.grants).toHaveLength(2);
+    const asiGrant = level8?.grants.find((g) => g.type === 'asi');
+    expect(asiGrant?.type).toBe('asi');
+    if (asiGrant?.type === 'asi') {
+      expect(asiGrant.points).toBe(2);
+      expect(asiGrant.key).toBe(createChoiceKey('asi', 'class', 'fighter', 2));
+    }
+    const featChoiceGrant = level8?.grants.find((g) => g.type === 'feat-choice');
+    expect(featChoiceGrant?.type).toBe('feat-choice');
+    if (featChoiceGrant?.type === 'feat-choice') {
+      expect(featChoiceGrant.key).toBe(createChoiceKey('feat-choice', 'class', 'fighter', 2));
     }
   });
 
@@ -505,6 +524,30 @@ describe('Bard class grant structures', () => {
     if (expertiseGrant?.type === 'expertise-choice') {
       expect(expertiseGrant.key).toBe(createChoiceKey('expertise-choice', 'class', 'bard', 1));
     }
+  });
+
+  describe('level 1 spell-choice grants', () => {
+    const l1Grants = source?.levels[0].grants ?? [];
+
+    it('has a cantrip spell-choice grant (spellLevel: 0, count: 2)', () => {
+      const cantripGrant = l1Grants.find((g) => g.type === 'spell-choice' && g.spellLevel === 0);
+      expect(cantripGrant?.type).toBe('spell-choice');
+      if (cantripGrant?.type === 'spell-choice') {
+        expect(cantripGrant.spellLevel).toBe(0);
+        expect(cantripGrant.count).toBe(2);
+        expect(cantripGrant.spellList).toBe('bard');
+      }
+    });
+
+    it('has a level-1 spell-choice grant (spellLevel: 1, count: 4)', () => {
+      const l1SpellGrant = l1Grants.find((g) => g.type === 'spell-choice' && g.spellLevel === 1);
+      expect(l1SpellGrant?.type).toBe('spell-choice');
+      if (l1SpellGrant?.type === 'spell-choice') {
+        expect(l1SpellGrant.spellLevel).toBe(1);
+        expect(l1SpellGrant.count).toBe(4);
+        expect(l1SpellGrant.spellList).toBe('bard');
+      }
+    });
   });
 });
 

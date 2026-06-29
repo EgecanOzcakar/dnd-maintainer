@@ -6,6 +6,7 @@ const logger = getLogger('resolver');
 import type { FightingStyleId } from '@/lib/dnd-helpers';
 import type { AbilityScores } from '@/types/database';
 import type { GrantBundle, SourceTag } from '@/types/sources';
+import { createChoiceKey, parseChoiceKey } from '@/types/choices';
 import type { ChoiceKey, ChoiceDecision } from '@/types/choices';
 import type { ResolvedCharacter, PendingChoice, ResolvedSkill } from '@/types/resolved';
 import type { HitDie, ExpertiseChoiceGrant } from '@/types/grants';
@@ -182,13 +183,33 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
       return true;
     })();
     if (!isValid) {
-      pendingChoices.push({
-        type: 'asi',
-        choiceKey: grant.key,
-        source,
-        points: grant.points,
-        from: grant.from,
-      });
+      // Either-or suppression: if the companion feat-choice is satisfied, skip ASI pending
+      const parsed = parseChoiceKey(grant.key);
+      const companionFeatKey = createChoiceKey('feat-choice', parsed.origin, parsed.id, parsed.index);
+      const companionFeatDecision = choices[companionFeatKey];
+      const featSatisfied = companionFeatDecision?.type === 'feat-choice' && companionFeatDecision.featId.length > 0;
+      if (!featSatisfied) {
+        pendingChoices.push({
+          type: 'asi',
+          choiceKey: grant.key,
+          source,
+          points: grant.points,
+          from: grant.from,
+        });
+      }
+    } else {
+      // Both-set guard: warn when ASI is valid AND the companion feat-choice is also satisfied —
+      // the picker should prevent this state; log it so it surfaces during debugging.
+      const parsed = parseChoiceKey(grant.key);
+      const companionFeatKey = createChoiceKey('feat-choice', parsed.origin, parsed.id, parsed.index);
+      const companionFeatDecision = choices[companionFeatKey];
+      const featAlsoSatisfied =
+        companionFeatDecision?.type === 'feat-choice' && companionFeatDecision.featId.length > 0;
+      if (featAlsoSatisfied) {
+        logger.warn(
+          `BUG: both ASI "${grant.key}" and feat-choice "${companionFeatKey}" are satisfied for the same origin — this should never happen`
+        );
+      }
     }
   }
 
@@ -333,13 +354,22 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     const decision = choices[grant.key];
     const resolvedFeat = decision?.type === 'feat-choice' ? getFeatSource(decision.featId) : undefined;
     if (!decision || decision.type !== 'feat-choice' || !resolvedFeat) {
-      pendingChoices.push({
-        type: 'feat-choice',
-        choiceKey: grant.key,
-        source,
-        from: grant.from,
-        category: grant.category,
-      });
+      // Either-or suppression: if the companion ASI is satisfied, skip feat-choice pending
+      const parsed = parseChoiceKey(grant.key);
+      const companionAsiKey = createChoiceKey('asi', parsed.origin, parsed.id, parsed.index);
+      const companionAsiDecision = choices[companionAsiKey];
+      const asiSatisfied =
+        companionAsiDecision?.type === 'asi' &&
+        Object.values(companionAsiDecision.allocation).reduce((sum, v) => sum + (v ?? 0), 0) > 0;
+      if (!asiSatisfied) {
+        pendingChoices.push({
+          type: 'feat-choice',
+          choiceKey: grant.key,
+          source,
+          from: grant.from,
+          category: grant.category,
+        });
+      }
     }
   }
 

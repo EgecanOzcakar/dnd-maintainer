@@ -506,6 +506,76 @@ describe('ASI from-constraint validation', () => {
   });
 });
 
+describe('Resolver either-or ASI ↔ feat-choice suppression', () => {
+  const asiKey = createChoiceKey('asi', 'class', 'fighter', 0);
+  const featKey = createChoiceKey('feat-choice', 'class', 'fighter', 0);
+
+  const bundlesWithBoth: readonly GrantBundle[] = [
+    {
+      source: { origin: 'class', id: 'fighter', level: 4 },
+      grants: [
+        { type: 'asi', key: asiKey, points: 2, from: null },
+        { type: 'feat-choice', key: featKey, from: null, category: 'general' },
+      ],
+    },
+  ];
+
+  it('emits BOTH asi and feat-choice pending choices when no decision is made', () => {
+    const result = resolveCharacter({ ...baseInput, bundles: bundlesWithBoth });
+    const asiPending = result.pendingChoices.find((c) => c.type === 'asi');
+    const featPending = result.pendingChoices.find((c) => c.type === 'feat-choice');
+    expect(asiPending).toBeDefined();
+    expect(featPending).toBeDefined();
+  });
+
+  it('suppresses ASI pending when companion feat-choice decision is satisfied', () => {
+    const result = resolveCharacter({
+      ...baseInput,
+      bundles: bundlesWithBoth,
+      choices: { [featKey]: { type: 'feat-choice', featId: 'alert' } as const },
+    });
+    const asiPending = result.pendingChoices.find((c) => c.type === 'asi');
+    const featPending = result.pendingChoices.find((c) => c.type === 'feat-choice');
+    expect(asiPending).toBeUndefined();
+    // feat-choice decision is valid → no feat-choice pending either
+    expect(featPending).toBeUndefined();
+  });
+
+  it('suppresses feat-choice pending when companion ASI decision is satisfied', () => {
+    const result = resolveCharacter({
+      ...baseInput,
+      bundles: bundlesWithBoth,
+      choices: { [asiKey]: { type: 'asi', allocation: { str: 2 } } as const },
+    });
+    const featPending = result.pendingChoices.find((c) => c.type === 'feat-choice');
+    // ASI is satisfied → feat-choice is suppressed
+    expect(featPending).toBeUndefined();
+    // ASI is fully allocated → ASI is also not pending
+    const asiPending = result.pendingChoices.find((c) => c.type === 'asi');
+    expect(asiPending).toBeUndefined();
+  });
+
+  it('does NOT suppress ASI when feat key exists with empty featId', () => {
+    const result = resolveCharacter({
+      ...baseInput,
+      bundles: bundlesWithBoth,
+      choices: { [featKey]: { type: 'feat-choice' as const, featId: '' as FeatId } },
+    });
+    const asiPending = result.pendingChoices.find((c) => c.type === 'asi');
+    expect(asiPending).toBeDefined();
+  });
+
+  it('does NOT suppress feat-choice when ASI key exists with zero allocation', () => {
+    const result = resolveCharacter({
+      ...baseInput,
+      bundles: bundlesWithBoth,
+      choices: { [asiKey]: { type: 'asi', allocation: {} } as const },
+    });
+    const featPending = result.pendingChoices.find((c) => c.type === 'feat-choice');
+    expect(featPending).toBeDefined();
+  });
+});
+
 describe('Human Fighter L1 equipment integration', () => {
   const humanFighterEquipBuild: CharacterBuild = {
     speciesId: 'human',
@@ -3344,5 +3414,87 @@ describe('Unarmored Defense AC wiring through resolveCharacter (#236/#247)', () 
       bundles,
     });
     expect(result.armorClass.effective).toBe(15);
+  });
+});
+
+describe('ASI + feat-choice both-set warning (FIX 6)', () => {
+  const asiKey = createChoiceKey('asi', 'class', 'fighter', 0);
+  const featKey = createChoiceKey('feat-choice', 'class', 'fighter', 0);
+
+  const bundlesWithBoth: readonly GrantBundle[] = [
+    {
+      source: { origin: 'class', id: 'fighter' as ClassId, level: 4 },
+      grants: [
+        { type: 'asi', key: asiKey, points: 2, from: null },
+        { type: 'feat-choice', key: featKey, from: null, category: 'general' },
+      ],
+    },
+  ];
+
+  it('emits a logger.warn when both ASI and feat-choice companion decisions are simultaneously satisfied', () => {
+    const logger = getLogger('resolver');
+    const warnSpy = vi.spyOn(logger, 'warn');
+
+    resolveCharacter({
+      ...baseInput,
+      bundles: bundlesWithBoth,
+      choices: {
+        [asiKey]: { type: 'asi', allocation: { str: 2 } } as const,
+        [featKey]: { type: 'feat-choice', featId: 'alert' } as const,
+      },
+    });
+
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('both ASI'));
+    warnSpy.mockRestore();
+  });
+
+  it('does NOT warn when only ASI is satisfied and feat-choice is not', () => {
+    const logger = getLogger('resolver');
+    const warnSpy = vi.spyOn(logger, 'warn');
+
+    resolveCharacter({
+      ...baseInput,
+      bundles: bundlesWithBoth,
+      choices: {
+        [asiKey]: { type: 'asi', allocation: { str: 2 } } as const,
+      },
+    });
+
+    expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining('both ASI'));
+    warnSpy.mockRestore();
+  });
+
+  it('does NOT warn when only feat-choice is satisfied and ASI is not', () => {
+    const logger = getLogger('resolver');
+    const warnSpy = vi.spyOn(logger, 'warn');
+
+    resolveCharacter({
+      ...baseInput,
+      bundles: bundlesWithBoth,
+      choices: {
+        [featKey]: { type: 'feat-choice', featId: 'alert' } as const,
+      },
+    });
+
+    expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining('both ASI'));
+    warnSpy.mockRestore();
+  });
+
+  it('does NOT change application behavior when both are set — no ASI pending, no feat pending', () => {
+    const warnSpy = vi.spyOn(getLogger('resolver'), 'warn');
+
+    const result = resolveCharacter({
+      ...baseInput,
+      bundles: bundlesWithBoth,
+      choices: {
+        [asiKey]: { type: 'asi', allocation: { str: 2 } } as const,
+        [featKey]: { type: 'feat-choice', featId: 'alert' } as const,
+      },
+    });
+
+    // Warn fires but no pending choices are emitted (behavior unchanged)
+    expect(result.pendingChoices.find((c) => c.type === 'asi')).toBeUndefined();
+    expect(result.pendingChoices.find((c) => c.type === 'feat-choice')).toBeUndefined();
+    warnSpy.mockRestore();
   });
 });

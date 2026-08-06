@@ -4,6 +4,7 @@ import {
   ChevronDown,
   Download,
   ExternalLink,
+  Library,
   ScrollText,
   Settings,
   Shield,
@@ -26,7 +27,7 @@ export interface SidebarProps {
 
 interface NavItem {
   readonly icon: typeof Shield;
-  readonly labelKey: 'nav.dashboard' | 'nav.characters' | 'nav.sessions' | 'nav.notes';
+  readonly labelKey: 'nav.dashboard' | 'nav.characters' | 'nav.sessions' | 'nav.notes' | 'nav.wiki';
   readonly path: string;
   readonly matchPaths?: readonly string[];
   readonly end?: boolean;
@@ -37,6 +38,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { icon: Users, labelKey: 'nav.characters', path: '/characters', matchPaths: ['/character'] },
   { icon: BookOpen, labelKey: 'nav.sessions', path: '/sessions' },
   { icon: ScrollText, labelKey: 'nav.notes', path: '/notes' },
+  { icon: Library, labelKey: 'nav.wiki', path: '/wiki' },
 ];
 
 export function Sidebar({

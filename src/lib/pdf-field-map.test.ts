@@ -518,6 +518,7 @@ describe('buildFieldValues — spellcasting', () => {
         slots: [4, 3, 2],
         preparedCount: 0,
         pactMagic: null,
+        spellAbilityOverrides: {},
       },
     });
     const { text } = bfv(resolved, makeCharacter({ class: 'wizard' }));
@@ -552,6 +553,7 @@ describe('buildFieldValues — spellcasting', () => {
         slots: [4, 3, 2, 0, 1], // L1=4, L2=3, L3=2, L4=0, L5=1
         preparedCount: 0,
         pactMagic: null,
+        spellAbilityOverrides: {},
       },
     });
     const { text } = bfv(resolved, makeCharacter({ class: 'wizard' }));
@@ -592,6 +594,7 @@ describe('buildFieldValues — spellcasting', () => {
         slots: [], // warlocks have empty slots
         preparedCount: 0,
         pactMagic: { count: 2, slotLevel: 1 },
+        spellAbilityOverrides: {},
       },
     });
     const { text } = bfv(resolved, makeCharacter({ class: 'warlock' }));
@@ -625,6 +628,7 @@ describe('buildFieldValues — spellcasting', () => {
         slots: [4, 3],
         preparedCount: 0,
         pactMagic: null,
+        spellAbilityOverrides: {},
       },
     });
     const { text } = bfv(resolved, makeCharacter({ class: 'wizard' }));

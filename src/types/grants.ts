@@ -203,6 +203,13 @@ export interface SpellGrant {
   // (e.g. Circle of the Land progressively unlocks its circle spells at druid L3/5/7/9).
   // Gated generically in collectBundles against the granting class's level — see issue #189.
   readonly minClassLevel?: number;
+  /**
+   * Optional ability override: when set, this spell uses the specified ability for its
+   * attack bonus and save DC instead of the character's dominant spellcasting ability.
+   * Typical use-case: species or feat spells that specify "using your [Ability] modifier"
+   * (e.g. High Elf Detect Magic using INT on a CHA-primary Bard).
+   */
+  readonly ability?: AbilityKey;
 }
 
 export interface AsiGrant {

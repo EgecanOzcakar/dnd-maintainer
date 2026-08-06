@@ -44,7 +44,14 @@ export function resolveSpellcasting(
   const cantrips: string[] = [];
   const knownSpells: { spellId: string; spellLevel: SpellLevel }[] = [];
   const alwaysPreparedSpells: string[] = [];
+  const spellAbilityOverrides: Record<string, AbilityKey> = {};
+
   for (const { grant } of spellGrants) {
+    // Track ability overrides — only record when it differs from the dominant ability
+    if (grant.ability && grant.ability !== ability) {
+      spellAbilityOverrides[grant.spellId] = grant.ability;
+    }
+
     if (grant.alwaysPrepared) {
       if (!getSpellDef(grant.spellId)) {
         logger.warn(`always-prepared spell grant references uncatalogued spell "${grant.spellId}"`);
@@ -97,5 +104,6 @@ export function resolveSpellcasting(
     slots,
     preparedCount,
     pactMagic,
+    spellAbilityOverrides,
   };
 }

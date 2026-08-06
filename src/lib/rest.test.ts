@@ -60,6 +60,7 @@ function makeSpellcasting(
     slots: [],
     preparedCount: 0,
     pactMagic: null,
+    spellAbilityOverrides: {},
     ...overrides,
   };
 }

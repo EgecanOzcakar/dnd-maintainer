@@ -1,6 +1,7 @@
 import { isSpellId, getSpellDef } from '@/lib/sources/spells';
 import { getSpellDisplayMeta } from '@/lib/spell-display';
 import type { ResolvedCharacter } from '@/types/resolved';
+import type { AbilityKey } from '@/lib/dnd-helpers';
 import type { DieSize } from '@/components/character-sheet/DiceRoller';
 import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
 import { parseDiceFormula, extractDiceFromText } from '@/lib/dice-helpers';
@@ -96,12 +97,15 @@ function SpellItemRow({
   level,
   school,
   spellAttackBonus,
+  abilityOverride,
   onSelectRollPreset,
 }: {
   id: string;
   level?: number;
   school?: string;
   spellAttackBonus?: number | null;
+  /** When set, this spell uses a different ability than the dominant spellcasting stat. */
+  abilityOverride?: AbilityKey;
   onSelectRollPreset?: (preset: RollPreset) => void;
 }) {
   const { t } = useTranslation('gamedata');
@@ -170,6 +174,16 @@ function SpellItemRow({
             <span className="text-xs text-muted-foreground shrink-0 hidden sm:inline">
               ({level !== undefined && level > 0 ? `lvl ${level} ` : ''}{displaySchool})
             </span>
+          )}
+
+          {abilityOverride && (
+            <Badge
+              variant="secondary"
+              className="text-[9px] py-0 px-1 ml-0.5 bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30 shrink-0 uppercase font-mono"
+              title={`Uses ${abilityOverride.toUpperCase()} instead of the default spellcasting ability`}
+            >
+              {abilityOverride.toUpperCase()}
+            </Badge>
           )}
 
           {renderSpellBadge(id)}
@@ -281,6 +295,7 @@ export function SpellcastingPanel({
                   key={id}
                   id={id}
                   spellAttackBonus={spellcasting.spellAttackBonus}
+                  abilityOverride={spellcasting.spellAbilityOverrides[id]}
                   onSelectRollPreset={onSelectRollPreset}
                 />
               ))}
@@ -299,6 +314,7 @@ export function SpellcastingPanel({
                   key={id}
                   id={id}
                   spellAttackBonus={spellcasting.spellAttackBonus}
+                  abilityOverride={spellcasting.spellAbilityOverrides[id]}
                   onSelectRollPreset={onSelectRollPreset}
                 />
               ))}
@@ -328,6 +344,7 @@ export function SpellcastingPanel({
                     id={id}
                     level={lvl}
                     spellAttackBonus={spellcasting.spellAttackBonus}
+                    abilityOverride={spellcasting.spellAbilityOverrides[id]}
                     onSelectRollPreset={onSelectRollPreset}
                   />
                 ))}

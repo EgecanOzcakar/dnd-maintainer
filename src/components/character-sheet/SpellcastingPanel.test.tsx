@@ -38,6 +38,7 @@ function makeSpellcasting(overrides: Partial<ResolvedSpellcasting> = {}): Resolv
     slots: [],
     preparedCount: 0,
     pactMagic: null,
+    spellAbilityOverrides: {},
     ...overrides,
   };
 }

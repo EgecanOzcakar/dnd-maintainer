@@ -9,10 +9,22 @@ export const isLocalhost =
   window.location.hostname === 'localhost' || 
   window.location.hostname === '127.0.0.1';
 
-// Use local port 54321 if on localhost, otherwise use the env variable (Cloudflare Tunnel URL)
+const isLocalOrPrivateUrl = (url?: string) => {
+  if (!url) return true;
+  return (
+    url.includes('localhost') ||
+    url.includes('127.0.0.1') ||
+    url.includes('192.168.') ||
+    url.includes('10.') ||
+    url.includes('172.16.')
+  );
+};
+
+// Use direct local port if on localhost, and fallback to window.location.origin 
+// when accessed remotely over ngrok/tunnels so requests are proxied by Vite.
 export const supabaseUrl = isLocalhost 
-  ? 'http://127.0.0.1:54321' 
-  : envUrl;
+  ? (envUrl || 'http://127.0.0.1:54321') 
+  : (!isLocalOrPrivateUrl(envUrl) ? envUrl : window.location.origin);
 
 if (!supabaseUrl || !supabasePublishableKey) {
   throw new Error('Missing Supabase environment variables');

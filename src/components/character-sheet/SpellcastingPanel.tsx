@@ -1,8 +1,12 @@
 import { isSpellId, getSpellDef } from '@/lib/sources/spells';
 import { getSpellDisplayMeta } from '@/lib/spell-display';
 import type { ResolvedCharacter } from '@/types/resolved';
+import type { DieSize } from '@/components/character-sheet/DiceRoller';
+import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
+import { parseDiceFormula, extractDiceFromText } from '@/lib/dice-helpers';
 import { Badge } from '@/components/ui/badge';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ChevronDown, ChevronRight, Dices } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -47,7 +51,6 @@ const KEYWORD_STYLES: { regex: RegExp; className: string }[] = [
 
 function highlightText(text: string) {
   if (!text) return text;
-  // Match all patterns simultaneously
   const combinedPattern = new RegExp(
     `\\b(Advantage|Disadvantage|STR|DEX|CON|INT|WIS|CHA|Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma|Acid|Bludgeoning|Cold|Fire|Force|Lightning|Necrotic|Piercing|Poison|Psychic|Radiant|Slashing|Thunder)\\b|\\b(\\d+d\\d+([+-]\\d+)?)\\b`,
     'gi'
@@ -88,7 +91,19 @@ function highlightText(text: string) {
   return parts;
 }
 
-function SpellItemRow({ id, level, school }: { id: string; level?: number; school?: string }) {
+function SpellItemRow({
+  id,
+  level,
+  school,
+  spellAttackBonus,
+  onSelectRollPreset,
+}: {
+  id: string;
+  level?: number;
+  school?: string;
+  spellAttackBonus?: number | null;
+  onSelectRollPreset?: (preset: RollPreset) => void;
+}) {
   const { t } = useTranslation('gamedata');
   const [expanded, setExpanded] = useState(false);
 
@@ -96,33 +111,83 @@ function SpellItemRow({ id, level, school }: { id: string; level?: number; schoo
   const spellName = isSpellId(id) ? t(`spells.${id}.name`) : id;
   const description = isSpellId(id) ? t(`spells.${id}.description`, { defaultValue: '' }) : '';
 
+  const handleSelectSpell = () => {
+    if (!onSelectRollPreset) return;
+    const extracted = extractDiceFromText(description);
+    if (extracted) {
+      const parsed = parseDiceFormula(extracted);
+      onSelectRollPreset({
+        die: parsed.die,
+        count: parsed.count,
+        modifier: parsed.modifier,
+        contextLabel: `Spell: ${spellName} (${extracted})`,
+      });
+    } else if (spellAttackBonus != null) {
+      onSelectRollPreset({
+        die: 20,
+        count: 1,
+        modifier: spellAttackBonus,
+        contextLabel: `Spell Attack: ${spellName} (${spellAttackBonus >= 0 ? `+${spellAttackBonus}` : spellAttackBonus})`,
+      });
+    } else {
+      onSelectRollPreset({
+        die: 20,
+        count: 1,
+        modifier: 0,
+        contextLabel: `Spell: ${spellName}`,
+      });
+    }
+  };
+
+  const meta = isSpellId(id) ? getSpellDisplayMeta(id) : null;
+  const metaSchool = meta?.school ? t(`spellSchools.${meta.school}`, { defaultValue: meta.school }) : null;
+  const displaySchool = school ?? metaSchool;
+
   return (
     <div className="rounded border border-border/70 bg-card/60 overflow-hidden transition-all">
-      <button
-        type="button"
-        onClick={() => setExpanded((p) => !p)}
-        className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-left hover:bg-muted/40 transition-colors"
-      >
-        {description ? (
-          expanded ? (
-            <ChevronDown className="size-3 text-muted-foreground shrink-0" />
+      <div className="w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 hover:bg-muted/40 transition-colors">
+        <button
+          type="button"
+          onClick={() => {
+            setExpanded((p) => !p);
+            handleSelectSpell();
+          }}
+          className="flex items-center gap-1.5 flex-1 min-w-0 text-left"
+        >
+          {description ? (
+            expanded ? (
+              <ChevronDown className="size-3 text-muted-foreground shrink-0" />
+            ) : (
+              <ChevronRight className="size-3 text-muted-foreground shrink-0" />
+            )
           ) : (
-            <ChevronRight className="size-3 text-muted-foreground shrink-0" />
-          )
-        ) : (
-          <span className="size-3 shrink-0 text-muted-foreground">&bull;</span>
+            <span className="size-3 shrink-0 text-muted-foreground">&bull;</span>
+          )}
+
+          <span className="text-sm font-semibold text-foreground truncate">{spellName}</span>
+
+          {displaySchool && (
+            <span className="text-xs text-muted-foreground shrink-0 hidden sm:inline">
+              ({level !== undefined && level > 0 ? `lvl ${level} ` : ''}{displaySchool})
+            </span>
+          )}
+
+          {renderSpellBadge(id)}
+        </button>
+
+        {onSelectRollPreset && (
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={handleSelectSpell}
+            className="h-6 px-1.5 text-[10px] gap-0.5 text-indigo-500 hover:bg-indigo-500/10 shrink-0"
+            title={`Select ${spellName} for Dice Roller`}
+          >
+            <Dices className="size-3" /> Roll
+          </Button>
         )}
-
-        <span className="text-sm font-semibold text-foreground flex-1 truncate">{spellName}</span>
-
-        {school && (
-          <span className="text-xs text-muted-foreground shrink-0">
-            ({level !== undefined ? `lvl ${level} ` : ''}{school})
-          </span>
-        )}
-
-        {renderSpellBadge(id)}
-      </button>
+      </div>
 
       {expanded && description && (
         <div className="px-3 py-2 text-xs border-t border-border/50 bg-muted/20 space-y-1.5">
@@ -141,7 +206,13 @@ function SpellItemRow({ id, level, school }: { id: string; level?: number; schoo
   );
 }
 
-export function SpellcastingPanel({ spellcasting }: { spellcasting: Spellcasting }) {
+export function SpellcastingPanel({
+  spellcasting,
+  onSelectRollPreset,
+}: {
+  spellcasting: Spellcasting;
+  onSelectRollPreset?: (preset: RollPreset) => void;
+}) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
 
@@ -195,46 +266,24 @@ export function SpellcastingPanel({ spellcasting }: { spellcasting: Spellcasting
       )}
 
       <div className="space-y-4">
-        {spellcasting.cantrips.length > 0 && (
-          <div>
-            <div className="text-xs font-bold text-muted-foreground mb-2">{cantripsHeader}</div>
-            <div className="space-y-1.5">
-              {spellcasting.cantrips.map((cantrip, i) => {
-                const meta = getSpellDisplayMeta(cantrip);
-                return <SpellItemRow key={i} id={cantrip} school={meta?.school} />;
-              })}
-            </div>
+        {spellcasting.knownSpells.length > 0 && (
+          <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            {tc('characterSheet.sections.knownSpells')}
           </div>
         )}
 
-        {sortedLevels.length > 0 && (
+        {spellcasting.cantrips.length > 0 && (
           <div>
-            <div className="text-xs font-bold text-muted-foreground mb-2">
-              {tc('characterSheet.sections.knownSpells')}
-            </div>
-            <div className="space-y-3">
-              {sortedLevels.map((level) => {
-                const levelLabel =
-                  level === 0
-                    ? tc('characterSheet.fields.spellLevelUnknown')
-                    : tc('characterSheet.fields.spellLevelLabel', { level });
-                const spellsKnownEntry = spellcasting.spellsKnown.find((e) => e.spellLevel === level);
-                const levelHeader =
-                  spellsKnownEntry != null
-                    ? `${levelLabel} (${tc('characterSheet.fields.chosenOfTarget', { chosen: spellsByLevel[level].length, target: spellsKnownEntry.count })})`
-                    : levelLabel;
-                return (
-                  <div key={level}>
-                    <div className="text-xs text-muted-foreground mb-1.5">{levelHeader}</div>
-                    <div className="space-y-1.5">
-                      {spellsByLevel[level].map((id, i) => {
-                        const meta = getSpellDisplayMeta(id);
-                        return <SpellItemRow key={i} id={id} level={meta?.level} school={meta?.school} />;
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="text-xs font-bold text-muted-foreground mb-2">{cantripsHeader}</div>
+            <div className="space-y-1">
+              {spellcasting.cantrips.map((id) => (
+                <SpellItemRow
+                  key={id}
+                  id={id}
+                  spellAttackBonus={spellcasting.spellAttackBonus}
+                  onSelectRollPreset={onSelectRollPreset}
+                />
+              ))}
             </div>
           </div>
         )}
@@ -244,14 +293,48 @@ export function SpellcastingPanel({ spellcasting }: { spellcasting: Spellcasting
             <div className="text-xs font-bold text-muted-foreground mb-2">
               {tc('characterSheet.sections.alwaysPrepared')}
             </div>
-            <div className="space-y-1.5">
-              {spellcasting.alwaysPreparedSpells.map((id, i) => {
-                const meta = getSpellDisplayMeta(id);
-                return <SpellItemRow key={i} id={id} level={meta?.level} school={meta?.school} />;
-              })}
+            <div className="space-y-1">
+              {spellcasting.alwaysPreparedSpells.map((id) => (
+                <SpellItemRow
+                  key={id}
+                  id={id}
+                  spellAttackBonus={spellcasting.spellAttackBonus}
+                  onSelectRollPreset={onSelectRollPreset}
+                />
+              ))}
             </div>
           </div>
         )}
+
+        {sortedLevels.map((lvl) => {
+          const ids = spellsByLevel[lvl];
+          if (!ids || ids.length === 0) return null;
+
+          const targetCount = spellcasting.spellsKnown.find((sk) => sk.spellLevel === lvl)?.count;
+          const levelHeader =
+            lvl === 0
+              ? tc('characterSheet.fields.spellLevelUnknown')
+              : targetCount !== undefined
+                ? `${tc('characterSheet.fields.spellLevelLabel', { level: lvl })} (${tc('characterSheet.fields.chosenOfTarget', { chosen: ids.length, target: targetCount })})`
+                : tc('characterSheet.fields.spellLevelLabel', { level: lvl });
+
+          return (
+            <div key={lvl}>
+              <div className="text-xs font-bold text-muted-foreground mb-2">{levelHeader}</div>
+              <div className="space-y-1">
+                {ids.map((id) => (
+                  <SpellItemRow
+                    key={id}
+                    id={id}
+                    level={lvl}
+                    spellAttackBonus={spellcasting.spellAttackBonus}
+                    onSelectRollPreset={onSelectRollPreset}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

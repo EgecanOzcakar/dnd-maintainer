@@ -41,6 +41,9 @@ import { useBuilderAutosave } from '@/hooks/useBuilderAutosave';
 import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
 import { InventoryTab } from '@/components/character-sheet/InventoryTab';
 import { PartyInitiativeTracker } from '@/components/character-sheet/PartyInitiativeTracker';
+import { DiceRoller } from '@/components/character-sheet/DiceRoller';
+import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
+import { Dices } from 'lucide-react';
 
 type EditSection = 'header' | 'personality' | 'backstory' | 'appearance' | null;
 
@@ -80,6 +83,7 @@ function CharacterSheetInner({
   const { saveDraft } = useBuilderAutosave(characterId);
   const [saveFailed, setSaveFailed] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
+  const [rollPreset, setRollPreset] = useState<RollPreset | null>(null);
 
   // Autosave when isDirty (level up/down, choices, etc.)
   const latestPayloadRef = useRef<AutosavePayload>({ character: ctxCharacter, rows, resolved });
@@ -339,6 +343,22 @@ function CharacterSheetInner({
 
               {/* Center Column: Combat & Features */}
               <div className="sheet-area-center">
+                {/* Interactive Dice Roller synced with party view */}
+                <div className="bg-card border border-indigo-500/30 rounded-lg p-5 mb-6 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Dices className="size-5 text-indigo-500" />
+                    <h2 className="text-base font-bold text-foreground">Interactive Party Dice Roller</h2>
+                  </div>
+                  <DiceRoller
+                    characterId={character.id}
+                    campaignId={character.campaign_id}
+                    presetDie={rollPreset?.die}
+                    presetCount={rollPreset?.count}
+                    presetModifier={rollPreset?.modifier}
+                    contextLabel={rollPreset?.contextLabel}
+                  />
+                </div>
+
                 <CombatPanel
                   resolved={resolved}
                   abilities={abilities}
@@ -369,7 +389,13 @@ function CharacterSheetInner({
                   </>
                 )}
 
-                {resolved && <AttacksPanel attacks={resolved.attacks} weaponMasteries={resolved.weaponMasteries} />}
+                {resolved && (
+                  <AttacksPanel
+                    attacks={resolved.attacks}
+                    weaponMasteries={resolved.weaponMasteries}
+                    onSelectRollPreset={(preset) => setRollPreset(preset)}
+                  />
+                )}
                 {resolved && <ProficienciesPanel resolved={resolved} />}
                 {resolved && <ResourcePoolsPanel resolved={resolved} />}
                 {resolved?.features && resolved.features.length > 0 && <FeaturesPanel features={resolved.features} />}
@@ -378,7 +404,12 @@ function CharacterSheetInner({
               {/* Right Column: Equipment, Spells & Personality */}
               <div className="sheet-area-right">
                 {itemsData.length > 0 && <EquipmentPanel itemsData={itemsData} />}
-                {hasSpells && resolved?.spellcasting && <SpellcastingPanel spellcasting={resolved.spellcasting} />}
+                {hasSpells && resolved?.spellcasting && (
+                  <SpellcastingPanel
+                    spellcasting={resolved.spellcasting}
+                    onSelectRollPreset={(preset) => setRollPreset(preset)}
+                  />
+                )}
                 {hasPersonality && <PersonalityPanel character={character} onEdit={() => setEditSection('personality')} />}
               </div>
             </div>

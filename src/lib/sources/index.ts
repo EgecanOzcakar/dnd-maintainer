@@ -237,35 +237,6 @@ export function collectBundles(build: CharacterBuild): CollectBundlesResult {
     }
   }
 
-  // Spell-choice decisions — expand chosen spellIds into individual spell grants so the
-  // resolver's collectGrantsByType('spell') loop picks them up.
-  const allSpellChoiceGrants: { grant: SpellChoiceGrant; source: SourceTag }[] = [];
-  for (const bundle of bundles) {
-    for (const grant of bundle.grants) {
-      if (grant.type === 'spell-choice') {
-        allSpellChoiceGrants.push({ grant: grant as SpellChoiceGrant, source: bundle.source });
-      }
-    }
-  }
-
-  for (const { grant, source } of allSpellChoiceGrants) {
-    const decision = build.choices[grant.key];
-    if (decision?.type === 'spell-choice') {
-      const pool = getSpellsForList(grant.spellList, grant.spellLevel);
-      for (const spellId of decision.spellIds) {
-        if (!pool.some((s) => s.id === spellId)) {
-          const msg = `spell-choice "${grant.key}" decision references spell "${spellId}" not in ${grant.spellList} list at level ${grant.spellLevel}`;
-          warnings.push(msg);
-          logger.warn(msg);
-          continue;
-        }
-        bundles.push({
-          source,
-          grants: [{ type: 'spell', spellId, alwaysPrepared: false }],
-        });
-      }
-    }
-  }
 
   // Damage-type choices — expand chosen damage type into a feature grant whose id
   // is `${featureIdPrefix}-${chosenDamageType}` (e.g. zealot-divine-fury-radiant).
@@ -447,6 +418,39 @@ export function collectBundles(build: CharacterBuild): CollectBundlesResult {
         const msg = `feature-choice "${grant.key}" decision references unknown option "${decision.optionId}"`;
         warnings.push(msg);
         logger.warn(msg);
+      }
+    }
+  }
+
+  // Spell-choice decisions — expand chosen spellIds into individual spell grants so the
+  // resolver's collectGrantsByType('spell') loop picks them up.
+  // IMPORTANT: this runs AFTER feature-choice expansion so that spell-choice grants injected
+  // by feature-choice options (e.g. Magic Initiate's per-class spell-choice grants) are
+  // visible here. Running it earlier would silently drop those spells from the spellcasting panel.
+  const allSpellChoiceGrants: { grant: SpellChoiceGrant; source: SourceTag }[] = [];
+  for (const bundle of bundles) {
+    for (const grant of bundle.grants) {
+      if (grant.type === 'spell-choice') {
+        allSpellChoiceGrants.push({ grant: grant as SpellChoiceGrant, source: bundle.source });
+      }
+    }
+  }
+
+  for (const { grant, source } of allSpellChoiceGrants) {
+    const decision = build.choices[grant.key];
+    if (decision?.type === 'spell-choice') {
+      const pool = getSpellsForList(grant.spellList, grant.spellLevel);
+      for (const spellId of decision.spellIds) {
+        if (!pool.some((s) => s.id === spellId)) {
+          const msg = `spell-choice "${grant.key}" decision references spell "${spellId}" not in ${grant.spellList} list at level ${grant.spellLevel}`;
+          warnings.push(msg);
+          logger.warn(msg);
+          continue;
+        }
+        bundles.push({
+          source,
+          grants: [{ type: 'spell', spellId, alwaysPrepared: false }],
+        });
       }
     }
   }

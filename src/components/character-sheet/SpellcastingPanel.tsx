@@ -1,9 +1,28 @@
-import { isSpellId } from '@/lib/sources/spells';
+import { isSpellId, getSpellDef } from '@/lib/sources/spells';
 import { getSpellDisplayMeta } from '@/lib/spell-display';
 import type { ResolvedCharacter } from '@/types/resolved';
+import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 
 type Spellcasting = NonNullable<ResolvedCharacter['spellcasting']>;
+
+function renderSpellBadge(id: string) {
+  if (!isSpellId(id)) return null;
+  const def = getSpellDef(id);
+  if (!def) return null;
+
+  const cost = def.castingTime.toLowerCase();
+  if (cost === 'action') {
+    return <Badge variant="default" className="text-[9px] py-0 px-1 ml-2 bg-primary/80">Action</Badge>;
+  }
+  if (cost === 'bonus action') {
+    return <Badge variant="secondary" className="text-[9px] py-0 px-1 ml-2 bg-amber-500/20 text-amber-600 dark:text-amber-400">Bonus Action</Badge>;
+  }
+  if (cost.startsWith('reaction')) {
+    return <Badge variant="secondary" className="text-[9px] py-0 px-1 ml-2 bg-blue-500/20 text-blue-600 dark:text-blue-400">Reaction</Badge>;
+  }
+  return <Badge variant="outline" className="text-[9px] py-0 px-1 ml-2 text-muted-foreground">{def.castingTime}</Badge>;
+}
 
 export function SpellcastingPanel({ spellcasting }: { spellcasting: Spellcasting }) {
   const { t } = useTranslation('gamedata');
@@ -66,9 +85,10 @@ export function SpellcastingPanel({ spellcasting }: { spellcasting: Spellcasting
               {spellcasting.cantrips.map((cantrip, i) => {
                 const meta = getSpellDisplayMeta(cantrip);
                 return (
-                  <div key={i} className="text-sm text-foreground">
-                    &bull; {isSpellId(cantrip) ? t(`spells.${cantrip}.name`) : cantrip}
-                    {meta && <span className="text-xs text-muted-foreground ml-2">{`(${meta.school})`}</span>}
+                  <div key={i} className="text-sm text-foreground flex items-center flex-wrap gap-y-0.5">
+                    <span>&bull; {isSpellId(cantrip) ? t(`spells.${cantrip}.name`) : cantrip}</span>
+                    {meta && <span className="text-xs text-muted-foreground ml-1.5">{`(${meta.school})`}</span>}
+                    {renderSpellBadge(cantrip)}
                   </div>
                 );
               })}
@@ -101,11 +121,12 @@ export function SpellcastingPanel({ spellcasting }: { spellcasting: Spellcasting
                       {spellsByLevel[level].map((id, i) => {
                         const meta = getSpellDisplayMeta(id);
                         return (
-                          <div key={i} className="text-sm text-foreground">
-                            &bull; {isSpellId(id) ? t(`spells.${id}.name`) : id}
+                          <div key={i} className="text-sm text-foreground flex items-center flex-wrap gap-y-0.5">
+                            <span>&bull; {isSpellId(id) ? t(`spells.${id}.name`) : id}</span>
                             {meta && (
-                              <span className="text-xs text-muted-foreground ml-2">{`(lvl ${meta.level} ${meta.school})`}</span>
+                              <span className="text-xs text-muted-foreground ml-1.5">{`(lvl ${meta.level} ${meta.school})`}</span>
                             )}
+                            {renderSpellBadge(id)}
                           </div>
                         );
                       })}
@@ -126,11 +147,12 @@ export function SpellcastingPanel({ spellcasting }: { spellcasting: Spellcasting
               {spellcasting.alwaysPreparedSpells.map((id, i) => {
                 const meta = getSpellDisplayMeta(id);
                 return (
-                  <div key={i} className="text-sm text-foreground">
-                    &bull; {isSpellId(id) ? t(`spells.${id}.name`) : id}
+                  <div key={i} className="text-sm text-foreground flex items-center flex-wrap gap-y-0.5">
+                    <span>&bull; {isSpellId(id) ? t(`spells.${id}.name`) : id}</span>
                     {meta && (
-                      <span className="text-xs text-muted-foreground ml-2">{`(lvl ${meta.level} ${meta.school})`}</span>
+                      <span className="text-xs text-muted-foreground ml-1.5">{`(lvl ${meta.level} ${meta.school})`}</span>
                     )}
+                    {renderSpellBadge(id)}
                   </div>
                 );
               })}

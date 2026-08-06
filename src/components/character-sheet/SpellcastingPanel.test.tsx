@@ -18,6 +18,7 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('@/lib/sources/spells', () => ({
   isSpellId: (id: string) => id.startsWith('spell-'),
+  getSpellDef: (id: string) => (id.startsWith('spell-') ? { id, level: 1, school: 'evocation', castingTime: 'Action', range: '60 ft', concentration: false, ritual: false } : null),
 }));
 
 vi.mock('@/lib/spell-display', () => ({

@@ -381,7 +381,17 @@
       "toolProficiencyTitle": "Tool Proficiency",
       "languageTitle": "Language",
       "noBackground": "Select a background to see its benefits.",
-      "selectBackgroundInBasics": "Pick a background in the Basics step to see its sub-choices."
+      "selectBackgroundInBasics": "Pick a background in the Basics step to see its sub-choices.",
+      "bonusSummaryTitle": "Background Bonuses",
+      "asiPointsTotal": "{{count}} points to distribute",
+      "skillsTitle": "Skills",
+      "languageChoiceCount": "{{count}} language of your choice",
+      "speciesBonusSummaryTitle": "Species Bonuses",
+      "speedTitle": "Speed",
+      "featuresTitle": "Features",
+      "resistancesTitle": "Resistances",
+      "languagesTitle": "Languages",
+      "speedFt": "{{speed}} ft"
     },
     "equipment": {
       "equipped": "Equipped",

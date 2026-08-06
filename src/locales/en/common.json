@@ -696,6 +696,7 @@
     "combatView": {
       "tabs": {
         "sheet": "Sheet",
+        "inventory": "Inventory",
         "combat": "Combat"
       },
       "sections": {

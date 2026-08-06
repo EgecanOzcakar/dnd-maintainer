@@ -194,7 +194,7 @@ body,
 
   @media (min-width: 1024px) {
     .sheet-grid {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.5fr);
       grid-template-areas: 'left center right';
       align-items: start;
     }
@@ -246,10 +246,12 @@ body,
   }
 
   @keyframes btn-pulse {
+
     0%,
     100% {
       transform: scale(1);
     }
+
     50% {
       transform: scale(0.92);
     }
@@ -272,6 +274,7 @@ body,
     0% {
       transform: translateX(-100%);
     }
+
     100% {
       transform: translateX(100%);
     }
@@ -324,9 +327,11 @@ body,
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }

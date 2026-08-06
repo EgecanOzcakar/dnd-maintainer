@@ -2163,105 +2163,288 @@
   },
   "items": {
     "weapons": {
-      "club": { "name": "Club" },
-      "dagger": { "name": "Dagger" },
-      "greatclub": { "name": "Greatclub" },
-      "handaxe": { "name": "Handaxe" },
-      "javelin": { "name": "Javelin" },
-      "light-hammer": { "name": "Light Hammer" },
-      "mace": { "name": "Mace" },
-      "quarterstaff": { "name": "Quarterstaff" },
-      "sickle": { "name": "Sickle" },
-      "spear": { "name": "Spear" },
-      "light-crossbow": { "name": "Light Crossbow" },
-      "dart": { "name": "Dart" },
-      "shortbow": { "name": "Shortbow" },
-      "sling": { "name": "Sling" },
-      "battleaxe": { "name": "Battleaxe" },
-      "flail": { "name": "Flail" },
-      "glaive": { "name": "Glaive" },
-      "greataxe": { "name": "Greataxe" },
-      "greatsword": { "name": "Greatsword" },
-      "halberd": { "name": "Halberd" },
-      "lance": { "name": "Lance" },
-      "longsword": { "name": "Longsword" },
-      "maul": { "name": "Maul" },
-      "morningstar": { "name": "Morningstar" },
-      "pike": { "name": "Pike" },
-      "rapier": { "name": "Rapier" },
-      "scimitar": { "name": "Scimitar" },
-      "shortsword": { "name": "Shortsword" },
-      "trident": { "name": "Trident" },
-      "war-pick": { "name": "War Pick" },
-      "warhammer": { "name": "Warhammer" },
-      "whip": { "name": "Whip" },
-      "blowgun": { "name": "Blowgun" },
-      "hand-crossbow": { "name": "Hand Crossbow" },
-      "heavy-crossbow": { "name": "Heavy Crossbow" },
-      "longbow": { "name": "Longbow" },
-      "net": { "name": "Net" }
+      "club": {
+        "name": "Club"
+      },
+      "dagger": {
+        "name": "Dagger"
+      },
+      "greatclub": {
+        "name": "Greatclub"
+      },
+      "handaxe": {
+        "name": "Handaxe"
+      },
+      "javelin": {
+        "name": "Javelin"
+      },
+      "light-hammer": {
+        "name": "Light Hammer"
+      },
+      "mace": {
+        "name": "Mace"
+      },
+      "quarterstaff": {
+        "name": "Quarterstaff"
+      },
+      "sickle": {
+        "name": "Sickle"
+      },
+      "spear": {
+        "name": "Spear"
+      },
+      "light-crossbow": {
+        "name": "Light Crossbow"
+      },
+      "dart": {
+        "name": "Dart"
+      },
+      "shortbow": {
+        "name": "Shortbow"
+      },
+      "sling": {
+        "name": "Sling"
+      },
+      "battleaxe": {
+        "name": "Battleaxe"
+      },
+      "flail": {
+        "name": "Flail"
+      },
+      "glaive": {
+        "name": "Glaive"
+      },
+      "greataxe": {
+        "name": "Greataxe"
+      },
+      "greatsword": {
+        "name": "Greatsword"
+      },
+      "halberd": {
+        "name": "Halberd"
+      },
+      "lance": {
+        "name": "Lance"
+      },
+      "longsword": {
+        "name": "Longsword"
+      },
+      "maul": {
+        "name": "Maul"
+      },
+      "morningstar": {
+        "name": "Morningstar"
+      },
+      "pike": {
+        "name": "Pike"
+      },
+      "rapier": {
+        "name": "Rapier"
+      },
+      "scimitar": {
+        "name": "Scimitar"
+      },
+      "shortsword": {
+        "name": "Shortsword"
+      },
+      "trident": {
+        "name": "Trident"
+      },
+      "war-pick": {
+        "name": "War Pick"
+      },
+      "warhammer": {
+        "name": "Warhammer"
+      },
+      "whip": {
+        "name": "Whip"
+      },
+      "blowgun": {
+        "name": "Blowgun"
+      },
+      "hand-crossbow": {
+        "name": "Hand Crossbow"
+      },
+      "heavy-crossbow": {
+        "name": "Heavy Crossbow"
+      },
+      "longbow": {
+        "name": "Longbow"
+      },
+      "net": {
+        "name": "Net"
+      },
+      "unarmed-strike": {
+        "name": "Unarmed Strike"
+      }
     },
     "armor": {
-      "padded": { "name": "Padded Armor" },
-      "leather": { "name": "Leather Armor" },
-      "studded-leather": { "name": "Studded Leather Armor" },
-      "hide": { "name": "Hide Armor" },
-      "chain-shirt": { "name": "Chain Shirt" },
-      "scale-mail": { "name": "Scale Mail" },
-      "breastplate": { "name": "Breastplate" },
-      "half-plate": { "name": "Half Plate" },
-      "ring-mail": { "name": "Ring Mail" },
-      "chain-mail": { "name": "Chain Mail" },
-      "splint": { "name": "Splint Armor" },
-      "plate": { "name": "Plate Armor" },
-      "shield": { "name": "Shield" }
+      "padded": {
+        "name": "Padded Armor"
+      },
+      "leather": {
+        "name": "Leather Armor"
+      },
+      "studded-leather": {
+        "name": "Studded Leather Armor"
+      },
+      "hide": {
+        "name": "Hide Armor"
+      },
+      "chain-shirt": {
+        "name": "Chain Shirt"
+      },
+      "scale-mail": {
+        "name": "Scale Mail"
+      },
+      "breastplate": {
+        "name": "Breastplate"
+      },
+      "half-plate": {
+        "name": "Half Plate"
+      },
+      "ring-mail": {
+        "name": "Ring Mail"
+      },
+      "chain-mail": {
+        "name": "Chain Mail"
+      },
+      "splint": {
+        "name": "Splint Armor"
+      },
+      "plate": {
+        "name": "Plate Armor"
+      },
+      "shield": {
+        "name": "Shield"
+      }
     },
     "gear": {
-      "arrows-20": { "name": "Arrows (20)" },
-      "bolts-20": { "name": "Crossbow Bolts (20)" },
-      "sling-bullets-20": { "name": "Sling Bullets (20)" },
-      "blowgun-needles-50": { "name": "Blowgun Needles (50)" },
-      "insignia-of-rank": { "name": "Insignia of Rank" },
-      "common-clothes": { "name": "Common Clothes" },
-      "pouch": { "name": "Pouch" },
-      "backpack": { "name": "Backpack" },
-      "bedroll": { "name": "Bedroll" },
-      "mess-kit": { "name": "Mess Kit" },
-      "tinderbox": { "name": "Tinderbox" },
-      "torches-10": { "name": "Torches (10)" },
-      "rations-10": { "name": "Rations (10 days)" },
-      "waterskin": { "name": "Waterskin" },
-      "hemp-rope-50ft": { "name": "Hemp Rope (50 ft.)" },
-      "crowbar": { "name": "Crowbar" },
-      "hammer": { "name": "Hammer" },
-      "pitons-10": { "name": "Pitons (10)" },
-      "hooded-lantern": { "name": "Hooded Lantern" },
-      "oil-flasks-2": { "name": "Oil (2 flasks)" },
-      "thieves-tools": { "name": "Thieves' Tools" },
-      "ball-bearings-1000": { "name": "Ball Bearings (bag of 1,000)" },
-      "string-10ft": { "name": "String (10 ft.)" },
-      "bell": { "name": "Bell" },
-      "candles-5": { "name": "Candles (5)" }
+      "arrows-20": {
+        "name": "Arrows (20)"
+      },
+      "bolts-20": {
+        "name": "Crossbow Bolts (20)"
+      },
+      "sling-bullets-20": {
+        "name": "Sling Bullets (20)"
+      },
+      "blowgun-needles-50": {
+        "name": "Blowgun Needles (50)"
+      },
+      "insignia-of-rank": {
+        "name": "Insignia of Rank"
+      },
+      "common-clothes": {
+        "name": "Common Clothes"
+      },
+      "pouch": {
+        "name": "Pouch"
+      },
+      "backpack": {
+        "name": "Backpack"
+      },
+      "bedroll": {
+        "name": "Bedroll"
+      },
+      "mess-kit": {
+        "name": "Mess Kit"
+      },
+      "tinderbox": {
+        "name": "Tinderbox"
+      },
+      "torches-10": {
+        "name": "Torches (10)"
+      },
+      "rations-10": {
+        "name": "Rations (10 days)"
+      },
+      "waterskin": {
+        "name": "Waterskin"
+      },
+      "hemp-rope-50ft": {
+        "name": "Hemp Rope (50 ft.)"
+      },
+      "crowbar": {
+        "name": "Crowbar"
+      },
+      "hammer": {
+        "name": "Hammer"
+      },
+      "pitons-10": {
+        "name": "Pitons (10)"
+      },
+      "hooded-lantern": {
+        "name": "Hooded Lantern"
+      },
+      "oil-flasks-2": {
+        "name": "Oil (2 flasks)"
+      },
+      "thieves-tools": {
+        "name": "Thieves' Tools"
+      },
+      "ball-bearings-1000": {
+        "name": "Ball Bearings (bag of 1,000)"
+      },
+      "string-10ft": {
+        "name": "String (10 ft.)"
+      },
+      "bell": {
+        "name": "Bell"
+      },
+      "candles-5": {
+        "name": "Candles (5)"
+      }
     },
     "packs": {
-      "burglars-pack": { "name": "Burglar's Pack" },
-      "explorers-pack": { "name": "Explorer's Pack" },
-      "dungeoneers-pack": { "name": "Dungeoneer's Pack" }
+      "burglars-pack": {
+        "name": "Burglar's Pack"
+      },
+      "explorers-pack": {
+        "name": "Explorer's Pack"
+      },
+      "dungeoneers-pack": {
+        "name": "Dungeoneer's Pack"
+      }
     }
   },
   "bundles": {
-    "barbarian-loadout": { "name": "Greataxe + 4 Handaxes + Explorer's Pack" },
-    "rogue-loadout": { "name": "Leather Armor + 2 Daggers + Thieves' Tools" },
-    "rogue-rapier": { "name": "Rapier" },
-    "rogue-shortsword-melee": { "name": "Shortsword" },
-    "rogue-shortbow-kit": { "name": "Shortbow + Arrows (20)" },
-    "rogue-shortsword-ranged": { "name": "Shortsword" },
-    "fighter-chainmail": { "name": "Chain Mail" },
-    "fighter-archer-kit": { "name": "Leather Armor + Longbow + Arrows (20)" },
-    "martial-weapon-and-shield": { "name": "A martial weapon and a shield" },
-    "two-martial-weapons": { "name": "Two martial weapons" },
-    "light-crossbow-kit": { "name": "Light Crossbow + Bolts (20)" },
-    "two-handaxes": { "name": "Two Handaxes" }
+    "barbarian-loadout": {
+      "name": "Greataxe + 4 Handaxes + Explorer's Pack"
+    },
+    "rogue-loadout": {
+      "name": "Leather Armor + 2 Daggers + Thieves' Tools"
+    },
+    "rogue-rapier": {
+      "name": "Rapier"
+    },
+    "rogue-shortsword-melee": {
+      "name": "Shortsword"
+    },
+    "rogue-shortbow-kit": {
+      "name": "Shortbow + Arrows (20)"
+    },
+    "rogue-shortsword-ranged": {
+      "name": "Shortsword"
+    },
+    "fighter-chainmail": {
+      "name": "Chain Mail"
+    },
+    "fighter-archer-kit": {
+      "name": "Leather Armor + Longbow + Arrows (20)"
+    },
+    "martial-weapon-and-shield": {
+      "name": "A martial weapon and a shield"
+    },
+    "two-martial-weapons": {
+      "name": "Two martial weapons"
+    },
+    "light-crossbow-kit": {
+      "name": "Light Crossbow + Bolts (20)"
+    },
+    "two-handaxes": {
+      "name": "Two Handaxes"
+    }
   },
   "bundleCategories": {
     "loadout": "Loadout",
@@ -2361,71 +2544,198 @@
       "name": "Tough",
       "description": "Your Hit Point maximum increases by an amount equal to twice your character level when you take this feat, and it increases by 2 again whenever you gain a level."
     },
-    "archery": { "name": "Archery" },
-    "defense": { "name": "Defense" },
-    "dueling": { "name": "Dueling" },
-    "great-weapon-fighting": { "name": "Great Weapon Fighting" },
-    "protection": { "name": "Protection" },
-    "two-weapon-fighting": { "name": "Two-Weapon Fighting" },
-    "blind-fighting": { "name": "Blind Fighting" },
-    "interception": { "name": "Interception" },
-    "thrown-weapon-fighting": { "name": "Thrown Weapon Fighting" },
-    "unarmed-fighting": { "name": "Unarmed Fighting" },
-    "actor": { "name": "Actor" },
-    "athlete": { "name": "Athlete" },
-    "charger": { "name": "Charger" },
-    "chef": { "name": "Chef" },
-    "crossbow-expert": { "name": "Crossbow Expert" },
-    "crusher": { "name": "Crusher" },
-    "defensive-duelist": { "name": "Defensive Duelist" },
-    "dual-wielder": { "name": "Dual Wielder" },
-    "durable": { "name": "Durable" },
-    "elemental-adept": { "name": "Elemental Adept" },
-    "fey-touched": { "name": "Fey Touched" },
-    "grappler": { "name": "Grappler" },
-    "great-weapon-master": { "name": "Great Weapon Master" },
-    "heavily-armored": { "name": "Heavily Armored" },
-    "heavy-armor-master": { "name": "Heavy Armor Master" },
-    "inspiring-leader": { "name": "Inspiring Leader" },
-    "keen-mind": { "name": "Keen Mind" },
-    "lightly-armored": { "name": "Lightly Armored" },
-    "mage-slayer": { "name": "Mage Slayer" },
-
-    "medium-armor-master": { "name": "Medium Armor Master" },
-    "moderately-armored": { "name": "Moderately Armored" },
-    "mounted-combatant": { "name": "Mounted Combatant" },
-    "observant": { "name": "Observant" },
-    "piercer": { "name": "Piercer" },
-    "poisoner": { "name": "Poisoner" },
-    "polearm-master": { "name": "Polearm Master" },
-    "resilient": { "name": "Resilient" },
-    "ritual-caster": { "name": "Ritual Caster" },
-    "sentinel": { "name": "Sentinel" },
-    "shadow-touched": { "name": "Shadow Touched" },
-    "sharpshooter": { "name": "Sharpshooter" },
-    "shield-master": { "name": "Shield Master" },
-    "skill-expert": { "name": "Skill Expert" },
-    "skulker": { "name": "Skulker" },
-    "slasher": { "name": "Slasher" },
-    "speedy": { "name": "Speedy" },
-    "spell-sniper": { "name": "Spell Sniper" },
-    "telekinetic": { "name": "Telekinetic" },
-    "telepathic": { "name": "Telepathic" },
-    "war-caster": { "name": "War Caster" },
-    "weapon-master": { "name": "Weapon Master" },
-    "martial-weapon-training": { "name": "Martial Weapon Training" },
-    "boon-of-combat-prowess": { "name": "Boon of Combat Prowess" },
-    "boon-of-dimensional-travel": { "name": "Boon of Dimensional Travel" },
-    "boon-of-energy-resistance": { "name": "Boon of Energy Resistance" },
-    "boon-of-fate": { "name": "Boon of Fate" },
-    "boon-of-fortitude": { "name": "Boon of Fortitude" },
-    "boon-of-irresistible-offense": { "name": "Boon of Irresistible Offense" },
-    "boon-of-night-spirit": { "name": "Boon of Night Spirit" },
-    "boon-of-recovery": { "name": "Boon of Recovery" },
-    "boon-of-skill": { "name": "Boon of Skill" },
-    "boon-of-speed": { "name": "Boon of Speed" },
-    "boon-of-spell-recall": { "name": "Boon of Spell Recall" },
-    "boon-of-truesight": { "name": "Boon of Truesight" }
+    "archery": {
+      "name": "Archery"
+    },
+    "defense": {
+      "name": "Defense"
+    },
+    "dueling": {
+      "name": "Dueling"
+    },
+    "great-weapon-fighting": {
+      "name": "Great Weapon Fighting"
+    },
+    "protection": {
+      "name": "Protection"
+    },
+    "two-weapon-fighting": {
+      "name": "Two-Weapon Fighting"
+    },
+    "blind-fighting": {
+      "name": "Blind Fighting"
+    },
+    "interception": {
+      "name": "Interception"
+    },
+    "thrown-weapon-fighting": {
+      "name": "Thrown Weapon Fighting"
+    },
+    "unarmed-fighting": {
+      "name": "Unarmed Fighting"
+    },
+    "actor": {
+      "name": "Actor"
+    },
+    "athlete": {
+      "name": "Athlete"
+    },
+    "charger": {
+      "name": "Charger"
+    },
+    "chef": {
+      "name": "Chef"
+    },
+    "crossbow-expert": {
+      "name": "Crossbow Expert"
+    },
+    "crusher": {
+      "name": "Crusher"
+    },
+    "defensive-duelist": {
+      "name": "Defensive Duelist"
+    },
+    "dual-wielder": {
+      "name": "Dual Wielder"
+    },
+    "durable": {
+      "name": "Durable"
+    },
+    "elemental-adept": {
+      "name": "Elemental Adept"
+    },
+    "fey-touched": {
+      "name": "Fey Touched"
+    },
+    "grappler": {
+      "name": "Grappler"
+    },
+    "great-weapon-master": {
+      "name": "Great Weapon Master"
+    },
+    "heavily-armored": {
+      "name": "Heavily Armored"
+    },
+    "heavy-armor-master": {
+      "name": "Heavy Armor Master"
+    },
+    "inspiring-leader": {
+      "name": "Inspiring Leader"
+    },
+    "keen-mind": {
+      "name": "Keen Mind"
+    },
+    "lightly-armored": {
+      "name": "Lightly Armored"
+    },
+    "mage-slayer": {
+      "name": "Mage Slayer"
+    },
+    "medium-armor-master": {
+      "name": "Medium Armor Master"
+    },
+    "moderately-armored": {
+      "name": "Moderately Armored"
+    },
+    "mounted-combatant": {
+      "name": "Mounted Combatant"
+    },
+    "observant": {
+      "name": "Observant"
+    },
+    "piercer": {
+      "name": "Piercer"
+    },
+    "poisoner": {
+      "name": "Poisoner"
+    },
+    "polearm-master": {
+      "name": "Polearm Master"
+    },
+    "resilient": {
+      "name": "Resilient"
+    },
+    "ritual-caster": {
+      "name": "Ritual Caster"
+    },
+    "sentinel": {
+      "name": "Sentinel"
+    },
+    "shadow-touched": {
+      "name": "Shadow Touched"
+    },
+    "sharpshooter": {
+      "name": "Sharpshooter"
+    },
+    "shield-master": {
+      "name": "Shield Master"
+    },
+    "skill-expert": {
+      "name": "Skill Expert"
+    },
+    "skulker": {
+      "name": "Skulker"
+    },
+    "slasher": {
+      "name": "Slasher"
+    },
+    "speedy": {
+      "name": "Speedy"
+    },
+    "spell-sniper": {
+      "name": "Spell Sniper"
+    },
+    "telekinetic": {
+      "name": "Telekinetic"
+    },
+    "telepathic": {
+      "name": "Telepathic"
+    },
+    "war-caster": {
+      "name": "War Caster"
+    },
+    "weapon-master": {
+      "name": "Weapon Master"
+    },
+    "martial-weapon-training": {
+      "name": "Martial Weapon Training"
+    },
+    "boon-of-combat-prowess": {
+      "name": "Boon of Combat Prowess"
+    },
+    "boon-of-dimensional-travel": {
+      "name": "Boon of Dimensional Travel"
+    },
+    "boon-of-energy-resistance": {
+      "name": "Boon of Energy Resistance"
+    },
+    "boon-of-fate": {
+      "name": "Boon of Fate"
+    },
+    "boon-of-fortitude": {
+      "name": "Boon of Fortitude"
+    },
+    "boon-of-irresistible-offense": {
+      "name": "Boon of Irresistible Offense"
+    },
+    "boon-of-night-spirit": {
+      "name": "Boon of Night Spirit"
+    },
+    "boon-of-recovery": {
+      "name": "Boon of Recovery"
+    },
+    "boon-of-skill": {
+      "name": "Boon of Skill"
+    },
+    "boon-of-speed": {
+      "name": "Boon of Speed"
+    },
+    "boon-of-spell-recall": {
+      "name": "Boon of Spell Recall"
+    },
+    "boon-of-truesight": {
+      "name": "Boon of Truesight"
+    }
   },
   "weaponMasteries": {
     "cleave": {

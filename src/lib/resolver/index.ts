@@ -99,12 +99,15 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     }
   }
 
+  const monkLevel = getClassLevel(bundles, 'monk' satisfies ClassId);
+
   const attacks = resolveAttacks(
     equipmentResult.items,
     abilities,
     proficiencyBonus,
     proficiencies.weapon,
-    fightingStyleIds
+    fightingStyleIds,
+    monkLevel
   );
 
   // Build hitDie array from hit-die grants

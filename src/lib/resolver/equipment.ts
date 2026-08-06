@@ -153,7 +153,8 @@ export function resolveAttacks(
   abilities: Readonly<Record<AbilityKey, ResolvedAbility>>,
   proficiencyBonus: number,
   weaponProficiencies: readonly Sourced<WeaponProficiencyId>[],
-  fightingStyleIds: readonly string[]
+  fightingStyleIds: readonly string[],
+  monkLevel: number
 ): readonly ResolvedAttack[] {
   const equippedWeapons = equippedItems.filter((item) => item.equipped && item.itemDef.type === 'weapon');
 
@@ -215,6 +216,50 @@ export function resolveAttacks(
       range: weapon.range,
       ...(weapon.normalRange !== undefined ? { normalRange: weapon.normalRange } : {}),
       ...(weapon.longRange !== undefined ? { longRange: weapon.longRange } : {}),
+    });
+  }
+
+  const hasUnarmedFighting = fightingStyleIds.includes('unarmed-fighting');
+  const hasNoWeaponEquipped = totalEquippedWeapons === 0;
+
+  if (hasNoWeaponEquipped || monkLevel > 0 || hasUnarmedFighting) {
+    let attackAbility: AbilityKey = 'str';
+    if (monkLevel > 0) {
+      attackAbility = abilities.str.modifier >= abilities.dex.modifier ? 'str' : 'dex';
+    }
+
+    const abilityMod = abilities[attackAbility].modifier;
+
+    const attackBreakdown: AttackBonusComponent[] = [{ type: 'ability', value: abilityMod, label: attackAbility }];
+    attackBreakdown.push({ type: 'proficiency', value: proficiencyBonus, label: 'proficiency' });
+
+    let damageDice = '';
+    if (monkLevel > 0) {
+      if (monkLevel >= 17) damageDice = '1d12';
+      else if (monkLevel >= 11) damageDice = '1d10';
+      else if (monkLevel >= 5) damageDice = '1d8';
+      else damageDice = '1d6';
+    } else if (hasUnarmedFighting) {
+      const hasShield = equippedItems.some(
+        (item) => item.equipped && item.itemDef.type === 'armor' && item.itemDef.category === 'shield'
+      );
+      damageDice = hasNoWeaponEquipped && !hasShield ? '1d8' : '1d6';
+    } else {
+      damageDice = '1';
+    }
+
+    const damageBreakdown: DamageBonusComponent[] = [{ type: 'ability', value: abilityMod, label: attackAbility }];
+
+    attacks.push({
+      weaponId: 'unarmed-strike',
+      attackBonus: attackBreakdown.reduce((sum, c) => sum + c.value, 0),
+      attackBreakdown,
+      damageDice,
+      damageBonus: damageBreakdown.reduce((sum, c) => sum + c.value, 0),
+      damageBreakdown,
+      damageType: 'bludgeoning',
+      properties: [],
+      range: 'melee',
     });
   }
 

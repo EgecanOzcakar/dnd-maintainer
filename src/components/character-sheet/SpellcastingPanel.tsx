@@ -2,13 +2,12 @@ import { isSpellId, getSpellDef } from '@/lib/sources/spells';
 import { getSpellDisplayMeta } from '@/lib/spell-display';
 import type { ResolvedCharacter } from '@/types/resolved';
 import type { AbilityKey } from '@/lib/dnd-helpers';
-import type { DieSize } from '@/components/character-sheet/DiceRoller';
 import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
 import { parseDiceFormula, extractDiceFromText } from '@/lib/dice-helpers';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Dices } from 'lucide-react';
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type Spellcasting = NonNullable<ResolvedCharacter['spellcasting']>;
@@ -57,7 +56,7 @@ function highlightText(text: string) {
     'gi'
   );
 
-  const parts: (string | JSX.Element)[] = [];
+  const parts: (string | ReactElement)[] = [];
   let lastIndex = 0;
   let match: RegExpExecArray | null;
 

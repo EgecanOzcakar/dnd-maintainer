@@ -692,6 +692,59 @@
       "noTemplate": "No fillable PDF template found. Add one at public/assets/character-sheet.pdf (see the README there).",
       "failed": "PDF export failed.",
       "notReady": "Character data is still loading — try again in a moment."
+    },
+    "combatView": {
+      "tabs": {
+        "sheet": "Sheet",
+        "combat": "Combat"
+      },
+      "sections": {
+        "combatStats": "Combat Stats",
+        "abilityScores": "Ability Scores",
+        "actions": "Actions",
+        "bonusActions": "Bonus Actions",
+        "reactions": "Reactions",
+        "other": "Other",
+        "features": "Class Features",
+        "diceRoller": "Dice Roller"
+      },
+      "abilityBreakdown": {
+        "base": "Base",
+        "bonuses": "Bonuses",
+        "total": "Total",
+        "modifier": "Modifier",
+        "source": "{{source}}"
+      },
+      "diceRoller": {
+        "roll": "Roll",
+        "rolling": "Rolling…",
+        "result": "Result",
+        "modifier": "Modifier",
+        "numDice": "Dice",
+        "history": "Recent Rolls",
+        "clearHistory": "Clear",
+        "noHistory": "No rolls yet",
+        "rollEntry": "{{count}}{{die}} {{modifier}} = {{result}}",
+        "rollEntryNoMod": "{{count}}{{die}} = {{result}}"
+      },
+      "actions": {
+        "roll": "Roll",
+        "attackBonus": "ATK +{{bonus}}",
+        "saveDC": "Save DC {{dc}}",
+        "damage": "{{dice}} {{type}}",
+        "range": "{{range}}",
+        "spellLevel": "Lvl {{level}}",
+        "cantrip": "Cantrip",
+        "noActions": "No actions available",
+        "noBonusActions": "No bonus actions available",
+        "noReactions": "No reactions available",
+        "noOther": "No other actions",
+        "noFeatures": "No class features",
+        "castingTime": "{{time}}",
+        "concentration": "Concentration",
+        "ritual": "Ritual",
+        "usesPerRest": "{{uses}} / {{regen}}"
+      }
     }
   },
   "characterList": {

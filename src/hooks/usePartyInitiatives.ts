@@ -96,6 +96,7 @@ export function useUpdatePartyInitiatives() {
     },
     onSuccess: (_, { campaignId }) => {
       queryClient.invalidateQueries({ queryKey: ['party-initiatives', campaignId] });
+      queryClient.invalidateQueries({ queryKey: ['party-state', campaignId] });
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
     },
   });

@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dices, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useRecordCharacterRoll } from '@/hooks/usePartyState';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -63,6 +64,12 @@ interface DiceRollerProps {
   readonly contextLabel?: string;
   /** Compact mode hides the history panel. */
   readonly compact?: boolean;
+  /** Optional character ID for sync with party roll tracker. */
+  readonly characterId?: string;
+  /** Optional campaign ID for sync with party roll tracker. */
+  readonly campaignId?: string;
+  /** Optional callback fired when a roll completes. */
+  readonly onRoll?: (result: DiceRollResult) => void;
 }
 
 export function DiceRoller({
@@ -71,8 +78,12 @@ export function DiceRoller({
   presetCount,
   contextLabel,
   compact = false,
+  characterId,
+  campaignId,
+  onRoll,
 }: DiceRollerProps) {
   const { t: tc } = useTranslation('common');
+  const recordRoll = useRecordCharacterRoll();
 
   const [selectedDie, setSelectedDie] = useState<DieSize>(presetDie ?? 20);
   const [count, setCount] = useState<number>(presetCount ?? 1);
@@ -102,8 +113,25 @@ export function DiceRoller({
       setLastResult(entry);
       setHistory((prev) => [entry, ...prev].slice(0, MAX_HISTORY));
       setIsRolling(false);
+
+      if (onRoll) onRoll(entry);
+
+      if (characterId && campaignId) {
+        const modSignStr = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+        const formula = `${count}d${selectedDie}${modifier !== 0 ? modSignStr : ''}`;
+        recordRoll.mutate({
+          campaignId,
+          characterId,
+          roll: {
+            formula,
+            total,
+            rolls,
+            modifier,
+          },
+        });
+      }
     }, 320);
-  }, [isRolling, count, selectedDie, modifier]);
+  }, [isRolling, count, selectedDie, modifier, onRoll, characterId, campaignId, recordRoll]);
 
   // Keep preset values in sync when parent changes them (e.g. clicking a spell's Roll button)
   const lastPresetKey = useRef('');

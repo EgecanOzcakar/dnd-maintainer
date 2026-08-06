@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { Dices, Swords, RotateCcw, Sparkles } from 'lucide-react';
+import { Dices, Swords, RotateCcw, Sparkles, Heart, Plus, Minus, Shield, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useCharacters } from '@/hooks/useCharacters';
 import { useCampaignContext } from '@/hooks/useCampaignContext';
+import { usePartyState, useUpdatePartyHP, useRecordCharacterRoll } from '@/hooks/usePartyState';
 import { usePartyInitiatives, useUpdatePartyInitiatives } from '@/hooks/usePartyInitiatives';
 import type { CharacterSummary } from '@/types/database';
 import { toast } from 'sonner';
@@ -19,8 +20,11 @@ export default function DMControlPage() {
   const targetCampaignId = campaignId || campaignSlug || '';
 
   const { data: characters = [] } = useCharacters(targetCampaignId);
+  const { data: partyState } = usePartyState(targetCampaignId);
   const { data: partyInitState } = usePartyInitiatives(targetCampaignId);
   const updatePartyInitiatives = useUpdatePartyInitiatives();
+  const updatePartyHP = useUpdatePartyHP();
+  const recordCharacterRoll = useRecordCharacterRoll();
 
   // Filter only Player Characters (excluding NPCs)
   const pcs = characters.filter((c: CharacterSummary) => c.character_type === 'pc');
@@ -50,6 +54,23 @@ export default function DMControlPage() {
     const newEntry = { id: crypto.randomUUID(), formula, result: total, rolls };
     setRollHistory((prev) => [newEntry, ...prev.slice(0, 9)]);
     toast.success(`Rolled ${formula}: ${total}`);
+  };
+
+  // Roll on behalf of a specific PC
+  const handleRollForPC = async (pc: CharacterSummary) => {
+    const d20 = Math.floor(Math.random() * 20) + 1;
+    const formula = '1d20';
+    await recordCharacterRoll.mutateAsync({
+      campaignId: targetCampaignId,
+      characterId: pc.id,
+      roll: {
+        formula,
+        total: d20,
+        rolls: [d20],
+        modifier: 0,
+      },
+    });
+    toast.success(`Rolled d20 for ${pc.name}: ${d20}`);
   };
 
   // Trigger Standalone Initiative Roll for all characters
@@ -82,7 +103,44 @@ export default function DMControlPage() {
     toast.info('Initiative rolls reset.');
   };
 
-  const initiativesMap = partyInitState?.initiatives ?? {};
+  // Update single character HP
+  const handleAdjustHP = async (pcId: string, currentVal: number, maxVal: number, delta: number) => {
+    const newHp = Math.max(0, Math.min(maxVal, currentVal + delta));
+    await updatePartyHP.mutateAsync({
+      campaignId: targetCampaignId,
+      hpMap: { [pcId]: newHp },
+    });
+  };
+
+  const handleSetExactHP = async (pcId: string, maxVal: number, valStr: string) => {
+    const parsed = parseInt(valStr, 10);
+    if (isNaN(parsed)) return;
+    const clamped = Math.max(0, Math.min(maxVal, parsed));
+    await updatePartyHP.mutateAsync({
+      campaignId: targetCampaignId,
+      hpMap: { [pcId]: clamped },
+    });
+  };
+
+  // Full Heal All Characters
+  const handleHealAllParty = async () => {
+    if (!targetCampaignId || pcs.length === 0) return;
+    const hpMap: Record<string, number> = {};
+    pcs.forEach((pc) => {
+      const maxHp = pc.hit_points_max ?? 10;
+      hpMap[pc.id] = maxHp;
+    });
+    await updatePartyHP.mutateAsync({
+      campaignId: targetCampaignId,
+      hpMap,
+    });
+    toast.success('Fully healed all party characters!');
+  };
+
+  const initiativesMap = partyInitState?.initiatives ?? partyState?.initiatives ?? {};
+  const hpMap = partyState?.hp ?? {};
+  const lastRollsMap = partyState?.lastRolls ?? {};
+
   const hasInitiatives = Object.keys(initiativesMap).length > 0;
 
   return (
@@ -95,13 +153,17 @@ export default function DMControlPage() {
             <h1 className="text-2xl font-bold text-foreground">DM Control & Initiative Console</h1>
           </div>
           <p className="text-sm text-muted-foreground mt-1">
-            Standalone party initiative roller and DM dice roller console.
+            Party HP management, initiative roller, and DM dice roller console.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <Button onClick={handleHealAllParty} variant="outline" className="gap-2 text-rose-500 border-rose-500/30 hover:bg-rose-500/10">
+            <Heart className="size-4 fill-rose-500/20" /> Heal All Party
+          </Button>
+
           <Button onClick={handleTriggerInitiatives} className="gap-2 bg-primary hover:bg-primary/90">
-            <Sparkles className="size-4" /> Trigger Party Initiative Roll
+            <Sparkles className="size-4" /> Roll Party Initiative
           </Button>
 
           {hasInitiatives && (
@@ -110,6 +172,181 @@ export default function DMControlPage() {
             </Button>
           )}
         </div>
+      </div>
+
+      {/* ── Party HP & Status Management Section ────────────────────────────── */}
+      <div className="bg-card border rounded-xl p-6 space-y-6">
+        <div className="flex items-center justify-between border-b pb-3">
+          <div className="flex items-center gap-2">
+            <Heart className="size-5 text-rose-500 fill-rose-500/20" />
+            <h2 className="text-lg font-bold text-foreground">Party HP & Character Management</h2>
+          </div>
+          <span className="text-xs text-muted-foreground font-mono">
+            {pcs.length} {pcs.length === 1 ? 'Character' : 'Characters'}
+          </span>
+        </div>
+
+        {pcs.length === 0 ? (
+          <div className="text-center py-6 text-muted-foreground text-sm">No characters found in campaign.</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {pcs.map((pc) => {
+              const maxHp = pc.hit_points_max ?? 10;
+              const currentHp = hpMap[pc.id] ?? maxHp;
+              const lastRoll = lastRollsMap[pc.id];
+
+              const percent = Math.min(100, Math.max(0, Math.round((currentHp / maxHp) * 100)));
+
+              let statusBadge = { label: 'Healthy', variant: 'default' as const, colorClass: 'bg-emerald-600' };
+              if (currentHp === 0) {
+                statusBadge = { label: 'Unconscious', variant: 'destructive' as const, colorClass: 'bg-slate-700' };
+              } else if (percent <= 25) {
+                statusBadge = { label: 'Critical', variant: 'destructive' as const, colorClass: 'bg-rose-600' };
+              } else if (percent <= 50) {
+                statusBadge = { label: 'Injured', variant: 'secondary' as const, colorClass: 'bg-amber-600 text-white' };
+              }
+
+              const barColor =
+                currentHp === 0
+                  ? 'bg-slate-500'
+                  : percent <= 25
+                    ? 'bg-rose-500'
+                    : percent <= 50
+                      ? 'bg-amber-500'
+                      : 'bg-emerald-500';
+
+              return (
+                <div key={pc.id} className="p-4 rounded-xl border bg-muted/20 space-y-3">
+                  {/* Header: Name, class, AC & status */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="font-bold text-base text-foreground flex items-center gap-2">
+                        {pc.name}
+                        {pc.armor_class != null && (
+                          <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground flex items-center gap-1 border">
+                            <Shield className="size-3 text-sky-500" /> AC {pc.armor_class}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {pc.class ? `${pc.class} (lvl ${pc.level})` : `Lvl ${pc.level}`}
+                      </div>
+                    </div>
+
+                    <Badge className={statusBadge.colorClass}>{statusBadge.label}</Badge>
+                  </div>
+
+                  {/* HP Progress Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs font-bold font-mono">
+                      <span className="text-muted-foreground">Hit Points</span>
+                      <span className={currentHp === 0 ? 'text-destructive font-black' : 'text-foreground'}>
+                        {currentHp} / {maxHp} HP ({percent}%)
+                      </span>
+                    </div>
+                    <div className="h-2.5 w-full bg-muted rounded-full overflow-hidden border">
+                      <div
+                        className={`h-full transition-all duration-300 ${barColor}`}
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* HP Action Controls */}
+                  <div className="flex items-center gap-1.5 pt-1 flex-wrap">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, -5)}
+                      className="h-8 px-2 text-xs text-rose-500 hover:bg-rose-500/10"
+                    >
+                      -5
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, -1)}
+                      className="h-8 px-2 text-xs text-rose-500 hover:bg-rose-500/10"
+                    >
+                      <Minus className="size-3" /> 1
+                    </Button>
+
+                    <div className="w-16">
+                      <Input
+                        type="number"
+                        min={0}
+                        max={maxHp}
+                        value={currentHp}
+                        onChange={(e) => handleSetExactHP(pc.id, maxHp, e.target.value)}
+                        className="h-8 text-center text-xs font-bold font-mono px-1"
+                      />
+                    </div>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, 1)}
+                      className="h-8 px-2 text-xs text-emerald-600 hover:bg-emerald-500/10"
+                    >
+                      <Plus className="size-3" /> 1
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, 5)}
+                      className="h-8 px-2 text-xs text-emerald-600 hover:bg-emerald-500/10"
+                    >
+                      +5
+                    </Button>
+
+                    <div className="flex items-center gap-1 ml-auto">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, -maxHp)}
+                        className="h-8 px-2 text-[11px] text-muted-foreground hover:text-destructive"
+                      >
+                        0 HP
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, maxHp)}
+                        className="h-8 px-2 text-[11px] text-emerald-600 hover:bg-emerald-500/10"
+                      >
+                        Full
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Character Last Roll & Roll Action */}
+                  <div className="border-t pt-2 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5 text-muted-foreground truncate">
+                      <Dices className="size-3 text-indigo-500 shrink-0" />
+                      <span className="font-semibold text-[11px]">Last Roll:</span>
+                      {lastRoll ? (
+                        <span className="font-mono font-bold text-foreground">
+                          {lastRoll.formula} = <span className="text-primary font-black">{lastRoll.total}</span>
+                        </span>
+                      ) : (
+                        <span className="italic text-[11px]">No rolls yet</span>
+                      )}
+                    </div>
+
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleRollForPC(pc)}
+                      className="h-7 text-[11px] gap-1 border-indigo-500/30 text-indigo-500 hover:bg-indigo-500/10"
+                    >
+                      <Dices className="size-3" /> Roll d20
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* ── Active Party Initiative Roll Status ────────────────────────────── */}

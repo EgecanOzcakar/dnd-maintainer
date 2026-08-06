@@ -1,6 +1,7 @@
+import { usePartyState } from '@/hooks/usePartyState';
 import { usePartyInitiatives } from '@/hooks/usePartyInitiatives';
 import { useCharacters } from '@/hooks/useCharacters';
-import { Swords } from 'lucide-react';
+import { Swords, Heart, Dices } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CharacterSummary } from '@/types/database';
 
@@ -10,6 +11,7 @@ interface PartyInitiativeTrackerProps {
 }
 
 export function PartyInitiativeTracker({ campaignId, currentCharacterId }: PartyInitiativeTrackerProps) {
+  const { data: partyState } = usePartyState(campaignId);
   const { data: partyInitState } = usePartyInitiatives(campaignId);
   const { data: characters = [] } = useCharacters(campaignId);
 
@@ -18,14 +20,23 @@ export function PartyInitiativeTracker({ campaignId, currentCharacterId }: Party
 
   if (pcs.length === 0) return null;
 
-  const initiativesMap = partyInitState?.initiatives ?? {};
+  const initiativesMap = partyInitState?.initiatives ?? partyState?.initiatives ?? {};
+  const hpMap = partyState?.hp ?? {};
+  const lastRollsMap = partyState?.lastRolls ?? {};
 
   // Build PC list with initiative scores (sorted by initiative descending)
   const pcList = pcs.map((pc) => {
     const initiative = initiativesMap[pc.id] ?? null;
+    const maxHp = pc.hit_points_max;
+    const currentHp = maxHp != null ? (hpMap[pc.id] ?? maxHp) : null;
+    const lastRoll = lastRollsMap[pc.id] ?? null;
+
     return {
       pc,
       initiative,
+      currentHp,
+      maxHp,
+      lastRoll,
       isCurrent: pc.id === currentCharacterId,
     };
   });
@@ -45,7 +56,7 @@ export function PartyInitiativeTracker({ campaignId, currentCharacterId }: Party
       <div className="flex items-center justify-between border-b border-border/60 pb-2.5 mb-3">
         <div className="flex items-center gap-2">
           <Swords className="size-5 text-primary" />
-          <h3 className="font-bold text-sm text-foreground">Party Initiative Tracker</h3>
+          <h3 className="font-bold text-sm text-foreground">Party Initiative & Roll Tracker</h3>
           {hasInitiatives ? (
             <Badge variant="default" className="text-[10px] bg-emerald-600/90 text-white px-2 py-0.5">
               Live Rolled Order
@@ -63,37 +74,64 @@ export function PartyInitiativeTracker({ campaignId, currentCharacterId }: Party
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-        {pcList.map(({ pc, initiative, isCurrent }) => {
+        {pcList.map(({ pc, initiative, currentHp, maxHp, lastRoll, isCurrent }) => {
           return (
             <div
               key={pc.id}
-              className={`p-2.5 rounded-lg border text-xs flex items-center justify-between transition-all ${
+              className={`p-2.5 rounded-lg border text-xs flex flex-col justify-between gap-2 transition-all ${
                 isCurrent
                   ? 'bg-primary/10 border-primary font-semibold ring-1 ring-primary/40'
                   : 'bg-muted/40 border-border hover:bg-muted/70'
               }`}
             >
-              <div className="min-w-0 flex-1 pr-2">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-bold truncate text-foreground text-sm">{pc.name}</span>
-                  {isCurrent && (
-                    <Badge variant="secondary" className="text-[9px] py-0 px-1 shrink-0 bg-primary/20 text-primary">
-                      You
-                    </Badge>
-                  )}
+              {/* Header: Name, level, Initiative */}
+              <div className="flex items-start justify-between gap-1">
+                <div className="min-w-0 flex-1 pr-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold truncate text-foreground text-sm">{pc.name}</span>
+                    {isCurrent && (
+                      <Badge variant="secondary" className="text-[9px] py-0 px-1 shrink-0 bg-primary/20 text-primary">
+                        You
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground truncate mt-0.5">
+                    {pc.class ? `${pc.class} (lvl ${pc.level})` : `Lvl ${pc.level}`}
+                  </div>
                 </div>
-                <div className="text-[11px] text-muted-foreground truncate mt-0.5">
-                  {pc.class ? `${pc.class} (lvl ${pc.level})` : `Lvl ${pc.level}`}
-                </div>
-              </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Init</div>
                   <div className="text-base font-extrabold font-mono text-primary">
                     {initiative !== null ? (initiative >= 0 ? `+${initiative}` : initiative) : '--'}
                   </div>
                 </div>
+              </div>
+
+              {/* Sub-bar: HP & Last Roll */}
+              <div className="flex items-center justify-between border-t border-border/40 pt-1.5 text-[11px] font-mono">
+                {maxHp != null ? (
+                  <div className="flex items-center gap-1 text-muted-foreground" title="Current / Max Hit Points">
+                    <Heart className="size-3 text-rose-500 fill-rose-500/20 shrink-0" />
+                    <span className="font-bold">
+                      {currentHp ?? maxHp}/{maxHp} HP
+                    </span>
+                  </div>
+                ) : (
+                  <div />
+                )}
+
+                {lastRoll ? (
+                  <div
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-500 font-sans border border-indigo-500/20"
+                    title={`Last Roll: ${lastRoll.formula} = ${lastRoll.total}`}
+                  >
+                    <Dices className="size-3 text-indigo-500 shrink-0" />
+                    <span className="text-[10px] font-mono font-bold">{lastRoll.formula}: {lastRoll.total}</span>
+                  </div>
+                ) : (
+                  <span className="text-[10px] text-muted-foreground/60 italic">No rolls</span>
+                )}
               </div>
             </div>
           );

@@ -1,6 +1,7 @@
+import { usePartyState } from '@/hooks/usePartyState';
 import { usePartyInitiatives } from '@/hooks/usePartyInitiatives';
 import { useCharacters } from '@/hooks/useCharacters';
-import { Swords, Shield, Heart, Activity } from 'lucide-react';
+import { Swords, Shield, Heart, Dices } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { CharacterSummary } from '@/types/database';
 
@@ -10,6 +11,7 @@ interface FloatingPartyBarProps {
 }
 
 export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPartyBarProps) {
+  const { data: partyState } = usePartyState(campaignId);
   const { data: partyInitState } = usePartyInitiatives(campaignId);
   const { data: characters = [] } = useCharacters(campaignId);
 
@@ -18,16 +20,24 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
 
   if (pcs.length === 0) return null;
 
-  const initiativesMap = partyInitState?.initiatives ?? {};
+  const initiativesMap = partyInitState?.initiatives ?? partyState?.initiatives ?? {};
+  const hpMap = partyState?.hp ?? {};
+  const lastRollsMap = partyState?.lastRolls ?? {};
 
-  // Build PC list with initiative scores and HP/Status info
+  // Build PC list with initiative scores, HP/Status info, and last rolled dice
   const pcList = pcs.map((pc) => {
     const initiative = initiativesMap[pc.id] ?? null;
     const conditions = pc.conditions ?? [];
+    const maxHp = pc.hit_points_max;
+    const currentHp = maxHp != null ? (hpMap[pc.id] ?? maxHp) : null;
+    const lastRoll = lastRollsMap[pc.id] ?? null;
 
     return {
       pc,
       initiative,
+      currentHp,
+      maxHp,
+      lastRoll,
       conditions,
       isCurrent: pc.id === currentCharacterId,
     };
@@ -54,8 +64,10 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
 
         {/* Scrollable / Responsive Party Row */}
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 min-w-0 flex-1">
-          {pcList.map(({ pc, initiative, conditions, isCurrent }) => {
+          {pcList.map(({ pc, initiative, currentHp, maxHp, lastRoll, conditions, isCurrent }) => {
             const hasConditions = conditions.length > 0;
+
+            const isLowHp = currentHp !== null && maxHp !== null && currentHp <= maxHp * 0.25;
 
             return (
               <div
@@ -83,7 +95,7 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
                   </div>
                 </div>
 
-                {/* Stat Badges: AC, Max HP, Initiative */}
+                {/* Stat Badges: AC, Current / Max HP, Initiative, Last Roll */}
                 <div className="flex items-center gap-1.5 font-mono text-[11px] shrink-0">
                   {/* Armor Class */}
                   {pc.armor_class != null && (
@@ -93,11 +105,20 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
                     </div>
                   )}
 
-                  {/* Max Hit Points */}
-                  {pc.hit_points_max != null && (
-                    <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-muted/60 text-muted-foreground" title="Max Hit Points">
-                      <Heart className="size-3 text-rose-500 fill-rose-500/20" />
-                      <span className="font-bold">{pc.hit_points_max} HP</span>
+                  {/* Current / Max Hit Points */}
+                  {maxHp != null && (
+                    <div
+                      className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded border ${
+                        isLowHp
+                          ? 'bg-rose-500/10 text-rose-600 border-rose-500/30'
+                          : 'bg-muted/60 text-muted-foreground border-transparent'
+                      }`}
+                      title="Hit Points (Current / Max)"
+                    >
+                      <Heart className={`size-3 ${isLowHp ? 'text-rose-600 fill-rose-600' : 'text-rose-500 fill-rose-500/20'}`} />
+                      <span className="font-bold">
+                        {currentHp ?? maxHp}/{maxHp} HP
+                      </span>
                     </div>
                   )}
 
@@ -108,6 +129,18 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
                       {initiative !== null ? (initiative >= 0 ? `+${initiative}` : initiative) : '--'}
                     </span>
                   </div>
+
+                  {/* Last Rolled Dice */}
+                  {lastRoll && (
+                    <div
+                      className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-500 border border-indigo-500/20"
+                      title={`Last Roll: ${lastRoll.formula} = ${lastRoll.total} (${lastRoll.rolls.join(', ')})`}
+                    >
+                      <Dices className="size-3 text-indigo-500 shrink-0" />
+                      <span className="text-[10px] font-sans text-muted-foreground font-bold">{lastRoll.formula}:</span>
+                      <span className="font-black text-xs">{lastRoll.total}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Status Conditions */}

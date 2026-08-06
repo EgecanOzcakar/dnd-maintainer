@@ -284,7 +284,7 @@
       "selectSpeciesFirst": "Select a species to see lineage options.",
       "loadingLineage": "Loading lineage options...",
       "couldNotLoadPlayerNames": "Could not load player name suggestions",
-      "quickNpcDescription": "Click a class icon to create a random NPC of that class and jump ahead in the builder",
+      "quickNpcDescription": "Click a class icon to create a fully prepared random NPC ready for instant creation",
       "quickNpcButton": "Random {{class}} NPC",
       "quickNpcFailed": "Could not generate NPC — name data missing for selected species",
       "quickNpcUnknownClass": "Could not generate NPC — unknown class",
@@ -293,6 +293,8 @@
       "quickNpcAdvanceTimeout": "NPC was created but the step did not advance — please navigate manually",
       "quickNpcOverwriteTitle": "Replace your current work?",
       "quickNpcOverwriteConfirm": "This will overwrite the data you have already entered. Continue?",
+      "fillAllNpcOptions": "Auto-Fill All NPC Options",
+      "npcOptionsFilled": "All NPC options filled and ready to create!",
       "disabledSourceBook": "This option is from a source book not enabled for this campaign.",
       "alreadyGranted": "Already granted by another source"
     },

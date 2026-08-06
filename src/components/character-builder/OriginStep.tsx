@@ -366,7 +366,7 @@ export function OriginStep() {
             {bonusSummary.langChoiceCount > 0 && (
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-medium text-muted-foreground w-28 shrink-0">
-                  {tc('characterBuilder.backgroundStep.languageTitle')}
+                  {tc('characterBuilder.backgroundStep.languageLabel')}
                 </span>
                 <Badge variant="outline" className="text-xs">
                   {tc('characterBuilder.backgroundStep.languageChoiceCount', { count: bonusSummary.langChoiceCount })}

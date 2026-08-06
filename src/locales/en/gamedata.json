@@ -3110,7 +3110,7 @@
     },
     "fire-bolt": {
       "name": "Fire Bolt",
-      "description": "You hurl a mote of fire at a creature or an object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Fire damage. A flammable object hit by this spell ignites if it isn't being worn or carried."
+      "description": "You hurl a mote of fire at a creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 Fire damage. A flammable object hit by this spell ignites if it isn't being worn or carried."
     },
     "blur": {
       "name": "Blur",
@@ -3423,6 +3423,62 @@
     "summon-celestial": {
       "name": "Summon Celestial",
       "description": "You call forth a celestial spirit. It manifests in an angelic form in an unoccupied space within range. The creature is friendly to you and obeys your commands for the duration."
+    },
+    "minor-illusion": {
+      "name": "Minor Illusion",
+      "description": "You create a sound or an image of an object within range that lasts for the duration. The illusion also ends if you dismiss it as an action or cast this spell again."
+    },
+    "darkness": {
+      "name": "Darkness",
+      "description": "Magical darkness spreads from a point you choose within range to fill a 15-foot-radius sphere for the duration. The darkness spreads around corners. A creature with Darkvision can't see through this darkness, and nonmagical light can't illuminate it."
+    },
+    "darkvision": {
+      "name": "Darkvision",
+      "description": "You touch a willing creature to grant it the ability to see in the dark. For the duration, that creature has Darkvision out to a range of 60 feet."
+    },
+    "silence": {
+      "name": "Silence",
+      "description": "For the duration, no sound can be created within or pass through a 20-foot-radius sphere centered on a point you choose within range. Any creature or object entirely inside the sphere is Immune to Thunder damage, and creatures are Deafened while entirely inside it."
+    },
+    "longstrider": {
+      "name": "Longstrider",
+      "description": "You touch a creature. The target's Speed increases by 10 feet until the spell ends."
+    },
+    "detect-magic": {
+      "name": "Detect Magic",
+      "description": "For the duration, you sense the presence of magic within 30 feet of you. If you sense magic in this way, you can use your action to see a faint aura around any visible creature or object in the area that bears magic, and you learn its school of magic, if any."
+    },
+    "prestidigitation": {
+      "name": "Prestidigitation",
+      "description": "This spell is a minor magical trick that novice spellcasters use for practice. You create one of several minor effects, such as a puff of wind, a spark, an odor, cleaning or soiling an object, or warming/chilling food."
+    },
+    "animate-objects": {
+      "name": "Animate Objects",
+      "description": "Objects come to life at your command. Choose up to ten nonmagical objects within range that are not being worn or carried. Each target animates and becomes a creature under your control until the spell ends or until reduced to 0 Hit Points."
+    },
+    "chill-touch": {
+      "name": "Chill Touch",
+      "description": "You create a ghostly, skeletal hand in the space of a creature within range to assail it with the chill of the grave. Make a ranged spell attack against the creature. On a hit, the target takes 1d8 Necrotic damage, and it can't regain Hit Points until the start of your next turn."
+    },
+    "false-life": {
+      "name": "False Life",
+      "description": "Bolstering yourself with a necromantic facsimile of life, you gain 1d4 + 4 Temporary Hit Points for the duration."
+    },
+    "ray-of-enfeeblement": {
+      "name": "Ray of Enfeeblement",
+      "description": "A black beam of enervating energy springs from your finger toward a creature within range. Make a ranged spell attack against the target. On a hit, the target deals only half damage with Strength-based attacks until the spell ends."
+    },
+    "hellish-rebuke": {
+      "name": "Hellish Rebuke",
+      "description": "You point your finger at a creature that damaged you, and the creature is momentarily surrounded by hellish flames. The creature must make a Dexterity saving throw. It takes 2d10 Fire damage on a failed save, or half as much damage on a successful one."
+    },
+    "mage-hand": {
+      "name": "Mage Hand",
+      "description": "A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration or until you dismiss it as an action. You can use your action to control the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour the contents out of a vial."
+    },
+    "dancing-lights": {
+      "name": "Dancing Lights",
+      "description": "You create up to four torch-sized lights within range, making them appear as lanterns, glowing orbs, or soft lights. You can use a Bonus Action to move them up to 60 feet to a new spot within range."
     }
   },
   "sourceBooks": {

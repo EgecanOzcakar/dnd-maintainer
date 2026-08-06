@@ -524,7 +524,7 @@ describe('BasicsStep', () => {
 
     // No background update and no updateCreation call on the abilities branch
     const updateCall = mockUpdateCharacter.mock.calls[0][0] as Partial<Character>;
-    expect(updateCall.background).toBeUndefined();
+    expect(updateCall.background).toBeNull();
     expect(mockUpdateCreation).not.toHaveBeenCalled();
 
     // Simulate basics landing in state (abilities NOT required to advance on this branch)

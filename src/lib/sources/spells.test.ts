@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { SPELL_CATALOG, getSpellDef, requireSpellDef, getSpellsForList } from '@/lib/sources/spells';
 import { CLASS_SOURCES } from '@/lib/sources/classes';
 import { SUBCLASS_SOURCES } from '@/lib/sources/subclasses';
-import { SPECIES_SOURCES } from '@/lib/sources/species';
+import { SPECIES_SOURCES, LINEAGE_GRANTS_REGISTRY } from '@/lib/sources/species';
 import { BACKGROUND_SOURCES } from '@/lib/sources/backgrounds';
 import { FEAT_SOURCES } from '@/lib/sources/feats';
 import gamedata from '@/locales/en/gamedata.json';
@@ -143,6 +143,24 @@ describe('spell-grant catalog invariant', () => {
       for (const grant of source.grants) {
         if (grant.type === 'spell' && !getSpellDef(grant.spellId)) {
           missing.push(`background:${source.id} → "${grant.spellId}"`);
+        }
+      }
+    }
+
+    for (const source of SPECIES_SOURCES) {
+      for (const grant of source.grants) {
+        if (grant.type === 'spell' && !getSpellDef(grant.spellId)) {
+          missing.push(`species:${source.id} → "${grant.spellId}"`);
+        }
+      }
+    }
+
+    for (const [speciesId, lineageMap] of Object.entries(LINEAGE_GRANTS_REGISTRY)) {
+      for (const [lineageId, grants] of Object.entries(lineageMap as Record<string, readonly any[]>)) {
+        for (const grant of grants) {
+          if (grant.type === 'spell' && !getSpellDef(grant.spellId)) {
+            missing.push(`species-lineage:${speciesId}:${lineageId} → "${grant.spellId}"`);
+          }
         }
       }
     }

@@ -596,13 +596,13 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     id: 'telekinetic',
     category: 'general',
     prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-telekinetic' } }],
+    grants: [{ type: 'feature', feature: { id: 'feat-telekinetic' } }, { type: 'spell', spellId: 'mage-hand', alwaysPrepared: true }],
   },
   {
     id: 'telepathic',
     category: 'general',
     prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-telepathic' } }],
+    grants: [{ type: 'feature', feature: { id: 'feat-telepathic' } }, { type: 'spell', spellId: 'detect-thoughts', alwaysPrepared: true }],
   },
   {
     id: 'war-caster',

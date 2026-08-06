@@ -1294,15 +1294,21 @@ describe('getSubclassSource — Warrior of Shadow', () => {
     expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
   });
 
-  it('warriorofshadow level 3 grants 1 feature: shadow-arts', () => {
+  it('warriorofshadow level 3 grants features, spellcasting, and spells', () => {
     const source = getSubclassSource('warriorofshadow');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(1);
+    expect(level3?.grants).toHaveLength(7);
     expect(level3?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'warriorofshadow-shadow-arts' },
     });
+    expect(level3?.grants).toContainEqual(
+      expect.objectContaining({ type: 'spellcasting', ability: 'wis', source: 'class' })
+    );
+    expect(level3?.grants).toContainEqual(
+      expect.objectContaining({ type: 'spell', spellId: 'minor-illusion' })
+    );
   });
 
   it('warriorofshadow level 6 grants shadow-step feature', () => {

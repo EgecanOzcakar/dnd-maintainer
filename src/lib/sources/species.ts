@@ -73,14 +73,23 @@ export const TIEFLING_LINEAGE_GRANTS: Readonly<Partial<Record<string, readonly G
   abyssal: [
     { type: 'resistance', damageType: 'poison' },
     { type: 'feature', feature: { id: 'tiefling-fiendish-legacy-abyssal' } },
+    { type: 'spell', spellId: 'hold-person', alwaysPrepared: true },
+    { type: 'spell', spellId: 'ray-of-sickness', alwaysPrepared: true },
+    { type: 'spell', spellId: 'poison-spray', alwaysPrepared: true },
   ],
   chthonic: [
     { type: 'resistance', damageType: 'necrotic' },
     { type: 'feature', feature: { id: 'tiefling-fiendish-legacy-chthonic' } },
+    { type: 'spell', spellId: 'ray-of-enfeeblement', alwaysPrepared: true },
+    { type: 'spell', spellId: 'false-life', alwaysPrepared: true },
+    { type: 'spell', spellId: 'chill-touch', alwaysPrepared: true },
   ],
   infernal: [
     { type: 'resistance', damageType: 'fire' },
     { type: 'feature', feature: { id: 'tiefling-fiendish-legacy-infernal' } },
+    { type: 'spell', spellId: 'darkness', alwaysPrepared: true },
+    { type: 'spell', spellId: 'hellish-rebuke', alwaysPrepared: true },
+    { type: 'spell', spellId: 'fire-bolt', alwaysPrepared: true },
   ],
 } as const;
 
@@ -89,19 +98,34 @@ export const ELF_LINEAGE_GRANTS: Readonly<Partial<Record<string, readonly Grant[
   drow: [
     { type: 'feature', feature: { id: 'elf-drow-darkvision' } },
     { type: 'feature', feature: { id: 'elf-drow-dancing-lights' } },
+    { type: 'spell', spellId: 'dancing-lights', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'elf-drow-faerie-fire' } },
+    { type: 'spell', spellId: 'faerie-fire', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'elf-drow-darkness' } },
+    { type: 'spell', spellId: 'darkness', alwaysPrepared: true },
   ],
   'high-elf': [
     { type: 'feature', feature: { id: 'elf-high-elf-cantrip' } },
+    {
+      type: 'spell-choice',
+      key: createChoiceKey('spell-choice', 'species', 'elf', 0),
+      count: 1,
+      spellList: 'wizard',
+      spellLevel: 0,
+    },
     { type: 'feature', feature: { id: 'elf-high-elf-detect-magic' } },
+    { type: 'spell', spellId: 'detect-magic', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'elf-high-elf-misty-step' } },
+    { type: 'spell', spellId: 'misty-step', alwaysPrepared: true },
   ],
   'wood-elf': [
     { type: 'speed', mode: 'walk', value: 35 },
     { type: 'feature', feature: { id: 'elf-wood-elf-druidcraft' } },
+    { type: 'spell', spellId: 'druidcraft', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'elf-wood-elf-longstrider' } },
+    { type: 'spell', spellId: 'longstrider', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'elf-wood-elf-pass-without-trace' } },
+    { type: 'spell', spellId: 'pass-without-trace', alwaysPrepared: true },
   ],
 } as const;
 
@@ -109,13 +133,19 @@ export const ELF_LINEAGE_GRANTS: Readonly<Partial<Record<string, readonly Grant[
 export const GNOME_LINEAGE_GRANTS: Readonly<Partial<Record<string, readonly Grant[]>>> = {
   forest: [
     { type: 'feature', feature: { id: 'gnome-forest-minor-illusion' } },
+    { type: 'spell', spellId: 'minor-illusion', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'gnome-forest-speak-with-animals' } },
+    { type: 'spell', spellId: 'speak-with-animals', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'gnome-forest-misty-step' } },
+    { type: 'spell', spellId: 'misty-step', alwaysPrepared: true },
   ],
   rock: [
     { type: 'feature', feature: { id: 'gnome-rock-mending' } },
+    { type: 'spell', spellId: 'mending', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'gnome-rock-prestidigitation' } },
+    { type: 'spell', spellId: 'prestidigitation', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'gnome-rock-animate-objects' } },
+    { type: 'spell', spellId: 'animate-objects', alwaysPrepared: true },
   ],
 } as const;
 
@@ -284,6 +314,7 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
       { type: 'resistance', damageType: 'radiant' },
       { type: 'feature', feature: { id: 'aasimar-healing-hands' } },
       { type: 'feature', feature: { id: 'aasimar-light-bearer' } },
+    { type: 'spell', spellId: 'light', alwaysPrepared: true },
       { type: 'feature', feature: { id: 'aasimar-celestial-revelation' } },
     ],
   },

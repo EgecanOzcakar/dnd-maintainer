@@ -18,3 +18,58 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: vi.fn(),
   })),
 });
+
+// Polyfill localStorage to avoid clashes with Node.js built-in localStorage
+if (typeof Storage !== 'undefined') {
+  const store: Record<string, string> = {};
+  Object.defineProperties(Storage.prototype, {
+    getItem: {
+      value(key: string) {
+        return store[key] || null;
+      },
+      writable: true,
+      configurable: true,
+    },
+    setItem: {
+      value(key: string, value: string) {
+        store[key] = String(value);
+      },
+      writable: true,
+      configurable: true,
+    },
+    removeItem: {
+      value(key: string) {
+        delete store[key];
+      },
+      writable: true,
+      configurable: true,
+    },
+    clear: {
+      value() {
+        for (const key of Object.keys(store)) {
+          delete store[key];
+        }
+      },
+      writable: true,
+      configurable: true,
+    },
+    length: {
+      get() {
+        return Object.keys(store).length;
+      },
+      configurable: true,
+    },
+  });
+
+  const mockStorage = Object.create(Storage.prototype);
+  Object.defineProperty(global, 'localStorage', {
+    value: mockStorage,
+    configurable: true,
+    writable: true,
+  });
+  Object.defineProperty(window, 'localStorage', {
+    value: mockStorage,
+    configurable: true,
+    writable: true,
+  });
+}

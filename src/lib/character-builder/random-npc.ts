@@ -438,11 +438,11 @@ export function generateDecisionForPendingChoice(
       const bundleDef = getBundleDef(bundleId);
       const slotPicks: Record<string, string> = {};
       if (bundleDef?.slots) {
-        for (const [slotKey, slot] of Object.entries(bundleDef.slots)) {
-          const items = getItemsForSlot(slot, characterClass);
+        for (const slot of bundleDef.slots) {
+          const items = getItemsForSlot(slot.filter);
           const chosenItem = pick(items, rng);
           if (chosenItem) {
-            slotPicks[slotKey] = chosenItem.id;
+            slotPicks[slot.slotKey] = chosenItem.id;
           }
         }
       }

@@ -100,7 +100,7 @@ describe('resolveEquipment', () => {
 describe('resolveEquipment bundle-choice', () => {
   const FIGHTER_SOURCE: GrantBundle['source'] = { origin: 'class', id: 'fighter', level: 1 };
 
-  const makeBundleChoiceBundle = (bundleIds: string[], 0): GrantBundle => ({
+  const makeBundleChoiceBundle = (bundleIds: string[]): GrantBundle => ({
     source: FIGHTER_SOURCE,
     grants: [
       {
@@ -410,15 +410,20 @@ describe('resolveEquipment via useDBInventory', () => {
 // ---------------------------------------------------------------------------
 
 describe('resolveAttacks', () => {
-  it('returns empty with no equipped weapons', () => {
+  it('returns unarmed strike when no weapons are equipped', () => {
     const attacks = resolveAttacks(
       [],
       makeAbilities({ str: 16, dex: 14, con: 15, int: 10, wis: 10, cha: 10 }),
       2,
       PROFICIENT_SIMPLE_MARTIAL,
-      NO_FIGHTING_STYLES
+      NO_FIGHTING_STYLES,
+      0
     );
-    expect(attacks).toHaveLength(0);
+    expect(attacks).toHaveLength(1);
+    expect(attacks[0].weaponId).toBe('unarmed-strike');
+    expect(attacks[0].damageDice).toBe('1');
+    expect(attacks[0].attackBonus).toBe(5); // STR 3 + prof 2
+    expect(attacks[0].damageBonus).toBe(3); // STR 3
   });
 
   it('Fighter STR 16 proficient with longsword: attackBonus 5, damageBonus 3', () => {

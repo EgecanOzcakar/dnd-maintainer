@@ -379,7 +379,7 @@
       "originFeatTitle": "Origin Feat",
       "originFeatGranted": "Granted by {{background}}",
       "toolProficiencyTitle": "Tool Proficiency",
-      "languageTitle": "Language",
+      "languageLabel": "Language",
       "noBackground": "Select a background to see its benefits.",
       "selectBackgroundInBasics": "Pick a background in the Basics step to see its sub-choices.",
       "bonusSummaryTitle": "Background Bonuses",

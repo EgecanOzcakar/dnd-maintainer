@@ -1,8 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const envUrl= import.meta.env.VITE_SUPABASE_URL;
 const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+// Detect runtime environment
+export const isLocalhost = 
+  window.location.hostname === 'localhost' || 
+  window.location.hostname === '127.0.0.1';
+
+// Use local port 54321 if on localhost, otherwise use the env variable (Cloudflare Tunnel URL)
+export const supabaseUrl = isLocalhost 
+  ? 'http://127.0.0.1:54321' 
+  : envUrl;
 
 if (!supabaseUrl || !supabasePublishableKey) {
   throw new Error('Missing Supabase environment variables');

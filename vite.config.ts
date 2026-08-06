@@ -20,11 +20,12 @@ export default defineConfig({
   server: {
     port: 5173,
     open: true,
+    allowedHosts: ['localhost','.ngrok-free.dev'],
   },
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['src/test/setup.ts'],
+    setupFiles: ['src/test/setup.ts'], 
     restoreMocks: true,
     exclude: [...defaultExclude, '**/.claude/worktrees/**'],
     coverage: {

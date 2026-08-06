@@ -8,6 +8,7 @@ import { Skeleton } from './ui/skeleton';
 import { Button } from './ui/button';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { isThemeId } from '@/lib/theme';
+import { FloatingPartyBar } from '@/components/FloatingPartyBar';
 
 export function Layout() {
   const { campaignSlug } = useParams<{ campaignSlug: string }>();
@@ -134,15 +135,18 @@ export function Layout() {
               </div>
             </div>
           ) : (
-            <Outlet
-              context={
-                {
-                  campaignSlug,
-                  campaignId: currentCampaign?.id,
-                  setPageTitle,
-                } as import('@/hooks/useCampaignContext').CampaignContext
-              }
-            />
+            <>
+              {currentCampaign?.id && <FloatingPartyBar campaignId={currentCampaign.id} />}
+              <Outlet
+                context={
+                  {
+                    campaignSlug,
+                    campaignId: currentCampaign?.id,
+                    setPageTitle,
+                  } as import('@/hooks/useCampaignContext').CampaignContext
+                }
+              />
+            </>
           )}
         </div>
       </main>

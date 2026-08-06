@@ -176,6 +176,7 @@ export type CharacterSummary = Pick<
   | 'level'
   | 'hit_points_max'
   | 'armor_class'
+  | 'conditions'
   | 'portrait_url'
   | 'status'
   | 'updated_at'

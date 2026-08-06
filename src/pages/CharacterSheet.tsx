@@ -325,10 +325,21 @@ function CharacterSheetInner({
             <div className="sheet-grid mb-6">
               {/* Left Column: Abilities, Saving Throws, Skills */}
               <div className="sheet-area-left">
-                <AbilityScoresPanel abilities={abilities} buildError={buildError} />
-                <SavingThrowsPanel savingThrows={savingThrows} buildError={buildError} />
+                <AbilityScoresPanel
+                  abilities={abilities}
+                  buildError={buildError}
+                  onSelectRollPreset={(preset) => setRollPreset(preset)}
+                />
+                <SavingThrowsPanel
+                  savingThrows={savingThrows}
+                  buildError={buildError}
+                  onSelectRollPreset={(preset) => setRollPreset(preset)}
+                />
                 {skills ? (
-                  <SkillsPanel skills={skills} />
+                  <SkillsPanel
+                    skills={skills}
+                    onSelectRollPreset={(preset) => setRollPreset(preset)}
+                  />
                 ) : (
                   <div className="sheet-panel text-center text-muted-foreground">
                     <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.skills')}</h2>

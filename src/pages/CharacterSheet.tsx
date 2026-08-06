@@ -40,8 +40,7 @@ import { toast } from 'sonner';
 import { useBuilderAutosave } from '@/hooks/useBuilderAutosave';
 import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
 import { InventoryTab } from '@/components/character-sheet/InventoryTab';
-
-const logger = getLogger('character-sheet');
+import { PartyInitiativeTracker } from '@/components/character-sheet/PartyInitiativeTracker';
 
 type EditSection = 'header' | 'personality' | 'backstory' | 'appearance' | null;
 
@@ -282,8 +281,8 @@ function CharacterSheetInner({
             type="button"
             onClick={() => setActiveTab('sheet')}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'sheet'
-                ? 'bg-card text-foreground shadow-sm border border-border'
-                : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-card text-foreground shadow-sm border border-border'
+              : 'text-muted-foreground hover:text-foreground'
               }`}
           >
             {tc('characterSheet.combatView.tabs.sheet')}
@@ -292,8 +291,8 @@ function CharacterSheetInner({
             type="button"
             onClick={() => setActiveTab('inventory')}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'inventory'
-                ? 'bg-card text-foreground shadow-sm border border-border'
-                : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-card text-foreground shadow-sm border border-border'
+              : 'text-muted-foreground hover:text-foreground'
               }`}
           >
             {tc('characterSheet.combatView.tabs.inventory', { defaultValue: 'Inventory' })}
@@ -302,8 +301,8 @@ function CharacterSheetInner({
             type="button"
             onClick={() => setActiveTab('combat')}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'combat'
-                ? 'bg-card text-foreground shadow-sm border border-border'
-                : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-card text-foreground shadow-sm border border-border'
+              : 'text-muted-foreground hover:text-foreground'
               }`}
           >
             {tc('characterSheet.combatView.tabs.combat')}

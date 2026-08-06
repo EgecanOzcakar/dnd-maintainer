@@ -20,6 +20,26 @@ export function useEncounters(campaignId: string) {
   });
 }
 
+export function useActiveEncounter(campaignId: string | undefined) {
+  return useQuery({
+    queryKey: ['encounters', 'active', campaignId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('encounters')
+        .select(ENCOUNTER_DETAIL_COLS)
+        .eq('campaign_id', campaignId!)
+        .eq('status', 'active')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return (data as unknown as Encounter) ?? null;
+    },
+    enabled: !!campaignId,
+    refetchInterval: 3000,
+  });
+}
+
 export function useSessionEncounters(sessionId: string | undefined) {
   return useQuery({
     queryKey: ['encounters', 'session', sessionId],

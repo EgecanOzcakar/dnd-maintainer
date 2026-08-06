@@ -2,6 +2,7 @@ import { CampaignSummary } from '@/types/database';
 import {
   BookOpen,
   ChevronDown,
+  Dices,
   Download,
   ExternalLink,
   Library,
@@ -27,7 +28,7 @@ export interface SidebarProps {
 
 interface NavItem {
   readonly icon: typeof Shield;
-  readonly labelKey: 'nav.dashboard' | 'nav.characters' | 'nav.sessions' | 'nav.notes' | 'nav.wiki';
+  readonly labelKey: 'nav.dashboard' | 'nav.characters' | 'nav.sessions' | 'nav.notes' | 'nav.wiki' | 'nav.dmControl';
   readonly path: string;
   readonly matchPaths?: readonly string[];
   readonly end?: boolean;
@@ -39,6 +40,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { icon: BookOpen, labelKey: 'nav.sessions', path: '/sessions' },
   { icon: ScrollText, labelKey: 'nav.notes', path: '/notes' },
   { icon: Library, labelKey: 'nav.wiki', path: '/wiki' },
+  { icon: Dices, labelKey: 'nav.dmControl', path: '/dm' },
 ];
 
 export function Sidebar({

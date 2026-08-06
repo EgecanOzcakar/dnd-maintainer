@@ -61,6 +61,7 @@ export function InventoryTab({ characterId, campaignId, itemsData }: InventoryTa
   // Dialog States
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
   const [catalogSearch, setCatalogSearch] = useState('');
+  const [catalogFilterType, setCatalogFilterType] = useState<'all' | 'weapon' | 'armor' | 'gear' | 'pack'>('all');
   const [selectedCatalogItem, setSelectedCatalogItem] = useState<ItemDef | null>(null);
   const [addQty, setAddQty] = useState(1);
 
@@ -115,6 +116,7 @@ export function InventoryTab({ characterId, campaignId, itemsData }: InventoryTa
   });
 
   const catalogFiltered = ITEM_CATALOG.filter((item) => {
+    if (catalogFilterType !== 'all' && item.type !== catalogFilterType) return false;
     const name = t(getItemNameKey(item.type, item.id), {
       defaultValue: item.id.replace(/-/g, ' '),
     });
@@ -379,29 +381,52 @@ export function InventoryTab({ characterId, campaignId, itemsData }: InventoryTa
           {!isCustom ? (
             <div className="space-y-3">
               <Input
-                placeholder="Search catalog items..."
+                placeholder="Search catalog items (weapons, armor, gear)..."
                 value={catalogSearch}
                 onChange={(e) => setCatalogSearch(e.target.value)}
               />
+              <div className="flex gap-1 bg-muted/60 p-1 rounded-md text-[11px]">
+                {(['all', 'weapon', 'armor', 'gear', 'pack'] as const).map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setCatalogFilterType(type)}
+                    className={`flex-1 py-0.5 font-semibold rounded capitalize transition-colors ${
+                      catalogFilterType === type ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
               <div className="max-h-48 overflow-y-auto border rounded-lg p-2 space-y-1">
-                {catalogFiltered.slice(0, 30).map((item) => {
-                  const name = t(getItemNameKey(item.type, item.id), {
-                    defaultValue: item.id.replace(/-/g, ' '),
-                  });
-                  const isSelected = selectedCatalogItem?.id === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setSelectedCatalogItem(item)}
-                      className={`w-full text-left px-3 py-1.5 rounded text-xs flex justify-between items-center transition-colors ${isSelected ? 'bg-primary/10 text-primary font-bold' : 'hover:bg-muted/50'
+                {catalogFiltered.length === 0 ? (
+                  <div className="text-center py-4 text-xs text-muted-foreground">No matching items found.</div>
+                ) : (
+                  catalogFiltered.slice(0, 40).map((item) => {
+                    const name = t(getItemNameKey(item.type, item.id), {
+                      defaultValue: item.id.replace(/-/g, ' '),
+                    });
+                    const isSelected = selectedCatalogItem?.id === item.id;
+                    const detail = item.type === 'armor' ? ` (AC ${item.baseAc})` : item.type === 'weapon' ? ` (${item.damageDice} ${item.damageType})` : '';
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setSelectedCatalogItem(item)}
+                        className={`w-full text-left px-3 py-1.5 rounded text-xs flex justify-between items-center transition-colors ${
+                          isSelected ? 'bg-primary/10 text-primary font-bold' : 'hover:bg-muted/50'
                         }`}
-                    >
-                      <span>{name}</span>
-                      <Badge variant="outline" className="capitalize text-[10px]">{item.type}</Badge>
-                    </button>
-                  );
-                })}
+                      >
+                        <span>
+                          {name}
+                          <span className="text-[10px] text-muted-foreground font-normal">{detail}</span>
+                        </span>
+                        <Badge variant="outline" className="capitalize text-[10px] shrink-0 ml-2">{item.type}</Badge>
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
           ) : (

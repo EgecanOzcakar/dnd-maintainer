@@ -26,7 +26,9 @@
   "dependencies": {
     "@base-ui/react": "^1.5.0",
     "@fontsource-variable/geist": "^5.2.9",
-    "@supabase/supabase-js": "^2.107.0",
+    "@supabase/server": "^1.4.1",
+    "@supabase/ssr": "^0.12.4",
+    "@supabase/supabase-js": "^2.112.1",
     "@tanstack/react-query": "^5.101.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -75,7 +77,8 @@
     "vitest": "^4.1.8"
   },
   "allowScripts": {
-    "esbuild@0.28.0": true,
-    "msw@2.12.10": true
+    "msw@2.12.10": true,
+    "esbuild@0.28.1": true,
+    "fsevents@2.3.3": true
   }
 }

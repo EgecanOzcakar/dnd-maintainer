@@ -32,6 +32,7 @@ describe('usePartyState hooks', () => {
       lastRolls: {
         char1: { formula: '1d20+3', total: 18, rolls: [15], modifier: 3, timestamp: '2026-08-06T12:00:00Z' },
       },
+      displayImage: null,
       updatedAt: expect.any(String),
     });
   });

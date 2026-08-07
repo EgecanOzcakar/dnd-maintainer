@@ -55,7 +55,7 @@ export function CharacterSheetHeader({
   })();
 
   return (
-    <div className="bg-card border rounded-lg p-6 mb-6">
+    <div className="bg-card border rounded-lg p-6 h-full flex flex-col justify-between">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-4">
           <PortraitUpload

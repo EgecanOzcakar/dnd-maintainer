@@ -10,6 +10,7 @@ import { useCampaignContext } from '@/hooks/useCampaignContext';
 import { usePartyState, useUpdatePartyHP, useRecordCharacterRoll } from '@/hooks/usePartyState';
 import { usePartyInitiatives, useUpdatePartyInitiatives } from '@/hooks/usePartyInitiatives';
 import type { CharacterSummary } from '@/types/database';
+import { CommonImageDisplayer } from '@/components/common/CommonImageDisplayer';
 import { toast } from 'sonner';
 
 export default function DMControlPage() {
@@ -173,6 +174,9 @@ export default function DMControlPage() {
           )}
         </div>
       </div>
+
+      {/* ── DM Broadcast Scene & Common Image Displayer Section ────────────── */}
+      <CommonImageDisplayer campaignId={targetCampaignId} />
 
       {/* ── Party HP & Status Management Section ────────────────────────────── */}
       <div className="bg-card border rounded-xl p-6 space-y-6">

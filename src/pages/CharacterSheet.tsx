@@ -5,6 +5,7 @@ import { AbilityScoresPanel } from '@/components/character-sheet/AbilityScoresPa
 import { AttacksPanel } from '@/components/character-sheet/AttacksPanel';
 import { BackstoryPanel } from '@/components/character-sheet/BackstoryPanel';
 import { CharacterSheetHeader } from '@/components/character-sheet/CharacterSheetHeader';
+import { CommonImageDisplayer } from '@/components/common/CommonImageDisplayer';
 import { CombatPanel } from '@/components/character-sheet/CombatPanel';
 import { ConditionsPanel } from '@/components/character-sheet/ConditionsPanel';
 import { EquipmentPanel } from '@/components/character-sheet/EquipmentPanel';
@@ -261,18 +262,21 @@ function CharacterSheetInner({
           </div>
         )}
 
-        <CharacterSheetHeader
-          character={character}
-          onEdit={() => setEditSection('header')}
-          onClone={() => {
-            setCloneName(tc('characterSheet.actions.copyOfName', { name: character.name }));
-            setConfirmAction('clone');
-          }}
-          onArchive={() => setConfirmAction('archive')}
-          onDelete={() => setConfirmAction('delete')}
-          onExportPdf={handleExportPdf}
-          exportingPdf={exportingPdf}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <CharacterSheetHeader
+            character={character}
+            onEdit={() => setEditSection('header')}
+            onClone={() => {
+              setCloneName(tc('characterSheet.actions.copyOfName', { name: character.name }));
+              setConfirmAction('clone');
+            }}
+            onArchive={() => setConfirmAction('archive')}
+            onDelete={() => setConfirmAction('delete')}
+            onExportPdf={handleExportPdf}
+            exportingPdf={exportingPdf}
+          />
+          <CommonImageDisplayer campaignId={character.campaign_id} />
+        </div>
 
         {/* Pending Choices Panel */}
         <div className="mb-6">

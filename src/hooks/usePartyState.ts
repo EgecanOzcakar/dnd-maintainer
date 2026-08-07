@@ -15,6 +15,7 @@ export interface PartyFullState {
   hp: Record<string, number>;          // characterId -> current HP
   lastRolls: Record<string, CharacterRollEntry>; // characterId -> last rolled dice
   updatedAt: string;
+  displayImage?: { url: string; title?: string; caption?: string } | null;
 }
 
 export function usePartyState(campaignId: string | undefined) {
@@ -40,12 +41,14 @@ export function usePartyState(campaignId: string | undefined) {
         const partyInit = parsed.party_initiatives?.initiatives ?? {};
         const partyHp = parsed.party_hp?.hpMap ?? parsed.party_hp ?? {};
         const partyRolls = parsed.character_rolls?.rollsMap ?? parsed.character_rolls ?? {};
+        const displayImage = parsed.shared_image ?? null;
 
         return {
           campaignId,
           initiatives: partyInit,
           hp: partyHp,
           lastRolls: partyRolls,
+          displayImage,
           updatedAt: parsed.updatedAt ?? new Date().toISOString(),
         };
       } catch {
@@ -198,3 +201,59 @@ export function useRecordCharacterRoll() {
     },
   });
 }
+
+/**
+ * Mutation to update the shared DM scene image for a campaign
+ */
+export function useUpdateSharedImage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      campaignId,
+      image,
+    }: {
+      campaignId: string;
+      image: { url: string; title?: string; caption?: string } | null;
+    }) => {
+      const { data: campaign, error: fetchErr } = await supabase
+        .from('campaigns')
+        .select('dm_notes')
+        .eq('id', campaignId)
+        .single();
+
+      if (fetchErr) throw fetchErr;
+
+      let existingMeta: Record<string, unknown> = {};
+      if (campaign?.dm_notes) {
+        try {
+          existingMeta = typeof campaign.dm_notes === 'string' ? JSON.parse(campaign.dm_notes) : campaign.dm_notes;
+        } catch {
+          existingMeta = { raw_notes: campaign.dm_notes };
+        }
+      }
+
+      const updatedMeta = {
+        ...existingMeta,
+        shared_image: image,
+        updatedAt: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from('campaigns')
+        .update({
+          dm_notes: JSON.stringify(updatedMeta),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', campaignId);
+
+      if (error) throw error;
+      return updatedMeta;
+    },
+    onSuccess: (_, { campaignId }) => {
+      queryClient.invalidateQueries({ queryKey: ['party-state', campaignId] });
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+    },
+  });
+}
+

@@ -53,6 +53,9 @@ vi.mock('@/hooks/usePartyState', () => ({
   useRecordCharacterRoll: () => ({
     mutateAsync: mockMutateRoll,
   }),
+  useUpdateSharedImage: () => ({
+    mutateAsync: vi.fn(),
+  }),
 }));
 
 vi.mock('@/hooks/usePartyInitiatives', () => ({

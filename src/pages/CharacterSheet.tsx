@@ -261,13 +261,14 @@ function CharacterSheetInner({
 
   const hasPersonality = character.personality_traits || character.ideals || character.bonds || character.flaws;
   const hasSpells =
-    resolved?.spellcasting &&
-    (resolved.spellcasting.cantrips.length > 0 ||
-      resolved.spellcasting.alwaysPreparedSpells.length > 0 ||
-      resolved.spellcasting.knownSpells.length > 0 ||
-      resolved.spellcasting.preparedCount > 0 ||
-      resolved.spellcasting.ability != null ||
-      resolved.spellcasting.spellSaveDC != null);
+    (resolved?.spellcasting &&
+      (resolved.spellcasting.cantrips.length > 0 ||
+        resolved.spellcasting.alwaysPreparedSpells.length > 0 ||
+        resolved.spellcasting.knownSpells.length > 0 ||
+        resolved.spellcasting.preparedCount > 0 ||
+        resolved.spellcasting.ability != null ||
+        resolved.spellcasting.spellSaveDC != null)) ||
+    (resolved?.features && resolved.features.length > 0);
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -433,9 +434,10 @@ function CharacterSheetInner({
               {/* Right Column: Equipment, Spells & Personality */}
               <div className="sheet-area-right">
                 {itemsData.length > 0 && <EquipmentPanel itemsData={itemsData} />}
-                {hasSpells && resolved?.spellcasting && (
+                {hasSpells && (
                   <SpellcastingPanel
-                    spellcasting={resolved.spellcasting}
+                    spellcasting={resolved?.spellcasting}
+                    resolved={resolved}
                     onSelectRollPreset={handleSelectRollPreset}
                   />
                 )}

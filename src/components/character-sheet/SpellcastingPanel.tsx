@@ -219,37 +219,208 @@ function SpellItemRow({
   );
 }
 
-export function SpellcastingPanel({
-  spellcasting,
+function FeatureRow({
+  name,
+  description,
+  saveDC,
+  saveAbility,
   onSelectRollPreset,
 }: {
-  spellcasting: Spellcasting;
+  name: string;
+  description: string;
+  saveDC?: number;
+  saveAbility?: string;
+  onSelectRollPreset?: (preset: RollPreset) => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  const handleSelectFeature = () => {
+    if (!onSelectRollPreset) return;
+    const extracted = extractDiceFromText(description);
+    if (extracted) {
+      const parsed = parseDiceFormula(extracted);
+      onSelectRollPreset({
+        die: parsed.die,
+        count: parsed.count,
+        modifier: parsed.modifier,
+        contextLabel: `Feature: ${name} (${extracted})`,
+      });
+    } else {
+      onSelectRollPreset({
+        die: 20,
+        count: 1,
+        modifier: 0,
+        contextLabel: `Feature: ${name}`,
+      });
+    }
+  };
+
+  return (
+    <div className="rounded border border-amber-500/30 bg-amber-500/5 dark:bg-amber-950/10 overflow-hidden transition-all">
+      <div className="w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 hover:bg-amber-500/10 transition-colors">
+        <button
+          type="button"
+          onClick={() => {
+            setExpanded((p) => !p);
+            handleSelectFeature();
+          }}
+          className="flex items-center gap-1.5 flex-1 min-w-0 text-left"
+        >
+          {description ? (
+            expanded ? (
+              <ChevronDown className="size-3 text-amber-500 shrink-0" />
+            ) : (
+              <ChevronRight className="size-3 text-amber-500 shrink-0" />
+            )
+          ) : (
+            <span className="size-3 shrink-0 text-amber-500">&bull;</span>
+          )}
+
+          <span className="text-sm font-semibold text-foreground truncate">{name}</span>
+
+          <Badge variant="secondary" className="text-[9px] py-0 px-1 ml-1.5 bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0">
+            Ability / Action
+          </Badge>
+
+          {saveDC !== undefined && (
+            <Badge variant="outline" className="text-[9px] py-0 px-1 ml-1 font-mono border-amber-500/40 text-amber-600 dark:text-amber-400 shrink-0">
+              DC {saveDC} {saveAbility?.toUpperCase()}
+            </Badge>
+          )}
+        </button>
+
+        {onSelectRollPreset && (
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={handleSelectFeature}
+            className="h-6 px-1.5 text-[10px] gap-0.5 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 shrink-0"
+            title={`Select ${name} for Dice Roller`}
+          >
+            <Dices className="size-3" /> Roll
+          </Button>
+        )}
+      </div>
+
+      {expanded && description && (
+        <div className="px-3 py-2 text-xs border-t border-amber-500/20 bg-muted/20 space-y-1.5">
+          <p className="text-muted-foreground leading-relaxed">{highlightText(description)}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function SpellcastingPanel({
+  spellcasting,
+  resolved,
+  onSelectRollPreset,
+}: {
+  spellcasting?: Spellcasting | null;
+  resolved?: ResolvedCharacter;
   onSelectRollPreset?: (preset: RollPreset) => void;
 }) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
 
   // Group knownSpells by level, ascending
-  const spellsByLevel = spellcasting.knownSpells.reduce<Record<number, string[]>>((acc, { spellId, spellLevel }) => {
+  const spellsByLevel = spellcasting?.knownSpells.reduce<Record<number, string[]>>((acc, { spellId, spellLevel }) => {
     const group = acc[spellLevel] ?? [];
     group.push(spellId);
     return { ...acc, [spellLevel]: group };
-  }, {});
+  }, {}) ?? {};
   const sortedLevels = Object.keys(spellsByLevel)
     .map(Number)
     .sort((a, b) => a - b);
 
   // Cantrips header: show "CANTRIPS (chosen/target)" when cantripsKnown > 0
   const cantripsHeader =
-    spellcasting.cantripsKnown > 0
+    spellcasting && spellcasting.cantripsKnown > 0
       ? `${tc('characterSheet.sections.cantrips')} (${tc('characterSheet.fields.chosenOfTarget', { chosen: spellcasting.cantrips.length, target: spellcasting.cantripsKnown })})`
       : tc('characterSheet.sections.cantrips');
 
+  // Filter features to render active/special class abilities (e.g. Monk Ki actions, Second Wind, Cunning Action, Wild Shape, Channel Divinity, etc.)
+  const ACTIVE_OR_SPECIAL_FEATURE_IDS = new Set([
+    // Monk Focus / Ki Actions & Reactions
+    'monk-martial-arts',
+    'monk-flurry-of-blows',
+    'monk-patient-defense',
+    'monk-step-of-the-wind',
+    'monk-deflect-attacks',
+    'monk-slow-fall',
+    'monk-stunning-strike',
+    'monk-uncanny-metabolism',
+    'monk-stillness-of-mind',
+    'monk-heightened-focus',
+    'monk-self-restoration',
+    'monk-superior-defense',
+
+    // Barbarian
+    'barbarian-rage',
+    'barbarian-reckless-attack',
+    'barbarian-primal-knowledge',
+    'barbarian-brutal-strike',
+
+    // Bard
+    'bard-bardic-inspiration',
+    'bard-countercharm',
+
+    // Cleric
+    'cleric-channel-divinity',
+    'cleric-search-for-the-truth',
+
+    // Druid
+    'druid-wild-shape',
+
+    // Fighter
+    'fighter-second-wind',
+    'fighter-action-surge',
+    'fighter-tactical-mind',
+    'fighter-indomitable',
+
+    // Paladin
+    'paladin-lay-on-hands',
+    'paladin-divine-smite',
+    'paladin-channel-divinity',
+    'paladin-aura-of-protection',
+
+    // Ranger
+    'ranger-favored-enemy',
+
+    // Rogue
+    'rogue-sneak-attack',
+    'rogue-cunning-action',
+    'rogue-uncanny-dodge',
+    'rogue-evasion',
+    'rogue-reliable-talent',
+
+    // Sorcerer
+    'sorcerer-font-of-magic',
+    'sorcerer-metamagic',
+    'sorcerer-innate-sorcery',
+
+    // Warlock
+    'warlock-eldritch-invocations',
+    'warlock-pact-boon',
+
+    // Wizard
+    'wizard-arcane-recovery',
+    'wizard-scholar',
+    'wizard-memorize-spell',
+  ]);
+
+  const activeFeatures = resolved?.features.filter((f) =>
+    ACTIVE_OR_SPECIAL_FEATURE_IDS.has(f.feature.id)
+  ) ?? [];
+
   return (
     <div className="bg-card border border-purple-200 dark:border-purple-900/50 rounded-lg p-6">
-      <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.spells')}</h2>
+      <h2 className="text-lg font-bold text-foreground mb-4">
+        {spellcasting ? tc('characterSheet.sections.spells') : 'Special & Class Abilities'}
+      </h2>
 
-      {spellcasting.cannotCastSpells && (
+      {spellcasting?.cannotCastSpells && (
         <div className="mb-4 p-3 bg-amber-500/15 border border-amber-500/40 rounded text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2 font-medium">
           <AlertTriangle className="size-4 shrink-0 text-amber-500" />
           <span>Cannot Cast Spells — You are wearing armor without training.</span>
@@ -257,7 +428,7 @@ export function SpellcastingPanel({
       )}
 
       {/* Spellcasting stats header */}
-      {(spellcasting.ability != null || spellcasting.spellSaveDC != null || spellcasting.spellAttackBonus != null) && (
+      {spellcasting && (spellcasting.ability != null || spellcasting.spellSaveDC != null || spellcasting.spellAttackBonus != null) && (
         <div className="flex flex-wrap gap-4 mb-4 text-sm border-b border-border pb-3">
           {spellcasting.ability != null && (
             <div className="text-center">
@@ -286,13 +457,38 @@ export function SpellcastingPanel({
       )}
 
       <div className="space-y-4">
-        {spellcasting.knownSpells.length > 0 && (
+        {/* Active Class Features & Ki / Focus Actions */}
+        {activeFeatures.length > 0 && (
+          <div>
+            <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
+              Class Abilities & Actions
+            </div>
+            <div className="space-y-1.5">
+              {activeFeatures.map((rf, i) => {
+                const featName = t(`features.${rf.feature.id}.name`, { defaultValue: rf.feature.name ?? rf.feature.id });
+                const featDesc = t(`features.${rf.feature.id}.description`, { defaultValue: rf.feature.description ?? '' });
+                return (
+                  <FeatureRow
+                    key={i}
+                    name={featName}
+                    description={featDesc}
+                    saveDC={rf.saveDC}
+                    saveAbility={rf.feature.saveDC?.dcAbility}
+                    onSelectRollPreset={onSelectRollPreset}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {spellcasting && spellcasting.knownSpells.length > 0 && (
           <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
             {tc('characterSheet.sections.knownSpells')}
           </div>
         )}
 
-        {spellcasting.cantrips.length > 0 && (
+        {spellcasting && spellcasting.cantrips.length > 0 && (
           <div>
             <div className="text-xs font-bold text-muted-foreground mb-2">{cantripsHeader}</div>
             <div className="space-y-1">
@@ -309,7 +505,7 @@ export function SpellcastingPanel({
           </div>
         )}
 
-        {spellcasting.alwaysPreparedSpells.length > 0 && (
+        {spellcasting && spellcasting.alwaysPreparedSpells.length > 0 && (
           <div>
             <div className="text-xs font-bold text-muted-foreground mb-2">
               {tc('characterSheet.sections.alwaysPrepared')}
@@ -328,7 +524,7 @@ export function SpellcastingPanel({
           </div>
         )}
 
-        {sortedLevels.map((lvl) => {
+        {spellcasting && sortedLevels.map((lvl) => {
           const ids = spellsByLevel[lvl];
           if (!ids || ids.length === 0) return null;
 

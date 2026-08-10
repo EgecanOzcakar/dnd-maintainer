@@ -1423,6 +1423,18 @@
       "name": "Focus Points",
       "description": "Your training allows you to harness the mystic energy of Focus Points. Your Monk level determines the number of points you have."
     },
+    "monk-flurry-of-blows": {
+      "name": "Flurry of Blows",
+      "description": "You can spend 1 Focus Point to make two Unarmed Strikes as a Bonus Action."
+    },
+    "monk-patient-defense": {
+      "name": "Patient Defense",
+      "description": "You can take the Disengage action as a Bonus Action. Alternatively, you can spend 1 Focus Point to take both the Disengage and Dodge actions as a Bonus Action."
+    },
+    "monk-step-of-the-wind": {
+      "name": "Step of the Wind",
+      "description": "You can take the Dash action as a Bonus Action. Alternatively, you can spend 1 Focus Point to take both the Disengage and Dash actions as a Bonus Action, and your jump distance is doubled for the turn."
+    },
     "monk-unarmored-movement": {
       "name": "Unarmored Movement",
       "description": "Your speed increases by 10 feet while you are not wearing armor or wielding a shield."

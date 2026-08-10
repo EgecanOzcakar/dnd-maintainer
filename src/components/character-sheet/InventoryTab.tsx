@@ -2,14 +2,11 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Package,
-  Shield,
-  Sword,
   Plus,
   ArrowRightLeft,
   Trash2,
   CheckCircle2,
   Circle,
-  Sparkles,
   Search,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,7 +22,6 @@ import {
 } from '@/components/ui/dialog';
 import { getItemDef, getItemNameKey, ITEM_CATALOG } from '@/lib/sources/items';
 import type { ItemDef } from '@/types/items';
-import type { SourceTag } from '@/types/sources';
 import type { CharacterSummary } from '@/types/database';
 import { useInventoryMutations } from '@/hooks/useInventoryMutations';
 import { useCharacters } from '@/hooks/useCharacters';

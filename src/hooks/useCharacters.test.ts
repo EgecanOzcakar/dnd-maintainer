@@ -85,6 +85,7 @@ const baseDraftSummary: CharacterSummary = {
   hit_points_max: 12,
   armor_class: 16,
   portrait_url: null,
+  conditions: [],
   status: 'draft',
 };
 

@@ -115,7 +115,9 @@ export function OriginStep() {
   const speciesBonusSummary = useMemo(() => {
     if (!species || speciesGrants.length === 0) return null;
 
-    const speedGrant = speciesGrants.find((g): g is Extract<Grant, { type: 'speed'; mode: 'walk' }> => g.type === 'speed' && g.mode === 'walk');
+    const speedGrant = speciesGrants.find(
+      (g): g is Extract<Grant, { type: 'speed' }> => g.type === 'speed' && g.mode === 'walk'
+    );
     const fixedSkills = speciesGrants
       .filter((g): g is Extract<Grant, { type: 'proficiency'; category: 'skill' }> =>
         g.type === 'proficiency' && g.category === 'skill'

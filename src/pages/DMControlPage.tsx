@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { Dices, Swords, RotateCcw, Sparkles, Heart, Plus, Minus, Shield, RefreshCw, Eye, Brain, BookOpen } from 'lucide-react';
+import { Dices, Swords, RotateCcw, Sparkles, Heart, Plus, Minus, Shield, Eye, Brain, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -15,7 +14,6 @@ import { CommonImageDisplayer } from '@/components/common/CommonImageDisplayer';
 import { toast } from 'sonner';
 
 export default function DMControlPage() {
-  const { t } = useTranslation('common');
   const { campaignSlug } = useParams<{ campaignSlug: string }>();
   const { campaignId } = useCampaignContext();
 
@@ -424,13 +422,17 @@ export default function DMControlPage() {
 
               const percent = Math.min(100, Math.max(0, Math.round((currentHp / maxHp) * 100)));
 
-              let statusBadge = { label: 'Healthy', variant: 'default' as const, colorClass: 'bg-emerald-600' };
+              let statusBadge: { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; colorClass: string } = {
+                label: 'Healthy',
+                variant: 'default',
+                colorClass: 'bg-emerald-600',
+              };
               if (currentHp === 0) {
-                statusBadge = { label: 'Unconscious', variant: 'destructive' as const, colorClass: 'bg-slate-700' };
+                statusBadge = { label: 'Unconscious', variant: 'destructive', colorClass: 'bg-slate-700' };
               } else if (percent <= 25) {
-                statusBadge = { label: 'Critical', variant: 'destructive' as const, colorClass: 'bg-rose-600' };
+                statusBadge = { label: 'Critical', variant: 'destructive', colorClass: 'bg-rose-600' };
               } else if (percent <= 50) {
-                statusBadge = { label: 'Injured', variant: 'secondary' as const, colorClass: 'bg-amber-600 text-white' };
+                statusBadge = { label: 'Injured', variant: 'secondary', colorClass: 'bg-amber-600 text-white' };
               }
 
               const barColor =

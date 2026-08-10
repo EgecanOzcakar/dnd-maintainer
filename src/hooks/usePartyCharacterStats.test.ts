@@ -18,6 +18,7 @@ describe('usePartyCharacterStats hook', () => {
       player_name: 'Alice',
       character_type: 'pc',
       species: 'dwarf',
+      background: 'soldier',
       class: 'fighter',
       subclass: 'champion',
       level: 3,

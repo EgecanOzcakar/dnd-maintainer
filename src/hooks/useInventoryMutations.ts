@@ -74,7 +74,7 @@ export function useInventoryMutations() {
             quantity,
             equipped,
             attuned,
-            source: source as unknown as Record<string, unknown>,
+            source: (source ?? null) as any,
           })
           .select()
           .single();

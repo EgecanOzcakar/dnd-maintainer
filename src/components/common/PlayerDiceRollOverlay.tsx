@@ -44,7 +44,7 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
   const numberIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Find the latest roll from any Player Character
-  const latestPcRoll = useMemo(() => {
+  const latestPcRoll = useMemo<{ pc: CharacterSummary; roll: CharacterRollEntry } | null>(() => {
     const lastRolls = partyState?.lastRolls;
     if (!lastRolls || pcMap.size === 0) return null;
 

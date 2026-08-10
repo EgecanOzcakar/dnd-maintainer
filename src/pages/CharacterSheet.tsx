@@ -41,10 +41,11 @@ import { toast } from 'sonner';
 import { useBuilderAutosave } from '@/hooks/useBuilderAutosave';
 import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
 import { InventoryTab } from '@/components/character-sheet/InventoryTab';
-import { PartyInitiativeTracker } from '@/components/character-sheet/PartyInitiativeTracker';
 import { DiceRoller } from '@/components/character-sheet/DiceRoller';
 import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
 import { Dices } from 'lucide-react';
+
+const logger = getLogger('CharacterSheet');
 
 type EditSection = 'header' | 'personality' | 'backstory' | 'appearance' | null;
 

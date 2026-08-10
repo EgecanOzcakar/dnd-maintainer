@@ -15,7 +15,6 @@ import {
   type BackgroundId,
   type ClassId,
   type DndGender,
-  type FightingStyleId,
   type SkillId,
   type SpeciesId,
   type ToolProficiencyId,
@@ -351,7 +350,7 @@ export function applyDecisionToRows(rows: BuildLevelRow[], choiceKey: ChoiceKey,
 export function generateDecisionForPendingChoice(
   choice: PendingChoice,
   resolved: ResolvedCharacter,
-  characterClass: ClassId,
+  _characterClass: ClassId,
   rng: Rng = Math.random
 ): ChoiceDecision | null {
   switch (choice.type) {
@@ -475,7 +474,7 @@ export function generateDecisionForPendingChoice(
       const unchosen = spells.map((s) => s.id).filter((id) => !known.has(id));
       const pool = unchosen.length >= choice.count ? unchosen : spells.map((s) => s.id);
       const picked = shuffle(pool, rng).slice(0, choice.count);
-      return { type: 'spell-choice', spellIds: picked };
+      return { type: 'spell-choice', spellIds: picked as any };
     }
     default:
       return null;
@@ -565,11 +564,14 @@ export function ensureNpcReadyToCreate(
   if (creationIdx === -1) {
     updatedRows.unshift({
       sequence: 0,
+      base_abilities: null,
       class_id: null,
       class_level: null,
       hp_roll: null,
       subclass_id: null,
       asi_allocation: null,
+      feat_id: null,
+      deleted_at: null,
       ability_method: 'standard-array',
       choices: {},
     });
@@ -586,6 +588,8 @@ export function ensureNpcReadyToCreate(
       hp_roll: null,
       subclass_id: null,
       asi_allocation: null,
+      feat_id: null,
+      deleted_at: null,
       choices: {},
     });
   } else if (levelRows[0].class_id !== classId) {

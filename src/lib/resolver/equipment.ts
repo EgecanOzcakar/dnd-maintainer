@@ -17,7 +17,7 @@ import { collectGrantsByType } from '@/lib/resolver/helpers';
 import { getItemDef, requireItemDef } from '@/lib/sources/items';
 import { getBundleDef, getItemsForSlot, resolveBundleRef } from '@/lib/sources/bundles';
 import type { WeaponProficiencyId } from '@/lib/dnd-helpers';
-import type { BundleSlot, SlotFilter } from '@/types/items';
+import type { BundleSlot, SlotFilter, DamageDice } from '@/types/items';
 
 /**
  * Confirms that a slot pick is an item in the catalog that satisfies the slot's filter.
@@ -233,7 +233,7 @@ export function resolveAttacks(
     const attackBreakdown: AttackBonusComponent[] = [{ type: 'ability', value: abilityMod, label: attackAbility }];
     attackBreakdown.push({ type: 'proficiency', value: proficiencyBonus, label: 'proficiency' });
 
-    let damageDice = '';
+    let damageDice: DamageDice;
     if (monkLevel > 0) {
       if (monkLevel >= 17) damageDice = '1d12';
       else if (monkLevel >= 11) damageDice = '1d10';
@@ -245,7 +245,7 @@ export function resolveAttacks(
       );
       damageDice = hasNoWeaponEquipped && !hasShield ? '1d8' : '1d6';
     } else {
-      damageDice = '1';
+      damageDice = '1' as DamageDice;
     }
 
     const damageBreakdown: DamageBonusComponent[] = [{ type: 'ability', value: abilityMod, label: attackAbility }];

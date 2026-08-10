@@ -202,11 +202,15 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
       });
     }
     for (const row of readyRows) {
-      if (row.sequence !== 0) {
+      if (row.sequence !== 0 && row.class_id) {
         if (!levelRows.some((r) => r.sequence === row.sequence)) {
-          context.levelUp(row.class_id, row.hp_roll, new Map(Object.entries(row.choices ?? {})));
+          context.levelUp(
+            row.class_id as ClassId,
+            row.hp_roll ?? null,
+            new Map(Object.entries(row.choices ?? {}) as [ChoiceKey, ChoiceDecision][])
+          );
         } else {
-          context.replaceLevel(row.sequence, row.class_id, row.subclass_id);
+          context.replaceLevel(row.sequence, row.class_id as ClassId, (row.subclass_id as any) ?? null);
           if (row.choices) {
             for (const [key, dec] of Object.entries(row.choices)) {
               context.makeChoice(key as ChoiceKey, dec);

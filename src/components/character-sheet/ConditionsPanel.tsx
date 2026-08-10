@@ -49,6 +49,22 @@ export function ConditionsPanel({ character, onUpdate }: ConditionsPanelProps) {
           );
         })}
       </div>
+
+      {/* Active condition effects — shown inline so the player can see at a glance */}
+      {activeConditions.length > 0 && (
+        <ul className="mt-4 space-y-2">
+          {activeConditions.map((id) => (
+            <li key={id} className="flex gap-2 text-sm">
+              <span className="font-semibold text-foreground shrink-0">
+                {t(`conditions.${id}.name`)}:
+              </span>
+              <span className="text-muted-foreground">
+                {t(`conditions.${id}.description`)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

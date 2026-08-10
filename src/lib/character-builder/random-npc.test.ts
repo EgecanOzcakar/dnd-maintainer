@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   STANDARD_ARRAY,
   assignStandardArray,
+  autoFillPendingChoices,
+  ensureNpcReadyToCreate,
   generateRandomNpcBasics,
   generateRandomNpcBasicsDetailed,
   getQuickNpcClassIds,
@@ -13,6 +15,9 @@ import { BACKGROUND_SOURCES } from '@/lib/sources/backgrounds';
 import { CLASS_SOURCES } from '@/lib/sources/classes';
 import { SPECIES_SOURCES } from '@/lib/sources/species';
 import { DND_ALIGNMENTS } from '@/lib/dnd-helpers';
+import { reconstructBuild } from '@/lib/build-reconstruction';
+import { collectBundles } from '@/lib/sources/index';
+import { resolveCharacter } from '@/lib/resolver/index';
 import { createChoiceKey } from '@/types/choices';
 import type { ClassSource } from '@/types/sources';
 
@@ -260,3 +265,146 @@ describe('generateRandomNpcBasicsDetailed', () => {
     expect(result.basics.lineageDecision).toBeUndefined();
   });
 });
+
+describe('ensureNpcReadyToCreate', () => {
+  it('fills all basic fields and all pending choices so resolved character has zero pending choices', () => {
+    const seedChar = {
+      id: 'test-npc-id',
+      slug: 'test-npc',
+      previous_slugs: [],
+      campaign_id: 'test-campaign',
+      name: '',
+      player_name: null,
+      character_type: 'npc' as const,
+      species: null,
+      class: 'fighter' as const,
+      subclass: null,
+      level: 1,
+      background: null,
+      alignment: null,
+      gender: null,
+      size: null,
+      age: null,
+      height: null,
+      weight: null,
+      eye_color: null,
+      hair_color: null,
+      skin_color: null,
+      hit_points_max: null,
+      armor_class: null,
+      speed: null,
+      proficiency_bonus: null,
+      personality_traits: null,
+      ideals: null,
+      bonds: null,
+      flaws: null,
+      appearance: null,
+      backstory: null,
+      notes: null,
+      portrait_url: null,
+      is_active: true,
+      status: 'draft' as const,
+      created_at: '',
+      updated_at: '',
+      weapon_masteries: null,
+      heroic_inspiration: false,
+      exhaustion_level: 0 as const,
+      conditions: [],
+      hit_dice_used: null,
+      spell_slots_used: null,
+    };
+
+    const seedRows = [
+      { sequence: 0, class_id: null, class_level: null, hp_roll: null, subclass_id: null, asi_allocation: null, choices: {} },
+      { sequence: 1, class_id: 'fighter' as const, class_level: 1, hp_roll: null, subclass_id: null, asi_allocation: null, choices: {} },
+    ];
+
+    const { character, rows } = ensureNpcReadyToCreate(seedChar, seedRows, () => 0.1);
+
+    expect(character.character_type).toBe('npc');
+    expect(character.name).toBeTruthy();
+    expect(character.species).toBeTruthy();
+    expect(character.class).toBe('fighter');
+    expect(character.alignment).toBeTruthy();
+    expect(character.background).toBeTruthy();
+    expect(character.gender).toBeTruthy();
+
+    const build = reconstructBuild(character, rows, []);
+    const { bundles } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 1,
+      bundles,
+      choices: build.choices,
+    });
+
+    expect(resolved.pendingChoices.length).toBe(0);
+  });
+
+  it('works for spellcasting classes like wizard to fill spell-choice and other pending choices', () => {
+    const wizardChar = {
+      id: 'test-wizard',
+      slug: 'test-wizard',
+      previous_slugs: [],
+      campaign_id: 'test-campaign',
+      name: 'Mage',
+      player_name: null,
+      character_type: 'npc' as const,
+      species: 'human' as const,
+      class: 'wizard' as const,
+      subclass: null,
+      level: 1,
+      background: 'sage' as const,
+      alignment: 'n' as const,
+      gender: 'female' as const,
+      size: null,
+      age: null,
+      height: null,
+      weight: null,
+      eye_color: null,
+      hair_color: null,
+      skin_color: null,
+      hit_points_max: null,
+      armor_class: null,
+      speed: null,
+      proficiency_bonus: null,
+      personality_traits: null,
+      ideals: null,
+      bonds: null,
+      flaws: null,
+      appearance: null,
+      backstory: null,
+      notes: null,
+      portrait_url: null,
+      is_active: true,
+      status: 'draft' as const,
+      created_at: '',
+      updated_at: '',
+      weapon_masteries: null,
+      heroic_inspiration: false,
+      exhaustion_level: 0 as const,
+      conditions: [],
+      hit_dice_used: null,
+      spell_slots_used: null,
+    };
+
+    const rows = [
+      { sequence: 0, class_id: null, class_level: null, hp_roll: null, subclass_id: null, asi_allocation: null, choices: {} },
+      { sequence: 1, class_id: 'wizard' as const, class_level: 1, hp_roll: null, subclass_id: null, asi_allocation: null, choices: {} },
+    ];
+
+    const { character: readyChar, rows: readyRows } = ensureNpcReadyToCreate(wizardChar, rows, () => 0.5);
+
+    const build = reconstructBuild(readyChar, readyRows, []);
+    const { bundles } = collectBundles(build);
+    const resolved = resolveCharacter({
+      baseAbilities: build.baseAbilities,
+      level: 1,
+      bundles,
+      choices: build.choices,
+    });
+
+    expect(resolved.pendingChoices.length).toBe(0);
+  });
+});
+

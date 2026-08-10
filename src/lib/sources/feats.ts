@@ -53,38 +53,128 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
           {
             optionId: 'bard',
             featureId: 'feat-magic-initiate-bard',
-            // TODO(#82): spell grants deferred — spell catalog not yet built
-            grants: [],
+            grants: [
+              { type: 'spellcasting', ability: 'cha', source: 'feat' },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-bard-cantrip', 0),
+                count: 2,
+                spellList: 'bard',
+                spellLevel: 0,
+              },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-bard-spell', 0),
+                count: 1,
+                spellList: 'bard',
+                spellLevel: 1,
+              },
+            ],
           },
           {
             optionId: 'cleric',
             featureId: 'feat-magic-initiate-cleric',
-            // TODO(#82): spell grants deferred — spell catalog not yet built
-            grants: [],
+            grants: [
+              { type: 'spellcasting', ability: 'wis', source: 'feat' },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-cleric-cantrip', 0),
+                count: 2,
+                spellList: 'cleric',
+                spellLevel: 0,
+              },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-cleric-spell', 0),
+                count: 1,
+                spellList: 'cleric',
+                spellLevel: 1,
+              },
+            ],
           },
           {
             optionId: 'druid',
             featureId: 'feat-magic-initiate-druid',
-            // TODO(#82): spell grants deferred — spell catalog not yet built
-            grants: [],
+            grants: [
+              { type: 'spellcasting', ability: 'wis', source: 'feat' },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-druid-cantrip', 0),
+                count: 2,
+                spellList: 'druid',
+                spellLevel: 0,
+              },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-druid-spell', 0),
+                count: 1,
+                spellList: 'druid',
+                spellLevel: 1,
+              },
+            ],
           },
           {
             optionId: 'sorcerer',
             featureId: 'feat-magic-initiate-sorcerer',
-            // TODO(#82): spell grants deferred — spell catalog not yet built
-            grants: [],
+            grants: [
+              { type: 'spellcasting', ability: 'cha', source: 'feat' },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-sorcerer-cantrip', 0),
+                count: 2,
+                spellList: 'sorcerer',
+                spellLevel: 0,
+              },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-sorcerer-spell', 0),
+                count: 1,
+                spellList: 'sorcerer',
+                spellLevel: 1,
+              },
+            ],
           },
           {
             optionId: 'warlock',
             featureId: 'feat-magic-initiate-warlock',
-            // TODO(#82): spell grants deferred — spell catalog not yet built
-            grants: [],
+            grants: [
+              { type: 'spellcasting', ability: 'cha', source: 'feat' },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-warlock-cantrip', 0),
+                count: 2,
+                spellList: 'warlock',
+                spellLevel: 0,
+              },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-warlock-spell', 0),
+                count: 1,
+                spellList: 'warlock',
+                spellLevel: 1,
+              },
+            ],
           },
           {
             optionId: 'wizard',
             featureId: 'feat-magic-initiate-wizard',
-            // TODO(#82): spell grants deferred — spell catalog not yet built
-            grants: [],
+            grants: [
+              { type: 'spellcasting', ability: 'int', source: 'feat' },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-wizard-cantrip', 0),
+                count: 2,
+                spellList: 'wizard',
+                spellLevel: 0,
+              },
+              {
+                type: 'spell-choice',
+                key: createChoiceKey('spell-choice', 'feat', 'magic-initiate-wizard-spell', 0),
+                count: 1,
+                spellList: 'wizard',
+                spellLevel: 1,
+              },
+            ],
           },
         ],
       },
@@ -506,13 +596,13 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     id: 'telekinetic',
     category: 'general',
     prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-telekinetic' } }],
+    grants: [{ type: 'feature', feature: { id: 'feat-telekinetic' } }, { type: 'spell', spellId: 'mage-hand', alwaysPrepared: true }],
   },
   {
     id: 'telepathic',
     category: 'general',
     prerequisites: [{ type: 'level-minimum', level: 4 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-telepathic' } }],
+    grants: [{ type: 'feature', feature: { id: 'feat-telepathic' } }, { type: 'spell', spellId: 'detect-thoughts', alwaysPrepared: true }],
   },
   {
     id: 'war-caster',

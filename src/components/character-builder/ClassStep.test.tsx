@@ -107,6 +107,7 @@ function wizardSpellcasting(): ResolvedSpellcasting {
     slots: [2],
     preparedCount: 3,
     pactMagic: null,
+    spellAbilityOverrides: {},
   };
 }
 

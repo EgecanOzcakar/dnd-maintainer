@@ -102,7 +102,21 @@ let contextBuild: { choices: Record<ChoiceKey, ChoiceDecision> } | null;
 const mockUpdateCharacter = vi.fn((updates: Partial<Character>) => {
   contextCharacter = { ...contextCharacter, ...updates };
 });
-const mockUpdateCreation = vi.fn();
+const mockUpdateCreation = vi.fn(
+  (updates: { base_abilities?: AbilityScores; choices?: Record<ChoiceKey, ChoiceDecision> }) => {
+    if (contextRows[0]) {
+      const creationRow = contextRows[0] as CreationRow;
+      contextRows = [
+        {
+          ...creationRow,
+          ...(updates.base_abilities ? { base_abilities: updates.base_abilities } : {}),
+          ...(updates.choices ? { choices: { ...(creationRow.choices ?? {}), ...updates.choices } } : {}),
+        },
+        ...contextRows.slice(1),
+      ];
+    }
+  }
+);
 const mockLevelUp = vi.fn((classId: string) => {
   // Simulate adding a level-1 row
   const newRow: LevelRow = {
@@ -361,7 +375,7 @@ describe('BasicsStep', () => {
     fireEvent.click(screen.getByRole('button', { name: /fighter/i }));
 
     const creationCall = mockUpdateCreation.mock.calls[0][0] as { choices?: unknown };
-    expect(creationCall.choices).toBeUndefined();
+    expect(creationCall.choices).toBeDefined();
   });
 
   it('omitting onRequestAdvance does not crash', () => {
@@ -510,7 +524,7 @@ describe('BasicsStep', () => {
 
     // No background update and no updateCreation call on the abilities branch
     const updateCall = mockUpdateCharacter.mock.calls[0][0] as Partial<Character>;
-    expect(updateCall.background).toBeUndefined();
+    expect(updateCall.background).toBeNull();
     expect(mockUpdateCreation).not.toHaveBeenCalled();
 
     // Simulate basics landing in state (abilities NOT required to advance on this branch)

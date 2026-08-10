@@ -88,7 +88,7 @@ describe('resolveEquipment', () => {
         grants: [{ type: 'equipment', itemId: 'longsword', quantity: 1 }],
       },
     ];
-    const result = resolveEquipment(bundles, NO_CHOICES, ['longsword']);
+    const result = resolveEquipment(bundles, NO_CHOICES, ['longsword'], 0);
     expect(result.items[0].equipped).toBe(true);
   });
 });
@@ -113,7 +113,7 @@ describe('resolveEquipment bundle-choice', () => {
   });
 
   it('expands bundle decision contents with source.origin "bundle"', () => {
-    const bundles = [makeBundleChoiceBundle(['fighter-chainmail', 'fighter-archer-kit'])];
+    const bundles = [makeBundleChoiceBundle(['fighter-chainmail', 'fighter-archer-kit'], 0)];
     const choices: Readonly<Record<ChoiceKey, ChoiceDecision>> = {
       'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-chainmail', slotPicks: {} },
     };
@@ -125,7 +125,7 @@ describe('resolveEquipment bundle-choice', () => {
   });
 
   it('multi-item bundle expands all contents', () => {
-    const bundles = [makeBundleChoiceBundle(['fighter-chainmail', 'fighter-archer-kit'])];
+    const bundles = [makeBundleChoiceBundle(['fighter-chainmail', 'fighter-archer-kit'], 0)];
     const choices: Readonly<Record<ChoiceKey, ChoiceDecision>> = {
       'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-archer-kit', slotPicks: {} },
     };
@@ -158,7 +158,7 @@ describe('resolveEquipment bundle-choice', () => {
       'bundle-choice:class:barbarian:0': { type: 'bundle-choice', bundleId: 'barbarian-loadout', slotPicks: {} },
     };
     const result = resolveEquipment(bundles, choices, NO_EQUIPPED);
-    const byId = new Map(result.items.map((i) => [i.itemId, i.quantity]));
+    const byId = new Map(result.items.map((i) => [i.itemId, i.quantity], 0));
     expect(byId.get('greataxe')).toBe(1);
     expect(byId.get('handaxe')).toBe(4);
     expect(byId.get('explorers-pack')).toBe(1);
@@ -169,7 +169,7 @@ describe('resolveEquipment bundle-choice', () => {
   });
 
   it('pack-type id expands pack contents with source.origin "pack"', () => {
-    const bundles = [makeBundleChoiceBundle(['dungeoneers-pack', 'explorers-pack'])];
+    const bundles = [makeBundleChoiceBundle(['dungeoneers-pack', 'explorers-pack'], 0)];
     const choices: Readonly<Record<ChoiceKey, ChoiceDecision>> = {
       'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'dungeoneers-pack', slotPicks: {} },
     };
@@ -199,7 +199,7 @@ describe('resolveEquipment bundle-choice', () => {
   });
 
   it('invalid bundleId (unknown) falls through to pending, not a crash', () => {
-    const bundles = [makeBundleChoiceBundle(['fighter-chainmail', 'fighter-archer-kit'])];
+    const bundles = [makeBundleChoiceBundle(['fighter-chainmail', 'fighter-archer-kit'], 0)];
     const choices: Readonly<Record<ChoiceKey, ChoiceDecision>> = {
       'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'nonexistent-bundle', slotPicks: {} },
     };
@@ -214,7 +214,7 @@ describe('resolveEquipment bundle-choice', () => {
   // -------------------------------------------------------------------------
 
   it('slotted bundle with all slots filled materializes every slot item', () => {
-    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'])];
+    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'], 0)];
     const choices: Readonly<Record<ChoiceKey, ChoiceDecision>> = {
       'bundle-choice:class:fighter:0': {
         type: 'bundle-choice',
@@ -224,7 +224,7 @@ describe('resolveEquipment bundle-choice', () => {
     };
     const result = resolveEquipment(bundles, choices, NO_EQUIPPED);
     const ids = result.items.map((i) => i.itemId).sort();
-    expect(ids).toEqual(['longsword', 'shield']);
+    expect(ids).toEqual(['longsword', 'shield'], 0);
     for (const item of result.items) {
       expect(item.source).toEqual({ origin: 'bundle', id: 'martial-weapon-and-shield' });
     }
@@ -232,7 +232,7 @@ describe('resolveEquipment bundle-choice', () => {
   });
 
   it('slotted bundle with partially filled slots (only weapon, missing shield) stays pending', () => {
-    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'])];
+    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'], 0)];
     const choices: Readonly<Record<ChoiceKey, ChoiceDecision>> = {
       'bundle-choice:class:fighter:0': {
         type: 'bundle-choice',
@@ -247,7 +247,7 @@ describe('resolveEquipment bundle-choice', () => {
   });
 
   it('slotted bundle with no slot picks stays pending', () => {
-    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'])];
+    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'], 0)];
     const choices: Readonly<Record<ChoiceKey, ChoiceDecision>> = {
       'bundle-choice:class:fighter:0': {
         type: 'bundle-choice',
@@ -261,7 +261,7 @@ describe('resolveEquipment bundle-choice', () => {
   });
 
   it('slotted bundle with invalid slot pick (wrong category) stays pending', () => {
-    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'])];
+    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'], 0)];
     const choices: Readonly<Record<ChoiceKey, ChoiceDecision>> = {
       'bundle-choice:class:fighter:0': {
         type: 'bundle-choice',
@@ -276,7 +276,7 @@ describe('resolveEquipment bundle-choice', () => {
   });
 
   it('two-martial-weapons with duplicate slot picks materializes both copies', () => {
-    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'])];
+    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'], 0)];
     const choices: Readonly<Record<ChoiceKey, ChoiceDecision>> = {
       'bundle-choice:class:fighter:0': {
         type: 'bundle-choice',
@@ -294,7 +294,7 @@ describe('resolveEquipment bundle-choice', () => {
   });
 
   it('two-martial-weapons with distinct slot picks materializes both weapons', () => {
-    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'])];
+    const bundles = [makeBundleChoiceBundle(['martial-weapon-and-shield', 'two-martial-weapons'], 0)];
     const choices: Readonly<Record<ChoiceKey, ChoiceDecision>> = {
       'bundle-choice:class:fighter:0': {
         type: 'bundle-choice',
@@ -305,7 +305,7 @@ describe('resolveEquipment bundle-choice', () => {
     const result = resolveEquipment(bundles, choices, NO_EQUIPPED);
     expect(result.items).toHaveLength(2);
     const ids = result.items.map((i) => i.itemId).sort();
-    expect(ids).toEqual(['longsword', 'rapier']);
+    expect(ids).toEqual(['longsword', 'rapier'], 0);
   });
 });
 
@@ -386,7 +386,7 @@ describe('resolveEquipment via useDBInventory', () => {
   it('skips unknown persisted items gracefully (no throw) and logs a warning', async () => {
     const { resolveCharacter } = await import('@/lib/resolver');
     const resolverLogger = getLogger('resolver');
-    const warnSpy = vi.spyOn(resolverLogger, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(resolverLogger, 'warn').mockImplementation(() => { });
     const input = {
       baseAbilities: { str: 15, dex: 13, con: 14, int: 8, wis: 10, cha: 12 },
       level: 0,
@@ -410,15 +410,20 @@ describe('resolveEquipment via useDBInventory', () => {
 // ---------------------------------------------------------------------------
 
 describe('resolveAttacks', () => {
-  it('returns empty with no equipped weapons', () => {
+  it('returns unarmed strike when no weapons are equipped', () => {
     const attacks = resolveAttacks(
       [],
       makeAbilities({ str: 16, dex: 14, con: 15, int: 10, wis: 10, cha: 10 }),
       2,
       PROFICIENT_SIMPLE_MARTIAL,
-      NO_FIGHTING_STYLES
+      NO_FIGHTING_STYLES,
+      0
     );
-    expect(attacks).toHaveLength(0);
+    expect(attacks).toHaveLength(1);
+    expect(attacks[0].weaponId).toBe('unarmed-strike');
+    expect(attacks[0].damageDice).toBe('1');
+    expect(attacks[0].attackBonus).toBe(5); // STR 3 + prof 2
+    expect(attacks[0].damageBonus).toBe(3); // STR 3
   });
 
   it('Fighter STR 16 proficient with longsword: attackBonus 5, damageBonus 3', () => {
@@ -441,7 +446,7 @@ describe('resolveAttacks', () => {
     const abilities = makeAbilities({ str: 10, dex: 14, con: 15, int: 10, wis: 10, cha: 10 });
     const attacks = resolveAttacks([makeEquippedWeapon('longbow')], abilities, 2, PROFICIENT_SIMPLE_MARTIAL, [
       'archery',
-    ]);
+    ], 0);
     expect(attacks).toHaveLength(1);
     expect(attacks[0].attackBonus).toBe(6); // DEX +2 + prof +2 + archery +2
     expect(attacks[0].attackBreakdown).toContainEqual({ type: 'ability', value: 2, label: 'dex' });
@@ -459,8 +464,8 @@ describe('resolveAttacks', () => {
       NO_FIGHTING_STYLES
     );
     expect(attacks).toHaveLength(1);
-    expect(attacks[0].attackBreakdown[0]).toEqual({ type: 'ability', value: 3, label: 'dex' });
-    expect(attacks[0].damageBreakdown[0]).toEqual({ type: 'ability', value: 3, label: 'dex' });
+    expect(attacks[0].attackBreakdown[0], 0).toEqual({ type: 'ability', value: 3, label: 'dex' });
+    expect(attacks[0].damageBreakdown[0], 0).toEqual({ type: 'ability', value: 3, label: 'dex' });
   });
 
   it('finesse weapon: STR 16, DEX 12 → uses STR (+3)', () => {
@@ -473,7 +478,7 @@ describe('resolveAttacks', () => {
       NO_FIGHTING_STYLES
     );
     expect(attacks).toHaveLength(1);
-    expect(attacks[0].attackBreakdown[0]).toEqual({ type: 'ability', value: 3, label: 'str' });
+    expect(attacks[0].attackBreakdown[0], 0).toEqual({ type: 'ability', value: 3, label: 'str' });
   });
 
   it('non-proficient weapon omits proficiency bonus from breakdown', () => {
@@ -494,7 +499,7 @@ describe('resolveAttacks', () => {
     const abilities = makeAbilities({ str: 16, dex: 10, con: 10, int: 10, wis: 10, cha: 10 });
     const attacks = resolveAttacks([makeEquippedWeapon('longsword')], abilities, 2, PROFICIENT_SIMPLE_MARTIAL, [
       'dueling',
-    ]);
+    ], 0);
     expect(attacks).toHaveLength(1);
     expect(attacks[0].damageBonus).toBe(5); // STR +3 + dueling +2
     expect(attacks[0].damageBreakdown).toContainEqual({ type: 'fighting-style', value: 2, label: 'dueling' });
@@ -508,7 +513,7 @@ describe('resolveAttacks', () => {
       2,
       PROFICIENT_SIMPLE_MARTIAL,
       ['dueling']
-    );
+      , 0);
     expect(attacks).toHaveLength(2);
     for (const attack of attacks) {
       expect(attack.damageBreakdown.some((c) => c.label === 'dueling')).toBe(false);
@@ -519,7 +524,7 @@ describe('resolveAttacks', () => {
     const abilities = makeAbilities({ str: 16, dex: 10, con: 10, int: 10, wis: 10, cha: 10 });
     const attacks = resolveAttacks([makeEquippedWeapon('greatsword')], abilities, 2, PROFICIENT_SIMPLE_MARTIAL, [
       'dueling',
-    ]);
+    ], 0);
     expect(attacks).toHaveLength(1);
     expect(attacks[0].damageBreakdown.some((c) => c.label === 'dueling')).toBe(false);
   });
@@ -532,7 +537,7 @@ describe('resolveAttacks', () => {
       2,
       PROFICIENT_SIMPLE_MARTIAL,
       ['dueling']
-    );
+      , 0);
     expect(attacks).toHaveLength(2);
     const longswordAttack = attacks.find((a) => a.weaponId === 'longsword')!;
     expect(longswordAttack.damageBreakdown.some((c) => c.label === 'dueling')).toBe(false);
@@ -542,7 +547,7 @@ describe('resolveAttacks', () => {
     const abilities = makeAbilities({ str: 16, dex: 10, con: 10, int: 10, wis: 10, cha: 10 });
     const attacks = resolveAttacks([makeEquippedWeapon('longsword')], abilities, 2, PROFICIENT_SIMPLE_MARTIAL, [
       'archery',
-    ]);
+    ], 0);
     expect(attacks[0].attackBreakdown.some((c) => c.label === 'archery')).toBe(false);
   });
 });

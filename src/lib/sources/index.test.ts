@@ -639,10 +639,17 @@ describe('feat-origin feature-choice pipeline (build.feats: magic-initiate)', ()
     });
     const clericFeatures = result.features.filter((f) => f.feature.id === 'feat-magic-initiate-cleric');
     expect(clericFeatures, 'feat-magic-initiate-cleric should appear exactly once').toHaveLength(1);
-    const pendingMagicInitiate = result.pendingChoices.find(
-      (c) => 'choiceKey' in c && String(c.choiceKey).includes('magic-initiate')
+    // The feature-choice (picking the class) is resolved, so no pending feature-choice remains.
+    // Spell-choice sub-picks (2 cantrips + 1 leveled spell) are correctly pending since
+    // buildWithDecision does not include spell decisions.
+    const pendingFeatureChoice = result.pendingChoices.find(
+      (c) => c.type === 'feature-choice' && String(c.choiceKey).includes('magic-initiate')
     );
-    expect(pendingMagicInitiate, 'no pending magic-initiate choice after resolution').toBeUndefined();
+    expect(pendingFeatureChoice, 'feature-choice for magic-initiate should be resolved').toBeUndefined();
+    const pendingSpellChoices = result.pendingChoices.filter(
+      (c) => c.type === 'spell-choice' && String(c.choiceKey).includes('magic-initiate')
+    );
+    expect(pendingSpellChoices, 'two spell-choice picks (cantrips + leveled) should be pending').toHaveLength(2);
   });
 
   it('without decision: a pending feature-choice for magic-initiate is emitted', () => {

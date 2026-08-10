@@ -1,12 +1,16 @@
 import { DND_SKILLS } from '@/lib/dnd-helpers';
 import type { SkillId } from '@/lib/dnd-helpers';
 import type { ResolvedSkill } from '@/types/resolved';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
+import { formatSigned } from '@/lib/format';
+import { Button } from '@/components/ui/button';
+import { ChevronDown, ChevronRight, Dices } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface SkillsPanelProps {
   readonly skills: Readonly<Record<SkillId, ResolvedSkill>>;
+  readonly onSelectRollPreset?: (preset: RollPreset) => void;
 }
 
 function formatBonus(value: number): string {
@@ -23,7 +27,7 @@ function BreakdownLabel({ type, label }: { type: string; label: string }) {
   return <>{t(`features.${label}.name`, { defaultValue: label })}</>;
 }
 
-export function SkillsPanel({ skills }: SkillsPanelProps) {
+export function SkillsPanel({ skills, onSelectRollPreset }: SkillsPanelProps) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
   const [expanded, setExpanded] = useState<Set<SkillId>>(new Set());
@@ -51,6 +55,17 @@ export function SkillsPanel({ skills }: SkillsPanelProps) {
     });
   };
 
+  const handleSelectSkillRoll = (skillId: SkillId, bonus: number) => {
+    if (!onSelectRollPreset) return;
+    const skillName = t(`skills.${skillId}`);
+    onSelectRollPreset({
+      die: 20,
+      count: 1,
+      modifier: bonus,
+      contextLabel: `Skill Check: ${skillName} (${formatSigned(bonus)})`,
+    });
+  };
+
   return (
     <div className="bg-card border rounded-lg p-6">
       <div className="flex items-center justify-between mb-4">
@@ -71,31 +86,56 @@ export function SkillsPanel({ skills }: SkillsPanelProps) {
           if (!resolved) return null;
           const isExpanded = expanded.has(skill.id);
           const abbrev = t(`abilityAbbreviations.${skill.ability}`);
+          const skillName = t(`skills.${skill.id}`);
 
           return (
-            <div key={skill.id}>
-              <button
-                type="button"
-                onClick={() => toggleSkill(skill.id)}
-                className="flex items-center justify-between w-full text-foreground py-1 hover:bg-muted/50 rounded px-1 -mx-1 transition-colors"
-              >
-                <span className="flex items-center gap-1">
+            <div key={skill.id} className="border-b border-border/30 last:border-0 py-0.5">
+              <div className="flex items-center justify-between w-full text-foreground py-0.5 hover:bg-muted/50 rounded px-1 -mx-1 transition-colors">
+                <button
+                  type="button"
+                  onClick={() => {
+                    toggleSkill(skill.id);
+                    handleSelectSkillRoll(skill.id, resolved.bonus);
+                  }}
+                  className="flex items-center gap-1 text-left flex-1"
+                >
                   {isExpanded ? (
-                    <ChevronDown className="size-3 text-muted-foreground" />
+                    <ChevronDown className="size-3 text-muted-foreground shrink-0" />
                   ) : (
-                    <ChevronRight className="size-3 text-muted-foreground" />
+                    <ChevronRight className="size-3 text-muted-foreground shrink-0" />
                   )}
                   <span className={resolved.proficient ? 'font-bold' : ''}>
-                    {t(`skills.${skill.id}`)}
+                    {skillName}
                     <span className="text-xs text-muted-foreground ml-1">({abbrev})</span>
                   </span>
-                </span>
-                <span
-                  className={`font-mono ${resolved.expertise ? 'text-green-600 font-bold' : 'text-muted-foreground'}`}
-                >
-                  {formatBonus(resolved.bonus)}
-                </span>
-              </button>
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectSkillRoll(skill.id, resolved.bonus)}
+                    className={`font-mono px-1 rounded hover:bg-primary/20 ${
+                      resolved.expertise ? 'text-green-600 font-bold' : 'text-muted-foreground font-bold'
+                    }`}
+                    title={`Click to set ${skillName} Check Roll (${formatBonus(resolved.bonus)})`}
+                  >
+                    {formatBonus(resolved.bonus)}
+                  </button>
+
+                  {onSelectRollPreset && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleSelectSkillRoll(skill.id, resolved.bonus)}
+                      className="h-6 px-1.5 text-[10px] gap-0.5 text-primary hover:bg-primary/10"
+                      title={`Roll ${skillName} Check`}
+                    >
+                      <Dices className="size-3" /> Roll
+                    </Button>
+                  )}
+                </div>
+              </div>
               {isExpanded && (
                 <div className="ml-5 mb-1 space-y-0.5">
                   {resolved.breakdown.map((component, i) => (

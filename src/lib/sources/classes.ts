@@ -944,6 +944,13 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             key: createChoiceKey('weapon-mastery-choice', 'class', 'paladin', 0),
             count: 2,
           },
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'class', 'paladin', 0),
+            count: 2,
+            spellList: 'paladin',
+            spellLevel: 1,
+          },
         ],
       },
       {
@@ -1040,6 +1047,14 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             key: createChoiceKey('fighting-style-choice', 'class', 'ranger', 0),
             count: 1,
             from: FIGHTING_STYLE_IDS,
+          },
+          // Spells Prepared: 2 at Level 1 (2024 PHB)
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'class', 'ranger', 0),
+            count: 2,
+            spellList: 'ranger',
+            spellLevel: 1,
           },
         ],
       },
@@ -1217,6 +1232,22 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'spellcasting', ability: 'cha', source: 'class' },
           { type: 'feature', feature: { id: 'sorcerer-innate-sorcery' } },
           { type: 'armor-class', calculation: { mode: 'armored' } },
+          // Cantrips: 4 at Level 1
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'class', 'sorcerer', 0),
+            count: 4,
+            spellList: 'sorcerer',
+            spellLevel: 0,
+          },
+          // Spells Known: 2 at Level 1
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'class', 'sorcerer', 1),
+            count: 2,
+            spellList: 'sorcerer',
+            spellLevel: 1,
+          },
         ],
       },
       {
@@ -1280,6 +1311,22 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'feature', feature: { id: 'warlock-eldritch-invocations' } },
           { type: 'feature', feature: { id: 'warlock-magical-cunning' } },
           { type: 'armor-class', calculation: { mode: 'armored' } },
+          // Cantrips: 2 at Level 1
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'class', 'warlock', 0),
+            count: 2,
+            spellList: 'warlock',
+            spellLevel: 0,
+          },
+          // Spells Known: 2 at Level 1
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'class', 'warlock', 1),
+            count: 2,
+            spellList: 'warlock',
+            spellLevel: 1,
+          },
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'warlock-pact-magic-enhancement' } }] },
@@ -1339,6 +1386,22 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'spellcasting', ability: 'int', source: 'class' },
           { type: 'feature', feature: { id: 'wizard-arcane-recovery' } },
           { type: 'armor-class', calculation: { mode: 'armored' } },
+          // Cantrips: 3 at Level 1
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'class', 'wizard', 0),
+            count: 3,
+            spellList: 'wizard',
+            spellLevel: 0,
+          },
+          // Spellbook initial spells: 6 Level 1 spells
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'class', 'wizard', 1),
+            count: 6,
+            spellList: 'wizard',
+            spellLevel: 1,
+          },
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'wizard-scholar' } }] },

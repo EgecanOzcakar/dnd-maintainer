@@ -203,7 +203,7 @@ describe('FEAT_SOURCES', () => {
       }
     });
 
-    it.each(['magic-initiate', 'elemental-adept', 'resilient'] as const)(
+    it.each(['elemental-adept', 'resilient'] as const)(
       '%s: each option has grants: [] and featureId matching feat-<feat>-<optionId>',
       (featId) => {
         const feat = FEAT_SOURCES.find((f) => f.id === featId);
@@ -223,5 +223,30 @@ describe('FEAT_SOURCES', () => {
         }
       }
     );
+
+    it('magic-initiate: each option has spellcasting + 2 spell-choice grants and correct featureId', () => {
+      const feat = FEAT_SOURCES.find((f) => f.id === 'magic-initiate');
+      const choiceGrant = feat?.grants.find((g) => g.type === 'feature-choice');
+      expect(choiceGrant).toBeDefined();
+      if (choiceGrant?.type === 'feature-choice') {
+        const EXPECTED_CLASS_IDS = ['bard', 'cleric', 'druid', 'sorcerer', 'warlock', 'wizard'];
+        expect(choiceGrant.options.map((o) => o.optionId)).toEqual(EXPECTED_CLASS_IDS);
+        for (const option of choiceGrant.options) {
+          expect(option.featureId).toBe(`feat-magic-initiate-${option.optionId}`);
+          // Should have: 1 spellcasting grant + 1 cantrip spell-choice + 1 leveled spell-choice
+          expect(option.grants).toHaveLength(3);
+          const types = option.grants.map((g) => g.type);
+          expect(types).toContain('spellcasting');
+          const spellChoices = option.grants.filter((g) => g.type === 'spell-choice');
+          expect(spellChoices).toHaveLength(2);
+          const cantripChoice = spellChoices.find((g) => g.type === 'spell-choice' && g.spellLevel === 0);
+          const leveledChoice = spellChoices.find((g) => g.type === 'spell-choice' && g.spellLevel === 1);
+          expect(cantripChoice).toBeDefined();
+          expect(leveledChoice).toBeDefined();
+          if (cantripChoice?.type === 'spell-choice') expect(cantripChoice.count).toBe(2);
+          if (leveledChoice?.type === 'spell-choice') expect(leveledChoice.count).toBe(1);
+        }
+      }
+    });
   });
 });

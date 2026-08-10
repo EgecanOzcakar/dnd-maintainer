@@ -5,6 +5,7 @@ import { AbilityScoresPanel } from '@/components/character-sheet/AbilityScoresPa
 import { AttacksPanel } from '@/components/character-sheet/AttacksPanel';
 import { BackstoryPanel } from '@/components/character-sheet/BackstoryPanel';
 import { CharacterSheetHeader } from '@/components/character-sheet/CharacterSheetHeader';
+import { CommonImageDisplayer } from '@/components/common/CommonImageDisplayer';
 import { CombatPanel } from '@/components/character-sheet/CombatPanel';
 import { ConditionsPanel } from '@/components/character-sheet/ConditionsPanel';
 import { EquipmentPanel } from '@/components/character-sheet/EquipmentPanel';
@@ -39,8 +40,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useBuilderAutosave } from '@/hooks/useBuilderAutosave';
 import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
-
-const logger = getLogger('character-sheet');
+import { InventoryTab } from '@/components/character-sheet/InventoryTab';
+import { PartyInitiativeTracker } from '@/components/character-sheet/PartyInitiativeTracker';
+import { DiceRoller } from '@/components/character-sheet/DiceRoller';
+import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
+import { Dices } from 'lucide-react';
 
 type EditSection = 'header' | 'personality' | 'backstory' | 'appearance' | null;
 
@@ -56,6 +60,7 @@ function CharacterSheetInner({
   const { t: tc } = useTranslation('common');
   const { t: tg } = useTranslation('gamedata');
   const [editSection, setEditSection] = useState<EditSection>(null);
+  const [activeTab, setActiveTab] = useState<'sheet' | 'combat' | 'inventory'>('sheet');
 
   const navigate = useNavigate();
   const { campaignSlug } = useParams<{ campaignSlug: string }>();
@@ -79,6 +84,7 @@ function CharacterSheetInner({
   const { saveDraft } = useBuilderAutosave(characterId);
   const [saveFailed, setSaveFailed] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
+  const [rollPreset, setRollPreset] = useState<RollPreset | null>(null);
 
   // Autosave when isDirty (level up/down, choices, etc.)
   const latestPayloadRef = useRef<AutosavePayload>({ character: ctxCharacter, rows, resolved });
@@ -256,96 +262,181 @@ function CharacterSheetInner({
           </div>
         )}
 
-        <CharacterSheetHeader
-          character={character}
-          onEdit={() => setEditSection('header')}
-          onClone={() => {
-            setCloneName(tc('characterSheet.actions.copyOfName', { name: character.name }));
-            setConfirmAction('clone');
-          }}
-          onArchive={() => setConfirmAction('archive')}
-          onDelete={() => setConfirmAction('delete')}
-          onExportPdf={handleExportPdf}
-          exportingPdf={exportingPdf}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <CharacterSheetHeader
+            character={character}
+            onEdit={() => setEditSection('header')}
+            onClone={() => {
+              setCloneName(tc('characterSheet.actions.copyOfName', { name: character.name }));
+              setConfirmAction('clone');
+            }}
+            onArchive={() => setConfirmAction('archive')}
+            onDelete={() => setConfirmAction('delete')}
+            onExportPdf={handleExportPdf}
+            exportingPdf={exportingPdf}
+          />
+          <CommonImageDisplayer campaignId={character.campaign_id} />
+        </div>
 
         {/* Pending Choices Panel */}
         <div className="mb-6">
           <PendingChoicesPanel />
         </div>
 
-        {/* WotC-inspired layout: stats (left) / combat (center) / roleplay & gear (right) */}
-        <div className="sheet-grid mb-6">
-          {/* Left Column: Abilities, Saving Throws, Skills */}
-          <div className="sheet-area-left">
-            <AbilityScoresPanel abilities={abilities} buildError={buildError} />
-            <SavingThrowsPanel savingThrows={savingThrows} buildError={buildError} />
-            {skills ? (
-              <SkillsPanel skills={skills} />
-            ) : (
-              <div className="sheet-panel text-center text-muted-foreground">
-                <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.skills')}</h2>
-                <p>
-                  {buildError
-                    ? tc('characterSheet.buildError.skills', { message: buildError })
-                    : tc('characterSheet.emptyState.skills')}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Center Column: Combat & Features */}
-          <div className="sheet-area-center">
-            <CombatPanel
-              resolved={resolved}
-              abilities={abilities}
-              armorClass={armorClass}
-              speedValue={speedValue}
-              speed={resolved?.speed}
-              maxHP={maxHP}
-              profBonus={profBonus}
-              passivePerception={resolved ? 10 + resolved.skills.perception.bonus : null}
-              isStale={isStale}
-              buildError={buildError}
-            />
-
-            <ConditionsPanel character={character} onUpdate={handleUpdate} />
-
-            {resolved && (
-              <>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1" onClick={handleShortRest}>
-                    {tc('characterSheet.actions.shortRest')}
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1" onClick={handleLongRest}>
-                    {tc('characterSheet.actions.longRest')}
-                  </Button>
-                </div>
-                <HitDicePanel resolved={resolved} character={character} onUpdate={handleUpdate} />
-                <SpellSlotsPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
-              </>
-            )}
-
-            {resolved && <AttacksPanel attacks={resolved.attacks} weaponMasteries={resolved.weaponMasteries} />}
-            {resolved && <ProficienciesPanel resolved={resolved} />}
-            {resolved && <ResourcePoolsPanel resolved={resolved} />}
-            {resolved?.features && resolved.features.length > 0 && <FeaturesPanel features={resolved.features} />}
-          </div>
-
-          {/* Right Column: Equipment, Spells & Personality */}
-          <div className="sheet-area-right">
-            {itemsData.length > 0 && <EquipmentPanel itemsData={itemsData} />}
-            {hasSpells && <SpellcastingPanel spellcasting={resolved.spellcasting!} />}
-            {hasPersonality && <PersonalityPanel character={character} onEdit={() => setEditSection('personality')} />}
-          </div>
+        {/* Sheet / Inventory / Combat tab toggle */}
+        <div className="flex gap-1 mb-6 p-1 bg-muted/60 rounded-xl border border-border w-fit">
+          <button
+            type="button"
+            onClick={() => setActiveTab('sheet')}
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'sheet'
+              ? 'bg-card text-foreground shadow-sm border border-border'
+              : 'text-muted-foreground hover:text-foreground'
+              }`}
+          >
+            {tc('characterSheet.combatView.tabs.sheet')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('inventory')}
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'inventory'
+              ? 'bg-card text-foreground shadow-sm border border-border'
+              : 'text-muted-foreground hover:text-foreground'
+              }`}
+          >
+            {tc('characterSheet.combatView.tabs.inventory', { defaultValue: 'Inventory' })}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('combat')}
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'combat'
+              ? 'bg-card text-foreground shadow-sm border border-border'
+              : 'text-muted-foreground hover:text-foreground'
+              }`}
+          >
+            {tc('characterSheet.combatView.tabs.combat')}
+          </button>
         </div>
 
-        {/* Full Width Backstory & Appearance */}
-        <BackstoryPanel
-          character={character}
-          onEditBackstory={() => setEditSection('backstory')}
-          onEditAppearance={() => setEditSection('appearance')}
-        />
+        {activeTab === 'inventory' ? (
+          <InventoryTab
+            characterId={character.id}
+            campaignId={character.campaign_id}
+            itemsData={itemsData}
+          />
+        ) : (
+          <>
+            {/* WotC-inspired layout: stats (left) / combat (center) / roleplay & gear (right) */}
+            <div className="sheet-grid mb-6">
+              {/* Left Column: Abilities, Saving Throws, Skills */}
+              <div className="sheet-area-left">
+                <AbilityScoresPanel
+                  abilities={abilities}
+                  buildError={buildError}
+                  onSelectRollPreset={(preset) => setRollPreset(preset)}
+                />
+                <SavingThrowsPanel
+                  savingThrows={savingThrows}
+                  buildError={buildError}
+                  onSelectRollPreset={(preset) => setRollPreset(preset)}
+                />
+                {skills ? (
+                  <SkillsPanel
+                    skills={skills}
+                    onSelectRollPreset={(preset) => setRollPreset(preset)}
+                  />
+                ) : (
+                  <div className="sheet-panel text-center text-muted-foreground">
+                    <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.skills')}</h2>
+                    <p>
+                      {buildError
+                        ? tc('characterSheet.buildError.skills', { message: buildError })
+                        : tc('characterSheet.emptyState.skills')}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Center Column: Combat & Features */}
+              <div className="sheet-area-center">
+                {/* Interactive Dice Roller synced with party view */}
+                <div className="bg-card border border-indigo-500/30 rounded-lg p-5 mb-6 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Dices className="size-5 text-indigo-500" />
+                    <h2 className="text-base font-bold text-foreground">Interactive Party Dice Roller</h2>
+                  </div>
+                  <DiceRoller
+                    characterId={character.id}
+                    campaignId={character.campaign_id}
+                    presetDie={rollPreset?.die}
+                    presetCount={rollPreset?.count}
+                    presetModifier={rollPreset?.modifier}
+                    contextLabel={rollPreset?.contextLabel}
+                  />
+                </div>
+
+                <CombatPanel
+                  resolved={resolved}
+                  abilities={abilities}
+                  armorClass={armorClass}
+                  speedValue={speedValue}
+                  speed={resolved?.speed}
+                  maxHP={maxHP}
+                  profBonus={profBonus}
+                  passivePerception={resolved ? 10 + resolved.skills.perception.bonus : null}
+                  isStale={isStale}
+                  buildError={buildError}
+                />
+
+                <ConditionsPanel character={character} onUpdate={handleUpdate} />
+
+                {resolved && (
+                  <>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" className="flex-1" onClick={handleShortRest}>
+                        {tc('characterSheet.actions.shortRest')}
+                      </Button>
+                      <Button variant="outline" size="sm" className="flex-1" onClick={handleLongRest}>
+                        {tc('characterSheet.actions.longRest')}
+                      </Button>
+                    </div>
+                    <HitDicePanel resolved={resolved} character={character} onUpdate={handleUpdate} />
+                    <SpellSlotsPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
+                  </>
+                )}
+
+                {resolved && (
+                  <AttacksPanel
+                    attacks={resolved.attacks}
+                    weaponMasteries={resolved.weaponMasteries}
+                    onSelectRollPreset={(preset) => setRollPreset(preset)}
+                  />
+                )}
+                {resolved && <ProficienciesPanel resolved={resolved} />}
+                {resolved && <ResourcePoolsPanel resolved={resolved} />}
+                {resolved?.features && resolved.features.length > 0 && <FeaturesPanel features={resolved.features} />}
+              </div>
+
+              {/* Right Column: Equipment, Spells & Personality */}
+              <div className="sheet-area-right">
+                {itemsData.length > 0 && <EquipmentPanel itemsData={itemsData} />}
+                {hasSpells && resolved?.spellcasting && (
+                  <SpellcastingPanel
+                    spellcasting={resolved.spellcasting}
+                    onSelectRollPreset={(preset) => setRollPreset(preset)}
+                  />
+                )}
+                {hasPersonality && <PersonalityPanel character={character} onEdit={() => setEditSection('personality')} />}
+              </div>
+            </div>
+
+            {/* Full Width Backstory & Appearance */}
+            <BackstoryPanel
+              character={character}
+              onEditBackstory={() => setEditSection('backstory')}
+              onEditAppearance={() => setEditSection('appearance')}
+            />
+          </>
+        )}
       </div>
 
       {/* Edit Dialogs */}

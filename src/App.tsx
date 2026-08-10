@@ -9,8 +9,10 @@ import CharacterSheet from '@/pages/CharacterSheet';
 import SessionList from '@/pages/SessionList';
 import SessionDetail from '@/pages/SessionDetail';
 import NotesPage from '@/pages/NotesPage';
+import WikiPage from '@/pages/WikiPage';
 import ExportData from '@/pages/ExportData';
 import SettingsTheme from '@/pages/SettingsTheme';
+import DMControlPage from '@/pages/DMControlPage';
 
 export default function App() {
   return (
@@ -26,6 +28,9 @@ export default function App() {
           <Route path="/campaign/:campaignSlug/sessions" element={<SessionList />} />
           <Route path="/campaign/:campaignSlug/session/:sessionSlug" element={<SessionDetail />} />
           <Route path="/campaign/:campaignSlug/notes" element={<NotesPage />} />
+          <Route path="/campaign/:campaignSlug/wiki" element={<WikiPage />} />
+          <Route path="/campaign/:campaignSlug/dm" element={<DMControlPage />} />
+          <Route path="/wiki" element={<WikiPage />} />
           <Route path="/export" element={<ExportData />} />
           <Route path="/settings/theme" element={<SettingsTheme />} />
         </Route>

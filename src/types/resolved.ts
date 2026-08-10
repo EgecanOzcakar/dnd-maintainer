@@ -150,126 +150,132 @@ export interface ResolvedSpellcasting {
   readonly slots: readonly number[];
   readonly preparedCount: number;
   readonly pactMagic: ResolvedPactMagic | null;
+  /**
+   * Sparse map of spellId → AbilityKey for spells that use a different ability than the
+   * character's dominant spellcasting ability. Only entries that differ are included;
+   * absence means the spell uses `ability` above.
+   */
+  readonly spellAbilityOverrides: Readonly<Record<string, AbilityKey>>;
 }
 
 export type PendingChoice =
   | {
-      readonly type: 'ability-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly count: number;
-      readonly bonus: number;
-      readonly from: readonly AbilityKey[] | null;
-    }
+    readonly type: 'ability-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly count: number;
+    readonly bonus: number;
+    readonly from: readonly AbilityKey[] | null;
+  }
   | {
-      readonly type: 'skill-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly category: 'skill';
-      readonly count: number;
-      readonly from: readonly SkillId[] | null;
-    }
+    readonly type: 'skill-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly category: 'skill';
+    readonly count: number;
+    readonly from: readonly SkillId[] | null;
+  }
   | {
-      readonly type: 'tool-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly category: 'tool';
-      readonly count: number;
-      readonly from: readonly ToolProficiencyId[] | null;
-    }
+    readonly type: 'tool-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly category: 'tool';
+    readonly count: number;
+    readonly from: readonly ToolProficiencyId[] | null;
+  }
   | {
-      readonly type: 'language-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly count: number;
-      readonly from: readonly LanguageId[] | null;
-    }
+    readonly type: 'language-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly count: number;
+    readonly from: readonly LanguageId[] | null;
+  }
   | {
-      readonly type: 'saving-throw-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly category: 'saving-throw';
-      readonly count: number;
-      readonly from: readonly AbilityKey[] | null;
-    }
+    readonly type: 'saving-throw-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly category: 'saving-throw';
+    readonly count: number;
+    readonly from: readonly AbilityKey[] | null;
+  }
   | {
-      readonly type: 'expertise-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly count: number;
-      readonly from: readonly SkillId[] | null;
-      readonly fromTools: readonly ToolProficiencyId[];
-    }
+    readonly type: 'expertise-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly count: number;
+    readonly from: readonly SkillId[] | null;
+    readonly fromTools: readonly ToolProficiencyId[];
+  }
   | {
-      readonly type: 'asi';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly points: number;
-      readonly from: readonly AbilityKey[] | null;
-    }
+    readonly type: 'asi';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly points: number;
+    readonly from: readonly AbilityKey[] | null;
+  }
   | { readonly type: 'subclass'; readonly choiceKey: ChoiceKey; readonly source: SourceTag; readonly classId: ClassId }
   | {
-      readonly type: 'fighting-style-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly count: number;
-      readonly from: readonly FightingStyleId[];
-      readonly alreadyChosen: readonly FightingStyleId[];
-    }
+    readonly type: 'fighting-style-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly count: number;
+    readonly from: readonly FightingStyleId[];
+    readonly alreadyChosen: readonly FightingStyleId[];
+  }
   | {
-      readonly type: 'weapon-mastery-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly count: number;
-      readonly from: readonly string[];
-      readonly alreadyChosen: readonly string[];
-    }
+    readonly type: 'weapon-mastery-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly count: number;
+    readonly from: readonly string[];
+    readonly alreadyChosen: readonly string[];
+  }
   | {
-      readonly type: 'damage-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly count: number;
-      readonly from: readonly DamageTypeId[];
-      readonly featureIdPrefix: string;
-    }
+    readonly type: 'damage-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly count: number;
+    readonly from: readonly DamageTypeId[];
+    readonly featureIdPrefix: string;
+  }
   | {
-      readonly type: 'bundle-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly category: BundleCategory;
-      readonly bundleIds: readonly string[];
-    }
+    readonly type: 'bundle-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly category: BundleCategory;
+    readonly bundleIds: readonly string[];
+  }
   | {
-      readonly type: 'lineage-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly speciesId: SpeciesId;
-      readonly from: readonly string[];
-    }
+    readonly type: 'lineage-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly speciesId: SpeciesId;
+    readonly from: readonly string[];
+  }
   | {
-      readonly type: 'feat-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly from: readonly FeatId[] | null;
-      readonly category: FeatCategory;
-    }
+    readonly type: 'feat-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly from: readonly FeatId[] | null;
+    readonly category: FeatCategory;
+  }
   | {
-      readonly type: 'feature-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly options: readonly [
-        { readonly optionId: string; readonly featureId: string },
-        ...{ readonly optionId: string; readonly featureId: string }[],
-      ];
-    }
+    readonly type: 'feature-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly options: readonly [
+      { readonly optionId: string; readonly featureId: string },
+      ...{ readonly optionId: string; readonly featureId: string }[],
+    ];
+  }
   | {
-      readonly type: 'spell-choice';
-      readonly choiceKey: ChoiceKey;
-      readonly source: SourceTag;
-      readonly count: number;
-      readonly spellList: ClassId;
-      readonly spellLevel: number;
-    };
+    readonly type: 'spell-choice';
+    readonly choiceKey: ChoiceKey;
+    readonly source: SourceTag;
+    readonly count: number;
+    readonly spellList: ClassId;
+    readonly spellLevel: number;
+  };
 
 export interface ResolvedCharacter {
   readonly abilities: Readonly<Record<AbilityKey, ResolvedAbility>>;

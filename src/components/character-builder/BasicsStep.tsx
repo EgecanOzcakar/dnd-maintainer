@@ -21,10 +21,14 @@ import {
 } from '@/lib/dnd-helpers';
 import { SPECIES_SOURCES } from '@/lib/sources/species';
 import {
+  ensureNpcReadyToCreate,
   generateRandomNpcBasicsDetailed,
   getQuickNpcClassIds,
   type RandomNpcFailure,
 } from '@/lib/character-builder/random-npc';
+import type { ChoiceDecision, ChoiceKey } from '@/types/choices';
+import type { BuildLevelRow } from '@/lib/build-reconstruction';
+import type { Character } from '@/types/database';
 import type { StepType } from '@/types/character-builder';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { MoreHorizontal, Wand2 } from 'lucide-react';
@@ -188,6 +192,31 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
     !!character.player_name ||
     levelRows.length > 0;
 
+  const applyNpcResultToContext = (readyChar: Character, readyRows: readonly BuildLevelRow[]) => {
+    context.updateCharacter(readyChar);
+    const creationRow = readyRows.find((r) => r.sequence === 0);
+    if (creationRow) {
+      context.updateCreation({
+        base_abilities: creationRow.base_abilities ?? undefined,
+        choices: creationRow.choices ?? {},
+      });
+    }
+    for (const row of readyRows) {
+      if (row.sequence !== 0) {
+        if (!levelRows.some((r) => r.sequence === row.sequence)) {
+          context.levelUp(row.class_id, row.hp_roll, new Map(Object.entries(row.choices ?? {})));
+        } else {
+          context.replaceLevel(row.sequence, row.class_id, row.subclass_id);
+          if (row.choices) {
+            for (const [key, dec] of Object.entries(row.choices)) {
+              context.makeChoice(key as ChoiceKey, dec);
+            }
+          }
+        }
+      }
+    }
+  };
+
   const commitQuickNpc = (classId: ClassId) => {
     const result = generateRandomNpcBasicsDetailed(classId);
     if (!result.ok) {
@@ -195,17 +224,14 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
       return;
     }
     const basics = result.basics;
-    // Full commit is wrapped: if any step throws, we rollback ref state and
-    // surface the error. Callers of levelUp/replaceLevel already mutate before
-    // throwing, but a throw in updateCharacter/updateCreation would otherwise
-    // leave the form half-applied with no user feedback.
     try {
       if (levelRows.length === 0) {
         context.levelUp(classId, null);
       } else {
         context.replaceLevel(levelRows[0].sequence, classId, null);
       }
-      context.updateCharacter({
+      const initialChar: Character = {
+        ...character,
         character_type: 'npc',
         player_name: '',
         gender: basics.gender,
@@ -215,9 +241,10 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
         class: classId,
         level: 1,
         ...(basics.targetStep === 'class' ? { background: basics.suggestedBackground } : {}),
-      });
+      };
+
       const asiDecision = basics.targetStep === 'class' ? basics.backgroundAsiDecision : undefined;
-      const choices = {
+      const initialChoices: Record<ChoiceKey, ChoiceDecision> = {
         ...(asiDecision
           ? {
               [asiDecision.key]: {
@@ -235,14 +262,29 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
             }
           : {}),
       };
-      const hasChoices = Object.keys(choices).length > 0;
+
       if (basics.targetStep === 'class') {
-        context.updateCreation({
-          base_abilities: basics.baseAbilities,
-          ...(hasChoices ? { choices } : {}),
+        const currentRows = rows.map((r) => {
+          if (r.sequence === 0) {
+            return {
+              ...r,
+              base_abilities: basics.baseAbilities,
+              choices: { ...(r.choices ?? {}), ...initialChoices },
+            };
+          }
+          if (r.sequence === 1 || (levelRows.length > 0 && r.sequence === levelRows[0].sequence)) {
+            return { ...r, class_id: classId };
+          }
+          return r;
         });
-      } else if (hasChoices) {
-        context.updateCreation({ choices });
+        const { character: readyChar, rows: readyRows } = ensureNpcReadyToCreate(initialChar, currentRows);
+        applyNpcResultToContext(readyChar, readyRows);
+      } else {
+        context.updateCharacter(initialChar);
+        const hasChoices = Object.keys(initialChoices).length > 0;
+        if (hasChoices) {
+          context.updateCreation({ choices: initialChoices });
+        }
       }
     } catch (err) {
       pendingAdvanceRef.current = null;
@@ -251,9 +293,6 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
       toast.error(tc('characterBuilder.hints.quickNpcCommitFailed'));
       return;
     }
-    // Arm the advance flag and a watchdog. If the basics-ready gate never
-    // settles (e.g. a reducer drops a field), the watchdog clears the ref and
-    // warns the user rather than leaving the flow silently stuck.
     pendingAdvanceRef.current = basics.targetStep;
     clearWatchdog();
     watchdogRef.current = window.setTimeout(() => {
@@ -263,6 +302,17 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
       logger.error('Quick NPC advance watchdog fired', { classId, basics });
       toast.error(tc('characterBuilder.hints.quickNpcAdvanceTimeout'));
     }, PENDING_ADVANCE_TIMEOUT_MS);
+  };
+
+  const handleAutoFillNpc = () => {
+    try {
+      const { character: readyChar, rows: readyRows } = ensureNpcReadyToCreate(character, rows);
+      applyNpcResultToContext(readyChar, readyRows);
+      toast.success(tc('characterBuilder.hints.npcOptionsFilled'));
+    } catch (err) {
+      logger.error('Auto-fill NPC failed', err);
+      toast.error(tc('characterBuilder.hints.quickNpcCommitFailed'));
+    }
   };
 
   const handleQuickNpc = (classId: ClassId) => {
@@ -283,7 +333,20 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
     <div className="space-y-6">
       {/* Quick Random NPC buttons */}
       <div className="space-y-2">
-        <Label>{tc('characterBuilder.fields.quickNpcLabel')}</Label>
+        <div className="flex items-center justify-between">
+          <Label>{tc('characterBuilder.fields.quickNpcLabel')}</Label>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={handleAutoFillNpc}
+            className="gap-2 text-xs"
+            title={tc('characterBuilder.hints.fillAllNpcOptions')}
+          >
+            <Wand2 className="size-3.5 text-primary" />
+            {tc('characterBuilder.hints.fillAllNpcOptions')}
+          </Button>
+        </div>
         <p className="text-xs text-muted-foreground">{tc('characterBuilder.hints.quickNpcDescription')}</p>
         <div className="flex flex-wrap gap-2">
           {getQuickNpcClassIds().map((classId) => {

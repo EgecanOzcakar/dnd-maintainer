@@ -717,9 +717,13 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Minor Illusion cantrip; Focus Point cost to cast Darkness, Darkvision, Pass without Trace, or Silence
-          // TODO #93: replace spell-cost casts with spell grants when spell id system is available
           { type: 'feature', feature: { id: 'warriorofshadow-shadow-arts' } },
+          { type: 'spellcasting', ability: 'wis', source: 'class' },
+          { type: 'spell', spellId: 'minor-illusion', alwaysPrepared: true, ability: 'wis' },
+          { type: 'spell', spellId: 'darkness', alwaysPrepared: true, ability: 'wis' },
+          { type: 'spell', spellId: 'darkvision', alwaysPrepared: true, ability: 'wis' },
+          { type: 'spell', spellId: 'pass-without-trace', alwaysPrepared: true, ability: 'wis' },
+          { type: 'spell', spellId: 'silence', alwaysPrepared: true, ability: 'wis' },
         ],
       },
       {

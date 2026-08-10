@@ -8,7 +8,7 @@ import type { AbilityScores } from '@/types/database';
 import type { GrantBundle, SourceTag } from '@/types/sources';
 import { createChoiceKey, parseChoiceKey } from '@/types/choices';
 import type { ChoiceKey, ChoiceDecision } from '@/types/choices';
-import type { ResolvedCharacter, PendingChoice, ResolvedSkill } from '@/types/resolved';
+import type { ResolvedCharacter, PendingChoice, ResolvedSkill, ResolvedArmorClass } from '@/types/resolved';
 import type { HitDie, ExpertiseChoiceGrant } from '@/types/grants';
 import { mapNonEmpty } from '@/lib/non-empty';
 import type { WeaponMasteryId } from '@/types/items';
@@ -20,7 +20,7 @@ import { resolveHp, resolveSpeed, resolveAc, resolveBardicInspiration } from '@/
 import { resolveSpellcasting } from '@/lib/resolver/spellcasting';
 import { resolveEquipment, resolveAttacks, resolveEquippedArmorAc } from '@/lib/resolver/equipment';
 import { resolveResourcePools } from '@/lib/resolver/resource-pools';
-import { getItemDef, getOrParseItemDef, WEAPON_CATALOG } from '@/lib/sources/items';
+import { getOrParseItemDef, WEAPON_CATALOG } from '@/lib/sources/items';
 import { getFeatSource } from '@/lib/sources';
 import { getSpellsForList } from '@/lib/sources/spells';
 

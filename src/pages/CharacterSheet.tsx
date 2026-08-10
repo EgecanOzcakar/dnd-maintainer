@@ -43,7 +43,7 @@ import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
 import { InventoryTab } from '@/components/character-sheet/InventoryTab';
 import { DiceRoller } from '@/components/character-sheet/DiceRoller';
 import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
-import { Dices } from 'lucide-react';
+import { Dices, X } from 'lucide-react';
 
 import { supabase } from '@/lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
@@ -89,6 +89,12 @@ function CharacterSheetInner({
   const [saveFailed, setSaveFailed] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
   const [rollPreset, setRollPreset] = useState<RollPreset | null>(null);
+  const [isDiceRollerOpen, setIsDiceRollerOpen] = useState(false);
+
+  const handleSelectRollPreset = useCallback((preset: RollPreset) => {
+    setRollPreset(preset);
+    setIsDiceRollerOpen(true);
+  }, []);
 
   // Autosave when isDirty (level up/down, choices, etc.)
   const latestPayloadRef = useRef<AutosavePayload>({ character: ctxCharacter, rows, resolved });
@@ -356,17 +362,17 @@ function CharacterSheetInner({
                 <AbilityScoresPanel
                   abilities={abilities}
                   buildError={buildError}
-                  onSelectRollPreset={(preset) => setRollPreset(preset)}
+                  onSelectRollPreset={handleSelectRollPreset}
                 />
                 <SavingThrowsPanel
                   savingThrows={savingThrows}
                   buildError={buildError}
-                  onSelectRollPreset={(preset) => setRollPreset(preset)}
+                  onSelectRollPreset={handleSelectRollPreset}
                 />
                 {skills ? (
                   <SkillsPanel
                     skills={skills}
-                    onSelectRollPreset={(preset) => setRollPreset(preset)}
+                    onSelectRollPreset={handleSelectRollPreset}
                   />
                 ) : (
                   <div className="sheet-panel text-center text-muted-foreground">
@@ -382,22 +388,6 @@ function CharacterSheetInner({
 
               {/* Center Column: Combat & Features */}
               <div className="sheet-area-center">
-                {/* Interactive Dice Roller synced with party view */}
-                <div className="bg-card border border-indigo-500/30 rounded-lg p-5 mb-6 shadow-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Dices className="size-5 text-indigo-500" />
-                    <h2 className="text-base font-bold text-foreground">Interactive Party Dice Roller</h2>
-                  </div>
-                  <DiceRoller
-                    characterId={character.id}
-                    campaignId={character.campaign_id}
-                    presetDie={rollPreset?.die}
-                    presetCount={rollPreset?.count}
-                    presetModifier={rollPreset?.modifier}
-                    contextLabel={rollPreset?.contextLabel}
-                  />
-                </div>
-
                 <CombatPanel
                   resolved={resolved}
                   abilities={abilities}
@@ -432,7 +422,7 @@ function CharacterSheetInner({
                   <AttacksPanel
                     attacks={resolved.attacks}
                     weaponMasteries={resolved.weaponMasteries}
-                    onSelectRollPreset={(preset) => setRollPreset(preset)}
+                    onSelectRollPreset={handleSelectRollPreset}
                   />
                 )}
                 {resolved && <ProficienciesPanel resolved={resolved} />}
@@ -446,7 +436,7 @@ function CharacterSheetInner({
                 {hasSpells && resolved?.spellcasting && (
                   <SpellcastingPanel
                     spellcasting={resolved.spellcasting}
-                    onSelectRollPreset={(preset) => setRollPreset(preset)}
+                    onSelectRollPreset={handleSelectRollPreset}
                   />
                 )}
                 {hasPersonality && <PersonalityPanel character={character} onEdit={() => setEditSection('personality')} />}
@@ -503,6 +493,47 @@ function CharacterSheetInner({
           saving={updateMutation.isPending}
         />
       )}
+
+      {/* Floating Side Tab Dice Roller (Fixed Bottom-Left, opposite of party roll overlay on bottom-right) */}
+      <div className="fixed bottom-6 left-2 z-40 pointer-events-auto">
+        {isDiceRollerOpen ? (
+          <div className="bg-card/95 border border-indigo-500/40 rounded-2xl p-4 shadow-2xl backdrop-blur-xl w-80 max-w-[calc(100vw-3rem)] animate-in slide-in-from-bottom-5 fade-in duration-200">
+            <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-border/60">
+              <div className="flex items-center gap-2">
+                <Dices className="size-5 text-indigo-500 animate-pulse" />
+                <h3 className="text-sm font-bold text-foreground">Dice Roller</h3>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDiceRollerOpen(false)}
+                className="size-7 p-0 text-muted-foreground hover:text-foreground rounded-full"
+                aria-label={tc('buttons.close') || 'Close'}
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+            <DiceRoller
+              characterId={character.id}
+              campaignId={character.campaign_id}
+              presetDie={rollPreset?.die}
+              presetCount={rollPreset?.count}
+              presetModifier={rollPreset?.modifier}
+              contextLabel={rollPreset?.contextLabel}
+            />
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setIsDiceRollerOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 border border-indigo-400/40"
+            title="Open Dice Roller"
+          >
+            <Dices className="size-5" />
+            <span>Dice Roller</span>
+          </button>
+        )}
+      </div>
 
       {/* Archive / Delete / Clone Confirmation */}
       {confirmAction && (

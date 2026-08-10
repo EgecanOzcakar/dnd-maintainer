@@ -127,11 +127,12 @@ export function DiceRoller({
             total,
             rolls,
             modifier,
+            label: contextLabel,
           },
         });
       }
     }, 320);
-  }, [isRolling, count, selectedDie, modifier, onRoll, characterId, campaignId, recordRoll]);
+  }, [isRolling, count, selectedDie, modifier, onRoll, characterId, campaignId, recordRoll, contextLabel]);
 
   // Keep preset values in sync when parent changes them (e.g. clicking a spell's Roll button)
   const lastPresetKey = useRef('');

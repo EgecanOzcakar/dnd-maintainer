@@ -67,6 +67,26 @@ vi.mock('@/hooks/usePartyInitiatives', () => ({
   }),
 }));
 
+vi.mock('@/hooks/usePartyCharacterStats', () => ({
+  usePartyCharacterStats: () => ({
+    data: {
+      'pc-1': {
+        characterId: 'pc-1',
+        wisScore: 14,
+        wisMod: 2,
+        intScore: 12,
+        intMod: 1,
+        perceptionBonus: 4,
+        passivePerception: 14,
+        passiveWisdom: 12,
+        passiveIntelligence: 11,
+        perceptionProficient: true,
+        perceptionExpertise: false,
+      },
+    },
+  }),
+}));
+
 describe('DMControlPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -120,6 +140,30 @@ describe('DMControlPage', () => {
     expect(mockMutateHP).toHaveBeenCalledWith({
       campaignId: 'camp-1',
       hpMap: { 'pc-1': 44 },
+    });
+  });
+
+  it('renders perception, wisdom, and intelligence stats and triggers rolls', async () => {
+    render(
+      <MemoryRouter initialEntries={['/campaign/test-campaign/dm']}>
+        <Routes>
+          <Route path="/campaign/:campaignSlug/dm" element={<DMControlPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Party Perception, Wisdom & Intelligence Checks')).toBeInTheDocument();
+
+    const rollPartyPerception = screen.getByRole('button', { name: /Roll Party Perception/i });
+    fireEvent.click(rollPartyPerception);
+
+    expect(mockMutateRoll).toHaveBeenCalledWith({
+      campaignId: 'camp-1',
+      characterId: 'pc-1',
+      roll: expect.objectContaining({
+        modifier: 4,
+        label: 'Thorin Oakenshield - Perception Check',
+      }),
     });
   });
 });

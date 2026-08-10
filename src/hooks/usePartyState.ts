@@ -7,6 +7,7 @@ export interface CharacterRollEntry {
   rolls: number[];
   modifier: number;
   timestamp: string;
+  label?: string;
 }
 
 export interface PartyFullState {
@@ -145,6 +146,7 @@ export function useRecordCharacterRoll() {
         total: number;
         rolls: number[];
         modifier: number;
+        label?: string;
       };
     }) => {
       const { data: campaign, error: fetchErr } = await supabase

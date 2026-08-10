@@ -45,6 +45,9 @@ import { DiceRoller } from '@/components/character-sheet/DiceRoller';
 import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
 import { Dices } from 'lucide-react';
 
+import { supabase } from '@/lib/supabase';
+import { useQueryClient } from '@tanstack/react-query';
+
 const logger = getLogger('CharacterSheet');
 
 type EditSection = 'header' | 'personality' | 'backstory' | 'appearance' | null;
@@ -117,6 +120,25 @@ function CharacterSheetInner({
     const timer = setTimeout(doSave, 500);
     return () => clearTimeout(timer);
   }, [isDirty, doSave]);
+
+  const queryClient = useQueryClient();
+  const effectiveAc = resolved?.armorClass.effective;
+  useEffect(() => {
+    if (effectiveAc != null && ctxCharacter && effectiveAc !== ctxCharacter.armor_class) {
+      supabase
+        .from('characters')
+        .update({ armor_class: effectiveAc, updated_at: new Date().toISOString() })
+        .eq('id', ctxCharacter.id)
+        .then(({ error }) => {
+          if (error) {
+            logger.error('Failed to sync stored armor_class:', error);
+          } else {
+            queryClient.invalidateQueries({ queryKey: ['character', ctxCharacter.id] });
+            queryClient.invalidateQueries({ queryKey: ['characters'] });
+          }
+        });
+    }
+  }, [effectiveAc, ctxCharacter?.armor_class, ctxCharacter?.id, queryClient]);
 
   // Flush a pending autosave on unmount so the last level-up isn't lost when the user navigates away within the debounce window.
   useEffect(() => {
@@ -323,6 +345,7 @@ function CharacterSheetInner({
             characterId={character.id}
             campaignId={character.campaign_id}
             itemsData={itemsData}
+            armorProficiencies={resolved?.armorProficiencies}
           />
         ) : (
           <>

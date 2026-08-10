@@ -20,7 +20,7 @@ import { resolveHp, resolveSpeed, resolveAc, resolveBardicInspiration } from '@/
 import { resolveSpellcasting } from '@/lib/resolver/spellcasting';
 import { resolveEquipment, resolveAttacks, resolveEquippedArmorAc } from '@/lib/resolver/equipment';
 import { resolveResourcePools } from '@/lib/resolver/resource-pools';
-import { getItemDef, WEAPON_CATALOG } from '@/lib/sources/items';
+import { getItemDef, getOrParseItemDef, WEAPON_CATALOG } from '@/lib/sources/items';
 import { getFeatSource } from '@/lib/sources';
 import { getSpellsForList } from '@/lib/sources/spells';
 
@@ -78,7 +78,7 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     input.useDBInventory && input.persistedItems
       ? resolveEquipmentFromPersisted(input.persistedItems)
       : resolveEquipment(bundles, choices, equippedItemIds);
-  const equippedArmorAc = resolveEquippedArmorAc(equipmentResult.items, dexModifier);
+  const equippedArmorAc = resolveEquippedArmorAc(equipmentResult.items, dexModifier, proficiencies.armor);
   const bardLevel = getClassLevel(bundles, 'bard' satisfies ClassId);
   const chaModifier = abilities.cha.modifier;
   const bardicInspiration = resolveBardicInspiration(bundles, bardLevel, chaModifier);
@@ -441,6 +441,44 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     }
   }
 
+  const hasArmorPenalty = Boolean(equippedArmorAc?.hasNonProficientBodyArmor);
+
+  const finalArmorClass: ResolvedArmorClass = {
+    ...armorClass,
+    hasNonProficientBodyArmor: equippedArmorAc?.hasNonProficientBodyArmor ?? false,
+    hasNonProficientShield: equippedArmorAc?.hasNonProficientShield ?? false,
+  };
+
+  const finalSpellcasting = spellcasting
+    ? {
+        ...spellcasting,
+        cannotCastSpells: hasArmorPenalty ? true : undefined,
+        armorPenalty: hasArmorPenalty ? true : undefined,
+      }
+    : null;
+
+  const finalSavingThrows = hasArmorPenalty
+    ? (Object.fromEntries(
+        Object.entries(savingThrows).map(([ability, val]) => [
+          ability,
+          ability === 'str' || ability === 'dex' ? { ...val, disadvantageFromArmor: true } : val,
+        ])
+      ) as typeof savingThrows)
+    : savingThrows;
+
+  const finalSkills = hasArmorPenalty
+    ? (Object.fromEntries(
+        Object.entries(skills).map(([skillId, val]) => [
+          skillId,
+          val.ability === 'str' || val.ability === 'dex' ? { ...val, disadvantageFromArmor: true } : val,
+        ])
+      ) as typeof skills)
+    : skills;
+
+  const finalAttacks = hasArmorPenalty
+    ? attacks.map((atk) => ({ ...atk, disadvantageFromArmor: true }))
+    : attacks;
+
   return {
     abilities,
     hitDie,
@@ -448,9 +486,9 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     speed,
     initiative: dexModifier,
     proficiencyBonus,
-    armorClass,
-    savingThrows,
-    skills,
+    armorClass: finalArmorClass,
+    savingThrows: finalSavingThrows,
+    skills: finalSkills,
     armorProficiencies: proficiencies.armor,
     weaponProficiencies: proficiencies.weapon,
     toolProficiencies: proficiencies.tool,
@@ -461,9 +499,9 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
       sources: [source],
     })),
     immunities: [],
-    spellcasting,
+    spellcasting: finalSpellcasting,
     equipment: equipmentResult.items,
-    attacks,
+    attacks: finalAttacks,
     toolExpertise,
     bardicInspiration,
     pendingChoices,
@@ -483,7 +521,7 @@ function resolveEquipmentFromPersisted(persistedItems: readonly PersistedItem[])
 } {
   const items: import('@/types/resolved').ResolvedEquipmentItem[] = [];
   for (const row of persistedItems) {
-    const itemDef = getItemDef(row.itemId);
+    const itemDef = getOrParseItemDef(row.itemId, row.source);
     if (!itemDef) {
       logger.warn(`Skipping unknown persisted item "${row.itemId}" — removed from catalog?`);
       continue;

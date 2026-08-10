@@ -1,5 +1,5 @@
 import { getLogger } from '@/lib/logger';
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
 const logger = getLogger('character-context');
@@ -343,6 +343,11 @@ export function CharacterProvider({
   children,
 }: CharacterProviderProps): React.JSX.Element {
   const [character, setCharacter] = useState<Character>(initialCharacter);
+
+  useEffect(() => {
+    setCharacter(initialCharacter);
+  }, [initialCharacter]);
+
   const [rows, setRows] = useState<readonly BuildLevelRow[]>(() => {
     // Seed a creation row if one doesn't exist so reconstructBuild can always find sequence 0
     if (initialRows.some((r) => r.sequence === 0)) return initialRows;
@@ -361,9 +366,6 @@ export function CharacterProvider({
     };
     return [seedRow, ...initialRows];
   });
-  // TODO: add a toggleEquipped(itemId) setter so the character sheet can
-  // equip/unequip items at runtime. Currently read-only after mount.
-  const [equippedItems] = useState<readonly string[]>(initialEquippedItems);
   const [isDirty, setIsDirty] = useState<boolean>(false);
 
   const {
@@ -373,10 +375,8 @@ export function CharacterProvider({
     error: buildError,
     warnings: buildWarnings,
   } = useMemo(
-    () => tryDeriveAndResolve(character, rows, equippedItems, initialPersistedItems, useDBInventory),
-    // initialPersistedItems and useDBInventory are stable (set at mount from DB query results)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [character, rows, equippedItems]
+    () => tryDeriveAndResolve(character, rows, initialEquippedItems, initialPersistedItems, useDBInventory),
+    [character, rows, initialEquippedItems, initialPersistedItems, useDBInventory]
   );
 
   const level = useMemo(() => rows.filter((r) => r.sequence !== 0 && r.deleted_at == null).length, [rows]);

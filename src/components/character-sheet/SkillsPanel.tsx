@@ -4,6 +4,7 @@ import type { ResolvedSkill } from '@/types/resolved';
 import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
 import { formatSigned } from '@/lib/format';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ChevronDown, ChevronRight, Dices } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -108,6 +109,15 @@ export function SkillsPanel({ skills, onSelectRollPreset }: SkillsPanelProps) {
                     {skillName}
                     <span className="text-xs text-muted-foreground ml-1">({abbrev})</span>
                   </span>
+                  {resolved.disadvantageFromArmor && (
+                    <Badge
+                      variant="outline"
+                      title="Disadvantage on Strength and Dexterity tests while wearing armor without training"
+                      className="text-[9px] py-0 px-1 border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/10 cursor-help ml-1"
+                    >
+                      DIS
+                    </Badge>
+                  )}
                 </button>
 
                 <div className="flex items-center gap-2">

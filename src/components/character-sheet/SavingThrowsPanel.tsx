@@ -1,4 +1,5 @@
 import { BonusBreakdown } from '@/components/character-sheet/BonusBreakdown';
+import { Badge } from '@/components/ui/badge';
 import type { ResolvedCharacter } from '@/types/resolved';
 import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
 import { formatSigned } from '@/lib/format';
@@ -62,6 +63,15 @@ export function SavingThrowsPanel({
                   className={`inline-block size-2.5 rounded-full border ${save.proficient ? 'bg-foreground border-foreground' : 'border-muted-foreground/50'}`}
                 />
                 <span className={save.proficient ? 'font-bold' : ''}>{abilityName}</span>
+                {save.disadvantageFromArmor && (
+                  <Badge
+                    variant="outline"
+                    title="Disadvantage on Strength and Dexterity tests while wearing armor without training"
+                    className="text-[9px] py-0 px-1 border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/10 cursor-help"
+                  >
+                    DIS
+                  </Badge>
+                )}
               </button>
 
               <div className="flex items-center gap-2">

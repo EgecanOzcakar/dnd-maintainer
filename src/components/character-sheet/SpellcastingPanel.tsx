@@ -6,7 +6,7 @@ import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
 import { parseDiceFormula, extractDiceFromText } from '@/lib/dice-helpers';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight, Dices } from 'lucide-react';
+import { ChevronDown, ChevronRight, Dices, AlertTriangle } from 'lucide-react';
 import { useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -248,6 +248,13 @@ export function SpellcastingPanel({
   return (
     <div className="bg-card border border-purple-200 dark:border-purple-900/50 rounded-lg p-6">
       <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.spells')}</h2>
+
+      {spellcasting.cannotCastSpells && (
+        <div className="mb-4 p-3 bg-amber-500/15 border border-amber-500/40 rounded text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2 font-medium">
+          <AlertTriangle className="size-4 shrink-0 text-amber-500" />
+          <span>Cannot Cast Spells — You are wearing armor without training.</span>
+        </div>
+      )}
 
       {/* Spellcasting stats header */}
       {(spellcasting.ability != null || spellcasting.spellSaveDC != null || spellcasting.spellAttackBonus != null) && (

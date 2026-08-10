@@ -16,8 +16,8 @@ import type { ResolvedAbility } from '@/types/resolved';
 import { collectGrantsByType } from '@/lib/resolver/helpers';
 import { getItemDef, requireItemDef } from '@/lib/sources/items';
 import { getBundleDef, getItemsForSlot, resolveBundleRef } from '@/lib/sources/bundles';
-import type { WeaponProficiencyId } from '@/lib/dnd-helpers';
-import type { BundleSlot, SlotFilter, DamageDice } from '@/types/items';
+import type { ArmorProficiencyId, WeaponProficiencyId } from '@/lib/dnd-helpers';
+import type { BundleSlot, SlotFilter, DamageDice, ArmorCategory } from '@/types/items';
 
 /**
  * Confirms that a slot pick is an item in the catalog that satisfies the slot's filter.
@@ -267,38 +267,110 @@ export function resolveAttacks(
 }
 
 /**
- * Returns the AC contribution from equipped armor items.
- * - `totalBase`: the armor's base AC plus clamped DEX contribution (null when no body armor is equipped)
- * - `shieldBonus`: 2 when a shield is equipped, 0 otherwise
- * Returns null only when nothing armor-related is equipped at all.
+ * Helper to check if a character has proficiency with a given armor category.
+ */
+export function isProficientWithArmor(
+  armorCategory: ArmorCategory,
+  armorProficiencies: readonly (ArmorProficiencyId | Sourced<ArmorProficiencyId> | string)[]
+): boolean {
+  const profSet = new Set(armorProficiencies.map((p) => (typeof p === 'string' ? p : p.value)));
+
+  switch (armorCategory) {
+    case 'light':
+      return profSet.has('light');
+    case 'medium':
+      return profSet.has('medium') || profSet.has('medium-nonmetal');
+    case 'heavy':
+      return profSet.has('heavy');
+    case 'shield':
+      return profSet.has('shields') || profSet.has('shields-nonmetal');
+    default:
+      return false;
+  }
+}
+
+/**
+ * Helper to check if a character has non-proficient body armor equipped.
+ * Wearing body armor without proficiency causes disadvantage on STR/DEX tests and blocks spellcasting.
+ */
+export function hasNonProficientEquippedArmor(
+  equippedItems: readonly ResolvedEquipmentItem[],
+  armorProficiencies: readonly (ArmorProficiencyId | Sourced<ArmorProficiencyId> | string)[]
+): boolean {
+  const equippedBodyArmor = equippedItems.find(
+    (item) => item.equipped && item.itemDef.type === 'armor' && item.itemDef.category !== 'shield'
+  );
+  if (!equippedBodyArmor || equippedBodyArmor.itemDef.type !== 'armor') return false;
+  return !isProficientWithArmor(equippedBodyArmor.itemDef.category, armorProficiencies);
+}
+
+/**
+ * Returns the AC contribution from equipped armor items based on D&D 2024 rules:
+ * - Body armor grants its base AC (+ clamped DEX) whenever worn, regardless of proficiency.
+ * - Shield grants its +2 AC benefit ONLY if the character has training/proficiency with shields.
+ * - Returns null only when no body armor is equipped and no proficient shield is equipped.
  */
 export function resolveEquippedArmorAc(
   equippedItems: readonly ResolvedEquipmentItem[],
-  dexModifier: number
-): { readonly totalBase: number | null; readonly shieldBonus: number } | null {
+  dexModifier: number,
+  armorProficiencies?: readonly (ArmorProficiencyId | Sourced<ArmorProficiencyId> | string)[]
+): {
+  readonly totalBase: number | null;
+  readonly shieldBonus: number;
+  readonly hasNonProficientBodyArmor: boolean;
+  readonly hasNonProficientShield: boolean;
+} | null {
   const equippedShield = equippedItems.find(
     (item) => item.equipped && item.itemDef.type === 'armor' && item.itemDef.category === 'shield'
   );
-  const shieldBonus = equippedShield ? 2 : 0;
+  const isShieldProficient = armorProficiencies
+    ? isProficientWithArmor('shield', armorProficiencies)
+    : true;
+  const shieldBonus = equippedShield && isShieldProficient ? 2 : 0;
+  const hasNonProficientShield = Boolean(equippedShield && armorProficiencies && !isShieldProficient);
 
   const equippedBodyArmor = equippedItems.find(
     (item) => item.equipped && item.itemDef.type === 'armor' && item.itemDef.category !== 'shield'
   );
 
-  if (!equippedBodyArmor && !equippedShield) return null;
+  const hasNonProficientBodyArmor = Boolean(
+    equippedBodyArmor &&
+      equippedBodyArmor.itemDef.type === 'armor' &&
+      armorProficiencies &&
+      !isProficientWithArmor(equippedBodyArmor.itemDef.category, armorProficiencies)
+  );
+
+  if (!equippedBodyArmor && shieldBonus === 0) return null;
 
   if (!equippedBodyArmor) {
     // Shield only — caller uses its own base calculation but adds shieldBonus
-    return { totalBase: null, shieldBonus };
+    return {
+      totalBase: null,
+      shieldBonus,
+      hasNonProficientBodyArmor: false,
+      hasNonProficientShield,
+    };
   }
 
   const armor = equippedBodyArmor.itemDef;
-  if (armor.type !== 'armor') return { totalBase: null, shieldBonus };
+  if (armor.type !== 'armor') {
+    return {
+      totalBase: null,
+      shieldBonus,
+      hasNonProficientBodyArmor: false,
+      hasNonProficientShield,
+    };
+  }
 
   const dexContribution =
     armor.maxDexBonus === null ? dexModifier : Math.max(0, Math.min(dexModifier, armor.maxDexBonus));
 
-  return { totalBase: armor.baseAc + dexContribution, shieldBonus };
+  return {
+    totalBase: armor.baseAc + dexContribution,
+    shieldBonus,
+    hasNonProficientBodyArmor,
+    hasNonProficientShield,
+  };
 }
 
 /** Re-exported from items.ts for convenience. */

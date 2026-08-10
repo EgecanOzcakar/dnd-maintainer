@@ -68,6 +68,7 @@ export interface ResolvedSkill {
   readonly bonus: number;
   readonly breakdown: readonly SkillBonusComponent[];
   readonly sources: readonly SourceTag[];
+  readonly disadvantageFromArmor?: boolean;
 }
 
 export interface ResolvedEquipmentItem {
@@ -90,6 +91,7 @@ export interface ResolvedAttack {
   readonly range: WeaponRange;
   readonly normalRange?: number;
   readonly longRange?: number;
+  readonly disadvantageFromArmor?: boolean;
 }
 
 export interface ResolvedFeature {
@@ -115,6 +117,8 @@ export interface ResolvedArmorClass {
   }[];
   readonly bonuses: readonly { readonly value: number; readonly source: SourceTag }[];
   readonly effective: number;
+  readonly hasNonProficientBodyArmor?: boolean;
+  readonly hasNonProficientShield?: boolean;
 }
 
 export interface ResolvedPactMagic {
@@ -156,6 +160,8 @@ export interface ResolvedSpellcasting {
    * absence means the spell uses `ability` above.
    */
   readonly spellAbilityOverrides: Readonly<Record<string, AbilityKey>>;
+  readonly cannotCastSpells?: boolean;
+  readonly armorPenalty?: boolean;
 }
 
 export type PendingChoice =
@@ -293,6 +299,7 @@ export interface ResolvedCharacter {
         readonly bonus: number;
         readonly sources: readonly SourceTag[];
         readonly breakdown: readonly SavingThrowBonusComponent[];
+        readonly disadvantageFromArmor?: boolean;
       }
     >
   >;

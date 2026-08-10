@@ -18,6 +18,19 @@ const ROGUE_SKILL_POOL = [
   'stealth',
 ] as const;
 
+const SORCERER_METAMAGIC_OPTIONS: FeatureChoiceGrant['options'] = [
+  { optionId: 'careful-spell', featureId: 'metamagic-careful-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-careful-spell' } }] },
+  { optionId: 'distant-spell', featureId: 'metamagic-distant-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-distant-spell' } }] },
+  { optionId: 'empowered-spell', featureId: 'metamagic-empowered-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-empowered-spell' } }] },
+  { optionId: 'extended-spell', featureId: 'metamagic-extended-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-extended-spell' } }] },
+  { optionId: 'heightened-spell', featureId: 'metamagic-heightened-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-heightened-spell' } }] },
+  { optionId: 'quickened-spell', featureId: 'metamagic-quickened-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-quickened-spell' } }] },
+  { optionId: 'seeking-spell', featureId: 'metamagic-seeking-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-seeking-spell' } }] },
+  { optionId: 'subtle-spell', featureId: 'metamagic-subtle-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-subtle-spell' } }] },
+  { optionId: 'transmuted-spell', featureId: 'metamagic-transmuted-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-transmuted-spell' } }] },
+  { optionId: 'twinned-spell', featureId: 'metamagic-twinned-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-twinned-spell' } }] },
+];
+
 export const CLASS_SOURCES: readonly ClassSource[] = [
   // ─── Barbarian ───────────────────────────────────────────────────────────────
   {
@@ -1263,6 +1276,16 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             max: { mode: 'class-level', classId: 'sorcerer' },
             regen: 'long-rest',
           },
+          {
+            type: 'feature-choice',
+            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 0),
+            options: SORCERER_METAMAGIC_OPTIONS,
+          },
+          {
+            type: 'feature-choice',
+            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 1),
+            options: SORCERER_METAMAGIC_OPTIONS,
+          },
         ],
       },
       { grants: [{ type: 'subclass', classId: 'sorcerer', key: createChoiceKey('subclass', 'class', 'sorcerer', 0) }] },
@@ -1272,7 +1295,21 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       { grants: [{ type: 'feature', feature: { id: 'sorcerer-sorcery-incarnate' } }] },
       { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 1), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'sorcerer', 1), from: null, category: 'general' }] },
       EMPTY_LEVEL,
-      { grants: [{ type: 'feature', feature: { id: 'sorcerer-metamagic-options' } }] },
+      { 
+        grants: [
+          { type: 'feature', feature: { id: 'sorcerer-metamagic-options' } },
+          {
+            type: 'feature-choice',
+            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 2),
+            options: SORCERER_METAMAGIC_OPTIONS,
+          },
+          {
+            type: 'feature-choice',
+            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 3),
+            options: SORCERER_METAMAGIC_OPTIONS,
+          },
+        ] 
+      },
       EMPTY_LEVEL,
       { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'sorcerer', 2), from: null, category: 'general' }] },
       EMPTY_LEVEL,
@@ -1280,7 +1317,21 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       EMPTY_LEVEL,
       { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 3), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'sorcerer', 3), from: null, category: 'general' }] },
       EMPTY_LEVEL,
-      { grants: [{ type: 'feature', feature: { id: 'sorcerer-arcane-apotheosis' } }] },
+      { 
+        grants: [
+          { type: 'feature', feature: { id: 'sorcerer-arcane-apotheosis' } },
+          {
+            type: 'feature-choice',
+            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 4),
+            options: SORCERER_METAMAGIC_OPTIONS,
+          },
+          {
+            type: 'feature-choice',
+            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 5),
+            options: SORCERER_METAMAGIC_OPTIONS,
+          },
+        ] 
+      },
       { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 4), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'sorcerer', 4), from: null, category: 'general' }] },
       { grants: [{ type: 'feature', feature: { id: 'sorcerer-sorcerous-restoration' } }] },
     ],

@@ -20,7 +20,7 @@ export default defineConfig({
   server: {
     port: 5173,
     open: true,
-    allowedHosts: ['localhost', '.ngrok-free.dev', '.ngrok-free.app'],
+    allowedHosts: ['localhost', '.ngrok-free.dev', '.ngrok-free.app', '.trycloudflare.com'],
     proxy: {
       '/rest': {
         target: 'http://127.0.0.1:54321',

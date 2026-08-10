@@ -7,9 +7,11 @@
     "start": "npx supabase start && npx supabase gen types typescript --local > src/types/supabase.ts && vite",
     "stop": "npx supabase stop --yes",
     "dev": "vite",
+    "tunnel": "cloudflared tunnel --url http://localhost:5173",
     "typecheck": "tsc -b --noEmit",
     "build": "tsc -b && vite build",
-    "deploy": "npm run build && wrangler deploy",
+    "deploy": "npm run build && npx wrangler deploy",
+    "deploy:preview": "npm run build && npx wrangler dev",
     "preview": "vite preview",
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run",
@@ -75,7 +77,8 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.1",
     "vite": "^8.0.16",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.8",
+    "wrangler": "^4.120.1"
   },
   "allowScripts": {
     "msw@2.12.10": true,

@@ -2599,166 +2599,220 @@
       "name": "Unarmed Fighting"
     },
     "actor": {
-      "name": "Actor"
+      "name": "Actor",
+      "description": "Increase your Charisma score by 1. You gain advantage on Deception and Performance checks when trying to pass yourself off as a different person, and you can mimic the speech of another person or the sounds made by other creatures."
     },
     "athlete": {
-      "name": "Athlete"
+      "name": "Athlete",
+      "description": "Increase your Strength or Dexterity score by 1. Rising from prone costs only 5 feet of movement, climbing doesn't cost extra movement, and you can make a running jump after moving only 5 feet."
     },
     "charger": {
-      "name": "Charger"
+      "name": "Charger",
+      "description": "Increase your Strength or Dexterity score by 1. When you take the Dash action, your speed increases by an extra 10 feet. If you move at least 10 feet in a straight line before hitting with a melee attack, you can deal +1d8 extra damage or push the target 10 feet."
     },
     "chef": {
-      "name": "Chef"
+      "name": "Chef",
+      "description": "Increase your Constitution or Wisdom score by 1. Gain proficiency with Cook's Utensils. During a Short Rest, you can cook food to grant allies +1d8 extra HP per spent Hit Die. During a Long Rest, you can create treats equal to your Proficiency Bonus that grant Temporary HP as a Bonus Action."
     },
     "crossbow-expert": {
-      "name": "Crossbow Expert"
+      "name": "Crossbow Expert",
+      "description": "Increase your Dexterity score by 1. You ignore the loading property of crossbows, being within 5 feet of an enemy doesn't impose disadvantage on your ranged attack rolls, and when you attack with a one-handed weapon you can use a Bonus Action to attack with a Hand Crossbow."
     },
     "crusher": {
-      "name": "Crusher"
+      "name": "Crusher",
+      "description": "Increase your Strength or Constitution score by 1. Once per turn when you deal Bludgeoning damage, you can move the target 5 feet to an unoccupied space. When you score a critical hit dealing Bludgeoning damage, attack rolls against the target have advantage until the start of your next turn."
     },
     "defensive-duelist": {
-      "name": "Defensive Duelist"
+      "name": "Defensive Duelist",
+      "description": "Increase your Dexterity score by 1. When you are wielding a Finesse weapon with which you are proficient and another creature hits you with a melee attack, you can use your reaction to add your Proficiency Bonus to your AC for that attack."
     },
     "dual-wielder": {
-      "name": "Dual Wielder"
+      "name": "Dual Wielder",
+      "description": "Increase your Strength or Dexterity score by 1. You gain a +1 bonus to AC while wielding separate melee weapons in each hand. You can use two-weapon fighting even when your one-handed melee weapons aren't Light, and you can draw or stow two weapons at once."
     },
     "durable": {
-      "name": "Durable"
+      "name": "Durable",
+      "description": "Increase your Constitution score by 1. As a Bonus Action, you can expend one of your Hit Dice, roll it, and regain Hit Points equal to the roll. You also gain advantage on Death Saving Throws."
     },
     "elemental-adept": {
-      "name": "Elemental Adept"
+      "name": "Elemental Adept",
+      "description": "Increase your Intelligence, Wisdom, or Charisma score by 1. Spells you cast ignore resistance to damage of the chosen damage type (Acid, Cold, Fire, Lightning, or Thunder). In addition, when you roll damage for a spell of that type, you can treat any 1 on a damage die as a 2."
     },
     "fey-touched": {
-      "name": "Fey Touched"
+      "name": "Fey Touched",
+      "description": "Increase Intelligence, Wisdom, or Charisma by 1. Learn Misty Step and one 1st-level spell of your choice from the Divination or Enchantment school. You can cast each once per Long Rest without spending a spell slot."
     },
     "grappler": {
-      "name": "Grappler"
+      "name": "Grappler",
+      "description": "Increase your Strength or Dexterity score by 1. You have advantage on attack rolls against a creature grappled by you. When you hit a creature with an Unarmed Strike on your turn, you can deal damage and also grapple the target as part of the same action."
     },
     "great-weapon-master": {
-      "name": "Great Weapon Master"
+      "name": "Great Weapon Master",
+      "description": "Increase your Strength score by 1. On your turn, when you score a critical hit with a melee weapon or reduce a creature to 0 HP, you can make one melee weapon attack as a Bonus Action. Heavy weapons add your Proficiency Bonus to damage rolls on your turn."
     },
     "heavily-armored": {
-      "name": "Heavily Armored"
+      "name": "Heavily Armored",
+      "description": "Increase your Strength or Constitution score by 1. You gain proficiency with Heavy Armor."
     },
     "heavy-armor-master": {
-      "name": "Heavy Armor Master"
+      "name": "Heavy Armor Master",
+      "description": "Increase your Strength or Constitution score by 1. While wearing Heavy Armor, nonmagical Slashing, Piercing, and Bludgeoning damage you take is reduced by an amount equal to your Proficiency Bonus."
     },
     "inspiring-leader": {
-      "name": "Inspiring Leader"
+      "name": "Inspiring Leader",
+      "description": "Increase your Wisdom or Charisma score by 1. At the end of a Short or Long Rest, you can give a speech to grant up to six allies Temporary Hit Points equal to your character level plus your Wisdom or Charisma modifier."
     },
     "keen-mind": {
-      "name": "Keen Mind"
+      "name": "Keen Mind",
+      "description": "Increase your Intelligence score by 1. You gain proficiency in Arcana, History, Investigation, Nature, or Religion. You can take the Study action as a Bonus Action."
     },
     "lightly-armored": {
-      "name": "Lightly Armored"
+      "name": "Lightly Armored",
+      "description": "Increase your Strength or Dexterity score by 1. You gain proficiency with Light Armor and Shields."
     },
     "mage-slayer": {
-      "name": "Mage Slayer"
+      "name": "Mage Slayer",
+      "description": "Increase your Strength or Dexterity score by 1. When a creature within 5 feet casts a spell, you can use your reaction to make a melee attack. Creatures damaged by you have disadvantage on concentration saves. Once per Long Rest, you can automatically succeed on a save against a spell."
     },
     "medium-armor-master": {
-      "name": "Medium Armor Master"
+      "name": "Medium Armor Master",
+      "description": "Increase your Strength or Dexterity score by 1. Wearing Medium Armor doesn't impose disadvantage on your Stealth checks, and you can add up to +3 (instead of +2) from Dexterity to your AC when wearing Medium Armor."
     },
     "moderately-armored": {
-      "name": "Moderately Armored"
+      "name": "Moderately Armored",
+      "description": "Increase your Strength or Dexterity score by 1. You gain proficiency with Medium Armor and Shields."
     },
     "mounted-combatant": {
-      "name": "Mounted Combatant"
+      "name": "Mounted Combatant",
+      "description": "Increase Strength, Dexterity, or Wisdom by 1. You have advantage on melee attack rolls against unmounted creatures smaller than your mount. You can force an attack targeted at your mount to hit you instead, and your mount gains Evasion."
     },
     "observant": {
-      "name": "Observant"
+      "name": "Observant",
+      "description": "Increase Intelligence or Wisdom by 1. You gain proficiency in Insight, Investigation, or Perception. You can take the Search action as a Bonus Action."
     },
     "piercer": {
-      "name": "Piercer"
+      "name": "Piercer",
+      "description": "Increase Strength or Dexterity by 1. Once per turn when you deal Piercing damage, you can reroll one of the damage dice. When you score a critical hit dealing Piercing damage, roll one additional damage die."
     },
     "poisoner": {
-      "name": "Poisoner"
+      "name": "Poisoner",
+      "description": "Increase Dexterity or Intelligence by 1. You gain proficiency with Poisoner's Kit. Weapons ignore Poison resistance. You can apply poison to a weapon as a Bonus Action (DC 14 CON save or take 2d8 Poison damage and become Poisoned)."
     },
     "polearm-master": {
-      "name": "Polearm Master"
+      "name": "Polearm Master",
+      "description": "Increase Strength or Dexterity by 1. When you attack with a Glaive, Halberd, Quarterstaff, or Spear, you can use a Bonus Action to make a melee strike with the butt end (1d4 damage). You provoke opportunity attacks when enemies enter your reach."
     },
     "resilient": {
-      "name": "Resilient"
+      "name": "Resilient",
+      "description": "Choose one ability score: Strength, Dexterity, Constitution, Intelligence, Wisdom, or Charisma. Increase that score by 1 and gain proficiency in saving throws using that ability."
     },
     "ritual-caster": {
-      "name": "Ritual Caster"
+      "name": "Ritual Caster",
+      "description": "Increase Intelligence, Wisdom, or Charisma by 1. You can cast any ritual spell from your class spell list or ritual spells you know as rituals without extending the casting time."
     },
     "sentinel": {
-      "name": "Sentinel"
+      "name": "Sentinel",
+      "description": "Increase Strength or Dexterity by 1. When you hit a creature with an opportunity attack, its speed becomes 0. Creatures provoke opportunity attacks even if they Disengage, and you can strike enemies that attack allies within 5 feet."
     },
     "shadow-touched": {
-      "name": "Shadow Touched"
+      "name": "Shadow Touched",
+      "description": "Increase Intelligence, Wisdom, or Charisma by 1. Learn Invisibility and one 1st-level Illusion or Necromancy spell. You can cast each once per Long Rest without a spell slot."
     },
     "sharpshooter": {
-      "name": "Sharpshooter"
+      "name": "Sharpshooter",
+      "description": "Increase Dexterity by 1. Attacking at long range doesn't impose disadvantage on ranged attack rolls, your ranged weapon attacks ignore half cover and three-quarters cover, and being within 5 feet of an enemy doesn't impose disadvantage on your ranged weapon attacks."
     },
     "shield-master": {
-      "name": "Shield Master"
+      "name": "Shield Master",
+      "description": "Increase Strength by 1. While wielding a Shield, if you hit a creature with a melee attack on your turn, you can push the target 5 feet or knock it Prone as part of the attack. You can also add your Shield's AC bonus to DEX saves against single-target effects."
     },
     "skill-expert": {
-      "name": "Skill Expert"
+      "name": "Skill Expert",
+      "description": "Increase one ability score of your choice by 1. Gain proficiency in one skill of your choice, and gain Expertise (double proficiency) in one skill in which you are proficient."
     },
     "skulker": {
-      "name": "Skulker"
+      "name": "Skulker",
+      "description": "Increase Dexterity by 1. You gain Blindsight out to 10 feet. You can hide when lightly obscured, and missing a ranged attack while hidden does not reveal your position."
     },
     "slasher": {
-      "name": "Slasher"
+      "name": "Slasher",
+      "description": "Increase Strength or Dexterity by 1. Once per turn when you deal Slashing damage, you can reduce the target's speed by 10 feet. Critical hits with Slashing damage impose disadvantage on the target's attack rolls until your next turn."
     },
     "speedy": {
-      "name": "Speedy"
+      "name": "Speedy",
+      "description": "Increase Dexterity or Constitution by 1. Your speed increases by 10 feet, moving through difficult terrain doesn't cost extra movement, and opportunity attacks against you have disadvantage."
     },
     "spell-sniper": {
-      "name": "Spell Sniper"
+      "name": "Spell Sniper",
+      "description": "Increase Intelligence, Wisdom, or Charisma by 1. Ranged spell attacks ignore half cover and three-quarters cover, casting ranged spells within 5 feet doesn't impose disadvantage, and your ranged spells have their range doubled (if at least 10 feet)."
     },
     "telekinetic": {
-      "name": "Telekinetic"
+      "name": "Telekinetic",
+      "description": "Increase Intelligence, Wisdom, or Charisma by 1. You learn Mage Hand (invisible range 60 ft). As a Bonus Action, you can telekinetically shove a creature within 30 feet 5 feet toward or away from you (DC = 8 + PB + ability mod)."
     },
     "telepathic": {
-      "name": "Telepathic"
+      "name": "Telepathic",
+      "description": "Increase Intelligence, Wisdom, or Charisma by 1. You can speak telepathically to any creature you can see within 60 feet. You can cast Detect Thoughts once per Long Rest without a spell slot."
     },
     "war-caster": {
-      "name": "War Caster"
+      "name": "War Caster",
+      "description": "Increase Intelligence, Wisdom, or Charisma by 1. You have advantage on CON saves to maintain concentration. You can perform somatic components while holding weapons or shields, and you can cast a single-target spell as an opportunity attack."
     },
     "weapon-master": {
-      "name": "Weapon Master"
+      "name": "Weapon Master",
+      "description": "Increase Strength or Dexterity by 1. You gain Weapon Mastery with four weapons of your choice."
     },
     "martial-weapon-training": {
-      "name": "Martial Weapon Training"
+      "name": "Martial Weapon Training",
+      "description": "Increase Strength or Dexterity by 1. You gain proficiency with all Martial weapons."
     },
     "boon-of-combat-prowess": {
-      "name": "Boon of Combat Prowess"
+      "name": "Boon of Combat Prowess",
+      "description": "When you miss with an attack roll, you can hit instead. Once per turn."
     },
     "boon-of-dimensional-travel": {
-      "name": "Boon of Dimensional Travel"
+      "name": "Boon of Dimensional Travel",
+      "description": "Immediately after you take the Attack action or cast a spell, you can teleport up to 30 feet to an unoccupied space."
     },
     "boon-of-energy-resistance": {
-      "name": "Boon of Energy Resistance"
+      "name": "Boon of Energy Resistance",
+      "description": "Gain resistance to two damage types of your choice: Acid, Cold, Fire, Lightning, Necrotic, Poison, Psychic, Radiant, or Thunder."
     },
     "boon-of-fate": {
-      "name": "Boon of Fate"
+      "name": "Boon of Fate",
+      "description": "When you or another creature within 60 feet makes a d20 test, you can roll a d10 and add or subtract it from the result. Once per rest."
     },
     "boon-of-fortitude": {
-      "name": "Boon of Fortitude"
+      "name": "Boon of Fortitude",
+      "description": "Your Hit Point maximum increases by 40. When you regain Hit Points, you regain an additional 2d20 Hit Points once per turn."
     },
     "boon-of-irresistible-offense": {
-      "name": "Boon of Irresistible Offense"
+      "name": "Boon of Irresistible Offense",
+      "description": "Your bludgeoning, piercing, and slashing damage ignores resistances. Critical hits deal additional damage equal to your ability modifier."
     },
     "boon-of-night-spirit": {
-      "name": "Boon of Night Spirit"
+      "name": "Boon of Night Spirit",
+      "description": "While in Dim Light or Darkness, you can become Invisible as a Bonus Action, and you gain resistance to all damage except Force and Radiant."
     },
     "boon-of-recovery": {
-      "name": "Boon of Recovery"
+      "name": "Boon of Recovery",
+      "description": "When you drop to 0 Hit Points, you can instantly regain half your Hit Point maximum instead. Once per Long Rest."
     },
     "boon-of-skill": {
-      "name": "Boon of Skill"
+      "name": "Boon of Skill",
+      "description": "Gain proficiency in all skills, and gain Expertise in one skill of your choice."
     },
     "boon-of-speed": {
-      "name": "Boon of Speed"
+      "name": "Boon of Speed",
+      "description": "Your speed increases by 30 feet. As a Bonus Action, you can take the Disengage action."
     },
     "boon-of-spell-recall": {
-      "name": "Boon of Spell Recall"
+      "name": "Boon of Spell Recall",
+      "description": "Whenever you cast a spell using a 1st through 4th-level spell slot, roll 1d4. On a 1, the spell slot is not expended."
     },
     "boon-of-truesight": {
-      "name": "Boon of Truesight"
+      "name": "Boon of Truesight",
+      "description": "You gain Truesight out to a range of 60 feet."
     }
   },
   "weaponMasteries": {

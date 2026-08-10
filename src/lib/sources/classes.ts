@@ -1336,7 +1336,27 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'subclass', classId: 'warlock', key: createChoiceKey('subclass', 'class', 'warlock', 0) },
-          { type: 'feature', feature: { id: 'warlock-pact-boon' } },
+          {
+            type: 'feature-choice',
+            key: createChoiceKey('feature-choice', 'class', 'warlock', 0),
+            options: [
+              {
+                optionId: 'blade',
+                featureId: 'warlock-pact-of-the-blade',
+                grants: [{ type: 'feature', feature: { id: 'warlock-pact-of-the-blade' } }],
+              },
+              {
+                optionId: 'chain',
+                featureId: 'warlock-pact-of-the-chain',
+                grants: [{ type: 'feature', feature: { id: 'warlock-pact-of-the-chain' } }],
+              },
+              {
+                optionId: 'tome',
+                featureId: 'warlock-pact-of-the-tome',
+                grants: [{ type: 'feature', feature: { id: 'warlock-pact-of-the-tome' } }],
+              },
+            ],
+          },
         ],
       },
       { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 0), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'warlock', 0), from: null, category: 'general' }] },

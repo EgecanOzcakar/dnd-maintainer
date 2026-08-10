@@ -1072,13 +1072,15 @@ describe('Warlock class grant structures', () => {
     expect(featureIds).toContain('warlock-magical-cunning');
   });
 
-  it('level 3 has subclass grant and pact-boon feature', () => {
+  it('level 3 has subclass grant and pact-boon feature-choice', () => {
     const grants = source?.levels[2].grants ?? [];
     expect(grants.find((g) => g.type === 'subclass')).toBeDefined();
-    const featureIds = grants
-      .filter((g) => g.type === 'feature')
-      .map((g) => (g.type === 'feature' ? g.feature.id : ''));
-    expect(featureIds).toContain('warlock-pact-boon');
+    const featureChoice = grants.find((g) => g.type === 'feature-choice');
+    expect(featureChoice?.type).toBe('feature-choice');
+    if (featureChoice?.type === 'feature-choice') {
+      const optionIds = featureChoice.options.map((o) => o.optionId);
+      expect(optionIds).toEqual(['blade', 'chain', 'tome']);
+    }
   });
 
   it('level 4 has ASI (index 0)', () => {

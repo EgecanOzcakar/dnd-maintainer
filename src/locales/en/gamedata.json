@@ -1779,6 +1779,18 @@
       "name": "Pact Boon",
       "description": "Your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice: Pact of the Blade, Pact of the Chain, or Pact of the Tome."
     },
+    "warlock-pact-of-the-blade": {
+      "name": "Pact of the Blade",
+      "description": "You can weave magic to create a pact weapon in your empty hand, or conjure a magical weapon into existence. You gain proficiency with it, and can use your Charisma modifier for its attack and damage rolls."
+    },
+    "warlock-pact-of-the-chain": {
+      "name": "Pact of the Chain",
+      "description": "You learn the Find Familar spell and can cast it as a ritual. When you cast the spell, you can choose a special form for your familiar (Imp, Pseudodragon, Quasit, Sprite, or Slaad Tadpole)."
+    },
+    "warlock-pact-of-the-tome": {
+      "name": "Pact of the Tome",
+      "description": "Your patron gives you a grimoire called a Book of Shadows. You choose three cantrips from any class's spell list and gain them as warlock cantrips."
+    },
     "warlock-mystic-arcanum-6": {
       "name": "Mystic Arcanum (6th Level)",
       "description": "Your patron bestows upon you a magical secret called an arcanum. Choose one 6th-level spell from the warlock spell list as this arcanum."

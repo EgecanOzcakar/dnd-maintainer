@@ -340,8 +340,8 @@ export function SpellcastingPanel({
       ? `${tc('characterSheet.sections.cantrips')} (${tc('characterSheet.fields.chosenOfTarget', { chosen: spellcasting.cantrips.length, target: spellcasting.cantripsKnown })})`
       : tc('characterSheet.sections.cantrips');
 
-  // Filter features to render active/special class abilities (e.g. Monk Ki actions, Second Wind, Cunning Action, Wild Shape, Channel Divinity, etc.)
-  const ACTIVE_OR_SPECIAL_FEATURE_IDS = new Set([
+  // Filter features to render active/special class abilities, boons, and subclass features
+  const CORE_CLASS_FEATURE_IDS = new Set([
     // Monk Focus / Ki Actions & Reactions
     'monk-martial-arts',
     'monk-flurry-of-blows',
@@ -400,9 +400,12 @@ export function SpellcastingPanel({
     'sorcerer-metamagic',
     'sorcerer-innate-sorcery',
 
-    // Warlock
+    // Warlock Boons & Features
     'warlock-eldritch-invocations',
     'warlock-pact-boon',
+    'warlock-pact-of-the-blade',
+    'warlock-pact-of-the-chain',
+    'warlock-pact-of-the-tome',
 
     // Wizard
     'wizard-arcane-recovery',
@@ -410,9 +413,26 @@ export function SpellcastingPanel({
     'wizard-memorize-spell',
   ]);
 
-  const activeFeatures = resolved?.features.filter((f) =>
-    ACTIVE_OR_SPECIAL_FEATURE_IDS.has(f.feature.id)
-  ) ?? [];
+  const SUBCLASS_PREFIXES = [
+    'berserker-', 'wildheart-', 'worldtree-', 'zealot-',
+    'collegedance-', 'collegeglamour-', 'collegelore-', 'collegevalor-',
+    'lifedomain-', 'lightdomain-', 'trickerydomain-', 'wardomain-',
+    'circleland-', 'circlemoon-', 'circlesea-', 'circlestars-',
+    'champion-', 'battlemaster-', 'eldritchknight-', 'psiwarrior-',
+    'warriorofmercy-', 'warriorofshadow-', 'warriorofelements-', 'warrioropenhand-',
+    'oathofdevotion-', 'oathofglory-', 'oathofancients-', 'oathofvengeance-',
+    'beastmaster-', 'feywanderer-', 'gloomstalker-', 'hunter-',
+    'thief-', 'assassin-', 'arcanetrickster-', 'soulknife-',
+    'aberrantsorcery-', 'clockworksorcery-', 'draconicsorcery-', 'wildmagicsorcery-',
+    'archfeypatron-', 'celestialpatron-', 'fiendpatron-', 'greatoldonepatron-',
+    'abjurer-', 'diviner-', 'evoker-', 'illusionist-',
+  ];
+
+  const activeFeatures = resolved?.features.filter((f) => {
+    const id = f.feature.id;
+    if (CORE_CLASS_FEATURE_IDS.has(id)) return true;
+    return SUBCLASS_PREFIXES.some((prefix) => id.startsWith(prefix));
+  }) ?? [];
 
   return (
     <div className="bg-card border border-purple-200 dark:border-purple-900/50 rounded-lg p-6">

@@ -213,6 +213,7 @@
       "skillChoice": "Choose {{count}} skill(s)",
       "languageChoice": "Choose {{count}} language(s)",
       "savingThrowChoice": "Choose {{count}} saving throw(s)",
+      "abilityChoice": "Choose {{count}} ability score(s) to increase",
       "toolChoice": "Choose {{count}} tool",
       "toolChoice_other": "Choose {{count}} tools",
       "expertiseChoice": "Choose {{count}} expertise",

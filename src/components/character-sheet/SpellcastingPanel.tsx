@@ -431,6 +431,7 @@ export function SpellcastingPanel({
   const activeFeatures = resolved?.features.filter((f) => {
     const id = f.feature.id;
     if (CORE_CLASS_FEATURE_IDS.has(id)) return true;
+    if (id.startsWith('feat-')) return true;
     return SUBCLASS_PREFIXES.some((prefix) => id.startsWith(prefix));
   }) ?? [];
 

@@ -203,26 +203,41 @@ describe('FEAT_SOURCES', () => {
       }
     });
 
-    it.each(['elemental-adept', 'resilient'] as const)(
-      '%s: each option has grants: [] and featureId matching feat-<feat>-<optionId>',
-      (featId) => {
-        const feat = FEAT_SOURCES.find((f) => f.id === featId);
-        const choiceGrant = feat?.grants.find((g) => g.type === 'feature-choice');
-        expect(choiceGrant).toBeDefined();
-        if (choiceGrant?.type === 'feature-choice') {
-          for (const option of choiceGrant.options) {
-            expect(
-              option.grants,
-              `${featId} option "${option.optionId}" should have empty grants (double-grant guard)`
-            ).toHaveLength(0);
-            expect(
-              option.featureId,
-              `${featId} option "${option.optionId}" featureId should be feat-${featId}-${option.optionId}`
-            ).toBe(`feat-${featId}-${option.optionId}`);
-          }
+    it('elemental-adept: each option has grants: [] and featureId matching feat-elemental-adept-<optionId>', () => {
+      const feat = FEAT_SOURCES.find((f) => f.id === 'elemental-adept');
+      const choiceGrant = feat?.grants.find((g) => g.type === 'feature-choice');
+      expect(choiceGrant).toBeDefined();
+      if (choiceGrant?.type === 'feature-choice') {
+        for (const option of choiceGrant.options) {
+          expect(
+            option.grants,
+            `elemental-adept option "${option.optionId}" should have empty grants (double-grant guard)`
+          ).toHaveLength(0);
+          expect(
+            option.featureId,
+            `elemental-adept option "${option.optionId}" featureId should be feat-elemental-adept-${option.optionId}`
+          ).toBe(`feat-elemental-adept-${option.optionId}`);
         }
       }
-    );
+    });
+
+    it('resilient: each option has featureId matching feat-resilient-<optionId> and terminal mechanical grants', () => {
+      const feat = FEAT_SOURCES.find((f) => f.id === 'resilient');
+      const choiceGrant = feat?.grants.find((g) => g.type === 'feature-choice');
+      expect(choiceGrant).toBeDefined();
+      if (choiceGrant?.type === 'feature-choice') {
+        for (const option of choiceGrant.options) {
+          expect(
+            option.featureId,
+            `resilient option "${option.optionId}" featureId should be feat-resilient-${option.optionId}`
+          ).toBe(`feat-resilient-${option.optionId}`);
+          // Each option should grant +1 ability bonus and saving throw proficiency
+          const types = option.grants.map((g) => g.type);
+          expect(types).toContain('ability-bonus');
+          expect(types).toContain('proficiency');
+        }
+      }
+    });
 
     it('magic-initiate: each option has spellcasting + 2 spell-choice grants and correct featureId', () => {
       const feat = FEAT_SOURCES.find((f) => f.id === 'magic-initiate');

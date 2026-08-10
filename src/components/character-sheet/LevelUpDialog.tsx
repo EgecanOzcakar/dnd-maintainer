@@ -7,8 +7,9 @@ import { ChoicePicker } from '@/components/character-builder/ChoicePicker';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RollingNumber } from '@/components/ui/rolling-number';
-import type { ClassId, FightingStyleId } from '@/lib/dnd-helpers';
+import type { ClassId, FeatId, FightingStyleId } from '@/lib/dnd-helpers';
 import { getGrantsForLevel } from '@/lib/sources/level-grants';
+import { getFeatSource } from '@/lib/sources';
 import { collectChoiceGrantsFromGrants } from '@/lib/use-all-choice-grants';
 import { parseChoiceKey } from '@/types/choices';
 import type { ChoiceDecision, ChoiceKey } from '@/types/choices';
@@ -89,6 +90,20 @@ function isChoiceSatisfied(choice: PendingChoice, decisions: ReadonlyMap<ChoiceK
       return false;
     }
   }
+}
+
+/**
+ * Given the local decisions map, collect all chosen feat IDs from feat-choice decisions.
+ * Returns an array of { featId, featChoiceKey } pairs.
+ */
+function getChosenFeats(decisions: ReadonlyMap<ChoiceKey, ChoiceDecision>): Array<{ featId: FeatId; featChoiceKey: ChoiceKey }> {
+  const result: Array<{ featId: FeatId; featChoiceKey: ChoiceKey }> = [];
+  for (const [key, decision] of decisions) {
+    if (decision.type === 'feat-choice' && decision.featId.length > 0) {
+      result.push({ featId: decision.featId as FeatId, featChoiceKey: key });
+    }
+  }
+  return result;
 }
 
 export function LevelUpDialog({
@@ -202,20 +217,110 @@ export function LevelUpDialog({
     return { asiOrFeatPairs: pairs, standaloneChoices: standalone };
   }, [levelChoices]);
 
-  // Gate: all choices made?
+  // --- Feat sub-choices: when a feat is chosen in an ASI/feat pair, derive the feat's own choices ---
+  const featSubChoices = useMemo(() => {
+    const chosenFeats = getChosenFeats(decisions);
+    const result: PendingChoice[] = [];
+    for (const { featId, featChoiceKey } of chosenFeats) {
+      const featSource = getFeatSource(featId);
+      if (!featSource) continue;
+      // Source tag for this feat's grants
+      const featSourceTag: SourceTag = { origin: 'feat', id: featId };
+      // Collect choices from the feat's grants. Pass the current local decisions so that
+      // feature-choice selections immediately unlock their nested grants (future: fixpoint).
+      const featChoices = collectChoiceGrantsFromGrants(featSource.grants, featSourceTag, {
+        resolvedWeaponProficiencies,
+        alreadyClaimedMasteries: new Set(),
+        allChosenStyles: [...alreadyChosenStyles],
+      });
+      // Filter out the feat-choice grant itself (already handled by the ASI/feat picker)
+      // and any purely informational choices that don't need a decision
+      for (const fc of featChoices) {
+        // Avoid duplicating any choice already in levelChoices
+        const alreadyInLevel = levelChoices.some((lc) => lc.choiceKey === fc.choiceKey);
+        if (!alreadyInLevel) {
+          // Tag each sub-choice with its parent feat-choice key so we can clear them on feat change
+          result.push({ ...fc, _parentFeatChoiceKey: featChoiceKey } as PendingChoice);
+        }
+      }
+    }
+    return result;
+  }, [decisions, resolvedWeaponProficiencies, alreadyChosenStyles, levelChoices]);
+
+  // When the feat selection changes for an ASI/feat pair, clear stale sub-choice decisions
+  const handleDecide = (key: ChoiceKey, decision: ChoiceDecision) => {
+    setDecisions((prev) => {
+      const next = new Map(prev);
+
+      // If this is a feat-choice decision, clear any previously decided sub-choices
+      // that were derived from the old feat for this key
+      if (decision.type === 'feat-choice') {
+        const oldDecision = prev.get(key);
+        if (oldDecision?.type === 'feat-choice' && oldDecision.featId !== decision.featId) {
+          // Clear all sub-choice decisions whose keys came from the old feat's grants
+          const oldFeatSource = oldDecision.featId ? getFeatSource(oldDecision.featId as FeatId) : undefined;
+          if (oldFeatSource) {
+            const oldSubChoices = collectChoiceGrantsFromGrants(
+              oldFeatSource.grants,
+              { origin: 'feat', id: oldDecision.featId as FeatId },
+              {}
+            );
+            for (const sc of oldSubChoices) {
+              next.delete(sc.choiceKey);
+            }
+          }
+        }
+      }
+
+      next.set(key, decision);
+      return next;
+    });
+  };
+
+  const handleClear = (key: ChoiceKey) => {
+    setDecisions((prev) => {
+      const next = new Map(prev);
+      next.delete(key);
+      return next;
+    });
+  };
+
+  // Combined choices for gate: level choices + feat sub-choices
   const allChoicesMade = useMemo(() => {
     // Check ASI/feat pairs: exactly one of the pair must be satisfied
     for (const { asiChoice, featChoice } of asiOrFeatPairs) {
       const asiSatisfied = isChoiceSatisfied(asiChoice, decisions);
       const featSatisfied = isChoiceSatisfied(featChoice, decisions);
       if (!asiSatisfied && !featSatisfied) return false;
+      // If feat is selected, ensure all feat sub-choices for this pair are also satisfied
+      if (featSatisfied) {
+        const pairSubChoices = featSubChoices.filter(
+          (sc) =>
+            (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey ===
+            featChoice.choiceKey
+        );
+        for (const subChoice of pairSubChoices) {
+          if (!isChoiceSatisfied(subChoice, decisions)) return false;
+        }
+      }
     }
-    // Check all standalone choices
+    // Check all standalone choices (including feat sub-choices for standalone feat-choices)
     for (const choice of standaloneChoices) {
       if (!isChoiceSatisfied(choice, decisions)) return false;
+      // If this is a standalone feat-choice that has been satisfied, check its sub-choices too
+      if (choice.type === 'feat-choice') {
+        const pairSubChoices = featSubChoices.filter(
+          (sc) =>
+            (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey ===
+            choice.choiceKey
+        );
+        for (const subChoice of pairSubChoices) {
+          if (!isChoiceSatisfied(subChoice, decisions)) return false;
+        }
+      }
     }
     return true;
-  }, [asiOrFeatPairs, standaloneChoices, decisions]);
+  }, [asiOrFeatPairs, standaloneChoices, featSubChoices, decisions]);
 
   const canConfirm = hpSelection !== null && allChoicesMade;
 
@@ -241,22 +346,6 @@ export function LevelUpDialog({
 
   const handleSelectHp = (value: number) => {
     setHpSelection(value);
-  };
-
-  const handleDecide = (key: ChoiceKey, decision: ChoiceDecision) => {
-    setDecisions((prev) => {
-      const next = new Map(prev);
-      next.set(key, decision);
-      return next;
-    });
-  };
-
-  const handleClear = (key: ChoiceKey) => {
-    setDecisions((prev) => {
-      const next = new Map(prev);
-      next.delete(key);
-      return next;
-    });
   };
 
   const handleConfirm = () => {
@@ -285,11 +374,82 @@ export function LevelUpDialog({
     [allDecisions, decisions]
   );
 
-  // Expertise keys for ExpertiseChoicePicker
+  // All expertise choice keys (level-level + feat sub-choices)
   const expertiseKeys = useMemo(
-    () => standaloneChoices.filter((c) => c.type === 'expertise-choice').map((c) => c.choiceKey),
-    [standaloneChoices]
+    () =>
+      [...standaloneChoices, ...featSubChoices]
+        .filter((c) => c.type === 'expertise-choice')
+        .map((c) => c.choiceKey),
+    [standaloneChoices, featSubChoices]
   );
+
+  /** Render a single PendingChoice into the appropriate picker component. */
+  const renderChoice = (choice: PendingChoice) => {
+    const currentDecision = decisions.get(choice.choiceKey);
+
+    if (choice.type === 'subclass') {
+      return (
+        <SubclassPicker
+          key={choice.choiceKey}
+          choice={choice}
+          currentDecision={currentDecision}
+          onDecide={(key, subclassId) => handleDecide(key, { type: 'subclass', subclassId })}
+          onClear={handleClear}
+          autoCommit
+        />
+      );
+    }
+
+    if (choice.type === 'fighting-style-choice') {
+      return (
+        <FightingStylePicker
+          key={choice.choiceKey}
+          choice={choice}
+          currentDecision={currentDecision}
+          onDecide={handleDecide}
+          onClear={handleClear}
+        />
+      );
+    }
+
+    if (choice.type === 'damage-choice') {
+      return (
+        <DamageTypePicker
+          key={choice.choiceKey}
+          choice={choice}
+          currentDecision={currentDecision}
+          onDecide={handleDecide}
+          onClear={handleClear}
+        />
+      );
+    }
+
+    if (choice.type === 'expertise-choice') {
+      return (
+        <ExpertiseChoicePicker
+          key={choice.choiceKey}
+          choice={choice}
+          currentDecision={currentDecision}
+          allDecisions={mergedDecisions}
+          allExpertiseChoiceKeys={expertiseKeys}
+          resolvedSkills={resolvedSkills ?? ({} as ResolvedCharacter['skills'])}
+          onDecide={handleDecide}
+          onClear={handleClear}
+        />
+      );
+    }
+
+    // Everything else (skill/tool/language/saving-throw/ability/bundle/lineage/feat/feature/weapon-mastery/spell)
+    return (
+      <ChoicePicker
+        key={choice.choiceKey}
+        choice={choice}
+        currentDecision={currentDecision}
+        onDecide={handleDecide}
+        onClear={handleClear}
+      />
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -379,91 +539,62 @@ export function LevelUpDialog({
           </div>
         </div>
 
-        {/* ASI / feat pairs */}
-        {asiOrFeatPairs.map(({ asiChoice, featChoice }) =>
-          currentAbilities ? (
-            <AsiOrFeatPicker
-              key={asiChoice.choiceKey}
-              asiChoice={asiChoice}
-              featChoice={featChoice}
-              abilities={currentAbilities}
-              asiDecision={decisions.get(asiChoice.choiceKey)}
-              featDecision={decisions.get(featChoice.choiceKey)}
-              onDecide={handleDecide}
-              onClear={handleClear}
-            />
-          ) : (
-            <p key={asiChoice.choiceKey} className="text-sm text-destructive">
-              {t('characterSheet.levelUp.abilitiesUnavailable')}
-            </p>
-          )
-        )}
+        {/* ASI / feat pairs + their feat sub-choices */}
+        {asiOrFeatPairs.map(({ asiChoice, featChoice }) => {
+          const featDecision = decisions.get(featChoice.choiceKey);
+          const featIsChosen = featDecision?.type === 'feat-choice' && featDecision.featId.length > 0;
+          // Sub-choices for the feat selected in this particular pair
+          const pairSubChoices = featIsChosen
+            ? featSubChoices.filter(
+                (sc) =>
+                  // Include sub-choices derived from this pair's feat decision
+                  (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey ===
+                  featChoice.choiceKey
+              )
+            : [];
 
-        {/* All other choice types */}
-        {standaloneChoices.map((choice) => {
-          const currentDecision = decisions.get(choice.choiceKey);
-
-          if (choice.type === 'subclass') {
-            return (
-              <SubclassPicker
-                key={choice.choiceKey}
-                choice={choice}
-                currentDecision={currentDecision}
-                onDecide={(key, subclassId) => handleDecide(key, { type: 'subclass', subclassId })}
-                onClear={handleClear}
-                autoCommit
-              />
-            );
-          }
-
-          if (choice.type === 'fighting-style-choice') {
-            return (
-              <FightingStylePicker
-                key={choice.choiceKey}
-                choice={choice}
-                currentDecision={currentDecision}
-                onDecide={handleDecide}
-                onClear={handleClear}
-              />
-            );
-          }
-
-          if (choice.type === 'damage-choice') {
-            return (
-              <DamageTypePicker
-                key={choice.choiceKey}
-                choice={choice}
-                currentDecision={currentDecision}
-                onDecide={handleDecide}
-                onClear={handleClear}
-              />
-            );
-          }
-
-          if (choice.type === 'expertise-choice') {
-            return (
-              <ExpertiseChoicePicker
-                key={choice.choiceKey}
-                choice={choice}
-                currentDecision={currentDecision}
-                allDecisions={mergedDecisions}
-                allExpertiseChoiceKeys={expertiseKeys}
-                resolvedSkills={resolvedSkills ?? ({} as ResolvedCharacter['skills'])}
-                onDecide={handleDecide}
-                onClear={handleClear}
-              />
-            );
-          }
-
-          // Everything else (skill/tool/language/saving-throw/ability/bundle/lineage/feat/feature/weapon-mastery/spell)
           return (
-            <ChoicePicker
-              key={choice.choiceKey}
-              choice={choice}
-              currentDecision={currentDecision}
-              onDecide={handleDecide}
-              onClear={handleClear}
-            />
+            <div key={asiChoice.choiceKey} className="space-y-3">
+              {currentAbilities ? (
+                <AsiOrFeatPicker
+                  asiChoice={asiChoice}
+                  featChoice={featChoice}
+                  abilities={currentAbilities}
+                  asiDecision={decisions.get(asiChoice.choiceKey)}
+                  featDecision={featDecision}
+                  onDecide={handleDecide}
+                  onClear={handleClear}
+                />
+              ) : (
+                <p className="text-sm text-destructive">
+                  {t('characterSheet.levelUp.abilitiesUnavailable')}
+                </p>
+              )}
+              {/* Render sub-choices from the chosen feat */}
+              {pairSubChoices.map((subChoice) => renderChoice(subChoice))}
+            </div>
+          );
+        })}
+
+        {/* All other standalone choice types — feat-choice entries also show their sub-choices */}
+        {standaloneChoices.map((choice) => {
+          const standaloneFeatDecision = decisions.get(choice.choiceKey);
+          const standaloneFeatIsChosen =
+            choice.type === 'feat-choice' &&
+            standaloneFeatDecision?.type === 'feat-choice' &&
+            standaloneFeatDecision.featId.length > 0;
+          const standaloneSubChoices = standaloneFeatIsChosen
+            ? featSubChoices.filter(
+                (sc) =>
+                  (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey ===
+                  choice.choiceKey
+              )
+            : [];
+          return (
+            <div key={choice.choiceKey} className={standaloneSubChoices.length > 0 ? 'space-y-3' : undefined}>
+              {renderChoice(choice)}
+              {standaloneSubChoices.map((subChoice) => renderChoice(subChoice))}
+            </div>
           );
         })}
 

@@ -177,6 +177,56 @@ export function ChoicePicker({
     );
   }
 
+  if (choice.type === 'ability-choice') {
+    const rawPool = choice.from ?? ALL_ABILITY_KEYS;
+    const pool: readonly AbilityKey[] = rawPool.filter(isAbilityKey);
+    const current = currentDecision?.type === 'ability-choice' ? currentDecision.abilities : [];
+    const atMax = current.length >= choice.count;
+
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-muted-foreground">
+            {tc('characterBuilder.pendingChoices.abilityChoice', { count: choice.count })}
+          </p>
+          <Badge variant="outline" className="text-xs">
+            {current.length} / {choice.count}
+          </Badge>
+        </div>
+        <div className="space-y-1">
+          {pool.map((abilityKey) => {
+            const isSelected = current.includes(abilityKey);
+            const isDisabled = atMax && !isSelected;
+            return (
+              <div
+                key={abilityKey}
+                className="flex items-center gap-3 px-2 py-1.5 rounded-md transition-colors hover:bg-muted/50"
+              >
+                <Checkbox
+                  id={`choice-ability-${choice.choiceKey}-${abilityKey}`}
+                  checked={isSelected}
+                  disabled={isDisabled}
+                  onCheckedChange={(checked) => {
+                    const next = checked ? [...current, abilityKey] : current.filter((a) => a !== abilityKey);
+                    if (next.length === 0) {
+                      onClear(choice.choiceKey);
+                    } else {
+                      onDecide(choice.choiceKey, { type: 'ability-choice', abilities: next });
+                    }
+                  }}
+                />
+                <Label htmlFor={`choice-ability-${choice.choiceKey}-${abilityKey}`} className="flex-1 cursor-pointer">
+                  {t(`abilities.${abilityKey}`)}
+                  <span className="ml-2 text-muted-foreground text-xs">+{choice.bonus}</span>
+                </Label>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   if (choice.type === 'language-choice') {
     const rawPool = choice.from ?? ALL_LANGUAGE_IDS;
     const pool: readonly LanguageId[] = rawPool.filter(isLanguageId);

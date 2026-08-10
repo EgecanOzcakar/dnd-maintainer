@@ -2,7 +2,10 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
 const envUrl= import.meta.env.VITE_SUPABASE_URL;
-const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const supabasePublishableKey = 
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 
+  import.meta.env.VITE_SUPABASE_ANON_KEY || 
+  'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH';
 
 // Detect runtime environment
 export const isLocalhost = 

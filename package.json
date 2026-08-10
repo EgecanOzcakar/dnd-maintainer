@@ -9,6 +9,7 @@
     "dev": "vite",
     "typecheck": "tsc -b --noEmit",
     "build": "tsc -b && vite build",
+    "deploy": "npm run build && wrangler deploy",
     "preview": "vite preview",
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run",

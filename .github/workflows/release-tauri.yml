@@ -44,8 +44,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: v__VERSION__
-          releaseName: 'D&D Keeper v__VERSION__'
+          tagName: ${{ github.ref_name }}
+          releaseName: 'D&D Keeper ${{ github.ref_name }}'
           releaseBody: 'Download the Windows installer (.exe) or macOS DMG below.'
           releaseDraft: true
           prerelease: false

@@ -46,7 +46,16 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: 'D&D Keeper v__VERSION__'
-          releaseBody: 'Download the Windows installer (.exe / .msi) or macOS DMG below.'
+          releaseBody: 'Download the Windows installer (.exe) or macOS DMG below.'
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dnd-keeper-${{ matrix.platform }}
+          path: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+

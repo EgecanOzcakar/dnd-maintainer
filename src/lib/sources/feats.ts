@@ -604,7 +604,7 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     grants: [
       { type: 'feature', feature: { id: 'feat-lightly-armored' } },
       { type: 'proficiency', category: 'armor', id: 'light' },
-      { type: 'proficiency', category: 'armor', id: 'shield' },
+      { type: 'proficiency', category: 'armor', id: 'shields' },
       {
         type: 'ability-choice',
         key: createChoiceKey('ability-choice', 'feat', 'lightly-armored', 0),
@@ -651,7 +651,7 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     grants: [
       { type: 'feature', feature: { id: 'feat-moderately-armored' } },
       { type: 'proficiency', category: 'armor', id: 'medium' },
-      { type: 'proficiency', category: 'armor', id: 'shield' },
+      { type: 'proficiency', category: 'armor', id: 'shields' },
       {
         type: 'ability-choice',
         key: createChoiceKey('ability-choice', 'feat', 'moderately-armored', 0),

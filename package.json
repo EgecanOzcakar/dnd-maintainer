@@ -24,7 +24,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:bdd": "TSX_TSCONFIG_PATH=tsconfig.app.json tsx --import ./features/support/register.mjs ./node_modules/@cucumber/cucumber/bin/cucumber.js --exit",
-    "test:bdd:future": "TSX_TSCONFIG_PATH=tsconfig.app.json tsx --import ./features/support/register.mjs ./node_modules/@cucumber/cucumber/bin/cucumber.js --exit --profile future"
+    "test:bdd:future": "TSX_TSCONFIG_PATH=tsconfig.app.json tsx --import ./features/support/register.mjs ./node_modules/@cucumber/cucumber/bin/cucumber.js --exit --profile future",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -55,6 +58,8 @@
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.3.0",
     "@tanstack/devtools-vite": "^0.7.0",
+    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/cli": "^2.11.4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",

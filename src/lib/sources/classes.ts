@@ -1,4 +1,5 @@
 import { makeQuickBuild, type ClassSource } from '@/types/sources';
+import type { FeatureChoiceGrant } from '@/types/grants';
 import { createChoiceKey } from '@/types/choices';
 import { FIGHTING_STYLE_IDS } from '@/lib/dnd-helpers';
 

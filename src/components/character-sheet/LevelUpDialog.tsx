@@ -240,7 +240,7 @@ export function LevelUpDialog({
         const alreadyInLevel = levelChoices.some((lc) => lc.choiceKey === fc.choiceKey);
         if (!alreadyInLevel) {
           // Tag each sub-choice with its parent feat-choice key so we can clear them on feat change
-          result.push({ ...fc, _parentFeatChoiceKey: featChoiceKey } as PendingChoice);
+          result.push({ ...fc, _parentFeatChoiceKey: featChoiceKey } as unknown as PendingChoice);
         }
       }
     }

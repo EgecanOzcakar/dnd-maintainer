@@ -17,29 +17,32 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  clearScreen: false,
+  envPrefix: ['VITE_', 'TAURI_'],
   server: {
     port: 5173,
-    open: true,
+    strictPort: true,
+    open: false,
     allowedHosts: ['localhost', '.ngrok-free.dev', '.ngrok-free.app', '.trycloudflare.com'],
     proxy: {
       '/rest': {
-        target: 'http://127.0.0.1:54321',
+        target: 'https://aekpodxyvkjcsjgzwlca.supabase.co',
         changeOrigin: true,
       },
       '/auth': {
-        target: 'http://127.0.0.1:54321',
+        target: 'https://aekpodxyvkjcsjgzwlca.supabase.co',
         changeOrigin: true,
       },
       '/storage': {
-        target: 'http://127.0.0.1:54321',
+        target: 'https://aekpodxyvkjcsjgzwlca.supabase.co',
         changeOrigin: true,
       },
       '/functions': {
-        target: 'http://127.0.0.1:54321',
+        target: 'https://aekpodxyvkjcsjgzwlca.supabase.co',
         changeOrigin: true,
       },
       '/realtime': {
-        target: 'ws://127.0.0.1:54321',
+        target: 'https://aekpodxyvkjcsjgzwlca.supabase.co',
         ws: true,
         changeOrigin: true,
       },
@@ -48,7 +51,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['src/test/setup.ts'], 
+    setupFiles: ['src/test/setup.ts'],
     restoreMocks: true,
     exclude: [...defaultExclude, '**/.claude/worktrees/**'],
     coverage: {

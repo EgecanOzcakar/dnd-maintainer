@@ -52,7 +52,11 @@
     "confirm": "Confirm",
     "select": "Select",
     "selected": "Selected",
-    "clearSelection": "Clear"
+    "clearSelection": "Clear",
+    "unlock": "Unlock Campaign",
+    "unlocking": "Unlocking...",
+    "lockCampaign": "Lock Campaign",
+    "enterCampaign": "Enter Campaign"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -858,6 +862,11 @@
     "setting": "Setting",
     "placeholderSetting": "e.g., Forgotten Realms, Greyhawk",
     "placeholderDescription": "Describe your campaign...",
+    "passphrase": "Campaign Passphrase",
+    "passphrasePlaceholder": "Set a secure passphrase for players and DM...",
+    "passphraseHelp": "Required to protect this campaign on your cloud database. Only the Demo Campaign is open without a passphrase.",
+    "confirmPassphrase": "Confirm Passphrase",
+    "confirmPassphrasePlaceholder": "Re-enter passphrase...",
     "noCampaignsYet": "No Campaigns Yet",
     "noCampaignsMatch": "No Campaigns Match",
     "noCampaignsDescription": "Create your first campaign to begin your adventure!",
@@ -1014,9 +1023,24 @@
       "removeFailed": "Failed to remove portrait — please try again"
     }
   },
+  "auth": {
+    "passphrasePrompt": "Passphrase Required",
+    "passphraseDescription": "This campaign is protected by a passphrase. Enter the passphrase to enter and view campaign data.",
+    "passphrasePlaceholder": "Enter campaign passphrase...",
+    "incorrectPassphrase": "Incorrect passphrase. Please try again.",
+    "passphraseRequired": "Passphrase is required to unlock this campaign",
+    "campaignLocked": "Campaign locked successfully",
+    "campaignUnlocked": "Campaign unlocked",
+    "demoOpen": "Open Demo",
+    "protectedBadge": "Passphrase Protected",
+    "unlockedBadge": "Unlocked",
+    "lockCampaignTooltip": "Lock this campaign on this device"
+  },
   "validation": {
     "nameRequired": "Name is required",
     "titleRequired": "Title is required",
-    "itemNameRequired": "Item name is required"
+    "itemNameRequired": "Item name is required",
+    "passphraseRequired": "Passphrase is required",
+    "passphraseMismatch": "Passphrases do not match"
   }
 }

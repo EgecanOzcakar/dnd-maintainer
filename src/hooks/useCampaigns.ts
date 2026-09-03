@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { Campaign, CampaignSummary } from '@/types/database';
 import { CAMPAIGN_SUMMARY_COLS, CAMPAIGN_DETAIL_COLS } from '@/lib/query-columns';
 import { validateSlug } from '@/lib/slug-utils';
+import { setCampaignPassphrase, setCampaignUnlocked } from '@/lib/campaign-auth';
 
 // --- Queries ---
 
@@ -58,6 +59,7 @@ function toCampaignSummary(c: Campaign): CampaignSummary {
     created_at: c.created_at,
     updated_at: c.updated_at,
     archived_at: c.archived_at,
+    is_demo: c.is_demo,
   };
 }
 
@@ -67,13 +69,25 @@ export function useCampaignMutations() {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['campaigns'] });
 
   const create = useMutation({
-    mutationFn: async (campaign: { name: string; setting?: string; description?: string }) => {
+    mutationFn: async ({
+      passphrase,
+      ...campaign
+    }: {
+      name: string;
+      setting?: string;
+      description?: string;
+      passphrase?: string;
+    }) => {
       const { data, error } = await supabase
         .from('campaigns')
         .insert({ ...campaign, status: 'planning' })
         .select()
         .single();
       if (error) throw error;
+      if (passphrase && passphrase.trim()) {
+        await setCampaignPassphrase(data.id, passphrase.trim());
+      }
+      setCampaignUnlocked(data.id, data.slug);
       return data as Campaign;
     },
     onSuccess: invalidate,

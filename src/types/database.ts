@@ -42,6 +42,7 @@ export interface Campaign {
   theme: ThemeId | null;
   archived_at?: string | null;
   allowed_source_books: SourceBookId[];
+  is_demo?: boolean;
 }
 
 export interface Character {
@@ -159,6 +160,7 @@ export type CampaignSummary = Pick<
   | 'created_at'
   | 'updated_at'
   | 'archived_at'
+  | 'is_demo'
 >;
 export type CharacterSummary = Pick<
   Character,

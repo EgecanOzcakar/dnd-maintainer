@@ -11,17 +11,19 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase';
 import { CampaignSummary } from '@/types/database';
 import { useCampaigns, useCampaignMutations } from '@/hooks/useCampaigns';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useQuery } from '@tanstack/react-query';
-import { Archive, BookOpen, Plus, Search, Swords, Users, Zap } from 'lucide-react';
+import { Archive, BookOpen, Lock, Plus, Search, ShieldCheck, Swords, Unlock, Users, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Trans, useTranslation } from 'react-i18next';
 import { ValidationError } from '@/components/ui/validation-error';
+import { isCampaignUnlocked, isDemoCampaign } from '@/lib/campaign-auth';
 
 export default function CampaignList() {
   const navigate = useNavigate();
@@ -33,7 +35,11 @@ export default function CampaignList() {
     setting: '',
     description: '',
   });
+  const [passphrase, setPassphrase] = useState('');
+  const [confirmPassphrase, setConfirmPassphrase] = useState('');
   const [nameError, setNameError] = useState<string>('');
+  const [passphraseError, setPassphraseError] = useState<string>('');
+  const [confirmPassphraseError, setConfirmPassphraseError] = useState<string>('');
 
   const { t } = useTranslation('common');
 
@@ -77,24 +83,48 @@ export default function CampaignList() {
     },
   });
 
+  const resetForm = () => {
+    setNewCampaign({ name: '', setting: '', description: '' });
+    setPassphrase('');
+    setConfirmPassphrase('');
+    setNameError('');
+    setPassphraseError('');
+    setConfirmPassphraseError('');
+  };
+
   const handleCreateCampaign = (e: React.FormEvent) => {
     e.preventDefault();
+    let hasError = false;
+
     if (!newCampaign.name.trim()) {
       setNameError(t('validation.nameRequired'));
-      return;
+      hasError = true;
     }
-    createCampaignMutation.mutate(newCampaign, {
-      onSuccess: (data) => {
-        setShowNewCampaignForm(false);
-        setNewCampaign({ name: '', setting: '', description: '' });
-        setNameError('');
-        if (data?.slug) {
-          navigate(`/campaign/${data.slug}`);
-        } else {
-          toast.error(t('errors.missingSlug'));
-        }
-      },
-    });
+    if (!passphrase.trim()) {
+      setPassphraseError(t('validation.passphraseRequired'));
+      hasError = true;
+    }
+    if (passphrase.trim() && passphrase !== confirmPassphrase) {
+      setConfirmPassphraseError(t('validation.passphraseMismatch'));
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    createCampaignMutation.mutate(
+      { ...newCampaign, passphrase: passphrase.trim() },
+      {
+        onSuccess: (data) => {
+          setShowNewCampaignForm(false);
+          resetForm();
+          if (data?.slug) {
+            navigate(`/campaign/${data.slug}`);
+          } else {
+            toast.error(t('errors.missingSlug'));
+          }
+        },
+      }
+    );
   };
 
   const handleArchiveCampaign = () => {
@@ -175,7 +205,7 @@ export default function CampaignList() {
         open={showNewCampaignForm}
         onOpenChange={(open) => {
           setShowNewCampaignForm(open);
-          if (!open) setNameError('');
+          if (!open) resetForm();
         }}
       >
         <DialogContent className="sm:max-w-md">
@@ -202,6 +232,41 @@ export default function CampaignList() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="campaign-passphrase">{t('campaign.passphrase')}</Label>
+              <div className="flex flex-col gap-1">
+                <Input
+                  id="campaign-passphrase"
+                  type="password"
+                  value={passphrase}
+                  onChange={(e) => {
+                    setPassphraseError('');
+                    setPassphrase(e.target.value);
+                  }}
+                  placeholder={t('campaign.passphrasePlaceholder')}
+                />
+                <p className="text-[11px] text-muted-foreground">{t('campaign.passphraseHelp')}</p>
+                <ValidationError message={passphraseError} />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="campaign-confirm-passphrase">{t('campaign.confirmPassphrase')}</Label>
+              <div className="flex flex-col gap-1">
+                <Input
+                  id="campaign-confirm-passphrase"
+                  type="password"
+                  value={confirmPassphrase}
+                  onChange={(e) => {
+                    setConfirmPassphraseError('');
+                    setConfirmPassphrase(e.target.value);
+                  }}
+                  placeholder={t('campaign.confirmPassphrasePlaceholder')}
+                />
+                <ValidationError message={confirmPassphraseError} />
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="campaign-setting">{t('campaign.setting')}</Label>
               <Input
                 id="campaign-setting"
@@ -223,7 +288,7 @@ export default function CampaignList() {
                   })
                 }
                 placeholder={t('campaign.placeholderDescription')}
-                rows={4}
+                rows={3}
               />
             </div>
 
@@ -233,7 +298,7 @@ export default function CampaignList() {
                 variant="outline"
                 onClick={() => {
                   setShowNewCampaignForm(false);
-                  setNameError('');
+                  resetForm();
                 }}
               >
                 {t('buttons.cancel')}
@@ -279,6 +344,8 @@ export default function CampaignList() {
                 npc: 0,
               };
               const sessionCount = sessionCounts[campaign.id] || 0;
+              const isDemo = isDemoCampaign(campaign);
+              const isUnlocked = isDemo || isCampaignUnlocked(campaign.id) || isCampaignUnlocked(campaign.slug);
 
               return (
                 <div
@@ -287,19 +354,37 @@ export default function CampaignList() {
                   onClick={() => navigate(`/campaign/${campaign.slug}`)}
                 >
                   {/* Campaign Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                        {campaign.name}
-                      </h3>
-                      {campaign.setting && <p className="text-sm text-muted-foreground mt-1">{campaign.setting}</p>}
+                  <div className="flex items-start justify-between mb-4 gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                          {campaign.name}
+                        </h3>
+                        {isDemo ? (
+                          <Badge variant="outline" className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20">
+                            <ShieldCheck className="size-3 mr-1" />
+                            {t('auth.demoOpen')}
+                          </Badge>
+                        ) : isUnlocked ? (
+                          <Badge variant="outline" className="text-[11px] font-semibold text-primary bg-primary/10 border-primary/20">
+                            <Unlock className="size-3 mr-1" />
+                            {t('auth.unlockedBadge')}
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[11px] font-semibold text-amber-500 bg-amber-500/10 border-amber-500/20">
+                            <Lock className="size-3 mr-1" />
+                            {t('auth.protectedBadge')}
+                          </Badge>
+                        )}
+                      </div>
+                      {campaign.setting && <p className="text-sm text-muted-foreground">{campaign.setting}</p>}
                     </div>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setCampaignToArchive(campaign);
                       }}
-                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
                       title={t('campaign.archiveTitle')}
                     >
                       <Archive className="size-5" />

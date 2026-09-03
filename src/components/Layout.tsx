@@ -10,6 +10,7 @@ import { useCampaigns } from '@/hooks/useCampaigns';
 import { isThemeId } from '@/lib/theme';
 import { FloatingPartyBar } from '@/components/FloatingPartyBar';
 import { PlayerDiceRollOverlay } from '@/components/common/PlayerDiceRollOverlay';
+import { CampaignAuthGate } from './CampaignAuthGate';
 
 export function Layout() {
   const { campaignSlug } = useParams<{ campaignSlug: string }>();
@@ -20,6 +21,7 @@ export function Layout() {
   // keeps the sidebar expanded. The resize handler below re-expands when crossing to desktop.
   const [isCollapsed, setIsCollapsed] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
   const [pageTitle, setPageTitleState] = useState<string>('');
+  const [lockVersion, setLockVersion] = useState(0);
 
   // Stable setter — pages call this via outlet context inside useEffect
   const setPageTitle = useCallback((title: string) => setPageTitleState(title), []);
@@ -76,6 +78,7 @@ export function Layout() {
         onSelectCampaign={handleSelectCampaign}
         isCollapsed={isCollapsed}
         onToggleCollapse={setIsCollapsed}
+        onLockCampaign={() => setLockVersion((v) => v + 1)}
       />
 
       <main className="flex-1 overflow-auto flex flex-col">
@@ -135,8 +138,12 @@ export function Layout() {
                 <Button onClick={() => navigate('/')}>{t('campaign.backToCampaigns')}</Button>
               </div>
             </div>
-          ) : (
-            <>
+          ) : campaignSlug ? (
+            <CampaignAuthGate
+              key={`${campaignSlug}-${lockVersion}`}
+              campaign={currentCampaign}
+              campaignSlug={campaignSlug}
+            >
               {currentCampaign?.id && (
                 <>
                   <FloatingPartyBar campaignId={currentCampaign.id} />
@@ -152,7 +159,17 @@ export function Layout() {
                   } as import('@/hooks/useCampaignContext').CampaignContext
                 }
               />
-            </>
+            </CampaignAuthGate>
+          ) : (
+            <Outlet
+              context={
+                {
+                  campaignSlug: undefined,
+                  campaignId: undefined,
+                  setPageTitle,
+                } as import('@/hooks/useCampaignContext').CampaignContext
+              }
+            />
           )}
         </div>
       </main>

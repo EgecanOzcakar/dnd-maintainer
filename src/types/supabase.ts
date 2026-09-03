@@ -43,7 +43,9 @@ export type Database = {
           dm_notes: string | null
           id: string
           image_url: string | null
+          is_demo: boolean
           name: string
+          passphrase_hash: string | null
           previous_slugs: string[]
           setting: string | null
           slug: string
@@ -59,7 +61,9 @@ export type Database = {
           dm_notes?: string | null
           id?: string
           image_url?: string | null
+          is_demo?: boolean
           name: string
+          passphrase_hash?: string | null
           previous_slugs?: string[]
           setting?: string | null
           slug?: string
@@ -75,7 +79,9 @@ export type Database = {
           dm_notes?: string | null
           id?: string
           image_url?: string | null
+          is_demo?: boolean
           name?: string
+          passphrase_hash?: string | null
           previous_slugs?: string[]
           setting?: string | null
           slug?: string
@@ -500,9 +506,21 @@ export type Database = {
         Args: { entity_id: string; entity_name: string }
         Returns: string
       }
+      has_passphrase: {
+        Args: { c: Database["public"]["Tables"]["campaigns"]["Row"] }
+        Returns: boolean
+      }
       last_activity_at: {
         Args: { c: Database["public"]["Tables"]["campaigns"]["Row"] }
         Returns: string
+      }
+      set_campaign_passphrase: {
+        Args: { p_campaign_id: string; p_passphrase: string }
+        Returns: boolean
+      }
+      verify_campaign_passphrase: {
+        Args: { campaign_slug: string; candidate_passphrase: string }
+        Returns: boolean
       }
     }
     Enums: {

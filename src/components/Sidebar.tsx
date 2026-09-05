@@ -5,6 +5,7 @@ import {
   Dices,
   Download,
   ExternalLink,
+  Grid3x3,
   Library,
   Lock,
   ScrollText,
@@ -32,7 +33,14 @@ export interface SidebarProps {
 
 interface NavItem {
   readonly icon: typeof Shield;
-  readonly labelKey: 'nav.dashboard' | 'nav.characters' | 'nav.sessions' | 'nav.notes' | 'nav.wiki' | 'nav.dmControl';
+  readonly labelKey:
+    | 'nav.dashboard'
+    | 'nav.characters'
+    | 'nav.sessions'
+    | 'nav.notes'
+    | 'nav.wiki'
+    | 'nav.dmControl'
+    | 'nav.battleMap';
   readonly path: string;
   readonly matchPaths?: readonly string[];
   readonly end?: boolean;
@@ -45,6 +53,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { icon: ScrollText, labelKey: 'nav.notes', path: '/notes' },
   { icon: Library, labelKey: 'nav.wiki', path: '/wiki' },
   { icon: Dices, labelKey: 'nav.dmControl', path: '/dm' },
+  { icon: Grid3x3, labelKey: 'nav.battleMap', path: '/map' },
 ];
 
 export function Sidebar({

@@ -11,6 +11,9 @@ import { usePartyInitiatives, useUpdatePartyInitiatives } from '@/hooks/useParty
 import { usePartyCharacterStats } from '@/hooks/usePartyCharacterStats';
 import type { CharacterSummary } from '@/types/database';
 import { CommonImageDisplayer } from '@/components/common/CommonImageDisplayer';
+import { useBattleMap } from '@/hooks/useBattleMap';
+import { BattleMapView } from '@/components/battle-map/BattleMapView';
+import { DisplayModeToggle } from '@/components/battle-map/DisplayModeToggle';
 import { toast } from 'sonner';
 
 export default function DMControlPage() {
@@ -19,6 +22,7 @@ export default function DMControlPage() {
 
   const targetCampaignId = campaignId || campaignSlug || '';
 
+  const { data: battleMapState } = useBattleMap(targetCampaignId);
   const { data: characters = [] } = useCharacters(targetCampaignId);
   const { data: partyState } = usePartyState(targetCampaignId);
   const { data: partyInitState } = usePartyInitiatives(targetCampaignId);
@@ -35,7 +39,9 @@ export default function DMControlPage() {
   // Generic Dice Roller State
   const [numDice, setNumDice] = useState(1);
   const [modifier, setModifier] = useState(0);
-  const [rollHistory, setRollHistory] = useState<{ id: string; formula: string; result: number; rolls: number[] }[]>([]);
+  const [rollHistory, setRollHistory] = useState<{ id: string; formula: string; result: number; rolls: number[] }[]>(
+    []
+  );
 
   // Roll d20 helper with optional modifier
   const rollD20 = (mod: number = 0) => {
@@ -224,7 +230,11 @@ export default function DMControlPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <Button onClick={handleHealAllParty} variant="outline" className="gap-2 text-rose-500 border-rose-500/30 hover:bg-rose-500/10">
+          <Button
+            onClick={handleHealAllParty}
+            variant="outline"
+            className="gap-2 text-rose-500 border-rose-500/30 hover:bg-rose-500/10"
+          >
             <Heart className="size-4 fill-rose-500/20" /> Heal All Party
           </Button>
 
@@ -233,15 +243,28 @@ export default function DMControlPage() {
           </Button>
 
           {hasInitiatives && (
-            <Button variant="outline" onClick={handleResetInitiatives} className="gap-1.5 text-muted-foreground hover:text-destructive">
+            <Button
+              variant="outline"
+              onClick={handleResetInitiatives}
+              className="gap-1.5 text-muted-foreground hover:text-destructive"
+            >
               <RotateCcw className="size-4" /> Reset Initiatives
             </Button>
           )}
         </div>
       </div>
 
-      {/* ── DM Broadcast Scene & Common Image Displayer Section ────────────── */}
-      <CommonImageDisplayer campaignId={targetCampaignId} />
+      {/* ── DM Broadcast Scene: Common Image Displayer or Live Battle Map ──── */}
+      <div className="space-y-3">
+        <div className="flex justify-end">
+          <DisplayModeToggle campaignId={targetCampaignId} />
+        </div>
+        {battleMapState?.displayMode === 'map' ? (
+          <BattleMapView campaignId={targetCampaignId} />
+        ) : (
+          <CommonImageDisplayer campaignId={targetCampaignId} />
+        )}
+      </div>
 
       {/* ── Party Perception, Wisdom & Intelligence Checks Console ──────────── */}
       <div className="bg-card border rounded-xl p-6 space-y-6">
@@ -252,7 +275,8 @@ export default function DMControlPage() {
               <span>Party Perception, Wisdom & Intelligence Checks</span>
             </h2>
             <p className="text-xs text-muted-foreground mt-1">
-              Passive scores, check modifiers, and quick rollers for Perception, Wisdom, and Intelligence for all party members.
+              Passive scores, check modifiers, and quick rollers for Perception, Wisdom, and Intelligence for all party
+              members.
             </p>
           </div>
 
@@ -302,7 +326,8 @@ export default function DMControlPage() {
                 perceptionExpertise: false,
               };
 
-              const perceptionModStr = stat.perceptionBonus >= 0 ? `+${stat.perceptionBonus}` : `${stat.perceptionBonus}`;
+              const perceptionModStr =
+                stat.perceptionBonus >= 0 ? `+${stat.perceptionBonus}` : `${stat.perceptionBonus}`;
               const wisModStr = stat.wisMod >= 0 ? `+${stat.wisMod}` : `${stat.wisMod}`;
               const intModStr = stat.intMod >= 0 ? `+${stat.intMod}` : `${stat.intMod}`;
 
@@ -321,7 +346,10 @@ export default function DMControlPage() {
                         Expertise
                       </Badge>
                     ) : stat.perceptionProficient ? (
-                      <Badge variant="outline" className="text-[10px] text-emerald-500 border-emerald-500/30 bg-emerald-500/10">
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] text-emerald-500 border-emerald-500/30 bg-emerald-500/10"
+                      >
                         Proficient
                       </Badge>
                     ) : null}
@@ -334,7 +362,10 @@ export default function DMControlPage() {
                       <div className="text-[10px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 flex items-center justify-center gap-1">
                         <Eye className="size-3" /> Perc.
                       </div>
-                      <div className="text-lg font-black font-mono text-sky-600 dark:text-sky-400" title="Passive Perception">
+                      <div
+                        className="text-lg font-black font-mono text-sky-600 dark:text-sky-400"
+                        title="Passive Perception"
+                      >
                         {stat.passivePerception}
                       </div>
                       <div className="text-[10px] font-mono text-muted-foreground">
@@ -355,7 +386,10 @@ export default function DMControlPage() {
                       <div className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center justify-center gap-1">
                         <Brain className="size-3" /> Wis
                       </div>
-                      <div className="text-lg font-black font-mono text-purple-600 dark:text-purple-400" title="Passive Wisdom (10 + WIS mod)">
+                      <div
+                        className="text-lg font-black font-mono text-purple-600 dark:text-purple-400"
+                        title="Passive Wisdom (10 + WIS mod)"
+                      >
                         {stat.passiveWisdom}
                       </div>
                       <div className="text-[10px] font-mono text-muted-foreground">
@@ -376,7 +410,10 @@ export default function DMControlPage() {
                       <div className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center justify-center gap-1">
                         <BookOpen className="size-3" /> Int
                       </div>
-                      <div className="text-lg font-black font-mono text-amber-600 dark:text-amber-400" title="Passive Intelligence (10 + INT mod)">
+                      <div
+                        className="text-lg font-black font-mono text-amber-600 dark:text-amber-400"
+                        title="Passive Intelligence (10 + INT mod)"
+                      >
                         {stat.passiveIntelligence}
                       </div>
                       <div className="text-[10px] font-mono text-muted-foreground">
@@ -422,7 +459,11 @@ export default function DMControlPage() {
 
               const percent = Math.min(100, Math.max(0, Math.round((currentHp / maxHp) * 100)));
 
-              let statusBadge: { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; colorClass: string } = {
+              let statusBadge: {
+                label: string;
+                variant: 'default' | 'secondary' | 'destructive' | 'outline';
+                colorClass: string;
+              } = {
                 label: 'Healthy',
                 variant: 'default',
                 colorClass: 'bg-emerald-600',
@@ -585,7 +626,9 @@ export default function DMControlPage() {
             <Swords className="size-5 text-amber-500" /> Current Party Initiatives
           </h2>
           {hasInitiatives ? (
-            <Badge variant="default" className="bg-emerald-600">Live Rolled</Badge>
+            <Badge variant="default" className="bg-emerald-600">
+              Live Rolled
+            </Badge>
           ) : (
             <Badge variant="secondary">No Active Rolls</Badge>
           )}
@@ -602,7 +645,9 @@ export default function DMControlPage() {
                 <div key={pc.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
                   <div>
                     <div className="font-bold text-sm text-foreground">{pc.name}</div>
-                    <div className="text-xs text-muted-foreground">{pc.class ? `${pc.class} (lvl ${pc.level})` : `Lvl ${pc.level}`}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {pc.class ? `${pc.class} (lvl ${pc.level})` : `Lvl ${pc.level}`}
+                    </div>
                   </div>
                   <div className="text-right">
                     <div className="text-[10px] text-muted-foreground uppercase font-bold">Initiative</div>
@@ -623,7 +668,9 @@ export default function DMControlPage() {
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             <Dices className="size-5 text-indigo-500" /> DM Generic Dice Roller
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Quickly roll d4, d6, d8, d10, d12, d20, or d100 with modifiers.</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Quickly roll d4, d6, d8, d10, d12, d20, or d100 with modifiers.
+          </p>
         </div>
 
         {/* Dice Selector Bar */}
@@ -654,11 +701,7 @@ export default function DMControlPage() {
           </div>
           <div className="flex-1">
             <label className="text-xs font-semibold text-muted-foreground block mb-1">Modifier</label>
-            <Input
-              type="number"
-              value={modifier}
-              onChange={(e) => setModifier(parseInt(e.target.value, 10) || 0)}
-            />
+            <Input type="number" value={modifier} onChange={(e) => setModifier(parseInt(e.target.value, 10) || 0)} />
           </div>
         </div>
 
@@ -668,7 +711,10 @@ export default function DMControlPage() {
             <h3 className="text-xs font-bold text-muted-foreground mb-2">Recent DM Rolls</h3>
             <div className="flex flex-wrap gap-2">
               {rollHistory.map((roll) => (
-                <div key={roll.id} className="bg-muted px-3 py-1.5 rounded-md text-xs font-mono flex items-center gap-2">
+                <div
+                  key={roll.id}
+                  className="bg-muted px-3 py-1.5 rounded-md text-xs font-mono flex items-center gap-2"
+                >
                   <span className="text-muted-foreground">{roll.formula}:</span>
                   <span className="font-bold text-primary text-sm">{roll.result}</span>
                   <span className="text-[10px] text-muted-foreground">({roll.rolls.join(', ')})</span>

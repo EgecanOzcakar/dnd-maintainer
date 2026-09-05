@@ -58,6 +58,12 @@ vi.mock('@/hooks/usePartyState', () => ({
   }),
 }));
 
+vi.mock('@/hooks/useBattleMap', () => ({
+  useBattleMap: () => ({ data: { map: null, displayMode: 'image' } }),
+  useSetDisplayMode: () => ({ mutate: vi.fn() }),
+  useUpdateBattleMap: () => ({ mutate: vi.fn() }),
+}));
+
 vi.mock('@/hooks/usePartyInitiatives', () => ({
   usePartyInitiatives: () => ({
     data: { campaignId: 'camp-1', initiatives: { 'pc-1': 15 } },

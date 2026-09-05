@@ -1,5 +1,54 @@
 {
   "none": "—",
+  "battleMap": {
+    "title": "Battle Map Editor",
+    "subtitle": "Build a 60×60 tactical grid with objects, terrain, and movable party and enemy tokens.",
+    "defaultName": "New Battle Map",
+    "toolbarTitle": "Tools",
+    "save": "Save Map",
+    "saved": "Battle map saved.",
+    "cleared": "Battle map cleared.",
+    "clearMap": "Clear Map",
+    "zoom": "Zoom",
+    "breakHint": "Click a breakable object to toggle it destroyed. Drag tokens and objects to move them.",
+    "liveTitle": "Battle Map — Live",
+    "noMap": "No battle map has been created yet.",
+    "showImage": "Image",
+    "showMap": "Battle Map",
+    "tools": {
+      "select": "Select / Move",
+      "object": "Object",
+      "terrain": "Terrain",
+      "erase": "Erase"
+    },
+    "object": {
+      "breakable": "Breakable",
+      "short": "Short",
+      "tall": "Tall",
+      "defaultLabel": "Object"
+    },
+    "terrain": {
+      "label": "Terrain type",
+      "wall": "Wall",
+      "difficult": "Difficult terrain",
+      "water": "Water"
+    },
+    "palette": {
+      "title": "Add Tokens",
+      "party": "Party characters",
+      "noParty": "No player characters in this campaign.",
+      "enemies": "Enemies",
+      "enemyNamePlaceholder": "Enemy name (e.g. Goblin)",
+      "addEnemies": "Add"
+    },
+    "file": {
+      "title": "Save / Load File",
+      "export": "Export JSON",
+      "import": "Import JSON",
+      "importSuccess": "Battle map loaded from file.",
+      "importError": "Could not read that file as a valid battle map."
+    }
+  },
   "buttons": {
     "save": "Save",
     "saving": "Saving...",
@@ -65,6 +114,7 @@
     "notes": "Notes",
     "wiki": "Wiki",
     "dmControl": "DM Console",
+    "battleMap": "Battle Map",
     "exportData": "Export Data",
     "settings": "Settings",
     "selectCampaign": "Select Campaign",

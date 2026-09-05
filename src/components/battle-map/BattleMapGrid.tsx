@@ -50,6 +50,9 @@ export function BattleMapGrid({
   const height = map.gridHeight * cell;
 
   const [drag, setDrag] = useState<{ entity: EntityRef; x: number; y: number } | null>(null);
+  // While the pointer is held down with a paint tool (object / terrain / erase), we fill
+  // every cell it passes over. `last` de-dupes repeated events on the same cell.
+  const painting = useRef<{ last: string | null } | null>(null);
 
   const cellFromEvent = useCallback(
     (clientX: number, clientY: number) => {
@@ -62,28 +65,48 @@ export function BattleMapGrid({
     [cell, map.gridWidth, map.gridHeight]
   );
 
-  const handleSurfaceClick = (e: React.MouseEvent) => {
-    if (readOnly || !onCellAction) return;
-    const pos = cellFromEvent(e.clientX, e.clientY);
-    if (pos) onCellAction(pos.x, pos.y);
-  };
+  const paintAt = useCallback(
+    (clientX: number, clientY: number) => {
+      if (readOnly || !onCellAction || !painting.current) return;
+      const pos = cellFromEvent(clientX, clientY);
+      if (!pos) return;
+      const key = `${pos.x},${pos.y}`;
+      if (painting.current.last === key) return;
+      painting.current.last = key;
+      onCellAction(pos.x, pos.y);
+    },
+    [readOnly, onCellAction, cellFromEvent]
+  );
 
-  const startDrag = (entity: EntityRef) => (e: React.PointerEvent) => {
+  const startPaintOrDrag = (entity?: EntityRef) => (e: React.PointerEvent) => {
     if (readOnly) return;
-    e.stopPropagation();
+    if (entity) e.stopPropagation();
+
     if (tool === 'select') {
+      if (!entity) return;
       const pos = cellFromEvent(e.clientX, e.clientY);
       setDrag(pos ? { entity, ...pos } : null);
+      return;
     }
+
+    // Paint tools: begin a drag-fill starting on the pressed cell.
+    surfaceRef.current?.setPointerCapture?.(e.pointerId);
+    painting.current = { last: null };
+    paintAt(e.clientX, e.clientY);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
+    if (painting.current) {
+      paintAt(e.clientX, e.clientY);
+      return;
+    }
     if (!drag) return;
     const pos = cellFromEvent(e.clientX, e.clientY);
     if (pos && (pos.x !== drag.x || pos.y !== drag.y)) setDrag({ ...drag, ...pos });
   };
 
-  const endDrag = (e: React.PointerEvent) => {
+  const handlePointerUp = (e: React.PointerEvent) => {
+    painting.current = null;
     if (!drag) return;
     const pos = cellFromEvent(e.clientX, e.clientY);
     if (pos) onMoveEntity?.(drag.entity, pos.x, pos.y);
@@ -107,9 +130,10 @@ export function BattleMapGrid({
     <div className="overflow-auto rounded-lg border bg-muted/20 max-h-[70vh]">
       <div
         ref={surfaceRef}
-        onClick={handleSurfaceClick}
+        onPointerDown={startPaintOrDrag()}
         onPointerMove={handlePointerMove}
-        onPointerUp={endDrag}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         className={cn('relative select-none', !readOnly && tool !== 'select' && 'cursor-crosshair')}
         style={{
           width,
@@ -140,7 +164,7 @@ export function BattleMapGrid({
             <div
               key={obj.id}
               title={`${obj.label}${obj.breakable ? '' : ' (unbreakable)'} · ${obj.height}`}
-              onPointerDown={startDrag(entity)}
+              onPointerDown={startPaintOrDrag(entity)}
               onClick={handleEntityClick(entity)}
               className={cn(
                 'absolute flex items-center justify-center border',
@@ -164,7 +188,7 @@ export function BattleMapGrid({
             <div
               key={tk.id}
               title={tk.name}
-              onPointerDown={startDrag(entity)}
+              onPointerDown={startPaintOrDrag(entity)}
               onClick={handleEntityClick(entity)}
               className={cn(
                 'absolute flex items-center justify-center rounded-full border-2 text-xs font-bold overflow-hidden shadow',

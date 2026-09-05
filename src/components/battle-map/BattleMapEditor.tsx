@@ -53,7 +53,9 @@ export function BattleMapEditor({ campaignId }: BattleMapEditorProps) {
     (fn: (prev: BattleMap) => BattleMap) => {
       setMap((prev) => {
         if (!prev) return prev;
-        const next = { ...fn(prev), updatedAt: new Date().toISOString() };
+        const result = fn(prev);
+        if (result === prev) return prev;
+        const next = { ...result, updatedAt: new Date().toISOString() };
         persist(next);
         return next;
       });
@@ -73,22 +75,25 @@ export function BattleMapEditor({ campaignId }: BattleMapEditorProps) {
 
   const handleCellAction = (x: number, y: number) => {
     if (tool === 'object') {
-      if (isCellOccupied(map, x, y)) return;
-      mutate((prev) => ({
-        ...prev,
-        objects: [
-          ...prev.objects,
-          {
-            id: crypto.randomUUID(),
-            x,
-            y,
-            label: t('battleMap.object.defaultLabel'),
-            breakable: objectDraft.breakable,
-            height: objectDraft.height,
-            destroyed: false,
-          },
-        ],
-      }));
+      mutate((prev) =>
+        isCellOccupied(prev, x, y)
+          ? prev
+          : {
+              ...prev,
+              objects: [
+                ...prev.objects,
+                {
+                  id: crypto.randomUUID(),
+                  x,
+                  y,
+                  label: t('battleMap.object.defaultLabel'),
+                  breakable: objectDraft.breakable,
+                  height: objectDraft.height,
+                  destroyed: false,
+                },
+              ],
+            }
+      );
     } else if (tool === 'terrain') {
       mutate((prev) => ({ ...prev, terrain: { ...prev.terrain, [cellKey(x, y)]: terrainKind } }));
     } else if (tool === 'erase') {

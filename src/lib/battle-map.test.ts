@@ -19,7 +19,7 @@ describe('battle-map helpers', () => {
   it.each([
     [-5, 0],
     [0, 0],
-    [30, 30],
+    [10, 10],
     [GRID_SIZE - 1, GRID_SIZE - 1],
     [GRID_SIZE + 10, GRID_SIZE - 1],
     [Number.NaN, 0],
@@ -27,7 +27,7 @@ describe('battle-map helpers', () => {
     expect(clampToGrid(input)).toBe(expected);
   });
 
-  it('creates an empty 60x60 map', () => {
+  it('creates an empty grid-sized map', () => {
     const map = createEmptyMap('Cave');
     expect(map).toMatchObject({
       name: 'Cave',

@@ -1,5 +1,5 @@
-/** Fixed tactical grid dimensions (60x60 squares). */
-export const GRID_SIZE = 60;
+/** Fixed tactical grid dimensions (30x30 squares). */
+export const GRID_SIZE = 30;
 
 /** Object height categories — affects line-of-sight / cover semantics for the DM. */
 export type ObjectHeight = 'short' | 'tall';

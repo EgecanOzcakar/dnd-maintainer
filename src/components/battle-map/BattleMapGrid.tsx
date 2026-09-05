@@ -11,7 +11,7 @@ export interface EntityRef {
   id: string;
 }
 
-const BASE_CELL = 26;
+const BASE_CELL = 44;
 
 const TERRAIN_STYLES: Record<TerrainKind, string> = {
   wall: 'bg-stone-500/70',
@@ -167,7 +167,7 @@ export function BattleMapGrid({
               onPointerDown={startDrag(entity)}
               onClick={handleEntityClick(entity)}
               className={cn(
-                'absolute flex items-center justify-center rounded-full border-2 text-[9px] font-bold overflow-hidden shadow',
+                'absolute flex items-center justify-center rounded-full border-2 text-xs font-bold overflow-hidden shadow',
                 tk.kind === 'pc'
                   ? 'border-emerald-500 bg-emerald-500/20 text-emerald-100'
                   : 'border-rose-600 bg-rose-600/30 text-rose-50',
@@ -184,7 +184,7 @@ export function BattleMapGrid({
               {tk.portraitUrl ? (
                 <img src={tk.portraitUrl} alt={tk.name} className="size-full object-cover" />
               ) : tk.kind === 'enemy' ? (
-                <Skull className="size-3" />
+                <Skull className="size-4" />
               ) : (
                 initials
               )}

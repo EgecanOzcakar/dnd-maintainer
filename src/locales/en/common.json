@@ -2,7 +2,7 @@
   "none": "—",
   "battleMap": {
     "title": "Battle Map Editor",
-    "subtitle": "Build a 60×60 tactical grid with objects, terrain, and movable party and enemy tokens.",
+    "subtitle": "Build a 30×30 tactical grid with objects, terrain, and movable party and enemy tokens.",
     "defaultName": "New Battle Map",
     "toolbarTitle": "Tools",
     "save": "Save Map",

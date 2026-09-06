@@ -13,6 +13,7 @@ import WikiPage from '@/pages/WikiPage';
 import ExportData from '@/pages/ExportData';
 import SettingsTheme from '@/pages/SettingsTheme';
 import DMControlPage from '@/pages/DMControlPage';
+import BattleMapPage from '@/pages/BattleMapPage';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/campaign/:campaignSlug/notes" element={<NotesPage />} />
           <Route path="/campaign/:campaignSlug/wiki" element={<WikiPage />} />
           <Route path="/campaign/:campaignSlug/dm" element={<DMControlPage />} />
+          <Route path="/campaign/:campaignSlug/map" element={<BattleMapPage />} />
           <Route path="/wiki" element={<WikiPage />} />
           <Route path="/export" element={<ExportData />} />
           <Route path="/settings/theme" element={<SettingsTheme />} />

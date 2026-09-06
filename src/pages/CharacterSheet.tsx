@@ -5,7 +5,7 @@ import { AbilityScoresPanel } from '@/components/character-sheet/AbilityScoresPa
 import { AttacksPanel } from '@/components/character-sheet/AttacksPanel';
 import { BackstoryPanel } from '@/components/character-sheet/BackstoryPanel';
 import { CharacterSheetHeader } from '@/components/character-sheet/CharacterSheetHeader';
-import { CommonImageDisplayer } from '@/components/common/CommonImageDisplayer';
+import { PlayerSceneViewer } from '@/components/battle-map/PlayerSceneViewer';
 import { CombatPanel } from '@/components/character-sheet/CombatPanel';
 import { ConditionsPanel } from '@/components/character-sheet/ConditionsPanel';
 import { EquipmentPanel } from '@/components/character-sheet/EquipmentPanel';
@@ -305,7 +305,7 @@ function CharacterSheetInner({
             onExportPdf={handleExportPdf}
             exportingPdf={exportingPdf}
           />
-          <CommonImageDisplayer campaignId={character.campaign_id} />
+          <PlayerSceneViewer campaignId={character.campaign_id} />
         </div>
 
         {/* Pending Choices Panel */}
@@ -318,30 +318,33 @@ function CharacterSheetInner({
           <button
             type="button"
             onClick={() => setActiveTab('sheet')}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'sheet'
-              ? 'bg-card text-foreground shadow-sm border border-border'
-              : 'text-muted-foreground hover:text-foreground'
-              }`}
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              activeTab === 'sheet'
+                ? 'bg-card text-foreground shadow-sm border border-border'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
             {tc('characterSheet.combatView.tabs.sheet')}
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('inventory')}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'inventory'
-              ? 'bg-card text-foreground shadow-sm border border-border'
-              : 'text-muted-foreground hover:text-foreground'
-              }`}
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              activeTab === 'inventory'
+                ? 'bg-card text-foreground shadow-sm border border-border'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
             {tc('characterSheet.combatView.tabs.inventory', { defaultValue: 'Inventory' })}
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('combat')}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${activeTab === 'combat'
-              ? 'bg-card text-foreground shadow-sm border border-border'
-              : 'text-muted-foreground hover:text-foreground'
-              }`}
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              activeTab === 'combat'
+                ? 'bg-card text-foreground shadow-sm border border-border'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
             {tc('characterSheet.combatView.tabs.combat')}
           </button>
@@ -371,10 +374,7 @@ function CharacterSheetInner({
                   onSelectRollPreset={handleSelectRollPreset}
                 />
                 {skills ? (
-                  <SkillsPanel
-                    skills={skills}
-                    onSelectRollPreset={handleSelectRollPreset}
-                  />
+                  <SkillsPanel skills={skills} onSelectRollPreset={handleSelectRollPreset} />
                 ) : (
                   <div className="sheet-panel text-center text-muted-foreground">
                     <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.skills')}</h2>
@@ -441,7 +441,9 @@ function CharacterSheetInner({
                     onSelectRollPreset={handleSelectRollPreset}
                   />
                 )}
-                {hasPersonality && <PersonalityPanel character={character} onEdit={() => setEditSection('personality')} />}
+                {hasPersonality && (
+                  <PersonalityPanel character={character} onEdit={() => setEditSection('personality')} />
+                )}
               </div>
             </div>
 

@@ -2344,6 +2344,12 @@
       },
       "unarmed-strike": {
         "name": "Unarmed Strike"
+      },
+      "musket": {
+        "name": "Musket"
+      },
+      "pistol": {
+        "name": "Pistol"
       }
     },
     "armor": {
@@ -2462,6 +2468,309 @@
       },
       "candles-5": {
         "name": "Candles (5)"
+      },
+      "acid": {
+        "name": "Acid"
+      },
+      "alchemists-fire": {
+        "name": "Alchemist's Fire"
+      },
+      "alchemists-supplies": {
+        "name": "Alchemist's Supplies"
+      },
+      "amulet": {
+        "name": "Amulet"
+      },
+      "antitoxin": {
+        "name": "Antitoxin"
+      },
+      "bagpipes": {
+        "name": "Bagpipes"
+      },
+      "barrel": {
+        "name": "Barrel"
+      },
+      "basket": {
+        "name": "Basket"
+      },
+      "blanket": {
+        "name": "Blanket"
+      },
+      "block-and-tackle": {
+        "name": "Block and tackle"
+      },
+      "book": {
+        "name": "Book"
+      },
+      "bottle-glass": {
+        "name": "Bottle, Glass"
+      },
+      "brewers-supplies": {
+        "name": "Brewer's Supplies"
+      },
+      "bucket": {
+        "name": "Bucket"
+      },
+      "bullets-firearm": {
+        "name": "Bullets, Firearm"
+      },
+      "calligraphers-supplies": {
+        "name": "Calligrapher's Supplies"
+      },
+      "caltrops": {
+        "name": "Caltrops"
+      },
+      "carpenters-tools": {
+        "name": "Carpenter's Tools"
+      },
+      "cartographer-tools": {
+        "name": "Cartographer's Tools"
+      },
+      "case-crossbow-bolt": {
+        "name": "Case, Crossbow Bolt"
+      },
+      "case-map-or-scroll": {
+        "name": "Case, Map or Scroll"
+      },
+      "chain": {
+        "name": "Chain"
+      },
+      "chest": {
+        "name": "Chest"
+      },
+      "climbers-kit": {
+        "name": "Climber's Kit"
+      },
+      "clothes-fine": {
+        "name": "Clothes, Fine"
+      },
+      "cobblers-tools": {
+        "name": "Cobbler's Tools"
+      },
+      "component-pouch": {
+        "name": "Component Pouch"
+      },
+      "cooks-utensils": {
+        "name": "Cook's Utensils"
+      },
+      "costume": {
+        "name": "Costume"
+      },
+      "crystal": {
+        "name": "Crystal"
+      },
+      "dice": {
+        "name": "Dice"
+      },
+      "disguise-kit": {
+        "name": "Disguise Kit"
+      },
+      "dragonchess": {
+        "name": "Dragonchess"
+      },
+      "drum": {
+        "name": "Drum"
+      },
+      "dulcimer": {
+        "name": "Dulcimer"
+      },
+      "emblem": {
+        "name": "Emblem"
+      },
+      "flask": {
+        "name": "Flask"
+      },
+      "flute": {
+        "name": "Flute"
+      },
+      "forgery-kit": {
+        "name": "Forgery Kit"
+      },
+      "glassblowers-tools": {
+        "name": "Glassblower's Tools"
+      },
+      "grappling-hook": {
+        "name": "Grappling Hook"
+      },
+      "healers-kit": {
+        "name": "Healer's Kit"
+      },
+      "herbalism-kit": {
+        "name": "Herbalism Kit"
+      },
+      "holy-water": {
+        "name": "Holy Water"
+      },
+      "horn": {
+        "name": "Horn"
+      },
+      "hunting-trap": {
+        "name": "Hunting Trap"
+      },
+      "ink": {
+        "name": "Ink"
+      },
+      "ink-pen": {
+        "name": "Ink Pen"
+      },
+      "jewelers-tools": {
+        "name": "Jeweler's Tools"
+      },
+      "jug": {
+        "name": "Jug"
+      },
+      "ladder": {
+        "name": "Ladder"
+      },
+      "lamp": {
+        "name": "Lamp"
+      },
+      "lantern-bullseye": {
+        "name": "Lantern, Bullseye"
+      },
+      "leatherworkers-tools": {
+        "name": "Leatherworker's Tools"
+      },
+      "lock": {
+        "name": "Lock"
+      },
+      "lute": {
+        "name": "Lute"
+      },
+      "lyre": {
+        "name": "Lyre"
+      },
+      "magnifying-glass": {
+        "name": "Magnifying Glass"
+      },
+      "manacles": {
+        "name": "Manacles"
+      },
+      "map": {
+        "name": "Map"
+      },
+      "masons-tools": {
+        "name": "Mason's Tools"
+      },
+      "mirror": {
+        "name": "Mirror"
+      },
+      "navigators-tools": {
+        "name": "Navigator's Tools"
+      },
+      "orb": {
+        "name": "Orb"
+      },
+      "painters-supplies": {
+        "name": "Painter's Supplies"
+      },
+      "pan-flute": {
+        "name": "Pan flute"
+      },
+      "paper": {
+        "name": "Paper"
+      },
+      "parchment": {
+        "name": "Parchment"
+      },
+      "perfume": {
+        "name": "Perfume"
+      },
+      "playing-cards": {
+        "name": "Playing Cards"
+      },
+      "poison-basic": {
+        "name": "Poison, Basic"
+      },
+      "poisoners-kit": {
+        "name": "Poisoner's Kit"
+      },
+      "pole": {
+        "name": "Pole"
+      },
+      "pot-iron": {
+        "name": "Pot, Iron"
+      },
+      "potion-of-healing": {
+        "name": "Potion of Healing"
+      },
+      "potters-tools": {
+        "name": "Potter's Tools"
+      },
+      "quiver": {
+        "name": "Quiver"
+      },
+      "ram-portable": {
+        "name": "Ram, Portable"
+      },
+      "reliquary": {
+        "name": "Reliquary"
+      },
+      "robe": {
+        "name": "Robe"
+      },
+      "rod": {
+        "name": "Rod"
+      },
+      "sack": {
+        "name": "Sack"
+      },
+      "shawm": {
+        "name": "Shawm"
+      },
+      "shovel": {
+        "name": "Shovel"
+      },
+      "signal-whistle": {
+        "name": "Signal Whistle"
+      },
+      "smiths-tools": {
+        "name": "Smith's Tools"
+      },
+      "spell-scroll-cantrip": {
+        "name": "Spell Scroll, Cantrip"
+      },
+      "spell-scroll-level-1": {
+        "name": "Spell Scroll, Level 1"
+      },
+      "spellbook": {
+        "name": "Spellbook"
+      },
+      "sprig-of-mistletoe": {
+        "name": "Sprig of Mistletoe"
+      },
+      "spyglass": {
+        "name": "Spyglass"
+      },
+      "staff": {
+        "name": "Staff"
+      },
+      "tent": {
+        "name": "Tent"
+      },
+      "three-dragon-ante": {
+        "name": "Three-Dragon Ante"
+      },
+      "tinkers-tools": {
+        "name": "Tinker's Tools"
+      },
+      "vial": {
+        "name": "Vial"
+      },
+      "viol": {
+        "name": "Viol"
+      },
+      "wand": {
+        "name": "Wand"
+      },
+      "weavers-tools": {
+        "name": "Weaver's Tools"
+      },
+      "woodcarvers-tools": {
+        "name": "Woodcarver's Tools"
+      },
+      "yew-wand": {
+        "name": "Yew Wand"
       }
     },
     "packs": {
@@ -2473,6 +2782,18 @@
       },
       "dungeoneers-pack": {
         "name": "Dungeoneer's Pack"
+      },
+      "diplomat-pack": {
+        "name": "Diplomat's Pack"
+      },
+      "entertainers-pack": {
+        "name": "Entertainer's Pack"
+      },
+      "priests-pack": {
+        "name": "Priest's Pack"
+      },
+      "scholars-pack": {
+        "name": "Scholar's Pack"
       }
     }
   },

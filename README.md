@@ -150,3 +150,16 @@ psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -f seed.sql
 ## License
 
 This project is not yet licensed. If you'd like to use or contribute, please open an issue.
+
+### Third-party content
+
+The magic-item reference catalog (`src/lib/sources/magic-items.ts`) is derived from the
+D&D System Reference Document 5.2.1 via [`5e-bits/5e-database`](https://github.com/5e-bits/5e-database):
+
+> This work includes material from the System Reference Document 5.2.1 ("SRD 5.2.1") by
+> Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is
+> licensed under the Creative Commons Attribution 4.0 International License, available at
+> https://creativecommons.org/licenses/by/4.0/legalcode.
+
+Mundane equipment consists of game statistics (facts) only and carries no attribution
+requirement. See `scripts/data/README.md` for the data-generation workflow.

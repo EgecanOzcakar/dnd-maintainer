@@ -10,6 +10,7 @@ import {
   Lock,
   ScrollText,
   Settings,
+  Sparkles,
   Shield,
   Sword,
   Users,
@@ -40,7 +41,8 @@ interface NavItem {
     | 'nav.notes'
     | 'nav.wiki'
     | 'nav.dmControl'
-    | 'nav.battleMap';
+    | 'nav.battleMap'
+    | 'nav.magicItems';
   readonly path: string;
   readonly matchPaths?: readonly string[];
   readonly end?: boolean;
@@ -52,6 +54,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { icon: BookOpen, labelKey: 'nav.sessions', path: '/sessions' },
   { icon: ScrollText, labelKey: 'nav.notes', path: '/notes' },
   { icon: Library, labelKey: 'nav.wiki', path: '/wiki' },
+  { icon: Sparkles, labelKey: 'nav.magicItems', path: '/magic-items' },
   { icon: Dices, labelKey: 'nav.dmControl', path: '/dm' },
   { icon: Grid3x3, labelKey: 'nav.battleMap', path: '/map' },
 ];

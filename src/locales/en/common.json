@@ -1,5 +1,36 @@
 {
   "none": "—",
+  "magicItems": {
+    "title": "Magic Items",
+    "subtitle": "Searchable reference for the D&D 2024 SRD magic items.",
+    "searchPlaceholder": "Search by name or effect…",
+    "rarityAll": "All rarities",
+    "attunementFilter": "Requires attunement",
+    "attunement": "Attunement",
+    "attunementBy": "Attunement ({{who}})",
+    "attributionToggle": "Data source & licence",
+    "noResults": "No magic items match your filters.",
+    "resultCount": "{{count}} items",
+    "rarity": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "very-rare": "Very Rare",
+      "legendary": "Legendary",
+      "artifact": "Artifact",
+      "varies": "Varies"
+    },
+    "category": {
+      "armor": "Armor",
+      "weapon": "Weapon",
+      "wondrous-item": "Wondrous Item",
+      "ring": "Ring",
+      "staff": "Staff",
+      "wand": "Wand",
+      "potion": "Potion",
+      "other": "Other"
+    }
+  },
   "battleMap": {
     "title": "Battle Map Editor",
     "subtitle": "Build a 30×30 tactical grid with objects, terrain, and movable party and enemy tokens.",
@@ -115,6 +146,7 @@
     "wiki": "Wiki",
     "dmControl": "DM Console",
     "battleMap": "Battle Map",
+    "magicItems": "Magic Items",
     "exportData": "Export Data",
     "settings": "Settings",
     "selectCampaign": "Select Campaign",

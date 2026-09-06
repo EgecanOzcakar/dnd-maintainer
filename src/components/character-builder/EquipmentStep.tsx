@@ -8,10 +8,10 @@ import { getLogger } from '@/lib/logger';
 import { collectGrantsByType } from '@/lib/resolver/helpers';
 import {
   ARMOR_CATALOG,
-  GEAR_CATALOG,
+  ALL_GEAR_CATALOG,
   getItemDef,
   getItemNameKey,
-  PACK_CATALOG,
+  ALL_PACK_CATALOG,
   WEAPON_CATALOG,
 } from '@/lib/sources/items';
 import { BUNDLE_CATEGORIES, type WeaponMasteryId } from '@/types/items';
@@ -355,7 +355,7 @@ export function EquipmentStep({
                   {tc('characterBuilder.equipment.catalogGear')}
                 </h3>
                 <div className="grid gap-1">
-                  {GEAR_CATALOG.map((item) => (
+                  {ALL_GEAR_CATALOG.map((item) => (
                     <div key={item.id} className="flex items-center gap-2 text-sm">
                       <span className="flex-1">{t(getItemNameKey('gear', item.id), { defaultValue: item.id })}</span>
                       <span className="text-muted-foreground w-16 text-right">
@@ -375,7 +375,7 @@ export function EquipmentStep({
                   {tc('characterBuilder.equipment.catalogPacks')}
                 </h3>
                 <div className="grid gap-1">
-                  {PACK_CATALOG.map((item) => (
+                  {ALL_PACK_CATALOG.map((item) => (
                     <div key={item.id} className="flex items-center gap-2 text-sm">
                       <span className="flex-1">{t(getItemNameKey('pack', item.id), { defaultValue: item.id })}</span>
                       <span className="text-muted-foreground w-16 text-right">

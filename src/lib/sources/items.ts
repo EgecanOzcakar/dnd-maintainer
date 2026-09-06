@@ -1,5 +1,6 @@
 import type { ItemSource } from '@/types/sources';
 import type { ItemDef, WeaponDef, ArmorDef, GearDef, PackDef } from '@/types/items';
+import { SRD_GEAR_CATALOG, SRD_PACK_CATALOG } from '@/lib/sources/srd-gear';
 
 export const ITEM_SOURCES: readonly ItemSource[] = [];
 
@@ -528,6 +529,37 @@ export const WEAPON_CATALOG: readonly ({ readonly type: 'weapon' } & WeaponDef)[
     longRange: 15,
     weaponProficiencyId: 'martial',
   },
+  // Firearms (2024 SRD)
+  {
+    type: 'weapon',
+    id: 'musket',
+    category: 'martial',
+    range: 'ranged',
+    damageDice: '1d12',
+    damageType: 'piercing',
+    properties: ['ammunition', 'loading', 'two-handed'],
+    weight: 10,
+    costGp: 500,
+    normalRange: 40,
+    longRange: 120,
+    weaponProficiencyId: 'martial',
+    mastery: 'slow',
+  },
+  {
+    type: 'weapon',
+    id: 'pistol',
+    category: 'martial',
+    range: 'ranged',
+    damageDice: '1d10',
+    damageType: 'piercing',
+    properties: ['ammunition', 'loading'],
+    weight: 3,
+    costGp: 250,
+    normalRange: 30,
+    longRange: 90,
+    weaponProficiencyId: 'martial',
+    mastery: 'vex',
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -779,7 +811,24 @@ export const PACK_CATALOG: readonly ({ readonly type: 'pack' } & PackDef)[] = [
 // Combined catalog and lookup
 // ---------------------------------------------------------------------------
 
-export const ITEM_CATALOG: readonly ItemDef[] = [...WEAPON_CATALOG, ...ARMOR_CATALOG, ...GEAR_CATALOG, ...PACK_CATALOG];
+/** Full gear list: the original bundled-quantity entries plus the SRD 2024 catalog. */
+export const ALL_GEAR_CATALOG: readonly ({ readonly type: 'gear' } & GearDef)[] = [
+  ...GEAR_CATALOG,
+  ...SRD_GEAR_CATALOG,
+];
+
+/** Full pack list: hand-authored packs plus the remaining SRD 2024 packs. */
+export const ALL_PACK_CATALOG: readonly ({ readonly type: 'pack' } & PackDef)[] = [
+  ...PACK_CATALOG,
+  ...SRD_PACK_CATALOG,
+];
+
+export const ITEM_CATALOG: readonly ItemDef[] = [
+  ...WEAPON_CATALOG,
+  ...ARMOR_CATALOG,
+  ...ALL_GEAR_CATALOG,
+  ...ALL_PACK_CATALOG,
+];
 
 const ITEM_MAP: ReadonlyMap<string, ItemDef> = new Map(ITEM_CATALOG.map((item) => [item.id, item]));
 
@@ -804,7 +853,9 @@ export function getOrParseItemDef(id: string, source?: unknown): ItemDef | undef
   if (id.startsWith('custom-') || lowerDesc.includes('custom item') || lowerDesc.includes('armor')) {
     if (lowerDesc.includes('armor') || lowerDesc.includes('shield') || /ac \d+/i.test(desc)) {
       const categoryMatch = desc.match(/(shield|light|medium|heavy)/i);
-      const category = (categoryMatch ? categoryMatch[1].toLowerCase() : 'light') as import('@/types/items').ArmorCategory;
+      const category = (
+        categoryMatch ? categoryMatch[1].toLowerCase() : 'light'
+      ) as import('@/types/items').ArmorCategory;
       const acMatch = desc.match(/ac (\d+)/i);
       const baseAc = acMatch ? parseInt(acMatch[1], 10) : category === 'shield' ? 2 : 11;
       const weightMatch = desc.match(/(\d+(?:\.\d+)?) lbs/i);

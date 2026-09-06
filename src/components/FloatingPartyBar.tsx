@@ -1,9 +1,10 @@
 import { usePartyState } from '@/hooks/usePartyState';
 import { usePartyInitiatives } from '@/hooks/usePartyInitiatives';
+import { usePartyNpcs } from '@/hooks/usePartyNpcs';
 import { useCharacters } from '@/hooks/useCharacters';
+import { selectPartyMembers } from '@/lib/party';
 import { Swords, Shield, Heart, Dices } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import type { CharacterSummary } from '@/types/database';
 
 interface FloatingPartyBarProps {
   campaignId: string;
@@ -13,10 +14,11 @@ interface FloatingPartyBarProps {
 export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPartyBarProps) {
   const { data: partyState } = usePartyState(campaignId);
   const { data: partyInitState } = usePartyInitiatives(campaignId);
+  const { data: partyNpcIds = [] } = usePartyNpcs(campaignId);
   const { data: characters = [] } = useCharacters(campaignId);
 
-  // Filter strictly for Player Characters (PCs)
-  const pcs = characters.filter((c: CharacterSummary) => c.character_type === 'pc');
+  // Player Characters plus any NPC the DM has added to the party.
+  const pcs = selectPartyMembers(characters, partyNpcIds);
 
   if (pcs.length === 0) return null;
 
@@ -57,9 +59,7 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
         {/* Left Title Label - Fixed Width to Keep Grid Vertical Start Aligned */}
         <div className="flex items-center gap-2 shrink-0 md:w-32 md:pt-1">
           <Swords className="size-4 text-primary animate-pulse" />
-          <span className="text-xs font-extrabold uppercase tracking-wider text-foreground">
-            Party Status
-          </span>
+          <span className="text-xs font-extrabold uppercase tracking-wider text-foreground">Party Status</span>
         </div>
 
         {/* Strictly Aligned 6-Column Grid Layout */}
@@ -71,10 +71,11 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
             return (
               <div
                 key={pc.id}
-                className={`p-2 rounded-lg border text-xs flex flex-col justify-between gap-2 w-full min-w-0 transition-all ${isCurrent
+                className={`p-2 rounded-lg border text-xs flex flex-col justify-between gap-2 w-full min-w-0 transition-all ${
+                  isCurrent
                     ? 'bg-primary/10 border-primary font-semibold ring-1 ring-primary/40'
                     : 'bg-card/80 border-border hover:bg-muted/50'
-                  }`}
+                }`}
               >
                 {/* Header: Name, Role/Level, & Current Indicator */}
                 <div className="flex flex-col min-w-0 w-full">
@@ -82,10 +83,16 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
                     <span className="font-bold text-xs truncate text-foreground min-w-0 flex-1" title={pc.name}>
                       {pc.name}
                     </span>
-                    {isCurrent && (
+                    {isCurrent ? (
                       <span className="text-[9px] font-extrabold px-1 rounded bg-primary text-primary-foreground leading-none py-0.5 shrink-0">
                         YOU
                       </span>
+                    ) : (
+                      pc.character_type === 'npc' && (
+                        <span className="text-[9px] font-extrabold px-1 rounded bg-purple-600 text-white leading-none py-0.5 shrink-0">
+                          NPC
+                        </span>
+                      )
                     )}
                   </div>
                   <div className="text-[10px] text-muted-foreground truncate w-full">
@@ -108,8 +115,9 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
                     </div>
 
                     <div
-                      className={`flex items-center justify-center gap-1 px-1 py-0.5 rounded bg-muted/60 text-muted-foreground w-full ${pc.armor_class == null ? 'opacity-0' : ''
-                        }`}
+                      className={`flex items-center justify-center gap-1 px-1 py-0.5 rounded bg-muted/60 text-muted-foreground w-full ${
+                        pc.armor_class == null ? 'opacity-0' : ''
+                      }`}
                       title="Armor Class"
                     >
                       <Shield className="size-3 text-sky-500 shrink-0" />
@@ -119,15 +127,18 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
 
                   {/* Hit Points Row */}
                   <div
-                    className={`flex items-center justify-center gap-1 px-1.5 py-0.5 rounded border w-full ${maxHp == null
+                    className={`flex items-center justify-center gap-1 px-1.5 py-0.5 rounded border w-full ${
+                      maxHp == null
                         ? 'opacity-0'
                         : isLowHp
                           ? 'bg-rose-500/10 text-rose-600 border-rose-500/30'
                           : 'bg-muted/60 text-muted-foreground border-transparent'
-                      }`}
+                    }`}
                     title="Hit Points (Current / Max)"
                   >
-                    <Heart className={`size-3 ${isLowHp ? 'text-rose-600 fill-rose-600' : 'text-rose-500 fill-rose-500/20'} shrink-0`} />
+                    <Heart
+                      className={`size-3 ${isLowHp ? 'text-rose-600 fill-rose-600' : 'text-rose-500 fill-rose-500/20'} shrink-0`}
+                    />
                     <span className="font-bold text-[10px]">
                       {maxHp != null ? `${currentHp ?? maxHp}/${maxHp} HP` : '--'}
                     </span>
@@ -135,9 +146,14 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
 
                   {/* Last Roll Row */}
                   <div
-                    className={`flex items-center justify-between gap-1 px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 w-full ${!lastRoll ? 'opacity-0' : ''
-                      }`}
-                    title={lastRoll ? `Last Roll: ${lastRoll.formula} = ${lastRoll.total} (${lastRoll.rolls.join(', ')})` : ''}
+                    className={`flex items-center justify-between gap-1 px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 w-full ${
+                      !lastRoll ? 'opacity-0' : ''
+                    }`}
+                    title={
+                      lastRoll
+                        ? `Last Roll: ${lastRoll.formula} = ${lastRoll.total} (${lastRoll.rolls.join(', ')})`
+                        : ''
+                    }
                   >
                     <div className="flex items-center gap-1 truncate min-w-0">
                       <Dices className="size-3 text-indigo-500 shrink-0" />

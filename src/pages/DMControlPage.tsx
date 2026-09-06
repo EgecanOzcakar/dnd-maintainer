@@ -1,6 +1,21 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Dices, Swords, RotateCcw, Sparkles, Heart, Plus, Minus, Shield, Eye, Brain, BookOpen } from 'lucide-react';
+import {
+  Dices,
+  Swords,
+  RotateCcw,
+  Sparkles,
+  Heart,
+  Plus,
+  Minus,
+  Shield,
+  Eye,
+  Brain,
+  BookOpen,
+  Users,
+  UserPlus,
+  UserMinus,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +23,9 @@ import { useCharacters } from '@/hooks/useCharacters';
 import { useCampaignContext } from '@/hooks/useCampaignContext';
 import { usePartyState, useUpdatePartyHP, useRecordCharacterRoll } from '@/hooks/usePartyState';
 import { usePartyInitiatives, useUpdatePartyInitiatives } from '@/hooks/usePartyInitiatives';
+import { usePartyNpcs, useUpdatePartyNpcs } from '@/hooks/usePartyNpcs';
 import { usePartyCharacterStats } from '@/hooks/usePartyCharacterStats';
+import { selectPartyMembers, selectRecruitableNpcs } from '@/lib/party';
 import type { CharacterSummary } from '@/types/database';
 import { CommonImageDisplayer } from '@/components/common/CommonImageDisplayer';
 import { useBattleMap } from '@/hooks/useBattleMap';
@@ -26,12 +43,22 @@ export default function DMControlPage() {
   const { data: characters = [] } = useCharacters(targetCampaignId);
   const { data: partyState } = usePartyState(targetCampaignId);
   const { data: partyInitState } = usePartyInitiatives(targetCampaignId);
+  const { data: partyNpcIds = [] } = usePartyNpcs(targetCampaignId);
   const updatePartyInitiatives = useUpdatePartyInitiatives();
   const updatePartyHP = useUpdatePartyHP();
+  const updatePartyNpcs = useUpdatePartyNpcs();
   const recordCharacterRoll = useRecordCharacterRoll();
 
-  // Filter only Player Characters (excluding NPCs)
-  const pcs = characters.filter((c: CharacterSummary) => c.character_type === 'pc');
+  // The party: all Player Characters plus any NPC the DM has added to it.
+  const pcs = selectPartyMembers(characters, partyNpcIds);
+  const recruitableNpcs = selectRecruitableNpcs(characters);
+
+  const toggleNpcInParty = async (npcId: string, join: boolean) => {
+    const next = join ? [...partyNpcIds, npcId] : partyNpcIds.filter((id) => id !== npcId);
+    await updatePartyNpcs.mutateAsync({ campaignId: targetCampaignId, npcIds: next });
+    const npc = characters.find((c) => c.id === npcId);
+    toast.success(join ? `${npc?.name ?? 'NPC'} joined the party` : `${npc?.name ?? 'NPC'} left the party`);
+  };
 
   // Fetch Perception, Wisdom, and Intelligence statistics for all PCs
   const { data: partyStats = {} } = usePartyCharacterStats(targetCampaignId, pcs);
@@ -252,6 +279,72 @@ export default function DMControlPage() {
             </Button>
           )}
         </div>
+      </div>
+
+      {/* ── Party Roster: add / remove NPC companions ──────────────────────── */}
+      <div className="bg-card border rounded-xl p-6 space-y-4">
+        <div className="flex items-center justify-between border-b pb-3">
+          <div className="flex items-center gap-2">
+            <Users className="size-5 text-purple-500" />
+            <h2 className="text-lg font-bold text-foreground">Party Roster & NPC Companions</h2>
+          </div>
+          <span className="text-xs text-muted-foreground font-mono">
+            {pcs.length} in party · {partyNpcIds.length} NPC{partyNpcIds.length === 1 ? '' : 's'}
+          </span>
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          NPCs added here appear in the party status bar and initiative tracker, and are included when you roll party
+          initiative or party checks.
+        </p>
+
+        {recruitableNpcs.length === 0 ? (
+          <div className="text-center py-6 text-muted-foreground text-sm">
+            No NPCs in this campaign yet. Create an NPC to add them to the party.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {recruitableNpcs.map((npc) => {
+              const inParty = partyNpcIds.includes(npc.id);
+              return (
+                <div
+                  key={npc.id}
+                  className={`flex items-center justify-between gap-2 p-3 rounded-lg border ${
+                    inParty ? 'bg-purple-500/10 border-purple-500/30' : 'bg-muted/30'
+                  }`}
+                >
+                  <div className="min-w-0">
+                    <div className="font-bold text-sm text-foreground truncate">{npc.name}</div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      {npc.class ? `${npc.class} (lvl ${npc.level})` : `Lvl ${npc.level}`}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={updatePartyNpcs.isPending}
+                    onClick={() => toggleNpcInParty(npc.id, !inParty)}
+                    className={`h-8 shrink-0 gap-1.5 text-xs ${
+                      inParty
+                        ? 'text-muted-foreground hover:text-destructive'
+                        : 'text-purple-500 border-purple-500/30 hover:bg-purple-500/10'
+                    }`}
+                  >
+                    {inParty ? (
+                      <>
+                        <UserMinus className="size-3.5" /> Remove
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="size-3.5" /> Add to Party
+                      </>
+                    )}
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* ── DM Broadcast Scene: Common Image Displayer or Live Battle Map ──── */}

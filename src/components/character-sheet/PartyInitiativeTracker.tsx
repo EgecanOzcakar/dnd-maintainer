@@ -1,9 +1,10 @@
 import { usePartyState } from '@/hooks/usePartyState';
 import { usePartyInitiatives } from '@/hooks/usePartyInitiatives';
+import { usePartyNpcs } from '@/hooks/usePartyNpcs';
 import { useCharacters } from '@/hooks/useCharacters';
+import { selectPartyMembers } from '@/lib/party';
 import { Swords, Heart, Dices } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import type { CharacterSummary } from '@/types/database';
 
 interface PartyInitiativeTrackerProps {
   campaignId: string;
@@ -13,10 +14,11 @@ interface PartyInitiativeTrackerProps {
 export function PartyInitiativeTracker({ campaignId, currentCharacterId }: PartyInitiativeTrackerProps) {
   const { data: partyState } = usePartyState(campaignId);
   const { data: partyInitState } = usePartyInitiatives(campaignId);
+  const { data: partyNpcIds = [] } = usePartyNpcs(campaignId);
   const { data: characters = [] } = useCharacters(campaignId);
 
-  // Filter strictly for Player Characters (PCs)
-  const pcs = characters.filter((c: CharacterSummary) => c.character_type === 'pc');
+  // Player Characters plus any NPC the DM has added to the party.
+  const pcs = selectPartyMembers(characters, partyNpcIds);
 
   if (pcs.length === 0) return null;
 
@@ -94,6 +96,14 @@ export function PartyInitiativeTracker({ campaignId, currentCharacterId }: Party
                         You
                       </Badge>
                     )}
+                    {!isCurrent && pc.character_type === 'npc' && (
+                      <Badge
+                        variant="secondary"
+                        className="text-[9px] py-0 px-1 shrink-0 bg-purple-500/20 text-purple-500"
+                      >
+                        NPC
+                      </Badge>
+                    )}
                   </div>
                   <div className="text-[11px] text-muted-foreground truncate mt-0.5">
                     {pc.class ? `${pc.class} (lvl ${pc.level})` : `Lvl ${pc.level}`}
@@ -127,7 +137,9 @@ export function PartyInitiativeTracker({ campaignId, currentCharacterId }: Party
                     title={`Last Roll: ${lastRoll.formula} = ${lastRoll.total}`}
                   >
                     <Dices className="size-3 text-indigo-500 shrink-0" />
-                    <span className="text-[10px] font-mono font-bold">{lastRoll.formula}: {lastRoll.total}</span>
+                    <span className="text-[10px] font-mono font-bold">
+                      {lastRoll.formula}: {lastRoll.total}
+                    </span>
                   </div>
                 ) : (
                   <span className="text-[10px] text-muted-foreground/60 italic">No rolls</span>

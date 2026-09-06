@@ -73,6 +73,11 @@ vi.mock('@/hooks/usePartyInitiatives', () => ({
   }),
 }));
 
+vi.mock('@/hooks/usePartyNpcs', () => ({
+  usePartyNpcs: () => ({ data: [] }),
+  useUpdatePartyNpcs: () => ({ mutateAsync: vi.fn(), isPending: false }),
+}));
+
 vi.mock('@/hooks/usePartyCharacterStats', () => ({
   usePartyCharacterStats: () => ({
     data: {

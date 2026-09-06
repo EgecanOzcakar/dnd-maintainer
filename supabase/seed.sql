@@ -7,12 +7,13 @@ SET standard_conforming_strings = ON;
 BEGIN;
 
 -- campaigns
-INSERT INTO campaigns (id, name, status, description)
+INSERT INTO campaigns (id, name, status, description, is_demo)
 VALUES (
   'aaaaaaaa-0000-4000-8000-000000000001',
   'Demo Campaign',
   'active',
-  'A demonstration campaign showcasing all character archetypes.'
+  'A demonstration campaign showcasing all character archetypes.',
+  true
 );
 
 COMMIT;

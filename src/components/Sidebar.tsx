@@ -6,6 +6,7 @@ import {
   Download,
   ExternalLink,
   Library,
+  Lock,
   ScrollText,
   Settings,
   Shield,
@@ -16,6 +17,8 @@ import {
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
+import { isCampaignUnlocked, isDemoCampaign, lockCampaign } from '@/lib/campaign-auth';
 import { Button } from './ui/button';
 
 export interface SidebarProps {
@@ -24,6 +27,7 @@ export interface SidebarProps {
   onSelectCampaign: (slug: string) => void;
   isCollapsed: boolean;
   onToggleCollapse: (collapsed: boolean) => void;
+  onLockCampaign?: () => void;
 }
 
 interface NavItem {
@@ -49,6 +53,7 @@ export function Sidebar({
   onSelectCampaign,
   isCollapsed,
   onToggleCollapse,
+  onLockCampaign,
 }: SidebarProps) {
   const { t } = useTranslation('common');
   const { campaignSlug } = useParams<{ campaignSlug: string }>();
@@ -59,6 +64,17 @@ export function Sidebar({
   const currentCampaign = campaigns.find(
     (c) => c.slug === effectiveSlug || c.previous_slugs?.includes(effectiveSlug ?? '')
   );
+
+  const isCurrentDemo = isDemoCampaign(currentCampaign);
+
+  const handleLock = () => {
+    if (!currentCampaign) return;
+    lockCampaign(currentCampaign.id, currentCampaign.slug);
+    toast.info(t('auth.campaignLocked'));
+    if (onLockCampaign) {
+      onLockCampaign();
+    }
+  };
 
   return (
     <>
@@ -146,24 +162,47 @@ export function Sidebar({
                 {campaigns.length === 0 ? (
                   <div className="px-3 py-2 text-xs text-muted-foreground">{t('nav.noCampaigns')}</div>
                 ) : (
-                  campaigns.map((campaign) => (
-                    <button
-                      key={campaign.id}
-                      onClick={() => {
-                        onSelectCampaign(campaign.slug);
-                        setShowCampaignDropdown(false);
-                      }}
-                      className={`
-                        w-full text-left px-3 py-2 text-sm
-                        hover:bg-accent transition-colors
-                        ${campaign.slug === currentCampaign?.slug ? 'bg-accent text-accent-foreground font-medium' : 'text-popover-foreground'}
-                      `}
-                    >
-                      {campaign.name}
-                    </button>
-                  ))
+                  campaigns.map((campaign) => {
+                    const isDemo = isDemoCampaign(campaign);
+                    const isUnlocked = isDemo || isCampaignUnlocked(campaign.id) || isCampaignUnlocked(campaign.slug);
+                    return (
+                      <button
+                        key={campaign.id}
+                        onClick={() => {
+                          onSelectCampaign(campaign.slug);
+                          setShowCampaignDropdown(false);
+                        }}
+                        className={`
+                          w-full text-left px-3 py-2 text-sm flex items-center justify-between gap-2
+                          hover:bg-accent transition-colors
+                          ${campaign.slug === currentCampaign?.slug ? 'bg-accent text-accent-foreground font-medium' : 'text-popover-foreground'}
+                        `}
+                      >
+                        <span className="truncate">{campaign.name}</span>
+                        {isDemo ? (
+                          <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                            {t('auth.demoOpen')}
+                          </span>
+                        ) : !isUnlocked ? (
+                          <Lock className="size-3 text-amber-500 shrink-0" />
+                        ) : null}
+                      </button>
+                    );
+                  })
                 )}
               </div>
+            )}
+
+            {currentCampaign && !isCurrentDemo && !isCollapsed && (
+              <button
+                type="button"
+                onClick={handleLock}
+                className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1.5 mt-2 px-1 transition-colors"
+                title={t('auth.lockCampaignTooltip')}
+              >
+                <Lock className="size-3.5" />
+                <span>{t('buttons.lockCampaign')}</span>
+              </button>
             )}
           </div>
         </div>

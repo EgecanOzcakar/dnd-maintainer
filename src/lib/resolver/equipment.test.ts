@@ -621,4 +621,40 @@ describe('resolveEquippedArmorAc', () => {
     const result = resolveEquippedArmorAc([notEquipped], 3);
     expect(result).toBeNull();
   });
+
+  it('grants body armor AC even if character lacks proficiency, but sets hasNonProficientBodyArmor flag', () => {
+    // Rogue (light armor proficiency only) equipped with chain mail (heavy)
+    const result = resolveEquippedArmorAc([makeEquippedArmor('chain-mail')], 3, ['light']);
+    expect(result).not.toBeNull();
+    expect(result!.totalBase).toBe(16);
+    expect(result!.hasNonProficientBodyArmor).toBe(true);
+  });
+
+  it('applies equipped body armor with no penalty flag if character is proficient', () => {
+    // Fighter (heavy armor proficiency) equipped with chain mail
+    const result = resolveEquippedArmorAc([makeEquippedArmor('chain-mail')], 3, ['heavy', 'shields']);
+    expect(result).not.toBeNull();
+    expect(result!.totalBase).toBe(16);
+    expect(result!.hasNonProficientBodyArmor).toBe(false);
+  });
+
+  it('ignores shield bonus if character lacks shield proficiency', () => {
+    // Wizard (no armor proficiencies) equipped with shield
+    const result = resolveEquippedArmorAc([makeEquippedArmor('shield')], 2, []);
+    expect(result).toBeNull(); // shieldBonus 0 and no body armor -> returns null
+  });
+
+  it('handles mixed proficiencies (proficient in shield, not heavy armor)', () => {
+    // Druid (medium-nonmetal, shields-nonmetal) equipped with heavy armor and shield
+    const result = resolveEquippedArmorAc(
+      [makeEquippedArmor('chain-mail'), makeEquippedArmor('shield')],
+      2,
+      ['medium-nonmetal', 'shields-nonmetal']
+    );
+    expect(result).not.toBeNull();
+    expect(result!.totalBase).toBe(16); // Heavy armor base AC granted per 2024 rules
+    expect(result!.shieldBonus).toBe(2); // Shield applied
+    expect(result!.hasNonProficientBodyArmor).toBe(true);
+    expect(result!.hasNonProficientShield).toBe(false);
+  });
 });

@@ -787,9 +787,49 @@ export function getItemDef(id: string): ItemDef | undefined {
   return ITEM_MAP.get(id);
 }
 
+/**
+ * Returns an ItemDef from the catalog, or constructs a dynamic fallback ItemDef for custom items
+ * (e.g. custom armor with category and AC).
+ */
+export function getOrParseItemDef(id: string, source?: unknown): ItemDef | undefined {
+  const existing = ITEM_MAP.get(id);
+  if (existing) return existing;
+
+  const desc =
+    typeof source === 'object' && source !== null && 'description' in source && typeof source.description === 'string'
+      ? source.description
+      : '';
+  const lowerDesc = desc.toLowerCase();
+
+  if (id.startsWith('custom-') || lowerDesc.includes('custom item') || lowerDesc.includes('armor')) {
+    if (lowerDesc.includes('armor') || lowerDesc.includes('shield') || /ac \d+/i.test(desc)) {
+      const categoryMatch = desc.match(/(shield|light|medium|heavy)/i);
+      const category = (categoryMatch ? categoryMatch[1].toLowerCase() : 'light') as import('@/types/items').ArmorCategory;
+      const acMatch = desc.match(/ac (\d+)/i);
+      const baseAc = acMatch ? parseInt(acMatch[1], 10) : category === 'shield' ? 2 : 11;
+      const weightMatch = desc.match(/(\d+(?:\.\d+)?) lbs/i);
+      const weight = weightMatch ? parseFloat(weightMatch[1]) : 0;
+
+      return {
+        type: 'armor',
+        id,
+        category,
+        baseAc,
+        maxDexBonus: category === 'heavy' ? 0 : category === 'medium' ? 2 : null,
+        stealthDisadvantage: false,
+        strengthRequirement: 0,
+        weight,
+        costGp: 0,
+      };
+    }
+  }
+
+  return undefined;
+}
+
 /** Fail-fast lookup for trusted source data. Throws when the item id is not in the catalog. */
 export function requireItemDef(id: string): ItemDef {
-  const def = ITEM_MAP.get(id);
+  const def = getItemDef(id);
   if (def === undefined) {
     throw new Error(`Unknown item id: "${id}". Check source data or catalog.`);
   }

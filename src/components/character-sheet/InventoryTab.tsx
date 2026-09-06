@@ -20,9 +20,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { getItemDef, getItemNameKey, ITEM_CATALOG } from '@/lib/sources/items';
-import type { ItemDef } from '@/types/items';
+import { getItemDef, getOrParseItemDef, getItemNameKey, ITEM_CATALOG } from '@/lib/sources/items';
+import type { ItemDef, ArmorCategory } from '@/types/items';
 import type { CharacterSummary } from '@/types/database';
+import type { ArmorProficiencyId } from '@/lib/dnd-helpers';
+import type { Sourced } from '@/types/resolved';
+import { isProficientWithArmor } from '@/lib/resolver/equipment';
 import { useInventoryMutations } from '@/hooks/useInventoryMutations';
 import { useCharacters } from '@/hooks/useCharacters';
 import { toast } from 'sonner';
@@ -38,9 +41,10 @@ interface InventoryTabProps {
     quantity: number;
     source?: unknown;
   }[];
+  readonly armorProficiencies?: readonly (ArmorProficiencyId | Sourced<ArmorProficiencyId>)[];
 }
 
-export function InventoryTab({ characterId, campaignId, itemsData }: InventoryTabProps) {
+export function InventoryTab({ characterId, campaignId, itemsData, armorProficiencies }: InventoryTabProps) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
 
@@ -65,6 +69,8 @@ export function InventoryTab({ characterId, campaignId, itemsData }: InventoryTa
   const [isCustom, setIsCustom] = useState(false);
   const [customName, setCustomName] = useState('');
   const [customType, setCustomType] = useState<'weapon' | 'armor' | 'gear'>('gear');
+  const [customArmorCategory, setCustomArmorCategory] = useState<ArmorCategory>('light');
+  const [customAc, setCustomAc] = useState(11);
   const [customWeight, setCustomWeight] = useState(0);
 
   // Transfer Dialog State
@@ -82,7 +88,7 @@ export function InventoryTab({ characterId, campaignId, itemsData }: InventoryTa
   const itemRows = safeItemsData
     .filter((row) => row && row.item_id)
     .map((row) => {
-      const def = getItemDef(row.item_id);
+      const def = getItemDef(row.item_id) || getOrParseItemDef(row.item_id, row.source);
       const qty = row.quantity ?? 1;
       const itemWeight = def && def.type !== 'pack' ? (def.weight ?? 0) * qty : 0;
       totalWeight += itemWeight;
@@ -123,13 +129,17 @@ export function InventoryTab({ characterId, campaignId, itemsData }: InventoryTa
     if (isCustom) {
       if (!customName.trim()) return;
       const customId = `custom-${customName.toLowerCase().replace(/\s+/g, '-')}`;
+      const sourceDesc =
+        customType === 'armor'
+          ? `Custom Armor (${customArmorCategory}, AC ${customAc}, ${customWeight} lbs)`
+          : `Custom Item (${customType}, ${customWeight} lbs)`;
       addItem.mutate(
         {
           characterId,
           itemId: customId,
           quantity: addQty,
           equipped: false,
-          source: { origin: 'loot', description: `Custom Item (${customType}, ${customWeight} lbs)` },
+          source: { origin: 'loot', description: sourceDesc },
         },
         {
           onSuccess: () => {
@@ -278,6 +288,22 @@ export function InventoryTab({ characterId, campaignId, itemsData }: InventoryTa
                         Equipped
                       </Badge>
                     )}
+                    {item.equipped &&
+                      item.def?.type === 'armor' &&
+                      armorProficiencies &&
+                      !isProficientWithArmor(item.def.category, armorProficiencies) && (
+                        <Badge
+                          variant="outline"
+                          title={
+                            item.def.category === 'shield'
+                              ? 'No AC bonus without shield training'
+                              : 'Disadvantage on STR/DEX tests & cannot cast spells'
+                          }
+                          className="text-[10px] py-0 border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/10 cursor-help"
+                        >
+                          {item.def.category === 'shield' ? 'No Shield Training' : 'Lacks Armor Training'}
+                        </Badge>
+                      )}
                   </div>
                   <div className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5 font-mono">
                     <span>Qty: {item.quantity}</span>
@@ -453,6 +479,31 @@ export function InventoryTab({ characterId, campaignId, itemsData }: InventoryTa
                   />
                 </div>
               </div>
+              {customType === 'armor' && (
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground block mb-1">Armor Category</label>
+                    <select
+                      value={customArmorCategory}
+                      onChange={(e) => setCustomArmorCategory(e.target.value as ArmorCategory)}
+                      className="w-full bg-background border rounded px-3 py-2 text-xs"
+                    >
+                      <option value="light">Light Armor</option>
+                      <option value="medium">Medium Armor</option>
+                      <option value="heavy">Heavy Armor</option>
+                      <option value="shield">Shield</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground block mb-1">Base AC</label>
+                    <Input
+                      type="number"
+                      value={customAc}
+                      onChange={(e) => setCustomAc(parseInt(e.target.value, 10) || 0)}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

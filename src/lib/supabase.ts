@@ -1,16 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
-const envUrl= import.meta.env.VITE_SUPABASE_URL;
+const DEFAULT_SUPABASE_URL = 'https://aekpodxyvkjcsjgzwlca.supabase.co';
+const DEFAULT_SUPABASE_KEY = 'sb_publishable_kq2CF3umQ3xdUnTKAWjKkg_IS0t33G_';
+
+const envUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabasePublishableKey = 
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 
   import.meta.env.VITE_SUPABASE_ANON_KEY || 
-  'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH';
+  DEFAULT_SUPABASE_KEY;
 
 // Detect runtime environment
 export const isLocalhost = 
-  window.location.hostname === 'localhost' || 
-  window.location.hostname === '127.0.0.1';
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+export const isTauri = 
+  typeof window !== 'undefined' && 
+  ('__TAURI_INTERNALS__' in window || '__TAURI__' in window || window.location.protocol === 'tauri:');
 
 const isLocalOrPrivateUrl = (url?: string) => {
   if (!url) return true;
@@ -23,11 +30,12 @@ const isLocalOrPrivateUrl = (url?: string) => {
   );
 };
 
-// Use direct local port if on localhost, and fallback to window.location.origin 
-// when accessed remotely over ngrok/tunnels so requests are proxied by Vite.
-export const supabaseUrl = isLocalhost 
-  ? (envUrl || 'http://127.0.0.1:54321') 
-  : (!isLocalOrPrivateUrl(envUrl) ? envUrl : window.location.origin);
+// Inside Tauri desktop app or when envUrl points to remote cloud, use envUrl / Cloud URL.
+export const supabaseUrl = isTauri
+  ? (envUrl && !isLocalOrPrivateUrl(envUrl) ? envUrl : DEFAULT_SUPABASE_URL)
+  : isLocalhost 
+    ? (envUrl || 'http://127.0.0.1:54321') 
+    : (!isLocalOrPrivateUrl(envUrl) ? envUrl : window.location.origin);
 
 if (!supabaseUrl || !supabasePublishableKey) {
   throw new Error('Missing Supabase environment variables');

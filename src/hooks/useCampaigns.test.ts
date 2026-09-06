@@ -112,6 +112,20 @@ describe('useCampaignMutations', () => {
     expect(supabase.insert).toHaveBeenCalledWith(expect.objectContaining({ status: 'planning' }));
   });
 
+  it('create with passphrase calls set_campaign_passphrase RPC and unlocks campaign', async () => {
+    mockQueryResult.data = { ...baseCampaign, id: 'camp-secret', slug: 'camp-secret-slug', status: 'planning' };
+
+    const { result } = renderHook(() => useCampaignMutations(), { wrapper: createWrapper() });
+
+    result.current.create.mutate({ name: 'Secret Campaign', passphrase: 'mypassword' });
+
+    await waitFor(() => expect(result.current.create.isSuccess).toBe(true));
+    expect(supabase.rpc).toHaveBeenCalledWith('set_campaign_passphrase', {
+      p_campaign_id: 'camp-secret',
+      p_passphrase: 'mypassword',
+    });
+  });
+
   it('update patches the campaign by id', async () => {
     const updated = { ...baseCampaign, name: 'Updated Name' };
     mockQueryResult.data = updated;

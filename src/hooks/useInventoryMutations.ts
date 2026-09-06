@@ -84,7 +84,9 @@ export function useInventoryMutations() {
     },
     onSuccess: (_, { characterId }) => {
       queryClient.invalidateQueries({ queryKey: ['character-items', characterId] });
+      queryClient.invalidateQueries({ queryKey: ['character', characterId] });
       queryClient.invalidateQueries({ queryKey: ['character'] });
+      queryClient.invalidateQueries({ queryKey: ['characters'] });
     },
   });
 
@@ -101,7 +103,9 @@ export function useInventoryMutations() {
     },
     onSuccess: (_, { characterId }) => {
       queryClient.invalidateQueries({ queryKey: ['character-items', characterId] });
+      queryClient.invalidateQueries({ queryKey: ['character', characterId] });
       queryClient.invalidateQueries({ queryKey: ['character'] });
+      queryClient.invalidateQueries({ queryKey: ['characters'] });
     },
   });
 
@@ -112,7 +116,9 @@ export function useInventoryMutations() {
     },
     onSuccess: (_, { characterId }) => {
       queryClient.invalidateQueries({ queryKey: ['character-items', characterId] });
+      queryClient.invalidateQueries({ queryKey: ['character', characterId] });
       queryClient.invalidateQueries({ queryKey: ['character'] });
+      queryClient.invalidateQueries({ queryKey: ['characters'] });
     },
   });
 
@@ -188,7 +194,10 @@ export function useInventoryMutations() {
     onSuccess: (_, { sourceCharacterId, targetCharacterId }) => {
       queryClient.invalidateQueries({ queryKey: ['character-items', sourceCharacterId] });
       queryClient.invalidateQueries({ queryKey: ['character-items', targetCharacterId] });
+      queryClient.invalidateQueries({ queryKey: ['character', sourceCharacterId] });
+      queryClient.invalidateQueries({ queryKey: ['character', targetCharacterId] });
       queryClient.invalidateQueries({ queryKey: ['character'] });
+      queryClient.invalidateQueries({ queryKey: ['characters'] });
     },
   });
 

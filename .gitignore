@@ -43,3 +43,7 @@ supabase/.temp
 
 # Copyrighted PDF templates dropped into public/assets are never committed.
 public/assets/*.pdf
+
+# Tauri build target
+src-tauri/target/
+

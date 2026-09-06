@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AsiAllocator } from '@/components/character-sheet/AsiAllocator';
 import { ChoicePicker } from '@/components/character-builder/ChoicePicker';
 import { Button } from '@/components/ui/button';
@@ -27,14 +28,24 @@ export function AsiOrFeatPicker({
 }: AsiOrFeatPickerProps) {
   const { t } = useTranslation('common');
 
-  // Determine active mode: feat mode if there's a feat decision, otherwise ASI
-  const activeMode = featDecision?.type === 'feat-choice' ? 'feat' : 'asi';
+  // Determine initial mode: feat mode if there's an active feat decision, otherwise ASI
+  const [selectedMode, setSelectedMode] = useState<'asi' | 'feat'>(
+    featDecision?.type === 'feat-choice' ? 'feat' : 'asi'
+  );
+
+  const activeMode =
+    featDecision?.type === 'feat-choice'
+      ? 'feat'
+      : asiDecision?.type === 'asi' && Object.keys(asiDecision.allocation).length > 0
+        ? 'asi'
+        : selectedMode;
 
   const handleModeChange = (newMode: 'asi' | 'feat') => {
-    if (newMode === 'asi' && activeMode !== 'asi') {
+    setSelectedMode(newMode);
+    if (newMode === 'asi') {
       // Switching to ASI: clear the feat decision
       onClear(featChoice.choiceKey);
-    } else if (newMode === 'feat' && activeMode !== 'feat') {
+    } else if (newMode === 'feat') {
       // Switching to Feat: clear the ASI decision
       onClear(asiChoice.choiceKey);
     }

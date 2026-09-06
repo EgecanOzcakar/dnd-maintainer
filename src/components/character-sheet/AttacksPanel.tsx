@@ -108,6 +108,15 @@ export function AttacksPanel({ attacks, weaponMasteries, onSelectRollPreset }: A
                         {t(`weaponMasteries.${mastery}.name`)}
                       </Badge>
                     )}
+                    {attack.disadvantageFromArmor && (
+                      <Badge
+                        variant="outline"
+                        title="Disadvantage on attack rolls while wearing armor without training"
+                        className="text-[9px] py-0 px-1 border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/10 shrink-0 cursor-help"
+                      >
+                        DIS
+                      </Badge>
+                    )}
                   </button>
 
                   <button

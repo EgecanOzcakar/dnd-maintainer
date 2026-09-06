@@ -25,6 +25,7 @@ const METHODS = [
   'ilike',
   'in',
   'textSearch',
+  'rpc',
 ] as const;
 
 type MethodName = (typeof METHODS)[number];

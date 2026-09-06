@@ -1,0 +1,37 @@
+name: Auto-handle Issue and Release
+on:
+  issues:
+    types: [opened]
+jobs:
+  handle-issue:
+    runs-on: ubuntu-latest
+    # Only run for issues opened by trusted actors. Issue bodies are untrusted
+    # input that reaches a write-scoped agent, so external users must not trigger this.
+    if: >
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'),
+      github.event.issue.author_association)
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # full history needed so Claude can see existing tags
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Read this issue and implement a fix: ${{ github.event.issue.html_url }}
+
+            Then:
+            1. Open a pull request with the changes.
+            2. Determine the next patch version by checking the latest git tag
+               (use `git describe --tags --abbrev=0`; if no tags exist, start at v0.1.0).
+            3. Create a new annotated git tag for that version (e.g. `git tag -a vX.Y.Z -m "Release vX.Y.Z"`).
+            4. Push the tag to origin (e.g. `git push origin vX.Y.Z`).
+            5. Reference the new tag in the pull request description.
+          claude_args: |
+            --max-turns 20
+            --allowedTools "Bash(git tag:*),Bash(git push:*),Bash(git describe:*),Bash(git log:*)"

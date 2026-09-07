@@ -19,6 +19,14 @@ interface ActiveRollState {
 
 type OverlayPhase = 'center' | 'corner';
 
+/**
+ * Only surface rolls that landed within this window. Without this guard the
+ * overlay replays whatever the last stored roll was every time a campaign is
+ * opened, because on mount there is no previously-seen timestamp to compare
+ * against. A fresh roll always arrives well within this window.
+ */
+const MAX_ROLL_AGE_MS = 20_000;
+
 export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps) {
   const { t: tc } = useTranslation('common');
   const { data: partyState } = usePartyState(campaignId);
@@ -78,6 +86,11 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
     // Check if this is a newly arrived roll
     if (lastSeenTimestampRef.current !== rollTimestamp) {
       lastSeenTimestampRef.current = rollTimestamp;
+
+      // Ignore stale rolls (e.g. the last roll from a previous session that is
+      // still stored in party state when the campaign is re-opened).
+      const rollAge = Date.now() - new Date(rollTimestamp).getTime();
+      if (!Number.isFinite(rollAge) || rollAge > MAX_ROLL_AGE_MS) return;
 
       // Clear existing timers
       if (animationTimerRef.current) clearTimeout(animationTimerRef.current);
@@ -186,10 +199,11 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
             <div className="p-6 flex flex-col items-center text-center space-y-4 relative">
               {/* Top Banner / Badges */}
               <div className="flex items-center gap-2 flex-wrap justify-center">
-                <span className="font-extrabold text-lg tracking-wide text-foreground">
-                  {character.name}
-                </span>
-                <Badge variant="outline" className="font-mono font-extrabold text-xs uppercase border-primary/40 text-primary bg-primary/10 px-2 py-0.5">
+                <span className="font-extrabold text-lg tracking-wide text-foreground">{character.name}</span>
+                <Badge
+                  variant="outline"
+                  className="font-mono font-extrabold text-xs uppercase border-primary/40 text-primary bg-primary/10 px-2 py-0.5"
+                >
                   {dieName}
                 </Badge>
                 {isNat20 && (
@@ -199,7 +213,10 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
                   </Badge>
                 )}
                 {isNat1 && (
-                  <Badge variant="destructive" className="font-bold text-xs py-0.5 px-2.5 uppercase tracking-wider flex items-center gap-1 shadow-lg shadow-rose-500/30 animate-bounce">
+                  <Badge
+                    variant="destructive"
+                    className="font-bold text-xs py-0.5 px-2.5 uppercase tracking-wider flex items-center gap-1 shadow-lg shadow-rose-500/30 animate-bounce"
+                  >
                     <AlertCircle className="size-3.5" />
                     Nat 1!
                   </Badge>
@@ -243,9 +260,7 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
                     </div>
                   ) : (
                     <>
-                      <span className="text-5xl sm:text-6xl tracking-tighter drop-shadow-md">
-                        {roll.total}
-                      </span>
+                      <span className="text-5xl sm:text-6xl tracking-tighter drop-shadow-md">{roll.total}</span>
                       {isNat20 && (
                         <span className="text-[10px] font-sans uppercase font-black tracking-widest text-emerald-950/80 -mt-1">
                           Critical Hit
@@ -302,10 +317,11 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
               {/* Center: Character Info & Roll Details */}
               <div className="flex-1 min-w-0 space-y-1">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-extrabold text-sm truncate text-foreground">
-                    {character.name}
-                  </span>
-                  <Badge variant="outline" className="font-mono font-extrabold text-[10px] uppercase border-primary/40 text-primary bg-primary/10 px-1.5 py-0">
+                  <span className="font-extrabold text-sm truncate text-foreground">{character.name}</span>
+                  <Badge
+                    variant="outline"
+                    className="font-mono font-extrabold text-[10px] uppercase border-primary/40 text-primary bg-primary/10 px-1.5 py-0"
+                  >
                     {dieName}
                   </Badge>
                   {isNat20 && (
@@ -315,7 +331,10 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
                     </Badge>
                   )}
                   {isNat1 && (
-                    <Badge variant="destructive" className="text-[10px] py-0 px-1.5 font-bold uppercase tracking-wider flex items-center gap-0.5">
+                    <Badge
+                      variant="destructive"
+                      className="text-[10px] py-0 px-1.5 font-bold uppercase tracking-wider flex items-center gap-0.5"
+                    >
                       <AlertCircle className="size-2.5" />
                       Nat 1!
                     </Badge>
@@ -364,4 +383,3 @@ function extractDieName(formula: string): string {
   const match = formula.match(/d\d+/i);
   return match ? match[0].toLowerCase() : 'dice';
 }
-

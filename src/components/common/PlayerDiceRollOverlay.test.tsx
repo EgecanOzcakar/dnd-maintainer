@@ -193,6 +193,40 @@ describe('PlayerDiceRollOverlay', () => {
     expect(screen.queryByRole('region')).not.toBeInTheDocument();
   });
 
+  it('does not pop up a stale roll when re-entering a campaign', () => {
+    vi.spyOn(useCharactersModule, 'useCharacters').mockReturnValue({
+      data: [
+        {
+          id: 'pc-1',
+          name: 'Frodo',
+          character_type: 'pc',
+        },
+      ],
+    } as any);
+
+    vi.spyOn(usePartyStateModule, 'usePartyState').mockReturnValue({
+      data: {
+        campaignId: 'camp-1',
+        initiatives: {},
+        hp: {},
+        lastRolls: {
+          'pc-1': {
+            formula: '1d20+1',
+            total: 11,
+            rolls: [10],
+            modifier: 1,
+            timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+          },
+        },
+        updatedAt: new Date().toISOString(),
+      },
+    } as any);
+
+    render(<PlayerDiceRollOverlay campaignId="camp-1" />);
+
+    expect(screen.queryByRole('region')).not.toBeInTheDocument();
+  });
+
   it('dismisses manually when close button is clicked', () => {
     vi.spyOn(useCharactersModule, 'useCharacters').mockReturnValue({
       data: [

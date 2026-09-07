@@ -114,3 +114,7 @@ Spec-first acceptance tests live in `features/`, run via `npm run test:bdd` (and
 ## Environment Variables
 
 Requires `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env.local`.
+
+## Token compression
+Before writing long internal docs/notes, compress with:
+    caveman-nlp compress -f <file> -o <file>

@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { LevelUpDialog } from '@/components/character-sheet/LevelUpDialog';
 import { useCharacterContext } from '@/hooks/useCharacterContext';
 import { DND_CLASSES } from '@/lib/dnd-helpers';
@@ -17,9 +19,10 @@ interface LevelControlsProps {
 export function LevelControls({ classId }: LevelControlsProps) {
   const { t } = useTranslation('common');
   const { t: tg } = useTranslation('gamedata');
-  const { level, rows, resolved, hasDeletedRows, nextRestoreLevel, levelUp, levelDown, undoLevelDown } =
+  const { level, rows, resolved, hasDeletedRows, nextRestoreLevel, levelUp, levelUpTo, levelDown, undoLevelDown } =
     useCharacterContext();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [bulkTarget, setBulkTarget] = useState('');
 
   const canLevelUp = level < 20;
   const canLevelDown = level > 1;
@@ -66,6 +69,17 @@ export function LevelControls({ classId }: LevelControlsProps) {
     levelUp(classId, hpRoll, decisions);
   };
 
+  const bulkTargetNum = Number(bulkTarget);
+  const canBulkAdvance =
+    Number.isInteger(bulkTargetNum) && bulkTargetNum > level && bulkTargetNum <= 20 && !hasDeletedRows;
+
+  const handleBulkAdvance = () => {
+    if (!canBulkAdvance) return;
+    levelUpTo(classId, bulkTargetNum);
+    toast.success(t('characterSheet.levelManagement.bulkAdvanceSuccess', { className, level: bulkTargetNum }));
+    setBulkTarget('');
+  };
+
   // Button label changes based on whether we're replacing a soft-deleted level
   const levelUpLabel =
     hasDeletedRows && nextRestoreLevel != null
@@ -91,6 +105,29 @@ export function LevelControls({ classId }: LevelControlsProps) {
           </Button>
         )}
       </div>
+
+      {canLevelUp && !hasDeletedRows && (
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <label htmlFor="bulk-level-target" className="text-sm text-muted-foreground">
+              {t('characterSheet.levelManagement.bulkAdvance')}
+            </label>
+            <Input
+              id="bulk-level-target"
+              type="number"
+              min={level + 1}
+              max={20}
+              value={bulkTarget}
+              onChange={(e) => setBulkTarget(e.target.value)}
+              className="h-8 w-16"
+            />
+            <Button size="sm" variant="outline" onClick={handleBulkAdvance} disabled={!canBulkAdvance}>
+              {t('characterSheet.levelManagement.bulkAdvanceButton')}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">{t('characterSheet.levelManagement.bulkAdvanceHint')}</p>
+        </div>
+      )}
 
       <LevelUpDialog
         open={dialogOpen}

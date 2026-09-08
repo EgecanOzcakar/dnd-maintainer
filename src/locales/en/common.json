@@ -724,7 +724,11 @@
       "currentLevel": "Current Level",
       "levelUpSuccess": "Advanced to {{className}} Level {{level}}",
       "maxLevelReached": "Maximum level (20) reached",
-      "confirmLevelUp": "Confirm Level Up"
+      "confirmLevelUp": "Confirm Level Up",
+      "bulkAdvance": "Jump to level",
+      "bulkAdvanceButton": "Advance",
+      "bulkAdvanceHint": "Adds levels with average HP. Resolve subclass, ASI, and feature choices in Pending Choices.",
+      "bulkAdvanceSuccess": "Advanced to {{className}} level {{level}}"
     },
     "asi": {
       "asiTitle": "Ability Score Improvement",

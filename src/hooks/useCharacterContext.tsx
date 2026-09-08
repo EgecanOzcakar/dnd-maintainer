@@ -46,6 +46,13 @@ interface CharacterContextValue {
   makeChoice: (choiceKey: ChoiceKey, decision: ChoiceDecision) => void;
   clearChoice: (choiceKey: ChoiceKey) => void;
   levelUp: (classId: ClassId, hpRoll: number | null, decisions?: ReadonlyMap<ChoiceKey, ChoiceDecision>) => void;
+  /**
+   * Advance straight to `targetLevel` in a single class by appending average-HP
+   * level rows — no per-level dialog. Any resulting subclass/ASI/feature choices
+   * surface together in the Pending Choices panel. No-op if already at/above the
+   * target or the target is out of the 1–20 range.
+   */
+  levelUpTo: (classId: ClassId, targetLevel: number) => void;
   levelDown: () => void;
   undoLevelDown: () => void;
   replaceLevel: (oldSequence: number, newClassId: ClassId, newSubclassId: SubclassId | null) => void;
@@ -594,6 +601,41 @@ export function CharacterProvider({
     [rows]
   );
 
+  const levelUpTo = useCallback(
+    (classId: ClassId, targetLevel: number) => {
+      const target = Math.floor(targetLevel);
+      if (target > 20 || target <= level) return;
+      setRows((prev) => {
+        // ponytail: only appends fresh rows; ignores soft-deleted rows (use single
+        // Level Up to restore those). Bulk advance is for freshly-created characters.
+        const next = [...prev];
+        let added = 0;
+        while (next.filter((r) => r.sequence !== 0 && r.deleted_at == null).length < target) {
+          const activeLevelRows = next.filter((r) => r.sequence !== 0 && r.deleted_at == null);
+          const classLevelCount = activeLevelRows.filter((r) => r.class_id === classId).length;
+          const maxSeq = next.reduce((m, r) => Math.max(m, r.sequence), 0);
+          next.push({
+            sequence: maxSeq + 1,
+            base_abilities: null,
+            ability_method: null,
+            class_id: classId,
+            class_level: classLevelCount + 1,
+            subclass_id: null,
+            asi_allocation: null,
+            feat_id: null,
+            hp_roll: null,
+            choices: null,
+            deleted_at: null,
+          });
+          added++;
+        }
+        return added === 0 ? prev : next;
+      });
+      setIsDirty(true);
+    },
+    [level]
+  );
+
   const levelDown = useCallback(() => {
     // Only consider active (non-deleted) level rows
     const activeLevelRows = rows.filter((r) => r.sequence !== 0 && r.deleted_at == null);
@@ -668,6 +710,7 @@ export function CharacterProvider({
       makeChoice,
       clearChoice,
       levelUp,
+      levelUpTo,
       levelDown,
       undoLevelDown,
       replaceLevel,
@@ -690,6 +733,7 @@ export function CharacterProvider({
       makeChoice,
       clearChoice,
       levelUp,
+      levelUpTo,
       levelDown,
       undoLevelDown,
       replaceLevel,

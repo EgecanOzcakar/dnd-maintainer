@@ -259,6 +259,57 @@ describe('CharacterProvider', () => {
     expect(levelRows[0].sequence).toBe(1);
   });
 
+  it('levelUpTo appends level rows up to the target in one pass', () => {
+    const character = buildSeedCharacter();
+    const { result } = renderHook(() => useCharacterContext(), {
+      wrapper: createWrapper(character, [creationRow]),
+    });
+
+    act(() => {
+      result.current.levelUpTo('fighter', 5);
+    });
+
+    const levelRows = result.current.rows.filter((r) => r.sequence !== 0);
+    expect(levelRows).toHaveLength(5);
+    expect(levelRows.map((r) => r.class_level)).toEqual([1, 2, 3, 4, 5]);
+    expect(levelRows.map((r) => r.sequence)).toEqual([1, 2, 3, 4, 5]);
+    expect(levelRows.every((r) => r.class_id === 'fighter' && r.hp_roll === null)).toBe(true);
+    expect(result.current.level).toBe(5);
+    expect(result.current.isDirty).toBe(true);
+  });
+
+  it('levelUpTo continues from the current level and surfaces pending choices', () => {
+    const character = buildSeedCharacter();
+    const { result } = renderHook(() => useCharacterContext(), {
+      wrapper: createWrapper(character, [creationRow, fighterLevel1]),
+    });
+
+    act(() => {
+      result.current.levelUpTo('fighter', 4);
+    });
+
+    expect(result.current.level).toBe(4);
+    // Subclass (L3) + ASI (L4) become pending choices rather than per-level dialogs
+    const pendingTypes = (result.current.resolved?.pendingChoices ?? []).map((c) => c.type);
+    expect(pendingTypes).toContain('subclass');
+    expect(pendingTypes).toContain('asi');
+  });
+
+  it('levelUpTo is a no-op for a target at or below the current level, or out of range', () => {
+    const character = buildSeedCharacter();
+    const { result } = renderHook(() => useCharacterContext(), {
+      wrapper: createWrapper(character, [creationRow, fighterLevel1]),
+    });
+
+    act(() => {
+      result.current.levelUpTo('fighter', 1);
+      result.current.levelUpTo('fighter', 25);
+      result.current.levelUpTo('fighter', 0);
+    });
+
+    expect(result.current.rows.filter((r) => r.sequence !== 0)).toHaveLength(1);
+  });
+
   it('levelDown soft-deletes the highest-sequence active level row', () => {
     const character = buildSeedCharacter();
     const { result } = renderHook(() => useCharacterContext(), {

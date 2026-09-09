@@ -54,7 +54,8 @@ setupMockReset();
 describeListQuery(
   'useCampaigns',
   () => renderHook(() => useCampaigns(), { wrapper: createWrapper() }),
-  baseCampaign,
+  // useCampaigns enriches each row with counts derived from embedded child rows
+  { ...baseCampaign, pcCount: 0, npcCount: 0, sessionCount: 0 },
   null
 );
 
@@ -64,18 +65,33 @@ describe('useCampaigns ordering', () => {
     // replacing the `last_activity_at` computed field that hit the statement timeout.
     // Order stays decoupled from `updated_at` so theme/metadata edits don't reorder.
     mockQueryResult.data = [
-      { ...baseCampaign, id: 'old', created_at: '2024-01-01T00:00:00Z', sessions: [{ date: '2024-02-01' }] },
-      { ...baseCampaign, id: 'new', created_at: '2024-01-01T00:00:00Z', sessions: [{ date: '2024-06-01' }] },
-      { ...baseCampaign, id: 'none', created_at: '2023-01-01T00:00:00Z', sessions: [] },
+      {
+        ...baseCampaign,
+        id: 'old',
+        created_at: '2024-01-01T00:00:00Z',
+        sessions: [{ date: '2024-02-01' }],
+        characters: [],
+      },
+      {
+        ...baseCampaign,
+        id: 'new',
+        created_at: '2024-01-01T00:00:00Z',
+        sessions: [{ date: '2024-06-01' }],
+        characters: [],
+      },
+      { ...baseCampaign, id: 'none', created_at: '2023-01-01T00:00:00Z', sessions: [], characters: [] },
     ];
 
     const { result } = renderHook(() => useCampaigns(), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(supabase.select).toHaveBeenCalledWith(`${CAMPAIGN_SUMMARY_COLS}, sessions(date)`);
+    expect(supabase.select).toHaveBeenCalledWith(
+      `${CAMPAIGN_SUMMARY_COLS}, sessions(date), characters(character_type)`
+    );
     expect(result.current.data?.map((c) => c.id)).toEqual(['new', 'old', 'none']);
     expect(result.current.data?.[0]).not.toHaveProperty('sessions');
+    expect(result.current.data?.[0]).not.toHaveProperty('characters');
   });
 });
 

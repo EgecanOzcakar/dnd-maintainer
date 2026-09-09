@@ -7,26 +7,48 @@ import { setCampaignPassphrase, setCampaignUnlocked } from '@/lib/campaign-auth'
 
 // --- Queries ---
 
+/** A campaign list row plus the per-card counts the list view renders. */
+export type CampaignListItem = CampaignSummary & {
+  pcCount: number;
+  npcCount: number;
+  sessionCount: number;
+};
+
+type CampaignListRow = CampaignSummary & {
+  sessions?: { date: string | null }[];
+  characters?: { character_type: 'pc' | 'npc' }[];
+};
+
 export function useCampaigns() {
   return useQuery({
     queryKey: ['campaigns'],
-    queryFn: async () => {
-      // Sort by most-recent session date, falling back to created_at, so non-activity
-      // edits like theme changes don't reorder the list. The old `last_activity_at`
-      // PostgREST computed field ran `max(sessions.date)` as a per-row subquery — in
-      // both ORDER BY *and* the select list — and was hitting the statement timeout
-      // (57014) under load. Embed the session dates instead (one indexed join) and
-      // reduce to a max client-side; the list is small.
+    queryFn: async (): Promise<CampaignListItem[]> => {
+      // One round-trip for the whole list view. Previously this was 3 separate
+      // queries (campaigns + a full `characters` scan + a full `sessions` scan) plus
+      // the `last_activity_at` computed field running `max(sessions.date)` per row in
+      // ORDER BY — a cluster of requests that piled up and hit the 57014 statement
+      // timeout under load. Embed both child rows and derive everything client-side;
+      // the list is small.
       const { data, error } = await supabase
         .from('campaigns')
-        .select(`${CAMPAIGN_SUMMARY_COLS}, sessions(date)`)
+        .select(`${CAMPAIGN_SUMMARY_COLS}, sessions(date), characters(character_type)`)
         .is('archived_at', null);
       if (error) throw error;
-      const rows = (data || []) as unknown as (CampaignSummary & { sessions?: { date: string | null }[] })[];
-      const activity = (c: (typeof rows)[number]) =>
+
+      const rows = (data || []) as unknown as CampaignListRow[];
+      const activity = (c: CampaignListRow) =>
         (c.sessions ?? []).reduce((max, s) => (s.date && s.date > max ? s.date : max), c.created_at ?? '');
-      rows.sort((a, b) => (activity(a) < activity(b) ? 1 : -1));
-      return rows.map(({ sessions: _sessions, ...c }) => c) as CampaignSummary[];
+
+      return rows
+        .map(({ sessions, characters, ...c }) => ({
+          ...c,
+          _activity: activity({ ...c, sessions } as CampaignListRow),
+          sessionCount: sessions?.length ?? 0,
+          pcCount: (characters ?? []).filter((ch) => ch.character_type !== 'npc').length,
+          npcCount: (characters ?? []).filter((ch) => ch.character_type === 'npc').length,
+        }))
+        .sort((a, b) => (a._activity < b._activity ? 1 : -1))
+        .map(({ _activity, ...c }) => c) as CampaignListItem[];
     },
   });
 }
@@ -127,8 +149,13 @@ export function useCampaignMutations() {
       // than refetching. List order is keyed on the `last_activity_at` computed field,
       // not `updated_at`, so a metadata edit never reorders the list — only its fields.
       queryClient.setQueryData(['campaign', data.slug], data);
-      queryClient.setQueryData<CampaignSummary[]>(['campaigns'], (old) =>
-        old?.map((c) => (c.id === data.id ? toCampaignSummary(data) : c))
+      queryClient.setQueryData<CampaignListItem[]>(['campaigns'], (old) =>
+        old?.map((c) =>
+          c.id === data.id
+            ? // refresh the summary fields, carry the embedded counts across
+              { ...toCampaignSummary(data), pcCount: c.pcCount, npcCount: c.npcCount, sessionCount: c.sessionCount }
+            : c
+        )
       );
       // On rename, also refresh the old-slug detail entry so a page still mounted on it
       // shows the new data without a round-trip (the old slug now resolves to this row).

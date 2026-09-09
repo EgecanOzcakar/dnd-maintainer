@@ -10,13 +10,17 @@ const logger = getLogger('query-client');
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 10, // 10 minutes (formerly cacheTime)
+      staleTime: 1000 * 60 * 15, // 15 minutes — single-user data, mutations invalidate directly
+      gcTime: 1000 * 60 * 60 * 24, // 24h — keep the offline cache warm across the day
       // One retry, not two: a slow query that hits the statement timeout should not
       // be re-fired three times per mount — that turned a single slow query into a
       // pile-up that saturated the DB.
       retry: 1,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+      // Don't refetch every query on every tab refocus. With the persisted cache,
+      // that was a thundering herd of concurrent requests on a small instance every
+      // time the window regained focus — the main amplifier behind the 57014 storm.
+      refetchOnWindowFocus: false,
     },
     mutations: {
       retry: 1,

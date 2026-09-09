@@ -12,11 +12,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/lib/supabase';
-import { CampaignSummary } from '@/types/database';
+import type { CampaignListItem } from '@/hooks/useCampaigns';
 import { useCampaigns, useCampaignMutations } from '@/hooks/useCampaigns';
 import { usePageTitle } from '@/hooks/usePageTitle';
-import { useQuery } from '@tanstack/react-query';
 import { Archive, BookOpen, Lock, Plus, Search, ShieldCheck, Swords, Unlock, Users, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -29,7 +27,7 @@ export default function CampaignList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [showNewCampaignForm, setShowNewCampaignForm] = useState(false);
-  const [campaignToArchive, setCampaignToArchive] = useState<CampaignSummary | null>(null);
+  const [campaignToArchive, setCampaignToArchive] = useState<CampaignListItem | null>(null);
   const [newCampaign, setNewCampaign] = useState({
     name: '',
     setting: '',
@@ -47,41 +45,6 @@ export default function CampaignList() {
 
   const { data: campaigns = [], isLoading } = useCampaigns();
   const { create: createCampaignMutation, archive: archiveCampaignMutation } = useCampaignMutations();
-
-  const { data: characterCounts = {} } = useQuery({
-    queryKey: ['campaign-character-counts'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('characters').select('campaign_id, character_type');
-      if (error) throw error;
-
-      const counts: Record<string, { pc: number; npc: number }> = {};
-      data.forEach((char) => {
-        if (!counts[char.campaign_id]) {
-          counts[char.campaign_id] = { pc: 0, npc: 0 };
-        }
-        if (char.character_type === 'npc') {
-          counts[char.campaign_id].npc++;
-        } else {
-          counts[char.campaign_id].pc++;
-        }
-      });
-      return counts;
-    },
-  });
-
-  const { data: sessionCounts = {} } = useQuery({
-    queryKey: ['campaign-session-counts'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('sessions').select('campaign_id');
-      if (error) throw error;
-
-      const counts: Record<string, number> = {};
-      data.forEach((session) => {
-        counts[session.campaign_id] = (counts[session.campaign_id] || 0) + 1;
-      });
-      return counts;
-    },
-  });
 
   const resetForm = () => {
     setNewCampaign({ name: '', setting: '', description: '' });
@@ -339,11 +302,8 @@ export default function CampaignList() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCampaigns.map((campaign) => {
-              const charCount = characterCounts[campaign.id] || {
-                pc: 0,
-                npc: 0,
-              };
-              const sessionCount = sessionCounts[campaign.id] || 0;
+              const charCount = { pc: campaign.pcCount, npc: campaign.npcCount };
+              const sessionCount = campaign.sessionCount;
               const isDemo = isDemoCampaign(campaign);
               const isUnlocked = isDemo || isCampaignUnlocked(campaign.id) || isCampaignUnlocked(campaign.slug);
 
@@ -361,17 +321,26 @@ export default function CampaignList() {
                           {campaign.name}
                         </h3>
                         {isDemo ? (
-                          <Badge variant="outline" className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20">
+                          <Badge
+                            variant="outline"
+                            className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                          >
                             <ShieldCheck className="size-3 mr-1" />
                             {t('auth.demoOpen')}
                           </Badge>
                         ) : isUnlocked ? (
-                          <Badge variant="outline" className="text-[11px] font-semibold text-primary bg-primary/10 border-primary/20">
+                          <Badge
+                            variant="outline"
+                            className="text-[11px] font-semibold text-primary bg-primary/10 border-primary/20"
+                          >
                             <Unlock className="size-3 mr-1" />
                             {t('auth.unlockedBadge')}
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-[11px] font-semibold text-amber-500 bg-amber-500/10 border-amber-500/20">
+                          <Badge
+                            variant="outline"
+                            className="text-[11px] font-semibold text-amber-500 bg-amber-500/10 border-amber-500/20"
+                          >
                             <Lock className="size-3 mr-1" />
                             {t('auth.protectedBadge')}
                           </Badge>

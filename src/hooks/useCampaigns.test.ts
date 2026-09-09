@@ -59,18 +59,22 @@ describeListQuery(
 );
 
 describe('useCampaigns ordering', () => {
-  it('orders by the last_activity_at computed field, descending', async () => {
-    // Ordering is done server-side by the PostgREST `last_activity_at` computed
-    // field (most recent session date, falling back to created_at), decoupling list
-    // order from `updated_at` so theme/metadata edits don't reorder campaigns.
-    mockQueryResult.data = [baseCampaign];
+  it('sorts by the last_activity_at computed field, descending, client-side', async () => {
+    // The `last_activity_at` computed field (most recent session date, falling back
+    // to created_at) is fetched and sorted in JS — ordering by it in SQL forces a
+    // correlated per-row subquery in the sort. This decouples list order from
+    // `updated_at` so theme/metadata edits don't reorder campaigns.
+    mockQueryResult.data = [
+      { ...baseCampaign, id: 'old', last_activity_at: '2024-01-01T00:00:00Z' },
+      { ...baseCampaign, id: 'new', last_activity_at: '2024-06-01T00:00:00Z' },
+    ];
 
     const { result } = renderHook(() => useCampaigns(), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(supabase.select).toHaveBeenCalledWith(CAMPAIGN_SUMMARY_COLS);
-    expect(supabase.order).toHaveBeenCalledWith('last_activity_at', { ascending: false });
+    expect(supabase.select).toHaveBeenCalledWith(`${CAMPAIGN_SUMMARY_COLS}, last_activity_at`);
+    expect(result.current.data?.map((c) => c.id)).toEqual(['new', 'old']);
   });
 });
 

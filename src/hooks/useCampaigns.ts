@@ -11,17 +11,19 @@ export function useCampaigns() {
   return useQuery({
     queryKey: ['campaigns'],
     queryFn: async () => {
-      // Order by the `last_activity_at` computed field (most recent session date,
+      // Sort by the `last_activity_at` computed field (most recent session date,
       // falling back to created_at) rather than `updated_at`, so non-activity edits
-      // like theme changes don't reorder the list. The field is a PostgREST computed
-      // column defined in migration 20260607000000; ordering by it needs no select.
+      // like theme changes don't reorder the list. Ordering by the computed field in
+      // SQL forces a correlated per-row subquery in the sort (statement-timeout risk);
+      // the list is small, so fetch the value and sort client-side instead.
       const { data, error } = await supabase
         .from('campaigns')
-        .select(CAMPAIGN_SUMMARY_COLS)
-        .is('archived_at', null)
-        .order('last_activity_at', { ascending: false });
+        .select(`${CAMPAIGN_SUMMARY_COLS}, last_activity_at`)
+        .is('archived_at', null);
       if (error) throw error;
-      return (data || []) as unknown as CampaignSummary[];
+      const rows = (data || []) as unknown as (CampaignSummary & { last_activity_at: string | null })[];
+      rows.sort((a, b) => (b.last_activity_at ?? '').localeCompare(a.last_activity_at ?? ''));
+      return rows as CampaignSummary[];
     },
   });
 }

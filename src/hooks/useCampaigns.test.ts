@@ -87,13 +87,22 @@ describeSingleQuery(
 );
 
 describe('useCampaign slug query pattern', () => {
-  it('queries by slug using .or() with both slug and previous_slugs', async () => {
+  it('looks up by current slug first, as a single-index query', async () => {
     mockQueryResult.data = baseCampaign;
 
     const { result } = renderHook(() => useCampaign('test-slug'), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(supabase.or).toHaveBeenCalledWith('slug.eq.test-slug,previous_slugs.cs.{"test-slug"}');
+    expect(supabase.eq).toHaveBeenCalledWith('slug', 'test-slug');
+    expect(supabase.or).not.toHaveBeenCalled();
+  });
+
+  it('falls back to previous_slugs when the current slug misses', async () => {
+    mockQueryResult.data = null;
+
+    renderHook(() => useCampaign('old-slug'), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(supabase.contains).toHaveBeenCalledWith('previous_slugs', ['old-slug']));
   });
 
   it('throws when slug contains invalid characters', async () => {

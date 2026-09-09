@@ -33,13 +33,22 @@ export function useCampaign(slug: string | undefined) {
     queryKey: ['campaign', slug],
     queryFn: async () => {
       const safe = validateSlug(slug!);
-      const { data, error } = await supabase
+      // Two single-index lookups instead of one `slug = ? OR previous_slugs @> ?`.
+      // The OR forces the planner into a BitmapOr (or a seq scan) across the btree
+      // and GIN indexes, which was hitting the statement timeout under load. The
+      // current slug is the common case; previous_slugs is only checked on a miss
+      // (i.e. an old URL after a rename).
+      const current = await supabase.from('campaigns').select(CAMPAIGN_DETAIL_COLS).eq('slug', safe).maybeSingle();
+      if (current.error) throw current.error;
+      if (current.data) return current.data as unknown as Campaign;
+
+      const renamed = await supabase
         .from('campaigns')
         .select(CAMPAIGN_DETAIL_COLS)
-        .or(`slug.eq.${safe},previous_slugs.cs.{"${safe}"}`)
+        .contains('previous_slugs', [safe])
         .single();
-      if (error) throw error;
-      return data as unknown as Campaign;
+      if (renamed.error) throw renamed.error;
+      return renamed.data as unknown as Campaign;
     },
     enabled: !!slug,
   });

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npx supabase start && npx supabase gen types typescript --local > src/types/supabase.ts && vite",
     "stop": "npx supabase stop --yes",
+    "predev": "npx supabase gen types typescript --project-id aekpodxyvkjcsjgzwlca > src/types/supabase.ts.new 2>/dev/null && mv src/types/supabase.ts.new src/types/supabase.ts && echo '✓ supabase types refreshed from remote' || { rm -f src/types/supabase.ts.new; echo '⚠ supabase unreachable — using committed src/types/supabase.ts'; }",
     "dev": "vite",
     "tunnel": "cloudflared tunnel --url http://localhost:5173",
     "typecheck": "tsc -b --noEmit",

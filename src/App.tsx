@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { Layout } from '@/components/Layout';
+import { PWAUpdatePrompt } from '@/components/PWAUpdatePrompt';
 import CampaignList from '@/pages/CampaignList';
 import CampaignDashboard from '@/pages/CampaignDashboard';
 import CharacterList from '@/pages/CharacterList';
@@ -42,6 +43,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster position="bottom-center" />
+      <PWAUpdatePrompt />
     </>
   );
 }

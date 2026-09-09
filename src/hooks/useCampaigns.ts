@@ -11,19 +11,22 @@ export function useCampaigns() {
   return useQuery({
     queryKey: ['campaigns'],
     queryFn: async () => {
-      // Sort by the `last_activity_at` computed field (most recent session date,
-      // falling back to created_at) rather than `updated_at`, so non-activity edits
-      // like theme changes don't reorder the list. Ordering by the computed field in
-      // SQL forces a correlated per-row subquery in the sort (statement-timeout risk);
-      // the list is small, so fetch the value and sort client-side instead.
+      // Sort by most-recent session date, falling back to created_at, so non-activity
+      // edits like theme changes don't reorder the list. The old `last_activity_at`
+      // PostgREST computed field ran `max(sessions.date)` as a per-row subquery — in
+      // both ORDER BY *and* the select list — and was hitting the statement timeout
+      // (57014) under load. Embed the session dates instead (one indexed join) and
+      // reduce to a max client-side; the list is small.
       const { data, error } = await supabase
         .from('campaigns')
-        .select(`${CAMPAIGN_SUMMARY_COLS}, last_activity_at`)
+        .select(`${CAMPAIGN_SUMMARY_COLS}, sessions(date)`)
         .is('archived_at', null);
       if (error) throw error;
-      const rows = (data || []) as unknown as (CampaignSummary & { last_activity_at: string | null })[];
-      rows.sort((a, b) => (b.last_activity_at ?? '').localeCompare(a.last_activity_at ?? ''));
-      return rows as CampaignSummary[];
+      const rows = (data || []) as unknown as (CampaignSummary & { sessions?: { date: string | null }[] })[];
+      const activity = (c: (typeof rows)[number]) =>
+        (c.sessions ?? []).reduce((max, s) => (s.date && s.date > max ? s.date : max), c.created_at ?? '');
+      rows.sort((a, b) => (activity(a) < activity(b) ? 1 : -1));
+      return rows.map(({ sessions: _sessions, ...c }) => c) as CampaignSummary[];
     },
   });
 }

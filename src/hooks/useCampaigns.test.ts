@@ -59,22 +59,23 @@ describeListQuery(
 );
 
 describe('useCampaigns ordering', () => {
-  it('sorts by the last_activity_at computed field, descending, client-side', async () => {
-    // The `last_activity_at` computed field (most recent session date, falling back
-    // to created_at) is fetched and sorted in JS — ordering by it in SQL forces a
-    // correlated per-row subquery in the sort. This decouples list order from
-    // `updated_at` so theme/metadata edits don't reorder campaigns.
+  it('sorts by most-recent embedded session date, descending, client-side', async () => {
+    // Session dates are embedded (one indexed join) and reduced to a max in JS,
+    // replacing the `last_activity_at` computed field that hit the statement timeout.
+    // Order stays decoupled from `updated_at` so theme/metadata edits don't reorder.
     mockQueryResult.data = [
-      { ...baseCampaign, id: 'old', last_activity_at: '2024-01-01T00:00:00Z' },
-      { ...baseCampaign, id: 'new', last_activity_at: '2024-06-01T00:00:00Z' },
+      { ...baseCampaign, id: 'old', created_at: '2024-01-01T00:00:00Z', sessions: [{ date: '2024-02-01' }] },
+      { ...baseCampaign, id: 'new', created_at: '2024-01-01T00:00:00Z', sessions: [{ date: '2024-06-01' }] },
+      { ...baseCampaign, id: 'none', created_at: '2023-01-01T00:00:00Z', sessions: [] },
     ];
 
     const { result } = renderHook(() => useCampaigns(), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(supabase.select).toHaveBeenCalledWith(`${CAMPAIGN_SUMMARY_COLS}, last_activity_at`);
-    expect(result.current.data?.map((c) => c.id)).toEqual(['new', 'old']);
+    expect(supabase.select).toHaveBeenCalledWith(`${CAMPAIGN_SUMMARY_COLS}, sessions(date)`);
+    expect(result.current.data?.map((c) => c.id)).toEqual(['new', 'old', 'none']);
+    expect(result.current.data?.[0]).not.toHaveProperty('sessions');
   });
 });
 

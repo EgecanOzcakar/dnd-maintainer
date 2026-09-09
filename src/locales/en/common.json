@@ -1128,5 +1128,9 @@
     "itemNameRequired": "Item name is required",
     "passphraseRequired": "Passphrase is required",
     "passphraseMismatch": "Passphrases do not match"
+  },
+  "pwa": {
+    "updateAvailable": "A new version is available.",
+    "reload": "Reload"
   }
 }

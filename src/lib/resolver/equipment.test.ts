@@ -386,7 +386,7 @@ describe('resolveEquipment via useDBInventory', () => {
   it('skips unknown persisted items gracefully (no throw) and logs a warning', async () => {
     const { resolveCharacter } = await import('@/lib/resolver');
     const resolverLogger = getLogger('resolver');
-    const warnSpy = vi.spyOn(resolverLogger, 'warn').mockImplementation(() => { });
+    const warnSpy = vi.spyOn(resolverLogger, 'warn').mockImplementation(() => {});
     const input = {
       baseAbilities: { str: 15, dex: 13, con: 14, int: 8, wis: 10, cha: 12 },
       level: 0,
@@ -506,9 +506,14 @@ describe('resolveAttacks', () => {
 
   it('Dueling style: +2 damage for one-handed melee with no other weapon equipped', () => {
     const abilities = makeAbilities({ str: 16, dex: 10, con: 10, int: 10, wis: 10, cha: 10 });
-    const attacks = resolveAttacks([makeEquippedWeapon('longsword')], abilities, 2, PROFICIENT_SIMPLE_MARTIAL, [
-      'dueling',
-    ], 0);
+    const attacks = resolveAttacks(
+      [makeEquippedWeapon('longsword')],
+      abilities,
+      2,
+      PROFICIENT_SIMPLE_MARTIAL,
+      ['dueling'],
+      0
+    );
     expect(attacks).toHaveLength(1);
     expect(attacks[0].damageBonus).toBe(5); // STR +3 + dueling +2
     expect(attacks[0].damageBreakdown).toContainEqual({ type: 'fighting-style', value: 2, label: 'dueling' });
@@ -521,8 +526,9 @@ describe('resolveAttacks', () => {
       abilities,
       2,
       PROFICIENT_SIMPLE_MARTIAL,
-      ['dueling']
-      , 0);
+      ['dueling'],
+      0
+    );
     expect(attacks).toHaveLength(2);
     for (const attack of attacks) {
       expect(attack.damageBreakdown.some((c) => c.label === 'dueling')).toBe(false);
@@ -531,9 +537,14 @@ describe('resolveAttacks', () => {
 
   it('Dueling style: no +2 damage for two-handed melee weapon (greatsword)', () => {
     const abilities = makeAbilities({ str: 16, dex: 10, con: 10, int: 10, wis: 10, cha: 10 });
-    const attacks = resolveAttacks([makeEquippedWeapon('greatsword')], abilities, 2, PROFICIENT_SIMPLE_MARTIAL, [
-      'dueling',
-    ], 0);
+    const attacks = resolveAttacks(
+      [makeEquippedWeapon('greatsword')],
+      abilities,
+      2,
+      PROFICIENT_SIMPLE_MARTIAL,
+      ['dueling'],
+      0
+    );
     expect(attacks).toHaveLength(1);
     expect(attacks[0].damageBreakdown.some((c) => c.label === 'dueling')).toBe(false);
   });
@@ -545,8 +556,9 @@ describe('resolveAttacks', () => {
       abilities,
       2,
       PROFICIENT_SIMPLE_MARTIAL,
-      ['dueling']
-      , 0);
+      ['dueling'],
+      0
+    );
     expect(attacks).toHaveLength(2);
     const longswordAttack = attacks.find((a) => a.weaponId === 'longsword')!;
     expect(longswordAttack.damageBreakdown.some((c) => c.label === 'dueling')).toBe(false);
@@ -554,9 +566,14 @@ describe('resolveAttacks', () => {
 
   it('Archery does not apply to melee weapons', () => {
     const abilities = makeAbilities({ str: 16, dex: 10, con: 10, int: 10, wis: 10, cha: 10 });
-    const attacks = resolveAttacks([makeEquippedWeapon('longsword')], abilities, 2, PROFICIENT_SIMPLE_MARTIAL, [
-      'archery',
-    ], 0);
+    const attacks = resolveAttacks(
+      [makeEquippedWeapon('longsword')],
+      abilities,
+      2,
+      PROFICIENT_SIMPLE_MARTIAL,
+      ['archery'],
+      0
+    );
     expect(attacks[0].attackBreakdown.some((c) => c.label === 'archery')).toBe(false);
   });
 });
@@ -646,11 +663,10 @@ describe('resolveEquippedArmorAc', () => {
 
   it('handles mixed proficiencies (proficient in shield, not heavy armor)', () => {
     // Druid (medium-nonmetal, shields-nonmetal) equipped with heavy armor and shield
-    const result = resolveEquippedArmorAc(
-      [makeEquippedArmor('chain-mail'), makeEquippedArmor('shield')],
-      2,
-      ['medium-nonmetal', 'shields-nonmetal']
-    );
+    const result = resolveEquippedArmorAc([makeEquippedArmor('chain-mail'), makeEquippedArmor('shield')], 2, [
+      'medium-nonmetal',
+      'shields-nonmetal',
+    ]);
     expect(result).not.toBeNull();
     expect(result!.totalBase).toBe(16); // Heavy armor base AC granted per 2024 rules
     expect(result!.shieldBonus).toBe(2); // Shield applied

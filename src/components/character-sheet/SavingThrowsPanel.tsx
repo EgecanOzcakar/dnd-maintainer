@@ -52,7 +52,10 @@ export function SavingThrowsPanel({
           const abilityName = t(`abilities.${ability}`);
 
           return (
-            <div key={ability} className="flex justify-between items-center text-foreground hover:bg-muted/40 p-1 rounded transition-colors group">
+            <div
+              key={ability}
+              className="flex justify-between items-center text-foreground hover:bg-muted/40 p-1 rounded transition-colors group"
+            >
               <button
                 type="button"
                 onClick={() => handleSelectSave(ability, save.bonus)}

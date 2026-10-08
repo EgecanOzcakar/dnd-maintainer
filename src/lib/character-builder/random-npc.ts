@@ -288,7 +288,11 @@ function findGrantRowIndex(
   return { ok: true, index: idx };
 }
 
-export function applyDecisionToRows(rows: BuildLevelRow[], choiceKey: ChoiceKey, decision: ChoiceDecision): string | null {
+export function applyDecisionToRows(
+  rows: BuildLevelRow[],
+  choiceKey: ChoiceKey,
+  decision: ChoiceDecision
+): string | null {
   if (decision.type === 'subclass' || decision.type === 'asi') {
     const { origin, id: classId, index: grantIndex } = parseChoiceKey(choiceKey);
     if (decision.type === 'asi' && (origin === 'background' || origin === 'species')) {
@@ -595,9 +599,7 @@ export function ensureNpcReadyToCreate(
   } else if (levelRows[0].class_id !== classId) {
     const targetSeq = levelRows[0].sequence;
     updatedRows = updatedRows.map((r) =>
-      r.sequence === targetSeq
-        ? { ...r, class_id: classId, subclass_id: null, asi_allocation: null, choices: {} }
-        : r
+      r.sequence === targetSeq ? { ...r, class_id: classId, subclass_id: null, asi_allocation: null, choices: {} } : r
     );
   }
 
@@ -630,7 +632,7 @@ export function ensureNpcReadyToCreate(
 
   const classSource = CLASS_SOURCES.find((c) => c.id === classId);
   const qb = classSource?.quickBuild;
-  const highest = qb ? pick(qb.highestAbility, rng) ?? 'str' : (classSource?.primaryAbility as AbilityKey) ?? 'str';
+  const highest = qb ? (pick(qb.highestAbility, rng) ?? 'str') : ((classSource?.primaryAbility as AbilityKey) ?? 'str');
   const secondary = qb ? qb.secondaryAbility : highest === 'con' ? 'str' : 'con';
   const baseAbilities = hasBaseAbilities ? creationRow.base_abilities! : assignStandardArray(highest, secondary, rng);
 
@@ -679,4 +681,3 @@ export function ensureNpcReadyToCreate(
 
   return { character: updatedChar, rows: updatedRows };
 }
-

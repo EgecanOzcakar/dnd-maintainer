@@ -8,12 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ValidationError } from '@/components/ui/validation-error';
-import {
-  isCampaignUnlocked,
-  isDemoCampaign,
-  setCampaignUnlocked,
-  verifyCampaignPassphrase,
-} from '@/lib/campaign-auth';
+import { isCampaignUnlocked, isDemoCampaign, setCampaignUnlocked, verifyCampaignPassphrase } from '@/lib/campaign-auth';
 import type { Campaign, CampaignSummary } from '@/types/database';
 
 interface CampaignAuthGateProps {
@@ -31,9 +26,7 @@ export function CampaignAuthGate({ campaign, campaignSlug, children }: CampaignA
 
   const isDemo = isDemoCampaign(campaign);
   const isStorageUnlocked =
-    isDemo ||
-    (Boolean(campaignId) && isCampaignUnlocked(campaignId)) ||
-    (Boolean(slug) && isCampaignUnlocked(slug));
+    isDemo || (Boolean(campaignId) && isCampaignUnlocked(campaignId)) || (Boolean(slug) && isCampaignUnlocked(slug));
 
   const [sessionUnlocked, setSessionUnlocked] = useState(false);
   const [passphrase, setPassphrase] = useState('');
@@ -93,7 +86,10 @@ export function CampaignAuthGate({ campaign, campaignSlug, children }: CampaignA
               </CardTitle>
             </div>
             <div className="flex justify-center pt-1">
-              <Badge variant="outline" className="gap-1.5 py-0.5 text-xs font-semibold text-amber-500 border-amber-500/30 bg-amber-500/10">
+              <Badge
+                variant="outline"
+                className="gap-1.5 py-0.5 text-xs font-semibold text-amber-500 border-amber-500/30 bg-amber-500/10"
+              >
                 <ShieldAlert className="size-3.5" />
                 {t('auth.protectedBadge')}
               </Badge>

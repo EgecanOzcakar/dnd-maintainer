@@ -314,8 +314,30 @@ describe('ensureNpcReadyToCreate', () => {
     };
 
     const seedRows = [
-      { sequence: 0 as const, base_abilities: null, ability_method: null, class_id: null, class_level: null, hp_roll: null, subclass_id: null, asi_allocation: null, feat_id: null, deleted_at: null, choices: {} },
-      { sequence: 1, class_id: 'fighter' as const, class_level: 1, hp_roll: null, subclass_id: null, asi_allocation: null, feat_id: null, deleted_at: null, choices: {} },
+      {
+        sequence: 0 as const,
+        base_abilities: null,
+        ability_method: null,
+        class_id: null,
+        class_level: null,
+        hp_roll: null,
+        subclass_id: null,
+        asi_allocation: null,
+        feat_id: null,
+        deleted_at: null,
+        choices: {},
+      },
+      {
+        sequence: 1,
+        class_id: 'fighter' as const,
+        class_level: 1,
+        hp_roll: null,
+        subclass_id: null,
+        asi_allocation: null,
+        feat_id: null,
+        deleted_at: null,
+        choices: {},
+      },
     ];
 
     const { character, rows } = ensureNpcReadyToCreate(seedChar, seedRows, () => 0.1);
@@ -388,8 +410,30 @@ describe('ensureNpcReadyToCreate', () => {
     };
 
     const rows = [
-      { sequence: 0 as const, base_abilities: null, ability_method: null, class_id: null, class_level: null, hp_roll: null, subclass_id: null, asi_allocation: null, feat_id: null, deleted_at: null, choices: {} },
-      { sequence: 1, class_id: 'wizard' as const, class_level: 1, hp_roll: null, subclass_id: null, asi_allocation: null, feat_id: null, deleted_at: null, choices: {} },
+      {
+        sequence: 0 as const,
+        base_abilities: null,
+        ability_method: null,
+        class_id: null,
+        class_level: null,
+        hp_roll: null,
+        subclass_id: null,
+        asi_allocation: null,
+        feat_id: null,
+        deleted_at: null,
+        choices: {},
+      },
+      {
+        sequence: 1,
+        class_id: 'wizard' as const,
+        class_level: 1,
+        hp_roll: null,
+        subclass_id: null,
+        asi_allocation: null,
+        feat_id: null,
+        deleted_at: null,
+        choices: {},
+      },
     ];
 
     const { character: readyChar, rows: readyRows } = ensureNpcReadyToCreate(wizardChar, rows, () => 0.5);
@@ -406,4 +450,3 @@ describe('ensureNpcReadyToCreate', () => {
     expect(resolved.pendingChoices.length).toBe(0);
   });
 });
-

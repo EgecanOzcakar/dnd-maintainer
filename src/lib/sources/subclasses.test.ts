@@ -1306,9 +1306,7 @@ describe('getSubclassSource — Warrior of Shadow', () => {
     expect(level3?.grants).toContainEqual(
       expect.objectContaining({ type: 'spellcasting', ability: 'wis', source: 'class' })
     );
-    expect(level3?.grants).toContainEqual(
-      expect.objectContaining({ type: 'spell', spellId: 'minor-illusion' })
-    );
+    expect(level3?.grants).toContainEqual(expect.objectContaining({ type: 'spell', spellId: 'minor-illusion' }));
   });
 
   it('warriorofshadow level 6 grants shadow-step feature', () => {

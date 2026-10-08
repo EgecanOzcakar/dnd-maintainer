@@ -96,7 +96,9 @@ function isChoiceSatisfied(choice: PendingChoice, decisions: ReadonlyMap<ChoiceK
  * Given the local decisions map, collect all chosen feat IDs from feat-choice decisions.
  * Returns an array of { featId, featChoiceKey } pairs.
  */
-function getChosenFeats(decisions: ReadonlyMap<ChoiceKey, ChoiceDecision>): Array<{ featId: FeatId; featChoiceKey: ChoiceKey }> {
+function getChosenFeats(
+  decisions: ReadonlyMap<ChoiceKey, ChoiceDecision>
+): Array<{ featId: FeatId; featChoiceKey: ChoiceKey }> {
   const result: Array<{ featId: FeatId; featChoiceKey: ChoiceKey }> = [];
   for (const [key, decision] of decisions) {
     if (decision.type === 'feat-choice' && decision.featId.length > 0) {
@@ -296,8 +298,7 @@ export function LevelUpDialog({
       if (featSatisfied) {
         const pairSubChoices = featSubChoices.filter(
           (sc) =>
-            (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey ===
-            featChoice.choiceKey
+            (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey === featChoice.choiceKey
         );
         for (const subChoice of pairSubChoices) {
           if (!isChoiceSatisfied(subChoice, decisions)) return false;
@@ -310,9 +311,7 @@ export function LevelUpDialog({
       // If this is a standalone feat-choice that has been satisfied, check its sub-choices too
       if (choice.type === 'feat-choice') {
         const pairSubChoices = featSubChoices.filter(
-          (sc) =>
-            (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey ===
-            choice.choiceKey
+          (sc) => (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey === choice.choiceKey
         );
         for (const subChoice of pairSubChoices) {
           if (!isChoiceSatisfied(subChoice, decisions)) return false;
@@ -377,9 +376,7 @@ export function LevelUpDialog({
   // All expertise choice keys (level-level + feat sub-choices)
   const expertiseKeys = useMemo(
     () =>
-      [...standaloneChoices, ...featSubChoices]
-        .filter((c) => c.type === 'expertise-choice')
-        .map((c) => c.choiceKey),
+      [...standaloneChoices, ...featSubChoices].filter((c) => c.type === 'expertise-choice').map((c) => c.choiceKey),
     [standaloneChoices, featSubChoices]
   );
 
@@ -566,9 +563,7 @@ export function LevelUpDialog({
                   onClear={handleClear}
                 />
               ) : (
-                <p className="text-sm text-destructive">
-                  {t('characterSheet.levelUp.abilitiesUnavailable')}
-                </p>
+                <p className="text-sm text-destructive">{t('characterSheet.levelUp.abilitiesUnavailable')}</p>
               )}
               {/* Render sub-choices from the chosen feat */}
               {pairSubChoices.map((subChoice) => renderChoice(subChoice))}
@@ -586,8 +581,7 @@ export function LevelUpDialog({
           const standaloneSubChoices = standaloneFeatIsChosen
             ? featSubChoices.filter(
                 (sc) =>
-                  (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey ===
-                  choice.choiceKey
+                  (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey === choice.choiceKey
               )
             : [];
           return (

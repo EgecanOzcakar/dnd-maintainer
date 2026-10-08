@@ -475,9 +475,7 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
       ) as typeof skills)
     : skills;
 
-  const finalAttacks = hasArmorPenalty
-    ? attacks.map((atk) => ({ ...atk, disadvantageFromArmor: true }))
-    : attacks;
+  const finalAttacks = hasArmorPenalty ? attacks.map((atk) => ({ ...atk, disadvantageFromArmor: true })) : attacks;
 
   return {
     abilities,

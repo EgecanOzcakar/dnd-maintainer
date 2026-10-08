@@ -123,13 +123,7 @@ export function useInventoryMutations() {
   });
 
   const transferItem = useMutation({
-    mutationFn: async ({
-      sourceCharacterId,
-      targetCharacterId,
-      itemId,
-      quantity,
-      sourceRowId,
-    }: TransferItemParams) => {
+    mutationFn: async ({ sourceCharacterId, targetCharacterId, itemId, quantity, sourceRowId }: TransferItemParams) => {
       // 1. Decrement or delete from source character
       let rowToModify = sourceRowId;
       if (!rowToModify) {

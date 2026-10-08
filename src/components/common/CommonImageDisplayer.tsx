@@ -140,7 +140,10 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
         </div>
         <div className="flex items-center gap-2">
           {activeImage && (
-            <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/30 flex items-center gap-1">
+            <Badge
+              variant="outline"
+              className="text-xs bg-primary/10 text-primary border-primary/30 flex items-center gap-1"
+            >
               <Eye className="size-3" /> Live Display
             </Badge>
           )}
@@ -169,7 +172,11 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
                   onClick={() => handleApplyImage({ url: preset.url, title: preset.name, caption: preset.category })}
                   className="group relative rounded-md overflow-hidden border bg-black/60 text-left aspect-video hover:ring-2 hover:ring-primary transition-all focus:outline-none"
                 >
-                  <img src={preset.url} alt={preset.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-100" />
+                  <img
+                    src={preset.url}
+                    alt={preset.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-100"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent p-1.5 flex flex-col justify-end">
                     <span className="font-bold text-white text-[11px] leading-tight truncate">{preset.name}</span>
                     <span className="text-[9px] text-white/70">{preset.category}</span>
@@ -250,7 +257,9 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
             {activeImage.title && (
               <div className="w-full bg-muted/80 backdrop-blur-xs border-t px-3 py-1.5 text-center text-xs font-semibold text-foreground truncate">
                 {activeImage.title}
-                {activeImage.caption && <span className="text-muted-foreground ml-2 text-[11px] font-normal">({activeImage.caption})</span>}
+                {activeImage.caption && (
+                  <span className="text-muted-foreground ml-2 text-[11px] font-normal">({activeImage.caption})</span>
+                )}
               </div>
             )}
           </div>

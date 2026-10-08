@@ -141,10 +141,7 @@ export function extractSkillUnlocksFromGrants(
   return unlocks;
 }
 
-export function getClassProgression(
-  classSource: ClassSource,
-  subclassSource?: SubclassSource
-): LevelProgression[] {
+export function getClassProgression(classSource: ClassSource, subclassSource?: SubclassSource): LevelProgression[] {
   const progression: LevelProgression[] = [];
 
   // Check if class has spellcasting grant
@@ -343,7 +340,8 @@ export function getSkillMatrix(classes: readonly ClassSource[]): SkillMatrixEntr
             levelUpUnlocks.push({ classId: cls.id, level, type: 'grant' });
           } else if (
             (grant.type === 'skill-expertise' && grant.skill === skill.id) ||
-            (grant.type === 'expertise-choice' && (!grant.from || (grant.from as readonly SkillId[]).includes(skill.id)))
+            (grant.type === 'expertise-choice' &&
+              (!grant.from || (grant.from as readonly SkillId[]).includes(skill.id)))
           ) {
             levelUpUnlocks.push({ classId: cls.id, level, type: 'expertise' });
           }

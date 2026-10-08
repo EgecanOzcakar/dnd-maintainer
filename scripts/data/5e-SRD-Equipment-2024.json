@@ -2151,10 +2151,10 @@
     "name": "Entertainer's Pack",
     "equipment_categories": [
       {
-      "index": "adventuring-gear",
-      "name": "Adventuring Gear",
-      "url": "/api/2024/equipment-categories/adventuring-gear"
-    }
+        "index": "adventuring-gear",
+        "name": "Adventuring Gear",
+        "url": "/api/2024/equipment-categories/adventuring-gear"
+      }
     ],
     "cost": {
       "quantity": 40,
@@ -3567,9 +3567,7 @@
         "url": "/api/2024/damage-types/piercing"
       }
     },
-    "notes": [
-      "Two-handed unless mounted"
-    ],
+    "notes": ["Two-handed unless mounted"],
     "range": {
       "normal": 5
     },
@@ -6506,10 +6504,10 @@
     "name": "Spellbook",
     "equipment_categories": [
       {
-      "index": "adventuring-gear",
-      "name": "Adventuring Gear",
-      "url": "/api/2024/equipment-categories/adventuring-gear"
-    }
+        "index": "adventuring-gear",
+        "name": "Adventuring Gear",
+        "url": "/api/2024/equipment-categories/adventuring-gear"
+      }
     ],
     "cost": {
       "quantity": 50,

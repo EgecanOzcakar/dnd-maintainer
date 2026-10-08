@@ -19,12 +19,7 @@ import { useGameData } from '@/hooks/useGameData';
 import { CLASS_ICONS } from '@/lib/class-icons';
 import type { ClassId } from '@/lib/dnd-helpers';
 import { SUBCLASS_IDS_BY_CLASS, type SubclassId } from '@/lib/sources/subclasses';
-import {
-  getClassProgression,
-  getClassWikiSummary,
-  getSkillMatrix,
-  type LevelProgression,
-} from '@/lib/wiki-helpers';
+import { getClassProgression, getClassWikiSummary, getSkillMatrix, type LevelProgression } from '@/lib/wiki-helpers';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -168,9 +163,7 @@ export default function WikiPage() {
                   }
                 `}
               >
-                <div
-                  className={`p-2 rounded-md ${isSelected ? 'bg-primary-foreground/10' : 'bg-muted text-primary'}`}
-                >
+                <div className={`p-2 rounded-md ${isSelected ? 'bg-primary-foreground/10' : 'bg-muted text-primary'}`}>
                   <Icon className="size-5 shrink-0" />
                 </div>
                 <div className="min-w-0">
@@ -347,8 +340,7 @@ export default function WikiPage() {
                 </div>
               ) : (
                 filteredProgression.map((levelData) => {
-                  const hasFeatures =
-                    levelData.classFeatures.length > 0 || levelData.subclassFeatures.length > 0;
+                  const hasFeatures = levelData.classFeatures.length > 0 || levelData.subclassFeatures.length > 0;
                   const hasSkillUnlocks = levelData.skillUnlocks.length > 0;
 
                   return (
@@ -372,19 +364,28 @@ export default function WikiPage() {
 
                         <div className="flex flex-wrap gap-1.5 items-center">
                           {levelData.unlocksSubclass && (
-                            <Badge variant="secondary" className="bg-purple-500/20 text-purple-600 dark:text-purple-300 border-purple-500/30">
+                            <Badge
+                              variant="secondary"
+                              className="bg-purple-500/20 text-purple-600 dark:text-purple-300 border-purple-500/30"
+                            >
                               <Sparkles className="size-3 mr-1" />
                               {tc('wiki.labels.subclassSelection')}
                             </Badge>
                           )}
                           {levelData.isAsiLevel && (
-                            <Badge variant="secondary" className="bg-blue-500/20 text-blue-600 dark:text-blue-300 border-blue-500/30">
+                            <Badge
+                              variant="secondary"
+                              className="bg-blue-500/20 text-blue-600 dark:text-blue-300 border-blue-500/30"
+                            >
                               <Sword className="size-3 mr-1" />
                               {tc('wiki.labels.asiFeat')}
                             </Badge>
                           )}
                           {hasSkillUnlocks && (
-                            <Badge variant="secondary" className="bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30 font-semibold">
+                            <Badge
+                              variant="secondary"
+                              className="bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30 font-semibold"
+                            >
                               <Zap className="size-3 mr-1" />
                               {tc('wiki.labels.skillUnlocks')}
                             </Badge>
@@ -426,7 +427,9 @@ export default function WikiPage() {
                                       </span>
                                     )}
                                     {unlock.type === 'direct' && unlock.skill && (
-                                      <span>{tc('wiki.labels.directSkill', { skill: t(`skills.${unlock.skill}`) })}</span>
+                                      <span>
+                                        {tc('wiki.labels.directSkill', { skill: t(`skills.${unlock.skill}`) })}
+                                      </span>
                                     )}
                                     {unlock.type === 'expertise' && (
                                       <span>
@@ -469,7 +472,10 @@ export default function WikiPage() {
                             ))}
 
                             {levelData.subclassFeatures.map((feat) => (
-                              <div key={feat.id} className="p-3 rounded-lg border border-purple-500/30 bg-purple-500/5 space-y-1">
+                              <div
+                                key={feat.id}
+                                className="p-3 rounded-lg border border-purple-500/30 bg-purple-500/5 space-y-1"
+                              >
                                 <div className="font-semibold text-sm text-purple-600 dark:text-purple-300 flex items-center justify-between">
                                   <span>{t(`features.${feat.id}.name`, { defaultValue: feat.name ?? feat.id })}</span>
                                   <Badge variant="secondary" className="text-[10px] bg-purple-500/20">
@@ -516,11 +522,12 @@ export default function WikiPage() {
                                   {tc('wiki.labels.cantrips')}: {levelData.spellcasting.cantripsKnown}
                                 </Badge>
                               )}
-                              {levelData.spellcasting.preparedCount !== undefined && levelData.spellcasting.preparedCount > 0 && (
-                                <Badge variant="secondary">
-                                  {tc('wiki.labels.preparedApprox', { count: levelData.spellcasting.preparedCount })}
-                                </Badge>
-                              )}
+                              {levelData.spellcasting.preparedCount !== undefined &&
+                                levelData.spellcasting.preparedCount > 0 && (
+                                  <Badge variant="secondary">
+                                    {tc('wiki.labels.preparedApprox', { count: levelData.spellcasting.preparedCount })}
+                                  </Badge>
+                                )}
                               {levelData.spellcasting.pactMagic && (
                                 <Badge variant="secondary" className="bg-purple-500/20">
                                   {tc('wiki.labels.pactMagicSlots', {
@@ -587,7 +594,11 @@ export default function WikiPage() {
                           <div className="flex flex-wrap gap-1">
                             {item.levelUpUnlocks.length > 0 ? (
                               item.levelUpUnlocks.map((u, i) => (
-                                <Badge key={i} variant="outline" className="bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30">
+                                <Badge
+                                  key={i}
+                                  variant="outline"
+                                  className="bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30"
+                                >
                                   {tc('wiki.labels.classLevelBadge', {
                                     className: t(`classes.${u.classId}`),
                                     level: u.level,
@@ -624,14 +635,10 @@ export default function WikiPage() {
                           <span>{t(`subclasses.${subId}.name`, { defaultValue: subId })}</span>
                           <Badge variant="outline">{t(`classes.${selectedClassId}`)}</Badge>
                         </CardTitle>
-                        <CardDescription>
-                          {t(`subclasses.${subId}.description`, { defaultValue: '' })}
-                        </CardDescription>
+                        <CardDescription>{t(`subclasses.${subId}.description`, { defaultValue: '' })}</CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-3 text-xs">
-                        <span className="font-semibold text-foreground block">
-                          {tc('wiki.labels.featuresRoadmap')}
-                        </span>
+                        <span className="font-semibold text-foreground block">{tc('wiki.labels.featuresRoadmap')}</span>
                         {subSource ? (
                           <div className="space-y-2">
                             {subSource.features.map((featGroup, idx) => (
@@ -653,11 +660,7 @@ export default function WikiPage() {
                                       );
                                     }
                                     if (g.type === 'spell') {
-                                      return (
-                                        <li key={gi}>
-                                          {tc('wiki.labels.spellGrantItem', { spell: g.spellId })}
-                                        </li>
-                                      );
+                                      return <li key={gi}>{tc('wiki.labels.spellGrantItem', { spell: g.spellId })}</li>;
                                     }
                                     return null;
                                   })}

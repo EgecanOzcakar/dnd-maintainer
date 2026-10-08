@@ -237,7 +237,6 @@ export function collectBundles(build: CharacterBuild): CollectBundlesResult {
     }
   }
 
-
   // Damage-type choices — expand chosen damage type into a feature grant whose id
   // is `${featureIdPrefix}-${chosenDamageType}` (e.g. zealot-divine-fury-radiant).
   const allDamageChoiceGrants: { grant: DamageTypeChoiceGrant; source: SourceTag }[] = [];

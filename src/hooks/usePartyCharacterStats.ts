@@ -22,7 +22,10 @@ export interface CharacterChecksStats {
 }
 
 export function usePartyCharacterStats(campaignId: string | undefined, pcs: CharacterSummary[]) {
-  const pcIds = pcs.map((c) => c.id).sort().join(',');
+  const pcIds = pcs
+    .map((c) => c.id)
+    .sort()
+    .join(',');
 
   return useQuery({
     queryKey: ['party-character-stats', campaignId, pcIds],
@@ -100,11 +103,7 @@ export function usePartyCharacterStats(campaignId: string | undefined, pcs: Char
         let perceptionExpertise = false;
 
         try {
-          const build = reconstructBuild(
-            { species, background },
-            rows,
-            equippedItems
-          );
+          const build = reconstructBuild({ species, background }, rows, equippedItems);
           const { bundles, expandedFeats } = collectBundles(build);
           const levelRows = rows.filter((r) => r.sequence !== 0);
           const resolved = resolveCharacter({

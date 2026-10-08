@@ -1,14 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Package,
-  Plus,
-  ArrowRightLeft,
-  Trash2,
-  CheckCircle2,
-  Circle,
-  Search,
-} from 'lucide-react';
+import { Package, Plus, ArrowRightLeft, Trash2, CheckCircle2, Circle, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -96,8 +88,8 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
       const itemIdStr = String(row.item_id);
       const itemName = def
         ? t(getItemNameKey(def.type, def.id), {
-          defaultValue: def.id.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-        })
+            defaultValue: def.id.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+          })
         : itemIdStr.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
       return {
@@ -205,9 +197,14 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
           <div>
             <h2 className="text-lg font-bold text-foreground">{tc('characterSheet.sections.equipment')} & Inventory</h2>
             <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-              <span>Total Items: <strong className="text-foreground">{itemsData.reduce((acc, i) => acc + i.quantity, 0)}</strong></span>
+              <span>
+                Total Items:{' '}
+                <strong className="text-foreground">{itemsData.reduce((acc, i) => acc + i.quantity, 0)}</strong>
+              </span>
               <span>•</span>
-              <span>Carried Weight: <strong className="text-foreground">{totalWeight.toFixed(1)} lbs</strong></span>
+              <span>
+                Carried Weight: <strong className="text-foreground">{totalWeight.toFixed(1)} lbs</strong>
+              </span>
             </div>
           </div>
         </div>
@@ -235,8 +232,11 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
               key={type}
               type="button"
               onClick={() => setFilterType(type)}
-              className={`px-3 py-1 text-xs font-semibold rounded-md capitalize transition-colors ${filterType === type ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
-                }`}
+              className={`px-3 py-1 text-xs font-semibold rounded-md capitalize transition-colors ${
+                filterType === type
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
             >
               {type}
             </button>
@@ -255,10 +255,11 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className={`flex items-center justify-between p-3 rounded-lg border transition-shadow ${item.equipped
-                ? 'bg-green-50/50 border-green-200 dark:bg-green-950/20 dark:border-green-900/50'
-                : 'bg-card border-border hover:border-primary/40'
-                }`}
+              className={`flex items-center justify-between p-3 rounded-lg border transition-shadow ${
+                item.equipped
+                  ? 'bg-green-50/50 border-green-200 dark:bg-green-950/20 dark:border-green-900/50'
+                  : 'bg-card border-border hover:border-primary/40'
+              }`}
             >
               <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
                 <button
@@ -284,7 +285,10 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-sm text-foreground truncate">{item.itemName}</span>
                     {item.equipped && (
-                      <Badge variant="secondary" className="text-[10px] py-0 bg-green-500/10 text-green-700 dark:text-green-400">
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] py-0 bg-green-500/10 text-green-700 dark:text-green-400"
+                      >
                         Equipped
                       </Badge>
                     )}
@@ -308,7 +312,11 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                   <div className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5 font-mono">
                     <span>Qty: {item.quantity}</span>
                     {item.weight > 0 && <span>• {item.weight.toFixed(1)} lbs</span>}
-                    {item.def?.type === 'weapon' && <span>• {item.def.damageDice} {t(`damageTypes.${item.def.damageType}`)}</span>}
+                    {item.def?.type === 'weapon' && (
+                      <span>
+                        • {item.def.damageDice} {t(`damageTypes.${item.def.damageType}`)}
+                      </span>
+                    )}
                     {item.def?.type === 'armor' && <span>• AC {item.def.baseAc}</span>}
                   </div>
                 </div>
@@ -414,7 +422,9 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                     type="button"
                     onClick={() => setCatalogFilterType(type)}
                     className={`flex-1 py-0.5 font-semibold rounded capitalize transition-colors ${
-                      catalogFilterType === type ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                      catalogFilterType === type
+                        ? 'bg-card text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     {type}
@@ -430,7 +440,12 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                       defaultValue: item.id.replace(/-/g, ' '),
                     });
                     const isSelected = selectedCatalogItem?.id === item.id;
-                    const detail = item.type === 'armor' ? ` (AC ${item.baseAc})` : item.type === 'weapon' ? ` (${item.damageDice} ${item.damageType})` : '';
+                    const detail =
+                      item.type === 'armor'
+                        ? ` (AC ${item.baseAc})`
+                        : item.type === 'weapon'
+                          ? ` (${item.damageDice} ${item.damageType})`
+                          : '';
                     return (
                       <button
                         key={item.id}
@@ -444,7 +459,9 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                           {name}
                           <span className="text-[10px] text-muted-foreground font-normal">{detail}</span>
                         </span>
-                        <Badge variant="outline" className="capitalize text-[10px] shrink-0 ml-2">{item.type}</Badge>
+                        <Badge variant="outline" className="capitalize text-[10px] shrink-0 ml-2">
+                          {item.type}
+                        </Badge>
                       </button>
                     );
                   })
@@ -455,7 +472,11 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
             <div className="space-y-3">
               <div>
                 <label className="text-xs font-semibold text-muted-foreground block mb-1">Item Name</label>
-                <Input placeholder="e.g. Ring of Protection" value={customName} onChange={(e) => setCustomName(e.target.value)} />
+                <Input
+                  placeholder="e.g. Ring of Protection"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -519,7 +540,9 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddItemOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setIsAddItemOpen(false)}>
+              Cancel
+            </Button>
             <Button onClick={handleCreateOrAddItem}>Add Item</Button>
           </DialogFooter>
         </DialogContent>
@@ -530,7 +553,9 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Transfer Item</DialogTitle>
-            <DialogDescription>Give an item from your inventory to another party member in this campaign.</DialogDescription>
+            <DialogDescription>
+              Give an item from your inventory to another party member in this campaign.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
@@ -558,13 +583,17 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                 min="1"
                 max={transferingItem?.maxQty ?? 1}
                 value={transferQty}
-                onChange={(e) => setTransferQty(Math.min(transferingItem?.maxQty ?? 1, parseInt(e.target.value, 10) || 1))}
+                onChange={(e) =>
+                  setTransferQty(Math.min(transferingItem?.maxQty ?? 1, parseInt(e.target.value, 10) || 1))
+                }
               />
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setTransferingItem(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setTransferingItem(null)}>
+              Cancel
+            </Button>
             <Button onClick={handleConfirmTransfer}>Confirm Transfer</Button>
           </DialogFooter>
         </DialogContent>

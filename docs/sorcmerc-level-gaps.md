@@ -20,20 +20,20 @@ export is one-way, and sorcmerc's copy is authored by hand.
 
 ## Class features missing
 
-| class | level | feature id |
-|---|---|---|
-| cleric | 14 | `cleric-improved-blessed-strikes` |
-| fighter | 11 | `fighter-extra-attack-2` |
-| fighter | 13 | `fighter-indomitable-2` |
-| fighter | 13 | `fighter-studied-attacks` |
-| fighter | 17 | `fighter-action-surge-2` |
-| fighter | 17 | `fighter-indomitable-3` |
-| fighter | 20 | `fighter-extra-attack-3` |
-| rogue | 11 | `rogue-reliable-talent` |
-| rogue | 14 | `rogue-devious-strikes` |
-| rogue | 15 | `rogue-slippery-mind` |
-| rogue | 18 | `rogue-elusive` |
-| rogue | 20 | `rogue-stroke-of-luck` |
+| class   | level | feature id                        |
+| ------- | ----- | --------------------------------- |
+| cleric  | 14    | `cleric-improved-blessed-strikes` |
+| fighter | 11    | `fighter-extra-attack-2`          |
+| fighter | 13    | `fighter-indomitable-2`           |
+| fighter | 13    | `fighter-studied-attacks`         |
+| fighter | 17    | `fighter-action-surge-2`          |
+| fighter | 17    | `fighter-indomitable-3`           |
+| fighter | 20    | `fighter-extra-attack-3`          |
+| rogue   | 11    | `rogue-reliable-talent`           |
+| rogue   | 14    | `rogue-devious-strikes`           |
+| rogue   | 15    | `rogue-slippery-mind`             |
+| rogue   | 18    | `rogue-elusive`                   |
+| rogue   | 20    | `rogue-stroke-of-luck`            |
 
 ## Ability Score Improvements missing
 
@@ -42,57 +42,57 @@ take extras at 6 and 10 respectively, which this repo already has. These are the
 ones absent. Downstream they were given the next free choice-key index per class
 rather than renumbering existing slots.
 
-| class | levels |
-|---|---|
+| class   | levels         |
+| ------- | -------------- |
 | fighter | 12, 14, 16, 19 |
-| rogue | 12, 16, 19 |
+| rogue   | 12, 16, 19     |
 
 ## Subclass tiers missing
 
-| subclass | class level | feature id |
-|---|---|---|
-| arcanetrickster | 13 | `arcanetrickster-versatile-trickster` |
-| arcanetrickster | 17 | `arcanetrickster-spell-thief` |
-| assassin | 13 | `assassin-envenom-weapons` |
-| assassin | 17 | `assassin-death-strike` |
-| beastmaster | 11 | `beastmaster-bestial-fury` |
-| beastmaster | 15 | `beastmaster-share-spells` |
-| circleland | 14 | `circleland-natures-sanctuary` |
-| circlemoon | 14 | `circlemoon-lunar-form` |
-| circlesea | 14 | `circlesea-oceanic-gift` |
-| circlestars | 14 | `circlestars-full-of-stars` |
-| collegedance | 14 | `collegedance-tandem-footwork` |
-| collegeglamour | 14 | `collegeglamour-unbreakable-majesty` |
-| collegelore | 14 | `collegelore-peerless-skill` |
-| collegevalor | 14 | `collegevalor-battle-magic` |
-| feywanderer | 11 | `feywanderer-fey-reinforcements` |
-| feywanderer | 15 | `feywanderer-misty-wanderer` |
-| gloomstalker | 11 | `gloomstalker-stalkers-flurry` |
-| gloomstalker | 15 | `gloomstalker-shadowy-dodge` |
-| hunter | 11 | `hunter-superior-hunters-prey` |
-| hunter | 15 | `hunter-superior-hunters-defense` |
-| lifedomain | 17 | `lifedomain-supreme-healing` |
-| lightdomain | 17 | `lightdomain-corona-of-light` |
-| soulknife | 13 | `soulknife-psychic-veil` |
-| soulknife | 17 | `soulknife-rend-mind` |
-| thief | 13 | `thief-use-magic-device` |
-| thief | 17 | `thief-thiefs-reflexes` |
-| trickerydomain | 17 | `trickerydomain-improved-duplicity` |
-| wardomain | 17 | `wardomain-avatar-of-battle` |
-| warriorofelements | 11 | `warriorofelements-stride-of-the-elements` |
-| warriorofelements | 17 | `warriorofelements-elemental-epitome` |
-| warriorofmercy | 11 | `warriorofmercy-flurry-of-healing-and-harm` |
-| warriorofmercy | 17 | `warriorofmercy-hand-of-ultimate-mercy` |
-| warriorofshadow | 11 | `warriorofshadow-improved-shadow-step` |
-| warriorofshadow | 17 | `warriorofshadow-cloak-of-shadows` |
-| warrioropenhand | 11 | `warrioropenhand-fleet-step` |
-| warrioropenhand | 17 | `warrioropenhand-quivering-palm` |
-| wildheart | 3 | `wildheart-animal-speaker` |
-| wildheart | 10 | `wildheart-nature-speaker` |
-| wildheart | 14 | `wildheart-power-of-the-wilds` |
-| worldtree | 14 | `worldtree-travel-along-the-tree` |
-| zealot | 3 | `zealot-divine-fury` |
-| zealot | 14 | `zealot-rage-of-the-gods` |
+| subclass          | class level | feature id                                  |
+| ----------------- | ----------- | ------------------------------------------- |
+| arcanetrickster   | 13          | `arcanetrickster-versatile-trickster`       |
+| arcanetrickster   | 17          | `arcanetrickster-spell-thief`               |
+| assassin          | 13          | `assassin-envenom-weapons`                  |
+| assassin          | 17          | `assassin-death-strike`                     |
+| beastmaster       | 11          | `beastmaster-bestial-fury`                  |
+| beastmaster       | 15          | `beastmaster-share-spells`                  |
+| circleland        | 14          | `circleland-natures-sanctuary`              |
+| circlemoon        | 14          | `circlemoon-lunar-form`                     |
+| circlesea         | 14          | `circlesea-oceanic-gift`                    |
+| circlestars       | 14          | `circlestars-full-of-stars`                 |
+| collegedance      | 14          | `collegedance-tandem-footwork`              |
+| collegeglamour    | 14          | `collegeglamour-unbreakable-majesty`        |
+| collegelore       | 14          | `collegelore-peerless-skill`                |
+| collegevalor      | 14          | `collegevalor-battle-magic`                 |
+| feywanderer       | 11          | `feywanderer-fey-reinforcements`            |
+| feywanderer       | 15          | `feywanderer-misty-wanderer`                |
+| gloomstalker      | 11          | `gloomstalker-stalkers-flurry`              |
+| gloomstalker      | 15          | `gloomstalker-shadowy-dodge`                |
+| hunter            | 11          | `hunter-superior-hunters-prey`              |
+| hunter            | 15          | `hunter-superior-hunters-defense`           |
+| lifedomain        | 17          | `lifedomain-supreme-healing`                |
+| lightdomain       | 17          | `lightdomain-corona-of-light`               |
+| soulknife         | 13          | `soulknife-psychic-veil`                    |
+| soulknife         | 17          | `soulknife-rend-mind`                       |
+| thief             | 13          | `thief-use-magic-device`                    |
+| thief             | 17          | `thief-thiefs-reflexes`                     |
+| trickerydomain    | 17          | `trickerydomain-improved-duplicity`         |
+| wardomain         | 17          | `wardomain-avatar-of-battle`                |
+| warriorofelements | 11          | `warriorofelements-stride-of-the-elements`  |
+| warriorofelements | 17          | `warriorofelements-elemental-epitome`       |
+| warriorofmercy    | 11          | `warriorofmercy-flurry-of-healing-and-harm` |
+| warriorofmercy    | 17          | `warriorofmercy-hand-of-ultimate-mercy`     |
+| warriorofshadow   | 11          | `warriorofshadow-improved-shadow-step`      |
+| warriorofshadow   | 17          | `warriorofshadow-cloak-of-shadows`          |
+| warrioropenhand   | 11          | `warrioropenhand-fleet-step`                |
+| warrioropenhand   | 17          | `warrioropenhand-quivering-palm`            |
+| wildheart         | 3           | `wildheart-animal-speaker`                  |
+| wildheart         | 10          | `wildheart-nature-speaker`                  |
+| wildheart         | 14          | `wildheart-power-of-the-wilds`              |
+| worldtree         | 14          | `worldtree-travel-along-the-tree`           |
+| zealot            | 3           | `zealot-divine-fury`                        |
+| zealot            | 14          | `zealot-rage-of-the-gods`                   |
 
 ## One misplacement, not a gap
 
@@ -103,11 +103,11 @@ Presence at 10. `coverage-matrix.ts` cannot see this — it checks that a tier
 exists, never what the tier holds, which is the distinction its own header is
 careful about.
 
-| feature | here | should be |
-|---|---|---|
-| `berserker-mindless-rage` | 3 | 6 |
-| `berserker-retaliation` | 6 | 10 |
-| `berserker-intimidating-presence` | 10 | 14 |
+| feature                           | here | should be |
+| --------------------------------- | ---- | --------- |
+| `berserker-mindless-rage`         | 3    | 6         |
+| `berserker-retaliation`           | 6    | 10        |
+| `berserker-intimidating-presence` | 10   | 14        |
 
 ## What this list is worth
 

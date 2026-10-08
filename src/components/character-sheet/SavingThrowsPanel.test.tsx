@@ -9,9 +9,23 @@ vi.mock('react-i18next', () => ({
 }));
 
 const sampleSavingThrows = {
-  str: { bonus: 3, proficient: true, breakdown: [{ type: 'ability', label: 'str', value: 2 }, { type: 'proficiency', label: 'pb', value: 1 }] },
+  str: {
+    bonus: 3,
+    proficient: true,
+    breakdown: [
+      { type: 'ability', label: 'str', value: 2 },
+      { type: 'proficiency', label: 'pb', value: 1 },
+    ],
+  },
   dex: { bonus: 5, proficient: false, breakdown: [{ type: 'ability', label: 'dex', value: 5 }] },
-  con: { bonus: 2, proficient: true, breakdown: [{ type: 'ability', label: 'con', value: 1 }, { type: 'proficiency', label: 'pb', value: 1 }] },
+  con: {
+    bonus: 2,
+    proficient: true,
+    breakdown: [
+      { type: 'ability', label: 'con', value: 1 },
+      { type: 'proficiency', label: 'pb', value: 1 },
+    ],
+  },
   int: { bonus: 0, proficient: false, breakdown: [] },
   wis: { bonus: 1, proficient: false, breakdown: [] },
   cha: { bonus: -1, proficient: false, breakdown: [] },

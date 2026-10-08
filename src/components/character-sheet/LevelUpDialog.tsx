@@ -19,6 +19,9 @@ import type { SourceTag, SubclassId } from '@/types/sources';
 import { Dices } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('LevelUpDialog');
 
 interface LevelUpDialogProps {
   readonly open: boolean;
@@ -86,7 +89,7 @@ function isChoiceSatisfied(choice: PendingChoice, decisions: ReadonlyMap<ChoiceK
       return decision?.type === 'feature-choice' && decision.optionId.length > 0;
     default: {
       const _exhaustive: never = choice;
-      console.warn(`isChoiceSatisfied: unhandled choice type — treating as unsatisfied`, _exhaustive);
+      logger.warn(`isChoiceSatisfied: unhandled choice type — treating as unsatisfied`, _exhaustive);
       return false;
     }
   }
@@ -189,7 +192,7 @@ export function LevelUpDialog({
       try {
         parsedAsi = parseChoiceKey(asi.choiceKey);
       } catch (err) {
-        console.warn(`LevelUpDialog: failed to parse ASI choice key "${asi.choiceKey}" — skipping pair`, err);
+        logger.warn(`LevelUpDialog: failed to parse ASI choice key "${asi.choiceKey}" — skipping pair`, err);
         continue;
       }
       const companion = featChoices.find((fc) => {
@@ -197,7 +200,7 @@ export function LevelUpDialog({
         try {
           p = parseChoiceKey(fc.choiceKey);
         } catch (err) {
-          console.warn(`LevelUpDialog: failed to parse feat-choice key "${fc.choiceKey}" — skipping`, err);
+          logger.warn(`LevelUpDialog: failed to parse feat-choice key "${fc.choiceKey}" — skipping`, err);
           return false;
         }
         return p.origin === parsedAsi.origin && p.id === parsedAsi.id && p.index === parsedAsi.index;

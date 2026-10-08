@@ -37,7 +37,7 @@ describe('SavingThrowsPanel', () => {
   });
 
   it('renders saving throws list with bonuses', () => {
-    render(<SavingThrowsPanel savingThrows={sampleSavingThrows as any} buildError={null} />);
+    render(<SavingThrowsPanel savingThrows={sampleSavingThrows as never} buildError={null} />);
     expect(screen.getByText('str')).toBeInTheDocument();
     expect(screen.getByText('dex')).toBeInTheDocument();
   });
@@ -46,7 +46,7 @@ describe('SavingThrowsPanel', () => {
     const mockSelectPreset = vi.fn();
     render(
       <SavingThrowsPanel
-        savingThrows={sampleSavingThrows as any}
+        savingThrows={sampleSavingThrows as never}
         buildError={null}
         onSelectRollPreset={mockSelectPreset}
       />

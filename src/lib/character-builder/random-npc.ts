@@ -24,7 +24,7 @@ import type { ClassSource } from '@/types/sources';
 import { createChoiceKey, parseChoiceKey, type ChoiceDecision, type ChoiceKey } from '@/types/choices';
 import { SUBCLASS_IDS_BY_CLASS } from '@/lib/sources/subclasses';
 import { FEAT_SOURCES } from '@/lib/sources';
-import { getSpellsForList } from '@/lib/sources/spells';
+import { getSpellsForList, type SpellId } from '@/lib/sources/spells';
 import { getBundleDef, getItemsForSlot } from '@/lib/sources/bundles';
 import { reconstructBuild, type BuildLevelRow } from '@/lib/build-reconstruction';
 import { collectBundles } from '@/lib/sources/index';
@@ -478,7 +478,7 @@ export function generateDecisionForPendingChoice(
       const unchosen = spells.map((s) => s.id).filter((id) => !known.has(id));
       const pool = unchosen.length >= choice.count ? unchosen : spells.map((s) => s.id);
       const picked = shuffle(pool, rng).slice(0, choice.count);
-      return { type: 'spell-choice', spellIds: picked as any };
+      return { type: 'spell-choice', spellIds: picked as readonly SpellId[] };
     }
     default:
       return null;

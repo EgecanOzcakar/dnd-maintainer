@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import type { Json } from '@/types/supabase';
 import type { SourceTag } from '@/types/sources';
 
 interface AddItemParams {
@@ -74,7 +75,7 @@ export function useInventoryMutations() {
             quantity,
             equipped,
             attuned,
-            source: (source ?? null) as any,
+            source: (source ?? null) as Json,
           })
           .select()
           .single();
@@ -91,7 +92,7 @@ export function useInventoryMutations() {
   });
 
   const updateItem = useMutation({
-    mutationFn: async ({ characterId, id, ...updates }: UpdateItemParams) => {
+    mutationFn: async ({ characterId: _characterId, id, ...updates }: UpdateItemParams) => {
       const { data, error } = await supabase
         .from('character_items')
         .update({ ...updates, updated_at: new Date().toISOString() })

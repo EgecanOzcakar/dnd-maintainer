@@ -133,13 +133,13 @@ export function DiceRoller({
   }, [isRolling, count, selectedDie, modifier, onRoll, characterId, campaignId, recordRoll, contextLabel]);
 
   // Keep preset values in sync when parent changes them (e.g. clicking a spell's Roll button)
-  const lastPresetKey = useRef('');
+  const [lastPresetKey, setLastPresetKey] = useState('');
   const presetKey = `${presetDie}-${presetCount}-${presetModifier}`;
   if (
-    presetKey !== lastPresetKey.current &&
+    presetKey !== lastPresetKey &&
     (presetDie !== undefined || presetCount !== undefined || presetModifier !== undefined)
   ) {
-    lastPresetKey.current = presetKey;
+    setLastPresetKey(presetKey);
     if (presetDie !== undefined) setSelectedDie(presetDie);
     if (presetCount !== undefined) setCount(presetCount);
     if (presetModifier !== undefined) setModifier(presetModifier);

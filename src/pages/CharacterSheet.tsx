@@ -129,22 +129,24 @@ function CharacterSheetInner({
 
   const queryClient = useQueryClient();
   const effectiveAc = resolved?.armorClass.effective;
+  const ctxCharacterId = ctxCharacter?.id;
+  const ctxArmorClass = ctxCharacter?.armor_class;
   useEffect(() => {
-    if (effectiveAc != null && ctxCharacter && effectiveAc !== ctxCharacter.armor_class) {
+    if (effectiveAc != null && ctxCharacterId && effectiveAc !== ctxArmorClass) {
       supabase
         .from('characters')
         .update({ armor_class: effectiveAc, updated_at: new Date().toISOString() })
-        .eq('id', ctxCharacter.id)
+        .eq('id', ctxCharacterId)
         .then(({ error }) => {
           if (error) {
             logger.error('Failed to sync stored armor_class:', error);
           } else {
-            queryClient.invalidateQueries({ queryKey: ['character', ctxCharacter.id] });
+            queryClient.invalidateQueries({ queryKey: ['character', ctxCharacterId] });
             queryClient.invalidateQueries({ queryKey: ['characters'] });
           }
         });
     }
-  }, [effectiveAc, ctxCharacter?.armor_class, ctxCharacter?.id, queryClient]);
+  }, [effectiveAc, ctxArmorClass, ctxCharacterId, queryClient]);
 
   // Flush a pending autosave on unmount so the last level-up isn't lost when the user navigates away within the debounce window.
   useEffect(() => {

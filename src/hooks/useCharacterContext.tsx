@@ -1,5 +1,5 @@
 import { getLogger } from '@/lib/logger';
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
 const logger = getLogger('character-context');
@@ -351,9 +351,12 @@ export function CharacterProvider({
 }: CharacterProviderProps): React.JSX.Element {
   const [character, setCharacter] = useState<Character>(initialCharacter);
 
-  useEffect(() => {
+  // Resync local state when the parent hands us a new character (adjust state during render, not in an effect).
+  const [prevInitialCharacter, setPrevInitialCharacter] = useState(initialCharacter);
+  if (initialCharacter !== prevInitialCharacter) {
+    setPrevInitialCharacter(initialCharacter);
     setCharacter(initialCharacter);
-  }, [initialCharacter]);
+  }
 
   const [rows, setRows] = useState<readonly BuildLevelRow[]>(() => {
     // Seed a creation row if one doesn't exist so reconstructBuild can always find sequence 0

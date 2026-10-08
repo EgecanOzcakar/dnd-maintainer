@@ -98,6 +98,9 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
       if (dismissTimerRef.current) clearTimeout(dismissTimerRef.current);
       if (numberIntervalRef.current) clearInterval(numberIntervalRef.current);
 
+      // A new roll arriving from realtime party state kicks off a timed animation sequence; the setState calls
+      // below start that sequence, so this effect legitimately reacts to external data.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveRoll({
         character: latestPcRoll.pc,
         roll: latestPcRoll.roll,

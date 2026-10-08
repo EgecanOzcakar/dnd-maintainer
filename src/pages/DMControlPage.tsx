@@ -34,6 +34,8 @@ import { BattleMapView } from '@/components/battle-map/BattleMapView';
 import { DisplayModeToggle } from '@/components/battle-map/DisplayModeToggle';
 import { toast } from 'sonner';
 
+const rollDie = (sides: number) => Math.floor(Math.random() * sides) + 1;
+
 export default function DMControlPage() {
   const { t: tc } = useTranslation('common');
   const { campaignSlug } = useParams<{ campaignSlug: string }>();
@@ -74,7 +76,7 @@ export default function DMControlPage() {
 
   // Roll d20 helper with optional modifier
   const rollD20 = (mod: number = 0) => {
-    const d20 = Math.floor(Math.random() * 20) + 1;
+    const d20 = rollDie(20);
     return d20 + mod;
   };
 
@@ -83,7 +85,7 @@ export default function DMControlPage() {
     const rolls: number[] = [];
     let total = 0;
     for (let i = 0; i < numDice; i++) {
-      const r = Math.floor(Math.random() * sides) + 1;
+      const r = rollDie(sides);
       rolls.push(r);
       total += r;
     }
@@ -96,7 +98,7 @@ export default function DMControlPage() {
 
   // Roll on behalf of a specific PC
   const handleRollForPC = async (pc: CharacterSummary) => {
-    const d20 = Math.floor(Math.random() * 20) + 1;
+    const d20 = rollDie(20);
     const formula = '1d20';
     await recordCharacterRoll.mutateAsync({
       campaignId: targetCampaignId,
@@ -117,7 +119,7 @@ export default function DMControlPage() {
     checkName: 'Perception' | 'Wisdom' | 'Intelligence',
     mod: number
   ) => {
-    const d20 = Math.floor(Math.random() * 20) + 1;
+    const d20 = rollDie(20);
     const total = d20 + mod;
     const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
     const formula = `1d20${mod !== 0 ? modStr : ''}`;
@@ -152,7 +154,7 @@ export default function DMControlPage() {
             ? (pcStat?.wisMod ?? 0)
             : (pcStat?.intMod ?? 0);
 
-      const d20 = Math.floor(Math.random() * 20) + 1;
+      const d20 = rollDie(20);
       const total = d20 + mod;
       const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
       const formula = `1d20${mod !== 0 ? modStr : ''}`;

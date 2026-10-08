@@ -29,7 +29,10 @@ export function OriginStep() {
   const hasResolvedSpecies = !!species && SPECIES_SOURCES.some((s) => s.id === species);
 
   // Extract background grants (shared filter — avoids repeating the chain)
-  const backgroundGrants = bundles.filter((b) => b.source.origin === 'background').flatMap((b) => b.grants);
+  const backgroundGrants = useMemo(
+    () => bundles.filter((b) => b.source.origin === 'background').flatMap((b) => b.grants),
+    [bundles]
+  );
 
   // Extract background origin grant info for the badge.
   // deriveOriginFeatInfo handles both shapes (feat grant and direct feat-magic-initiate-* feature),

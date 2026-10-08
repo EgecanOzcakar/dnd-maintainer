@@ -98,7 +98,7 @@ export default function MagicItemsPage() {
           <Card key={item.id}>
             <CardHeader className="pb-2">
               <div className="flex flex-wrap items-center gap-2">
-                { }
+                {}
                 <CardTitle className="text-base">{item.name}</CardTitle>
                 <Badge variant="outline" className={`text-[10px] ${RARITY_STYLES[item.rarity]}`}>
                   {t(`magicItems.rarity.${item.rarity}` as const)}
@@ -116,7 +116,7 @@ export default function MagicItemsPage() {
               </div>
             </CardHeader>
             <CardContent>
-              { }
+              {}
               <p className="text-sm text-muted-foreground whitespace-pre-wrap">{item.description}</p>
             </CardContent>
           </Card>

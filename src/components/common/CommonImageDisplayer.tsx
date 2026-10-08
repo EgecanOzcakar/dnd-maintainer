@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { Image as ImageIcon, Maximize2, Upload, Trash2, Link as LinkIcon, Sparkles, X, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,6 +47,7 @@ interface CommonImageDisplayerProps {
 }
 
 export function CommonImageDisplayer({ campaignId, className = '' }: CommonImageDisplayerProps) {
+  const { t: tc } = useTranslation('common');
   const { data: partyState } = usePartyState(campaignId);
   const updateSharedImage = useUpdateSharedImage();
 
@@ -136,12 +138,15 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
       <div className="flex items-center justify-between mb-3 border-b pb-3">
         <div className="flex items-center gap-2">
           <ImageIcon className="size-5 text-primary" />
-          <h2 className="text-base font-bold text-foreground">Common Image Displayer</h2>
+          <h2 className="text-base font-bold text-foreground">{tc('imageDisplayer.title')}</h2>
         </div>
         <div className="flex items-center gap-2">
           {activeImage && (
-            <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/30 flex items-center gap-1">
-              <Eye className="size-3" /> Live Display
+            <Badge
+              variant="outline"
+              className="text-xs bg-primary/10 text-primary border-primary/30 flex items-center gap-1"
+            >
+              <Eye className="size-3" /> {tc('imageDisplayer.live')}
             </Badge>
           )}
           <Button
@@ -160,7 +165,7 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
       {isPickerOpen && (
         <div className="mb-4 p-4 rounded-lg bg-muted/40 border space-y-4 text-xs animate-in fade-in duration-200">
           <div>
-            <span className="font-semibold text-muted-foreground block mb-2">Preset Campaign Scenes</span>
+            <span className="font-semibold text-muted-foreground block mb-2">{tc('imageDisplayer.presets')}</span>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {PRESET_SCENE_IMAGES.map((preset) => (
                 <button
@@ -169,7 +174,11 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
                   onClick={() => handleApplyImage({ url: preset.url, title: preset.name, caption: preset.category })}
                   className="group relative rounded-md overflow-hidden border bg-black/60 text-left aspect-video hover:ring-2 hover:ring-primary transition-all focus:outline-none"
                 >
-                  <img src={preset.url} alt={preset.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-100" />
+                  <img
+                    src={preset.url}
+                    alt={preset.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-80 group-hover:opacity-100"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent p-1.5 flex flex-col justify-end">
                     <span className="font-bold text-white text-[11px] leading-tight truncate">{preset.name}</span>
                     <span className="text-[9px] text-white/70">{preset.category}</span>
@@ -180,7 +189,7 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
           </div>
 
           <div className="border-t pt-3 space-y-2">
-            <span className="font-semibold text-muted-foreground block">Or Custom Image URL</span>
+            <span className="font-semibold text-muted-foreground block">{tc('imageDisplayer.customUrl')}</span>
             <form onSubmit={handleCustomSubmit} className="flex gap-2">
               <Input
                 placeholder="Title (optional)"
@@ -195,14 +204,14 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
                 className="h-8 text-xs flex-1"
               />
               <Button type="submit" size="sm" className="h-8 text-xs gap-1">
-                <LinkIcon className="size-3" /> Load
+                <LinkIcon className="size-3" /> {tc('imageDisplayer.load')}
               </Button>
             </form>
           </div>
 
           <div className="border-t pt-3 flex items-center justify-between">
             <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded border bg-card hover:bg-accent text-xs font-semibold">
-              <Upload className="size-3.5 text-primary" /> Upload Image File
+              <Upload className="size-3.5 text-primary" /> {tc('imageDisplayer.upload')}
               <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
             </label>
 
@@ -213,7 +222,7 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
                 onClick={() => handleApplyImage(null)}
                 className="h-8 text-xs text-destructive hover:bg-destructive/10 gap-1"
               >
-                <Trash2 className="size-3.5" /> Clear Display
+                <Trash2 className="size-3.5" /> {tc('imageDisplayer.clear')}
               </Button>
             )}
           </div>
@@ -236,7 +245,7 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
                 onClick={() => setIsLightboxOpen(true)}
                 className="h-8 text-xs gap-1 shadow-md bg-white/90 text-black hover:bg-white"
               >
-                <Maximize2 className="size-3.5" /> Zoom
+                <Maximize2 className="size-3.5" /> {tc('imageDisplayer.zoom')}
               </Button>
               <Button
                 size="sm"
@@ -244,23 +253,23 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
                 onClick={() => handleApplyImage(null)}
                 className="h-8 text-xs gap-1 shadow-md"
               >
-                <Trash2 className="size-3.5" /> Remove
+                <Trash2 className="size-3.5" /> {tc('imageDisplayer.remove')}
               </Button>
             </div>
             {activeImage.title && (
               <div className="w-full bg-muted/80 backdrop-blur-xs border-t px-3 py-1.5 text-center text-xs font-semibold text-foreground truncate">
                 {activeImage.title}
-                {activeImage.caption && <span className="text-muted-foreground ml-2 text-[11px] font-normal">({activeImage.caption})</span>}
+                {activeImage.caption && (
+                  <span className="text-muted-foreground ml-2 text-[11px] font-normal">({activeImage.caption})</span>
+                )}
               </div>
             )}
           </div>
         ) : (
           <div className="w-full h-full min-h-[140px] border-2 border-dashed border-muted rounded-lg flex flex-col items-center justify-center p-4 text-center text-muted-foreground">
             <ImageIcon className="size-8 text-muted-foreground/50 mb-2" />
-            <span className="text-xs font-semibold text-foreground">No Image Currently Displayed</span>
-            <p className="text-[11px] text-muted-foreground mt-0.5 max-w-xs">
-              Select a preset scene, paste a URL, or upload artwork from the DM console to display it here.
-            </p>
+            <span className="text-xs font-semibold text-foreground">{tc('imageDisplayer.none')}</span>
+            <p className="text-[11px] text-muted-foreground mt-0.5 max-w-xs">{tc('imageDisplayer.hint')}</p>
           </div>
         )}
       </div>

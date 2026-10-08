@@ -1,4 +1,9 @@
-import { CAMPAIGN_DETAIL_COLS, CAMPAIGN_SUMMARY_COLS, CHARACTER_DETAIL_COLS, CHARACTER_SUMMARY_COLS } from '@/lib/query-columns';
+import {
+  CAMPAIGN_DETAIL_COLS,
+  CAMPAIGN_SUMMARY_COLS,
+  CHARACTER_DETAIL_COLS,
+  CHARACTER_SUMMARY_COLS,
+} from '@/lib/query-columns';
 
 describe('CAMPAIGN_SUMMARY_COLS', () => {
   it('does not contain passphrase or passphrase_hash so hashes are never exposed (word boundary match)', () => {

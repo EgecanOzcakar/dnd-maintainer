@@ -29,7 +29,10 @@ export function OriginStep() {
   const hasResolvedSpecies = !!species && SPECIES_SOURCES.some((s) => s.id === species);
 
   // Extract background grants (shared filter — avoids repeating the chain)
-  const backgroundGrants = bundles.filter((b) => b.source.origin === 'background').flatMap((b) => b.grants);
+  const backgroundGrants = useMemo(
+    () => bundles.filter((b) => b.source.origin === 'background').flatMap((b) => b.grants),
+    [bundles]
+  );
 
   // Extract background origin grant info for the badge.
   // deriveOriginFeatInfo handles both shapes (feat grant and direct feat-magic-initiate-* feature),
@@ -93,13 +96,15 @@ export function OriginStep() {
 
     const asiGrant = backgroundGrants.find((g): g is Extract<Grant, { type: 'asi' }> => g.type === 'asi');
     const fixedSkills = backgroundGrants
-      .filter((g): g is Extract<Grant, { type: 'proficiency'; category: 'skill' }> =>
-        g.type === 'proficiency' && g.category === 'skill'
+      .filter(
+        (g): g is Extract<Grant, { type: 'proficiency'; category: 'skill' }> =>
+          g.type === 'proficiency' && g.category === 'skill'
       )
       .map((g) => t(`skills.${g.id}` as `skills.${string}`, { defaultValue: g.id }));
     const fixedTools = backgroundGrants
-      .filter((g): g is Extract<Grant, { type: 'proficiency'; category: 'tool' }> =>
-        g.type === 'proficiency' && g.category === 'tool'
+      .filter(
+        (g): g is Extract<Grant, { type: 'proficiency'; category: 'tool' }> =>
+          g.type === 'proficiency' && g.category === 'tool'
       )
       .map((g) => t(`tools.${g.id}` as `tools.${string}`, { defaultValue: g.id }));
     const langChoiceGrant = backgroundGrants.find(
@@ -119,18 +124,21 @@ export function OriginStep() {
       (g): g is Extract<Grant, { type: 'speed' }> => g.type === 'speed' && g.mode === 'walk'
     );
     const fixedSkills = speciesGrants
-      .filter((g): g is Extract<Grant, { type: 'proficiency'; category: 'skill' }> =>
-        g.type === 'proficiency' && g.category === 'skill'
+      .filter(
+        (g): g is Extract<Grant, { type: 'proficiency'; category: 'skill' }> =>
+          g.type === 'proficiency' && g.category === 'skill'
       )
       .map((g) => t(`skills.${g.id}` as `skills.${string}`, { defaultValue: g.id }));
     const fixedTools = speciesGrants
-      .filter((g): g is Extract<Grant, { type: 'proficiency'; category: 'tool' }> =>
-        g.type === 'proficiency' && g.category === 'tool'
+      .filter(
+        (g): g is Extract<Grant, { type: 'proficiency'; category: 'tool' }> =>
+          g.type === 'proficiency' && g.category === 'tool'
       )
       .map((g) => t(`tools.${g.id}` as `tools.${string}`, { defaultValue: g.id }));
     const fixedLanguages = speciesGrants
-      .filter((g): g is Extract<Grant, { type: 'proficiency'; category: 'language' }> =>
-        g.type === 'proficiency' && g.category === 'language'
+      .filter(
+        (g): g is Extract<Grant, { type: 'proficiency'; category: 'language' }> =>
+          g.type === 'proficiency' && g.category === 'language'
       )
       .map((g) => t(`languages.${g.id}` as `languages.${string}`, { defaultValue: g.id }));
     const langChoiceGrants = speciesGrants.filter(
@@ -154,7 +162,7 @@ export function OriginStep() {
       fixedLanguages,
       langChoiceCount,
       resistances,
-      features
+      features,
     };
   }, [species, speciesGrants, t]);
 
@@ -174,9 +182,10 @@ export function OriginStep() {
       {/* Species bonus summary — shows speed, proficiencies, languages, resistances, features */}
       {speciesBonusSummary && (
         <div className="space-y-3">
-          <Label className="text-base font-semibold">{tc('characterBuilder.backgroundStep.speciesBonusSummaryTitle')}</Label>
+          <Label className="text-base font-semibold">
+            {tc('characterBuilder.backgroundStep.speciesBonusSummaryTitle')}
+          </Label>
           <div className="rounded-md border border-border bg-muted/30 p-3 space-y-2">
-
             {/* Speed */}
             {speciesBonusSummary.speed && (
               <div className="flex flex-wrap items-center gap-2">
@@ -235,7 +244,10 @@ export function OriginStep() {
                   ))}
                   {speciesBonusSummary.langChoiceCount > 0 && (
                     <Badge variant="outline" className="text-xs border-dashed">
-                      +{tc('characterBuilder.backgroundStep.languageChoiceCount', { count: speciesBonusSummary.langChoiceCount })}
+                      +
+                      {tc('characterBuilder.backgroundStep.languageChoiceCount', {
+                        count: speciesBonusSummary.langChoiceCount,
+                      })}
                     </Badge>
                   )}
                 </div>
@@ -250,7 +262,11 @@ export function OriginStep() {
                 </span>
                 <div className="flex flex-wrap gap-1">
                   {speciesBonusSummary.resistances.map((name) => (
-                    <Badge key={name} variant="secondary" className="text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 border-transparent">
+                    <Badge
+                      key={name}
+                      variant="secondary"
+                      className="text-xs bg-destructive/10 text-destructive hover:bg-destructive/20 border-transparent"
+                    >
                       {name}
                     </Badge>
                   ))}
@@ -273,7 +289,6 @@ export function OriginStep() {
                 </div>
               </div>
             )}
-
           </div>
         </div>
       )}
@@ -312,7 +327,6 @@ export function OriginStep() {
         <div className="space-y-3">
           <Label className="text-base font-semibold">{tc('characterBuilder.backgroundStep.bonusSummaryTitle')}</Label>
           <div className="rounded-md border border-border bg-muted/30 p-3 space-y-2">
-
             {/* ASI eligible abilities */}
             {bonusSummary.asiGrant && (
               <div className="flex flex-wrap items-center gap-2">
@@ -375,7 +389,6 @@ export function OriginStep() {
                 </Badge>
               </div>
             )}
-
           </div>
         </div>
       )}
@@ -389,11 +402,11 @@ export function OriginStep() {
               <Badge variant="secondary" className="text-sm">
                 {originFeatInfo.namespace === 'features'
                   ? t(`features.${originFeatInfo.id}.name` as `features.${string}.name`, {
-                    defaultValue: originFeatInfo.id,
-                  })
+                      defaultValue: originFeatInfo.id,
+                    })
                   : t(`feats.${originFeatInfo.id}.name` as `feats.${string}.name`, {
-                    defaultValue: originFeatInfo.id,
-                  })}
+                      defaultValue: originFeatInfo.id,
+                    })}
               </Badge>
               {backgroundName && (
                 <span className="text-xs text-muted-foreground">
@@ -404,11 +417,11 @@ export function OriginStep() {
             <p className="text-sm text-foreground">
               {originFeatInfo.namespace === 'features'
                 ? t(`features.${originFeatInfo.id}.description` as `features.${string}.description`, {
-                  defaultValue: '',
-                })
+                    defaultValue: '',
+                  })
                 : t(`feats.${originFeatInfo.id}.description` as `feats.${string}.description`, {
-                  defaultValue: '',
-                })}
+                    defaultValue: '',
+                  })}
             </p>
           </div>
         </div>

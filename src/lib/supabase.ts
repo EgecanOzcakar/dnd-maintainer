@@ -5,18 +5,16 @@ const DEFAULT_SUPABASE_URL = 'https://aekpodxyvkjcsjgzwlca.supabase.co';
 const DEFAULT_SUPABASE_KEY = 'sb_publishable_kq2CF3umQ3xdUnTKAWjKkg_IS0t33G_';
 
 const envUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabasePublishableKey = 
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 
-  import.meta.env.VITE_SUPABASE_ANON_KEY || 
-  DEFAULT_SUPABASE_KEY;
+const supabasePublishableKey =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_KEY;
 
 // Detect runtime environment
-export const isLocalhost = 
+export const isLocalhost =
   typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
-export const isTauri = 
-  typeof window !== 'undefined' && 
+export const isTauri =
+  typeof window !== 'undefined' &&
   ('__TAURI_INTERNALS__' in window || '__TAURI__' in window || window.location.protocol === 'tauri:');
 
 const isLocalOrPrivateUrl = (url?: string) => {
@@ -32,10 +30,14 @@ const isLocalOrPrivateUrl = (url?: string) => {
 
 // Inside Tauri desktop app or when envUrl points to remote cloud, use envUrl / Cloud URL.
 export const supabaseUrl = isTauri
-  ? (envUrl && !isLocalOrPrivateUrl(envUrl) ? envUrl : DEFAULT_SUPABASE_URL)
-  : isLocalhost 
-    ? (envUrl || 'http://127.0.0.1:54321') 
-    : (!isLocalOrPrivateUrl(envUrl) ? envUrl : window.location.origin);
+  ? envUrl && !isLocalOrPrivateUrl(envUrl)
+    ? envUrl
+    : DEFAULT_SUPABASE_URL
+  : isLocalhost
+    ? envUrl || 'http://127.0.0.1:54321'
+    : !isLocalOrPrivateUrl(envUrl)
+      ? envUrl
+      : window.location.origin;
 
 if (!supabaseUrl || !supabasePublishableKey) {
   throw new Error('Missing Supabase environment variables');

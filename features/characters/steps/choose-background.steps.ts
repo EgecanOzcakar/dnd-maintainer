@@ -35,9 +35,7 @@ Then('the character is proficient in the {word} skill', function (this: DndWorld
 Then('the character has a tool proficiency from the background', function (this: DndWorld) {
   // The 2024 rules grant either a fixed tool proficiency or a tool choice. Accept
   // either, scoped to a background source so a class/species tool cannot satisfy it.
-  const hasFixedTool = this.resolved!.toolProficiencies.some((t) =>
-    t.sources.some((s) => s.origin === 'background')
-  );
+  const hasFixedTool = this.resolved!.toolProficiencies.some((t) => t.sources.some((s) => s.origin === 'background'));
   const hasToolChoice = this.resolved!.pendingChoices.some(
     (c) => c.type === 'tool-choice' && c.source.origin === 'background'
   );
@@ -70,9 +68,9 @@ Then('the character gains an origin feat', function (this: DndWorld) {
     const featId = (featGrant as { readonly featId: FeatId }).featId;
     const hasFeat = this.resolved!.features.some((f) => f.source.origin === 'feat' && f.source.id === featId);
     if (!hasFeat) {
-      const featSources = this.resolved!.features
-        .filter((f) => f.source.origin === 'feat')
-        .map((f) => (f.source.origin === 'feat' ? f.source.id : null));
+      const featSources = this.resolved!.features.filter((f) => f.source.origin === 'feat').map((f) =>
+        f.source.origin === 'feat' ? f.source.id : null
+      );
       throw new Error(
         `Expected origin feat "${featId}" in resolved features; feat-origin sources: ${JSON.stringify(featSources)}`
       );
@@ -93,9 +91,9 @@ Then('the character gains an origin feat', function (this: DndWorld) {
       (f) => f.source.origin === 'background' && f.feature.id === featureId
     );
     if (!hasFeature) {
-      const backgroundFeatures = this.resolved!.features
-        .filter((f) => f.source.origin === 'background')
-        .map((f) => f.feature.id);
+      const backgroundFeatures = this.resolved!.features.filter((f) => f.source.origin === 'background').map(
+        (f) => f.feature.id
+      );
       throw new Error(
         `Expected direct-feature "${featureId}" in resolved features; background-origin features: ${JSON.stringify(backgroundFeatures)}`
       );

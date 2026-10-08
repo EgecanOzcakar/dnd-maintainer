@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { usePartyState } from '@/hooks/usePartyState';
 import { usePartyInitiatives } from '@/hooks/usePartyInitiatives';
 import { usePartyNpcs } from '@/hooks/usePartyNpcs';
@@ -12,6 +13,7 @@ interface FloatingPartyBarProps {
 }
 
 export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPartyBarProps) {
+  const { t: tc } = useTranslation('common');
   const { data: partyState } = usePartyState(campaignId);
   const { data: partyInitState } = usePartyInitiatives(campaignId);
   const { data: partyNpcIds = [] } = usePartyNpcs(campaignId);
@@ -59,7 +61,9 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
         {/* Left Title Label - Fixed Width to Keep Grid Vertical Start Aligned */}
         <div className="flex items-center gap-2 shrink-0 md:w-32 md:pt-1">
           <Swords className="size-4 text-primary animate-pulse" />
-          <span className="text-xs font-extrabold uppercase tracking-wider text-foreground">Party Status</span>
+          <span className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+            {tc('partyTracker.barTitle')}
+          </span>
         </div>
 
         {/* Strictly Aligned 6-Column Grid Layout */}
@@ -108,7 +112,9 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
                       className="flex items-center justify-center gap-1 px-1 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 w-full"
                       title="Initiative Score"
                     >
-                      <span className="text-[9px] uppercase font-sans font-bold text-muted-foreground">Init</span>
+                      <span className="text-[9px] uppercase font-sans font-bold text-muted-foreground">
+                        {tc('partyTracker.init')}
+                      </span>
                       <span className="font-black text-xs">
                         {initiative !== null ? (initiative >= 0 ? `+${initiative}` : initiative) : '--'}
                       </span>

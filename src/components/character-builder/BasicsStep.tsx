@@ -34,6 +34,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { MoreHorizontal, Wand2 } from 'lucide-react';
 import { CLASS_ICONS } from '@/lib/class-icons';
 import type { BackgroundId } from '@/lib/dnd-helpers';
+import type { SubclassId } from '@/types/sources';
 import {
   backgroundHasLaterChoices,
   classHasLaterChoices,
@@ -210,7 +211,7 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
             new Map(Object.entries(row.choices ?? {}) as [ChoiceKey, ChoiceDecision][])
           );
         } else {
-          context.replaceLevel(row.sequence, row.class_id as ClassId, (row.subclass_id as any) ?? null);
+          context.replaceLevel(row.sequence, row.class_id as ClassId, (row.subclass_id as SubclassId | null) ?? null);
           if (row.choices) {
             for (const [key, dec] of Object.entries(row.choices)) {
               context.makeChoice(key as ChoiceKey, dec);

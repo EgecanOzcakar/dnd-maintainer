@@ -323,9 +323,7 @@ export function resolveEquippedArmorAc(
   const equippedShield = equippedItems.find(
     (item) => item.equipped && item.itemDef.type === 'armor' && item.itemDef.category === 'shield'
   );
-  const isShieldProficient = armorProficiencies
-    ? isProficientWithArmor('shield', armorProficiencies)
-    : true;
+  const isShieldProficient = armorProficiencies ? isProficientWithArmor('shield', armorProficiencies) : true;
   const shieldBonus = equippedShield && isShieldProficient ? 2 : 0;
   const hasNonProficientShield = Boolean(equippedShield && armorProficiencies && !isShieldProficient);
 
@@ -335,9 +333,9 @@ export function resolveEquippedArmorAc(
 
   const hasNonProficientBodyArmor = Boolean(
     equippedBodyArmor &&
-      equippedBodyArmor.itemDef.type === 'armor' &&
-      armorProficiencies &&
-      !isProficientWithArmor(equippedBodyArmor.itemDef.category, armorProficiencies)
+    equippedBodyArmor.itemDef.type === 'armor' &&
+    armorProficiencies &&
+    !isProficientWithArmor(equippedBodyArmor.itemDef.category, armorProficiencies)
   );
 
   if (!equippedBodyArmor && shieldBonus === 0) return null;

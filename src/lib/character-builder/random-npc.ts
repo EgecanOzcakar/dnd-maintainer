@@ -24,7 +24,7 @@ import type { ClassSource } from '@/types/sources';
 import { createChoiceKey, parseChoiceKey, type ChoiceDecision, type ChoiceKey } from '@/types/choices';
 import { SUBCLASS_IDS_BY_CLASS } from '@/lib/sources/subclasses';
 import { FEAT_SOURCES } from '@/lib/sources';
-import { getSpellsForList } from '@/lib/sources/spells';
+import { getSpellsForList, type SpellId } from '@/lib/sources/spells';
 import { getBundleDef, getItemsForSlot } from '@/lib/sources/bundles';
 import { reconstructBuild, type BuildLevelRow } from '@/lib/build-reconstruction';
 import { collectBundles } from '@/lib/sources/index';
@@ -288,7 +288,11 @@ function findGrantRowIndex(
   return { ok: true, index: idx };
 }
 
-export function applyDecisionToRows(rows: BuildLevelRow[], choiceKey: ChoiceKey, decision: ChoiceDecision): string | null {
+export function applyDecisionToRows(
+  rows: BuildLevelRow[],
+  choiceKey: ChoiceKey,
+  decision: ChoiceDecision
+): string | null {
   if (decision.type === 'subclass' || decision.type === 'asi') {
     const { origin, id: classId, index: grantIndex } = parseChoiceKey(choiceKey);
     if (decision.type === 'asi' && (origin === 'background' || origin === 'species')) {
@@ -474,7 +478,7 @@ export function generateDecisionForPendingChoice(
       const unchosen = spells.map((s) => s.id).filter((id) => !known.has(id));
       const pool = unchosen.length >= choice.count ? unchosen : spells.map((s) => s.id);
       const picked = shuffle(pool, rng).slice(0, choice.count);
-      return { type: 'spell-choice', spellIds: picked as any };
+      return { type: 'spell-choice', spellIds: picked as readonly SpellId[] };
     }
     default:
       return null;
@@ -595,9 +599,7 @@ export function ensureNpcReadyToCreate(
   } else if (levelRows[0].class_id !== classId) {
     const targetSeq = levelRows[0].sequence;
     updatedRows = updatedRows.map((r) =>
-      r.sequence === targetSeq
-        ? { ...r, class_id: classId, subclass_id: null, asi_allocation: null, choices: {} }
-        : r
+      r.sequence === targetSeq ? { ...r, class_id: classId, subclass_id: null, asi_allocation: null, choices: {} } : r
     );
   }
 
@@ -630,7 +632,7 @@ export function ensureNpcReadyToCreate(
 
   const classSource = CLASS_SOURCES.find((c) => c.id === classId);
   const qb = classSource?.quickBuild;
-  const highest = qb ? pick(qb.highestAbility, rng) ?? 'str' : (classSource?.primaryAbility as AbilityKey) ?? 'str';
+  const highest = qb ? (pick(qb.highestAbility, rng) ?? 'str') : ((classSource?.primaryAbility as AbilityKey) ?? 'str');
   const secondary = qb ? qb.secondaryAbility : highest === 'con' ? 'str' : 'con';
   const baseAbilities = hasBaseAbilities ? creationRow.base_abilities! : assignStandardArray(highest, secondary, rng);
 
@@ -679,4 +681,3 @@ export function ensureNpcReadyToCreate(
 
   return { character: updatedChar, rows: updatedRows };
 }
-

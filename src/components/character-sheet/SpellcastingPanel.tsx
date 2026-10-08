@@ -9,25 +9,48 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Dices, AlertTriangle } from 'lucide-react';
 import { useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 
 type Spellcasting = NonNullable<ResolvedCharacter['spellcasting']>;
 
-function renderSpellBadge(id: string) {
+function renderSpellBadge(id: string, tc: TFunction<'common'>) {
   if (!isSpellId(id)) return null;
   const def = getSpellDef(id);
   if (!def) return null;
 
   const cost = def.castingTime.toLowerCase();
   if (cost === 'action') {
-    return <Badge variant="default" className="text-[9px] py-0 px-1 ml-1.5 bg-primary/80 shrink-0">Action</Badge>;
+    return (
+      <Badge variant="default" className="text-[9px] py-0 px-1 ml-1.5 bg-primary/80 shrink-0">
+        {tc('spellcastingPanel.action')}
+      </Badge>
+    );
   }
   if (cost === 'bonus action') {
-    return <Badge variant="secondary" className="text-[9px] py-0 px-1 ml-1.5 bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0">Bonus Action</Badge>;
+    return (
+      <Badge
+        variant="secondary"
+        className="text-[9px] py-0 px-1 ml-1.5 bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0"
+      >
+        {tc('spellcastingPanel.bonusAction')}
+      </Badge>
+    );
   }
   if (cost.startsWith('reaction')) {
-    return <Badge variant="secondary" className="text-[9px] py-0 px-1 ml-1.5 bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0">Reaction</Badge>;
+    return (
+      <Badge
+        variant="secondary"
+        className="text-[9px] py-0 px-1 ml-1.5 bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0"
+      >
+        {tc('spellcastingPanel.reaction')}
+      </Badge>
+    );
   }
-  return <Badge variant="outline" className="text-[9px] py-0 px-1 ml-1.5 text-muted-foreground shrink-0">{def.castingTime}</Badge>;
+  return (
+    <Badge variant="outline" className="text-[9px] py-0 px-1 ml-1.5 text-muted-foreground shrink-0">
+      {def.castingTime}
+    </Badge>
+  );
 }
 
 const KEYWORD_STYLES: { regex: RegExp; className: string }[] = [
@@ -44,7 +67,8 @@ const KEYWORD_STYLES: { regex: RegExp; className: string }[] = [
     className: 'font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1 py-0.2 rounded',
   },
   {
-    regex: /\b(Acid|Bludgeoning|Cold|Fire|Force|Lightning|Necrotic|Piercing|Poison|Psychic|Radiant|Slashing|Thunder)\b/gi,
+    regex:
+      /\b(Acid|Bludgeoning|Cold|Fire|Force|Lightning|Necrotic|Piercing|Poison|Psychic|Radiant|Slashing|Thunder)\b/gi,
     className: 'font-semibold text-rose-600 dark:text-rose-400',
   },
 ];
@@ -108,6 +132,7 @@ function SpellItemRow({
   onSelectRollPreset?: (preset: RollPreset) => void;
 }) {
   const { t } = useTranslation('gamedata');
+  const { t: tc } = useTranslation('common');
   const [expanded, setExpanded] = useState(false);
 
   const def = isSpellId(id) ? getSpellDef(id) : null;
@@ -171,7 +196,8 @@ function SpellItemRow({
 
           {displaySchool && (
             <span className="text-xs text-muted-foreground shrink-0 hidden sm:inline">
-              ({level !== undefined && level > 0 ? `lvl ${level} ` : ''}{displaySchool})
+              ({level !== undefined && level > 0 ? `lvl ${level} ` : ''}
+              {displaySchool})
             </span>
           )}
 
@@ -185,7 +211,7 @@ function SpellItemRow({
             </Badge>
           )}
 
-          {renderSpellBadge(id)}
+          {renderSpellBadge(id, tc)}
         </button>
 
         {onSelectRollPreset && (
@@ -197,7 +223,7 @@ function SpellItemRow({
             className="h-6 px-1.5 text-[10px] gap-0.5 text-indigo-500 hover:bg-indigo-500/10 shrink-0"
             title={`Select ${spellName} for Dice Roller`}
           >
-            <Dices className="size-3" /> Roll
+            <Dices className="size-3" /> {tc('rollButtons.roll')}
           </Button>
         )}
       </div>
@@ -207,10 +233,23 @@ function SpellItemRow({
           <p className="text-muted-foreground leading-relaxed">{highlightText(description)}</p>
           {def && (
             <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground/80 font-mono pt-1 border-t border-border/30">
-              <span><strong className="text-foreground/80 font-sans">Range:</strong> {def.range}</span>
-              <span><strong className="text-foreground/80 font-sans">Duration:</strong> {def.duration}</span>
-              {def.concentration && <span className="text-amber-600 dark:text-amber-400 font-sans font-semibold">Concentration</span>}
-              {def.ritual && <span className="text-purple-600 dark:text-purple-400 font-sans font-semibold">Ritual</span>}
+              <span>
+                <strong className="text-foreground/80 font-sans">{tc('spellcastingPanel.range')}</strong> {def.range}
+              </span>
+              <span>
+                <strong className="text-foreground/80 font-sans">{tc('spellcastingPanel.duration')}</strong>{' '}
+                {def.duration}
+              </span>
+              {def.concentration && (
+                <span className="text-amber-600 dark:text-amber-400 font-sans font-semibold">
+                  {tc('spellcastingPanel.concentration')}
+                </span>
+              )}
+              {def.ritual && (
+                <span className="text-purple-600 dark:text-purple-400 font-sans font-semibold">
+                  {tc('spellcastingPanel.ritual')}
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -232,6 +271,7 @@ function FeatureRow({
   saveAbility?: string;
   onSelectRollPreset?: (preset: RollPreset) => void;
 }) {
+  const { t: tc } = useTranslation('common');
   const [expanded, setExpanded] = useState(false);
 
   const handleSelectFeature = () => {
@@ -278,12 +318,18 @@ function FeatureRow({
 
           <span className="text-sm font-semibold text-foreground truncate">{name}</span>
 
-          <Badge variant="secondary" className="text-[9px] py-0 px-1 ml-1.5 bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0">
-            Ability / Action
+          <Badge
+            variant="secondary"
+            className="text-[9px] py-0 px-1 ml-1.5 bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0"
+          >
+            {tc('spellcastingPanel.abilityAction')}
           </Badge>
 
           {saveDC !== undefined && (
-            <Badge variant="outline" className="text-[9px] py-0 px-1 ml-1 font-mono border-amber-500/40 text-amber-600 dark:text-amber-400 shrink-0">
+            <Badge
+              variant="outline"
+              className="text-[9px] py-0 px-1 ml-1 font-mono border-amber-500/40 text-amber-600 dark:text-amber-400 shrink-0"
+            >
               DC {saveDC} {saveAbility?.toUpperCase()}
             </Badge>
           )}
@@ -298,7 +344,7 @@ function FeatureRow({
             className="h-6 px-1.5 text-[10px] gap-0.5 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 shrink-0"
             title={`Select ${name} for Dice Roller`}
           >
-            <Dices className="size-3" /> Roll
+            <Dices className="size-3" /> {tc('rollButtons.roll')}
           </Button>
         )}
       </div>
@@ -325,11 +371,12 @@ export function SpellcastingPanel({
   const { t: tc } = useTranslation('common');
 
   // Group knownSpells by level, ascending
-  const spellsByLevel = spellcasting?.knownSpells.reduce<Record<number, string[]>>((acc, { spellId, spellLevel }) => {
-    const group = acc[spellLevel] ?? [];
-    group.push(spellId);
-    return { ...acc, [spellLevel]: group };
-  }, {}) ?? {};
+  const spellsByLevel =
+    spellcasting?.knownSpells.reduce<Record<number, string[]>>((acc, { spellId, spellLevel }) => {
+      const group = acc[spellLevel] ?? [];
+      group.push(spellId);
+      return { ...acc, [spellLevel]: group };
+    }, {}) ?? {};
   const sortedLevels = Object.keys(spellsByLevel)
     .map(Number)
     .sort((a, b) => a - b);
@@ -414,26 +461,63 @@ export function SpellcastingPanel({
   ]);
 
   const SUBCLASS_PREFIXES = [
-    'berserker-', 'wildheart-', 'worldtree-', 'zealot-',
-    'collegedance-', 'collegeglamour-', 'collegelore-', 'collegevalor-',
-    'lifedomain-', 'lightdomain-', 'trickerydomain-', 'wardomain-',
-    'circleland-', 'circlemoon-', 'circlesea-', 'circlestars-',
-    'champion-', 'battlemaster-', 'eldritchknight-', 'psiwarrior-',
-    'warriorofmercy-', 'warriorofshadow-', 'warriorofelements-', 'warrioropenhand-',
-    'oathofdevotion-', 'oathofglory-', 'oathofancients-', 'oathofvengeance-',
-    'beastmaster-', 'feywanderer-', 'gloomstalker-', 'hunter-',
-    'thief-', 'assassin-', 'arcanetrickster-', 'soulknife-',
-    'aberrantsorcery-', 'clockworksorcery-', 'draconicsorcery-', 'wildmagicsorcery-',
-    'archfeypatron-', 'celestialpatron-', 'fiendpatron-', 'greatoldonepatron-',
-    'abjurer-', 'diviner-', 'evoker-', 'illusionist-',
+    'berserker-',
+    'wildheart-',
+    'worldtree-',
+    'zealot-',
+    'collegedance-',
+    'collegeglamour-',
+    'collegelore-',
+    'collegevalor-',
+    'lifedomain-',
+    'lightdomain-',
+    'trickerydomain-',
+    'wardomain-',
+    'circleland-',
+    'circlemoon-',
+    'circlesea-',
+    'circlestars-',
+    'champion-',
+    'battlemaster-',
+    'eldritchknight-',
+    'psiwarrior-',
+    'warriorofmercy-',
+    'warriorofshadow-',
+    'warriorofelements-',
+    'warrioropenhand-',
+    'oathofdevotion-',
+    'oathofglory-',
+    'oathofancients-',
+    'oathofvengeance-',
+    'beastmaster-',
+    'feywanderer-',
+    'gloomstalker-',
+    'hunter-',
+    'thief-',
+    'assassin-',
+    'arcanetrickster-',
+    'soulknife-',
+    'aberrantsorcery-',
+    'clockworksorcery-',
+    'draconicsorcery-',
+    'wildmagicsorcery-',
+    'archfeypatron-',
+    'celestialpatron-',
+    'fiendpatron-',
+    'greatoldonepatron-',
+    'abjurer-',
+    'diviner-',
+    'evoker-',
+    'illusionist-',
   ];
 
-  const activeFeatures = resolved?.features.filter((f) => {
-    const id = f.feature.id;
-    if (CORE_CLASS_FEATURE_IDS.has(id)) return true;
-    if (id.startsWith('feat-')) return true;
-    return SUBCLASS_PREFIXES.some((prefix) => id.startsWith(prefix));
-  }) ?? [];
+  const activeFeatures =
+    resolved?.features.filter((f) => {
+      const id = f.feature.id;
+      if (CORE_CLASS_FEATURE_IDS.has(id)) return true;
+      if (id.startsWith('feat-')) return true;
+      return SUBCLASS_PREFIXES.some((prefix) => id.startsWith(prefix));
+    }) ?? [];
 
   return (
     <div className="bg-card border border-purple-200 dark:border-purple-900/50 rounded-lg p-6">
@@ -444,50 +528,55 @@ export function SpellcastingPanel({
       {spellcasting?.cannotCastSpells && (
         <div className="mb-4 p-3 bg-amber-500/15 border border-amber-500/40 rounded text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2 font-medium">
           <AlertTriangle className="size-4 shrink-0 text-amber-500" />
-          <span>Cannot Cast Spells — You are wearing armor without training.</span>
+          <span>{tc('spellcastingPanel.cannotCast')}</span>
         </div>
       )}
 
       {/* Spellcasting stats header */}
-      {spellcasting && (spellcasting.ability != null || spellcasting.spellSaveDC != null || spellcasting.spellAttackBonus != null) && (
-        <div className="flex flex-wrap gap-4 mb-4 text-sm border-b border-border pb-3">
-          {spellcasting.ability != null && (
-            <div className="text-center">
-              <div className="text-xs text-muted-foreground mb-1">
-                {tc('characterSheet.fields.spellcastingAbility')}
+      {spellcasting &&
+        (spellcasting.ability != null || spellcasting.spellSaveDC != null || spellcasting.spellAttackBonus != null) && (
+          <div className="flex flex-wrap gap-4 mb-4 text-sm border-b border-border pb-3">
+            {spellcasting.ability != null && (
+              <div className="text-center">
+                <div className="text-xs text-muted-foreground mb-1">
+                  {tc('characterSheet.fields.spellcastingAbility')}
+                </div>
+                <div className="font-bold text-foreground">{t(`abilities.${spellcasting.ability}`)}</div>
               </div>
-              <div className="font-bold text-foreground">{t(`abilities.${spellcasting.ability}`)}</div>
-            </div>
-          )}
-          {spellcasting.spellSaveDC != null && (
-            <div className="text-center">
-              <div className="text-xs text-muted-foreground mb-1">{tc('characterSheet.fields.spellSaveDC')}</div>
-              <div className="font-bold text-foreground">{spellcasting.spellSaveDC}</div>
-            </div>
-          )}
-          {spellcasting.spellAttackBonus != null && (
-            <div className="text-center">
-              <div className="text-xs text-muted-foreground mb-1">{tc('characterSheet.fields.spellAttackBonus')}</div>
-              <div className="font-bold text-foreground">
-                {spellcasting.spellAttackBonus >= 0 ? '+' : ''}
-                {spellcasting.spellAttackBonus}
+            )}
+            {spellcasting.spellSaveDC != null && (
+              <div className="text-center">
+                <div className="text-xs text-muted-foreground mb-1">{tc('characterSheet.fields.spellSaveDC')}</div>
+                <div className="font-bold text-foreground">{spellcasting.spellSaveDC}</div>
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+            {spellcasting.spellAttackBonus != null && (
+              <div className="text-center">
+                <div className="text-xs text-muted-foreground mb-1">{tc('characterSheet.fields.spellAttackBonus')}</div>
+                <div className="font-bold text-foreground">
+                  {spellcasting.spellAttackBonus >= 0 ? '+' : ''}
+                  {spellcasting.spellAttackBonus}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
       <div className="space-y-4">
         {/* Active Class Features & Ki / Focus Actions */}
         {activeFeatures.length > 0 && (
           <div>
             <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
-              Class Abilities & Actions
+              {tc('spellcastingPanel.classAbilities')}
             </div>
             <div className="space-y-1.5">
               {activeFeatures.map((rf, i) => {
-                const featName = t(`features.${rf.feature.id}.name`, { defaultValue: rf.feature.name ?? rf.feature.id });
-                const featDesc = t(`features.${rf.feature.id}.description`, { defaultValue: rf.feature.description ?? '' });
+                const featName = t(`features.${rf.feature.id}.name`, {
+                  defaultValue: rf.feature.name ?? rf.feature.id,
+                });
+                const featDesc = t(`features.${rf.feature.id}.description`, {
+                  defaultValue: rf.feature.description ?? '',
+                });
                 return (
                   <FeatureRow
                     key={i}
@@ -545,36 +634,37 @@ export function SpellcastingPanel({
           </div>
         )}
 
-        {spellcasting && sortedLevels.map((lvl) => {
-          const ids = spellsByLevel[lvl];
-          if (!ids || ids.length === 0) return null;
+        {spellcasting &&
+          sortedLevels.map((lvl) => {
+            const ids = spellsByLevel[lvl];
+            if (!ids || ids.length === 0) return null;
 
-          const targetCount = spellcasting.spellsKnown.find((sk) => sk.spellLevel === lvl)?.count;
-          const levelHeader =
-            lvl === 0
-              ? tc('characterSheet.fields.spellLevelUnknown')
-              : targetCount !== undefined
-                ? `${tc('characterSheet.fields.spellLevelLabel', { level: lvl })} (${tc('characterSheet.fields.chosenOfTarget', { chosen: ids.length, target: targetCount })})`
-                : tc('characterSheet.fields.spellLevelLabel', { level: lvl });
+            const targetCount = spellcasting.spellsKnown.find((sk) => sk.spellLevel === lvl)?.count;
+            const levelHeader =
+              lvl === 0
+                ? tc('characterSheet.fields.spellLevelUnknown')
+                : targetCount !== undefined
+                  ? `${tc('characterSheet.fields.spellLevelLabel', { level: lvl })} (${tc('characterSheet.fields.chosenOfTarget', { chosen: ids.length, target: targetCount })})`
+                  : tc('characterSheet.fields.spellLevelLabel', { level: lvl });
 
-          return (
-            <div key={lvl}>
-              <div className="text-xs font-bold text-muted-foreground mb-2">{levelHeader}</div>
-              <div className="space-y-1">
-                {ids.map((id) => (
-                  <SpellItemRow
-                    key={id}
-                    id={id}
-                    level={lvl}
-                    spellAttackBonus={spellcasting.spellAttackBonus}
-                    abilityOverride={spellcasting.spellAbilityOverrides[id]}
-                    onSelectRollPreset={onSelectRollPreset}
-                  />
-                ))}
+            return (
+              <div key={lvl}>
+                <div className="text-xs font-bold text-muted-foreground mb-2">{levelHeader}</div>
+                <div className="space-y-1">
+                  {ids.map((id) => (
+                    <SpellItemRow
+                      key={id}
+                      id={id}
+                      level={lvl}
+                      spellAttackBonus={spellcasting.spellAttackBonus}
+                      abilityOverride={spellcasting.spellAbilityOverrides[id]}
+                      onSelectRollPreset={onSelectRollPreset}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     </div>
   );

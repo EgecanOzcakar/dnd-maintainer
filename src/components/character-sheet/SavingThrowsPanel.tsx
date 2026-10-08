@@ -52,7 +52,10 @@ export function SavingThrowsPanel({
           const abilityName = t(`abilities.${ability}`);
 
           return (
-            <div key={ability} className="flex justify-between items-center text-foreground hover:bg-muted/40 p-1 rounded transition-colors group">
+            <div
+              key={ability}
+              className="flex justify-between items-center text-foreground hover:bg-muted/40 p-1 rounded transition-colors group"
+            >
               <button
                 type="button"
                 onClick={() => handleSelectSave(ability, save.bonus)}
@@ -85,7 +88,7 @@ export function SavingThrowsPanel({
                     className="h-6 px-1.5 text-[10px] gap-0.5 text-primary hover:bg-primary/10"
                     title={`Roll ${abilityName} Saving Throw`}
                   >
-                    <Dices className="size-3" /> Roll
+                    <Dices className="size-3" /> {tc('rollButtons.roll')}
                   </Button>
                 )}
               </div>

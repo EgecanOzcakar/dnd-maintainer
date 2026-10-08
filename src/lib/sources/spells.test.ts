@@ -156,7 +156,9 @@ describe('spell-grant catalog invariant', () => {
     }
 
     for (const [speciesId, lineageMap] of Object.entries(LINEAGE_GRANTS_REGISTRY)) {
-      for (const [lineageId, grants] of Object.entries(lineageMap as Record<string, readonly any[]>)) {
+      for (const [lineageId, grants] of Object.entries(
+        lineageMap as Record<string, readonly { type: string; spellId: string }[]>
+      )) {
         for (const grant of grants) {
           if (grant.type === 'spell' && !getSpellDef(grant.spellId)) {
             missing.push(`species-lineage:${speciesId}:${lineageId} → "${grant.spellId}"`);

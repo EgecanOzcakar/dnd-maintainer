@@ -13,7 +13,7 @@ export interface CharacterRollEntry {
 export interface PartyFullState {
   campaignId: string;
   initiatives: Record<string, number>; // characterId -> initiative roll
-  hp: Record<string, number>;          // characterId -> current HP
+  hp: Record<string, number>; // characterId -> current HP
   lastRolls: Record<string, CharacterRollEntry>; // characterId -> last rolled dice
   updatedAt: string;
   displayImage?: { url: string; title?: string; caption?: string } | null;
@@ -24,11 +24,7 @@ export function usePartyState(campaignId: string | undefined) {
     queryKey: ['party-state', campaignId],
     queryFn: async (): Promise<PartyFullState | null> => {
       if (!campaignId) return null;
-      const { data, error } = await supabase
-        .from('campaigns')
-        .select('dm_notes')
-        .eq('id', campaignId)
-        .single();
+      const { data, error } = await supabase.from('campaigns').select('dm_notes').eq('id', campaignId).single();
 
       if (error) throw error;
 
@@ -68,13 +64,7 @@ export function useUpdatePartyHP() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      campaignId,
-      hpMap,
-    }: {
-      campaignId: string;
-      hpMap: Record<string, number>;
-    }) => {
+    mutationFn: async ({ campaignId, hpMap }: { campaignId: string; hpMap: Record<string, number> }) => {
       const { data: campaign, error: fetchErr } = await supabase
         .from('campaigns')
         .select('dm_notes')
@@ -166,7 +156,8 @@ export function useRecordCharacterRoll() {
         }
       }
 
-      const existingRolls = (existingMeta.character_rolls as Record<string, unknown>)?.rollsMap ?? existingMeta.character_rolls ?? {};
+      const existingRolls =
+        (existingMeta.character_rolls as Record<string, unknown>)?.rollsMap ?? existingMeta.character_rolls ?? {};
 
       const updatedRolls = {
         ...(typeof existingRolls === 'object' && existingRolls !== null ? existingRolls : {}),
@@ -258,4 +249,3 @@ export function useUpdateSharedImage() {
     },
   });
 }
-

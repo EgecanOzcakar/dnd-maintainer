@@ -1,4 +1,11 @@
-import { renderHook, waitFor, createWrapper, supabase, mockQueryResult, setupMockReset } from '@/test/hook-test-helpers';
+import {
+  renderHook,
+  waitFor,
+  createWrapper,
+  supabase,
+  mockQueryResult,
+  setupMockReset,
+} from '@/test/hook-test-helpers';
 import { vi, describe, it, expect } from 'vitest';
 import { usePartyState, useUpdatePartyHP, useRecordCharacterRoll } from '@/hooks/usePartyState';
 
@@ -16,7 +23,12 @@ describe('usePartyState hooks', () => {
     const sampleDmNotes = JSON.stringify({
       party_initiatives: { campaignId: 'c1', initiatives: { char1: 18 } },
       party_hp: { campaignId: 'c1', hpMap: { char1: 25 } },
-      character_rolls: { campaignId: 'c1', rollsMap: { char1: { formula: '1d20+3', total: 18, rolls: [15], modifier: 3, timestamp: '2026-08-06T12:00:00Z' } } },
+      character_rolls: {
+        campaignId: 'c1',
+        rollsMap: {
+          char1: { formula: '1d20+3', total: 18, rolls: [15], modifier: 3, timestamp: '2026-08-06T12:00:00Z' },
+        },
+      },
     });
 
     mockQueryResult.data = { dm_notes: sampleDmNotes };

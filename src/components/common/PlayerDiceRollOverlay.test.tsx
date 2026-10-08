@@ -41,7 +41,7 @@ describe('PlayerDiceRollOverlay', () => {
           armor_class: 18,
         },
       ],
-    } as any);
+    } as never);
 
     vi.spyOn(usePartyStateModule, 'usePartyState').mockReturnValue({
       data: {
@@ -60,7 +60,7 @@ describe('PlayerDiceRollOverlay', () => {
         },
         updatedAt: new Date().toISOString(),
       },
-    } as any);
+    } as never);
 
     render(<PlayerDiceRollOverlay campaignId="camp-1" />);
 
@@ -89,7 +89,7 @@ describe('PlayerDiceRollOverlay', () => {
           character_type: 'pc',
         },
       ],
-    } as any);
+    } as never);
 
     vi.spyOn(usePartyStateModule, 'usePartyState').mockReturnValue({
       data: {
@@ -107,7 +107,7 @@ describe('PlayerDiceRollOverlay', () => {
         },
         updatedAt: new Date().toISOString(),
       },
-    } as any);
+    } as never);
 
     render(<PlayerDiceRollOverlay campaignId="camp-1" />);
 
@@ -115,7 +115,7 @@ describe('PlayerDiceRollOverlay', () => {
       vi.advanceTimersByTime(650);
     });
 
-    expect(screen.getByText('Nat 20!')).toBeInTheDocument();
+    expect(screen.getByText('rollButtons.nat20')).toBeInTheDocument();
     expect(screen.getByText('25')).toBeInTheDocument();
   });
 
@@ -128,7 +128,7 @@ describe('PlayerDiceRollOverlay', () => {
           character_type: 'pc',
         },
       ],
-    } as any);
+    } as never);
 
     vi.spyOn(usePartyStateModule, 'usePartyState').mockReturnValue({
       data: {
@@ -146,7 +146,7 @@ describe('PlayerDiceRollOverlay', () => {
         },
         updatedAt: new Date().toISOString(),
       },
-    } as any);
+    } as never);
 
     render(<PlayerDiceRollOverlay campaignId="camp-1" />);
 
@@ -154,7 +154,7 @@ describe('PlayerDiceRollOverlay', () => {
       vi.advanceTimersByTime(650);
     });
 
-    expect(screen.getByText('Nat 1!')).toBeInTheDocument();
+    expect(screen.getByText('rollButtons.nat1')).toBeInTheDocument();
     expect(screen.getByText('8')).toBeInTheDocument();
   });
 
@@ -167,7 +167,7 @@ describe('PlayerDiceRollOverlay', () => {
           character_type: 'npc',
         },
       ],
-    } as any);
+    } as never);
 
     vi.spyOn(usePartyStateModule, 'usePartyState').mockReturnValue({
       data: {
@@ -185,7 +185,7 @@ describe('PlayerDiceRollOverlay', () => {
         },
         updatedAt: new Date().toISOString(),
       },
-    } as any);
+    } as never);
 
     render(<PlayerDiceRollOverlay campaignId="camp-1" />);
 
@@ -202,7 +202,7 @@ describe('PlayerDiceRollOverlay', () => {
           character_type: 'pc',
         },
       ],
-    } as any);
+    } as never);
 
     vi.spyOn(usePartyStateModule, 'usePartyState').mockReturnValue({
       data: {
@@ -220,7 +220,7 @@ describe('PlayerDiceRollOverlay', () => {
         },
         updatedAt: new Date().toISOString(),
       },
-    } as any);
+    } as never);
 
     render(<PlayerDiceRollOverlay campaignId="camp-1" />);
 
@@ -236,7 +236,7 @@ describe('PlayerDiceRollOverlay', () => {
           character_type: 'pc',
         },
       ],
-    } as any);
+    } as never);
 
     vi.spyOn(usePartyStateModule, 'usePartyState').mockReturnValue({
       data: {
@@ -254,7 +254,7 @@ describe('PlayerDiceRollOverlay', () => {
         },
         updatedAt: new Date().toISOString(),
       },
-    } as any);
+    } as never);
 
     render(<PlayerDiceRollOverlay campaignId="camp-1" />);
 

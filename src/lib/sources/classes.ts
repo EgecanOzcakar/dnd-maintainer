@@ -20,16 +20,56 @@ const ROGUE_SKILL_POOL = [
 ] as const;
 
 const SORCERER_METAMAGIC_OPTIONS: FeatureChoiceGrant['options'] = [
-  { optionId: 'careful-spell', featureId: 'metamagic-careful-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-careful-spell' } }] },
-  { optionId: 'distant-spell', featureId: 'metamagic-distant-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-distant-spell' } }] },
-  { optionId: 'empowered-spell', featureId: 'metamagic-empowered-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-empowered-spell' } }] },
-  { optionId: 'extended-spell', featureId: 'metamagic-extended-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-extended-spell' } }] },
-  { optionId: 'heightened-spell', featureId: 'metamagic-heightened-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-heightened-spell' } }] },
-  { optionId: 'quickened-spell', featureId: 'metamagic-quickened-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-quickened-spell' } }] },
-  { optionId: 'seeking-spell', featureId: 'metamagic-seeking-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-seeking-spell' } }] },
-  { optionId: 'subtle-spell', featureId: 'metamagic-subtle-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-subtle-spell' } }] },
-  { optionId: 'transmuted-spell', featureId: 'metamagic-transmuted-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-transmuted-spell' } }] },
-  { optionId: 'twinned-spell', featureId: 'metamagic-twinned-spell', grants: [{ type: 'feature', feature: { id: 'metamagic-twinned-spell' } }] },
+  {
+    optionId: 'careful-spell',
+    featureId: 'metamagic-careful-spell',
+    grants: [{ type: 'feature', feature: { id: 'metamagic-careful-spell' } }],
+  },
+  {
+    optionId: 'distant-spell',
+    featureId: 'metamagic-distant-spell',
+    grants: [{ type: 'feature', feature: { id: 'metamagic-distant-spell' } }],
+  },
+  {
+    optionId: 'empowered-spell',
+    featureId: 'metamagic-empowered-spell',
+    grants: [{ type: 'feature', feature: { id: 'metamagic-empowered-spell' } }],
+  },
+  {
+    optionId: 'extended-spell',
+    featureId: 'metamagic-extended-spell',
+    grants: [{ type: 'feature', feature: { id: 'metamagic-extended-spell' } }],
+  },
+  {
+    optionId: 'heightened-spell',
+    featureId: 'metamagic-heightened-spell',
+    grants: [{ type: 'feature', feature: { id: 'metamagic-heightened-spell' } }],
+  },
+  {
+    optionId: 'quickened-spell',
+    featureId: 'metamagic-quickened-spell',
+    grants: [{ type: 'feature', feature: { id: 'metamagic-quickened-spell' } }],
+  },
+  {
+    optionId: 'seeking-spell',
+    featureId: 'metamagic-seeking-spell',
+    grants: [{ type: 'feature', feature: { id: 'metamagic-seeking-spell' } }],
+  },
+  {
+    optionId: 'subtle-spell',
+    featureId: 'metamagic-subtle-spell',
+    grants: [{ type: 'feature', feature: { id: 'metamagic-subtle-spell' } }],
+  },
+  {
+    optionId: 'transmuted-spell',
+    featureId: 'metamagic-transmuted-spell',
+    grants: [{ type: 'feature', feature: { id: 'metamagic-transmuted-spell' } }],
+  },
+  {
+    optionId: 'twinned-spell',
+    featureId: 'metamagic-twinned-spell',
+    grants: [{ type: 'feature', feature: { id: 'metamagic-twinned-spell' } }],
+  },
 ];
 
 export const CLASS_SOURCES: readonly ClassSource[] = [
@@ -115,7 +155,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'barbarian', 0), points: 2, from: null },
-          { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'barbarian', 0), from: null, category: 'general' },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'barbarian', 0),
+            from: null,
+            category: 'general',
+          },
           {
             type: 'weapon-mastery-choice',
             key: createChoiceKey('weapon-mastery-choice', 'class', 'barbarian', 1),
@@ -136,7 +181,17 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'feature', feature: { id: 'barbarian-instinctive-pounce' } },
         ],
       },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'barbarian', 1), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'barbarian', 1), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'barbarian', 1), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'barbarian', 1),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-brutal-strike' } }] },
       {
         grants: [
@@ -148,11 +203,31 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-relentless-rage' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'barbarian', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'barbarian', 2), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'barbarian', 2), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'barbarian', 2),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-improved-brutal-strike' } }] },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'barbarian-persistent-rage' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'barbarian', 3), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'barbarian', 3), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'barbarian', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'barbarian', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-improved-brutal-strike-2' } }] },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-indomitable-might' } }] },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-epic-boon' } }] },
@@ -255,7 +330,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         // L4: +1 cantrip (index 1), +1 spell known (highest: 2)
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'bard', 0), points: 2, from: null },
-          { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'bard', 0), from: null, category: 'general' },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'bard', 0),
+            from: null,
+            category: 'general',
+          },
           {
             type: 'spell-choice',
             key: createChoiceKey('spell-choice', 'class', 'bard', 1),
@@ -314,7 +394,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         // L8: +1 spell known (highest: 4)
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'bard', 1), points: 2, from: null },
-          { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'bard', 1), from: null, category: 'general' },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'bard', 1),
+            from: null,
+            category: 'general',
+          },
           {
             type: 'spell-choice',
             key: createChoiceKey('spell-choice', 'class', 'bard', 10),
@@ -375,7 +460,17 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'bard', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'bard', 2), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'bard', 2), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'bard', 2),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       {
         // L13: +1 spell known (highest: 7)
         grants: [
@@ -413,7 +508,17 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'bard', 3), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'bard', 3), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'bard', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'bard', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       {
         // L17: +1 spell known (highest: 9)
         grants: [
@@ -439,7 +544,17 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'bard', 4), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'bard', 4), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'bard', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'bard', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'bard-epic-boon' } }] },
     ],
   },
@@ -516,7 +631,17 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [{ type: 'feature', feature: { id: 'cleric-channel-divinity' } }],
       },
       { grants: [{ type: 'subclass', classId: 'cleric', key: createChoiceKey('subclass', 'class', 'cleric', 0) }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 0), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'cleric', 0), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 0), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'cleric', 0),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'cleric-smite-undead' } }] },
       EMPTY_LEVEL,
       {
@@ -541,18 +666,58 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 1), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'cleric', 1), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 1), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'cleric', 1),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'cleric-divine-intervention' } }] },
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'cleric', 2), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 2), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'cleric', 2),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 3), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'cleric', 3), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'cleric', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'cleric-channel-divinity-3' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 4), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'cleric', 4), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'cleric', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'cleric-greater-divine-intervention' } }] },
     ],
   },
@@ -645,7 +810,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         // L4: +1 cantrip (index 1)
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'druid', 0), points: 2, from: null },
-          { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'druid', 0), from: null, category: 'general' },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'druid', 0),
+            from: null,
+            category: 'general',
+          },
           { type: 'feature', feature: { id: 'druid-wild-shape-improvement-1' } },
           {
             type: 'spell-choice',
@@ -683,21 +853,56 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'druid', 1), points: 2, from: null },
-          { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'druid', 1), from: null, category: 'general' },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'druid', 1),
+            from: null,
+            category: 'general',
+          },
           { type: 'feature', feature: { id: 'druid-wild-shape-improvement-2' } },
         ],
       },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'druid', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'druid', 2), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'druid', 2), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'druid', 2),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'druid-improved-elemental-fury' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'druid', 3), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'druid', 3), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'druid', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'druid', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'druid-beast-spells' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'druid', 4), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'druid', 4), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'druid', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'druid', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'druid-archdruid' } }] },
     ],
   },
@@ -783,7 +988,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 0), points: 2, from: null },
-          { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'fighter', 0), from: null, category: 'general' },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'fighter', 0),
+            from: null,
+            category: 'general',
+          },
           {
             type: 'weapon-mastery-choice',
             key: createChoiceKey('weapon-mastery-choice', 'class', 'fighter', 1),
@@ -792,9 +1002,29 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'fighter-extra-attack' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 1), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'fighter', 1), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 1), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'fighter', 1),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'fighter', 2), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 2), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'fighter', 2),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'fighter-indomitable' } }] },
       {
         grants: [
@@ -880,7 +1110,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'monk', 0), points: 2, from: null },
-          { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'monk', 0), from: null, category: 'general' },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'monk', 0),
+            from: null,
+            category: 'general',
+          },
           { type: 'feature', feature: { id: 'monk-slow-fall' } },
         ],
       },
@@ -897,7 +1132,17 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'feature', feature: { id: 'monk-stillness-of-mind' } },
         ],
       },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'monk', 1), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'monk', 1), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'monk', 1), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'monk', 1),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'monk-acrobatic-movement' } }] },
       {
         grants: [
@@ -909,17 +1154,42 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'monk', 2), points: 2, from: null },
-          { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'monk', 2), from: null, category: 'general' },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'monk', 2),
+            from: null,
+            category: 'general',
+          },
           { type: 'feature', feature: { id: 'monk-disciplined-survivor' } },
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'monk-perfect-focus' } }] },
       { grants: [{ type: 'feature', feature: { id: 'monk-diamond-soul' } }] },
       { grants: [{ type: 'feature', feature: { id: 'monk-superior-defense' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'monk', 3), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'monk', 3), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'monk', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'monk', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'monk-body-and-mind' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'monk', 4), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'monk', 4), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'monk', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'monk', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'monk-epic-boon' } }] },
     ],
   },
@@ -984,7 +1254,17 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       { grants: [{ type: 'subclass', classId: 'paladin', key: createChoiceKey('subclass', 'class', 'paladin', 0) }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 0), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'paladin', 0), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 0), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'paladin', 0),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       {
         grants: [
           { type: 'feature', feature: { id: 'paladin-extra-attack' } },
@@ -993,18 +1273,58 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       { grants: [{ type: 'feature', feature: { id: 'paladin-aura-of-protection' } }] },
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 1), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'paladin', 1), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 1), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'paladin', 1),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'paladin-abjure-foes' } }] },
       { grants: [{ type: 'feature', feature: { id: 'paladin-aura-of-courage' } }] },
       { grants: [{ type: 'feature', feature: { id: 'paladin-radiant-strikes' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'paladin', 2), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 2), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'paladin', 2),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'paladin-restoring-touch' } }] },
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 3), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'paladin', 3), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'paladin', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'paladin-aura-expansion' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 4), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'paladin', 4), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'paladin', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'paladin-epic-boon' } }] },
     ],
   },
@@ -1078,7 +1398,17 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [{ type: 'subclass', classId: 'ranger', key: createChoiceKey('subclass', 'class', 'ranger', 0) }],
       },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'ranger', 0), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'ranger', 0), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'ranger', 0), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'ranger', 0),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'ranger-extra-attack' } }] },
       {
         grants: [
@@ -1101,18 +1431,58 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'ranger', 1), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'ranger', 1), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'ranger', 1), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'ranger', 1),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'ranger-conjure-barrage' } }] },
       { grants: [{ type: 'feature', feature: { id: 'ranger-tireless' } }] },
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'ranger', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'ranger', 2), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'ranger', 2), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'ranger', 2),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'ranger-relentless-hunter' } }] },
       { grants: [{ type: 'feature', feature: { id: 'ranger-natures-veil' } }] },
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'ranger', 3), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'ranger', 3), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'ranger', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'ranger', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'ranger-conjure-volley' } }] },
       { grants: [{ type: 'feature', feature: { id: 'ranger-swift-quiver' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'ranger', 4), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'ranger', 4), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'ranger', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'ranger', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'ranger-epic-boon' } }] },
     ],
   },
@@ -1189,7 +1559,17 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       { grants: [{ type: 'feature', feature: { id: 'rogue-cunning-action' } }] },
       { grants: [{ type: 'subclass', classId: 'rogue', key: createChoiceKey('subclass', 'class', 'rogue', 0) }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 0), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'rogue', 0), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 0), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'rogue', 0),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'rogue-uncanny-dodge' } }] },
       {
         grants: [
@@ -1203,9 +1583,29 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'rogue-evasion' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 1), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'rogue', 1), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 1), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'rogue', 1),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'rogue', 2), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 2), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'rogue', 2),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
       EMPTY_LEVEL,
@@ -1290,13 +1690,33 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       { grants: [{ type: 'subclass', classId: 'sorcerer', key: createChoiceKey('subclass', 'class', 'sorcerer', 0) }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 0), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'sorcerer', 0), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 0), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'sorcerer', 0),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'sorcerer-sorcery-incarnate' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 1), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'sorcerer', 1), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 1), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'sorcerer', 1),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
-      { 
+      {
         grants: [
           { type: 'feature', feature: { id: 'sorcerer-metamagic-options' } },
           {
@@ -1309,16 +1729,36 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             key: createChoiceKey('feature-choice', 'class', 'sorcerer', 3),
             options: SORCERER_METAMAGIC_OPTIONS,
           },
-        ] 
+        ],
       },
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'sorcerer', 2), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 2), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'sorcerer', 2),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 3), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'sorcerer', 3), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'sorcerer', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
-      { 
+      {
         grants: [
           { type: 'feature', feature: { id: 'sorcerer-arcane-apotheosis' } },
           {
@@ -1331,9 +1771,19 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             key: createChoiceKey('feature-choice', 'class', 'sorcerer', 5),
             options: SORCERER_METAMAGIC_OPTIONS,
           },
-        ] 
+        ],
       },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 4), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'sorcerer', 4), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'sorcerer', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'sorcerer-sorcerous-restoration' } }] },
     ],
   },
@@ -1411,22 +1861,72 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 0), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'warlock', 0), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 0), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'warlock', 0),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 1), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'warlock', 1), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 1), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'warlock', 1),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'warlock-mystic-arcanum-6' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'warlock', 2), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 2), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'warlock', 2),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'warlock-mystic-arcanum-7' } }] },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'warlock-mystic-arcanum-8' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 3), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'warlock', 3), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'warlock', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'warlock-mystic-arcanum-9' } }] },
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 4), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'warlock', 4), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'warlock', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'warlock-eldritch-master' } }] },
     ],
   },
@@ -1481,22 +1981,72 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       { grants: [{ type: 'feature', feature: { id: 'wizard-scholar' } }] },
       { grants: [{ type: 'subclass', classId: 'wizard', key: createChoiceKey('subclass', 'class', 'wizard', 0) }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 0), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'wizard', 0), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 0), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'wizard', 0),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'wizard-memorize-spell' } }] },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 1), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'wizard', 1), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 1), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'wizard', 1),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 2), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'wizard', 2), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 2), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'wizard', 2),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
       EMPTY_LEVEL,
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 3), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'wizard', 3), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'wizard', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'wizard-spell-mastery' } }] },
-      { grants: [{ type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 4), points: 2, from: null }, { type: 'feat-choice', key: createChoiceKey('feat-choice', 'class', 'wizard', 4), from: null, category: 'general' }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'wizard', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'wizard-signature-spells' } }] },
     ],
   },

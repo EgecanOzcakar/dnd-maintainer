@@ -18,11 +18,7 @@ export function usePartyInitiatives(campaignId: string | undefined) {
     queryKey: ['party-initiatives', campaignId],
     queryFn: async () => {
       if (!campaignId) return null;
-      const { data, error } = await supabase
-        .from('campaigns')
-        .select('dm_notes')
-        .eq('id', campaignId)
-        .single();
+      const { data, error } = await supabase.from('campaigns').select('dm_notes').eq('id', campaignId).single();
 
       if (error) throw error;
 
@@ -49,13 +45,7 @@ export function useUpdatePartyInitiatives() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      campaignId,
-      initiatives,
-    }: {
-      campaignId: string;
-      initiatives: Record<string, number>;
-    }) => {
+    mutationFn: async ({ campaignId, initiatives }: { campaignId: string; initiatives: Record<string, number> }) => {
       // 1. Fetch current campaign row
       const { data: campaign, error: fetchErr } = await supabase
         .from('campaigns')

@@ -314,7 +314,7 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
       { type: 'resistance', damageType: 'radiant' },
       { type: 'feature', feature: { id: 'aasimar-healing-hands' } },
       { type: 'feature', feature: { id: 'aasimar-light-bearer' } },
-    { type: 'spell', spellId: 'light', alwaysPrepared: true },
+      { type: 'spell', spellId: 'light', alwaysPrepared: true },
       { type: 'feature', feature: { id: 'aasimar-celestial-revelation' } },
     ],
   },

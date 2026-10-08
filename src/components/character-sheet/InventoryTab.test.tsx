@@ -45,6 +45,6 @@ describe('InventoryTab', () => {
 
     expect(screen.getByText(/longsword/i)).toBeInTheDocument();
     expect(screen.getByText(/dagger/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Items:/i)).toBeInTheDocument();
+    expect(screen.getByText(/inventory.totalItems/i)).toBeInTheDocument();
   });
 });

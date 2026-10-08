@@ -107,10 +107,7 @@ export function clearAllUnlockedCampaigns(): void {
 /**
  * Calls the Supabase RPC function to verify a passphrase against the campaign's crypt hash.
  */
-export async function verifyCampaignPassphrase(
-  campaignSlug: string,
-  candidatePassphrase: string
-): Promise<boolean> {
+export async function verifyCampaignPassphrase(campaignSlug: string, candidatePassphrase: string): Promise<boolean> {
   const { data, error } = await supabase.rpc('verify_campaign_passphrase', {
     campaign_slug: campaignSlug,
     candidate_passphrase: candidatePassphrase,
@@ -127,10 +124,7 @@ export async function verifyCampaignPassphrase(
 /**
  * Calls the Supabase RPC function to set/update a campaign's passphrase.
  */
-export async function setCampaignPassphrase(
-  campaignId: string,
-  newPassphrase: string
-): Promise<boolean> {
+export async function setCampaignPassphrase(campaignId: string, newPassphrase: string): Promise<boolean> {
   const { data, error } = await supabase.rpc('set_campaign_passphrase', {
     p_campaign_id: campaignId,
     p_passphrase: newPassphrase,

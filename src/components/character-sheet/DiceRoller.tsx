@@ -42,9 +42,7 @@ function HistoryEntry({ entry }: { entry: DiceRollResult }) {
         {sign ? ` ${sign}` : ''}
       </span>
       <div className="flex items-center gap-1.5 text-right">
-        <span className="text-muted-foreground/60 text-[10px]">
-          [{entry.rolls.join(', ')}]
-        </span>
+        <span className="text-muted-foreground/60 text-[10px]">[{entry.rolls.join(', ')}]</span>
         <span className="font-bold text-foreground text-sm w-8 text-right">{entry.total}</span>
       </div>
     </div>
@@ -135,10 +133,13 @@ export function DiceRoller({
   }, [isRolling, count, selectedDie, modifier, onRoll, characterId, campaignId, recordRoll, contextLabel]);
 
   // Keep preset values in sync when parent changes them (e.g. clicking a spell's Roll button)
-  const lastPresetKey = useRef('');
+  const [lastPresetKey, setLastPresetKey] = useState('');
   const presetKey = `${presetDie}-${presetCount}-${presetModifier}`;
-  if (presetKey !== lastPresetKey.current && (presetDie !== undefined || presetCount !== undefined || presetModifier !== undefined)) {
-    lastPresetKey.current = presetKey;
+  if (
+    presetKey !== lastPresetKey &&
+    (presetDie !== undefined || presetCount !== undefined || presetModifier !== undefined)
+  ) {
+    setLastPresetKey(presetKey);
     if (presetDie !== undefined) setSelectedDie(presetDie);
     if (presetCount !== undefined) setCount(presetCount);
     if (presetModifier !== undefined) setModifier(presetModifier);
@@ -148,9 +149,7 @@ export function DiceRoller({
 
   return (
     <div className="space-y-3">
-      {contextLabel && (
-        <div className="text-xs font-semibold text-primary truncate">{contextLabel}</div>
-      )}
+      {contextLabel && <div className="text-xs font-semibold text-primary truncate">{contextLabel}</div>}
 
       {/* Die selector */}
       <div className="flex flex-wrap gap-1.5">
@@ -161,14 +160,13 @@ export function DiceRoller({
             onClick={() => setSelectedDie(d)}
             className={`
               px-2.5 py-1 rounded-md text-xs font-bold border transition-all duration-150
-              ${selectedDie === d
-                ? 'bg-primary text-primary-foreground border-primary shadow-sm scale-105'
-                : 'bg-muted/50 text-muted-foreground border-border hover:border-primary/60 hover:text-foreground hover:bg-muted'
+              ${
+                selectedDie === d
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm scale-105'
+                  : 'bg-muted/50 text-muted-foreground border-border hover:border-primary/60 hover:text-foreground hover:bg-muted'
               }
             `}
-          >
-            d{d}
-          </button>
+          >{`d${d}`}</button>
         ))}
       </div>
 
@@ -204,11 +202,7 @@ export function DiceRoller({
 
       {/* Roll button + result */}
       <div className="flex items-center gap-3">
-        <Button
-          onClick={handleRoll}
-          disabled={isRolling}
-          className="flex-1 gap-2 font-bold"
-        >
+        <Button onClick={handleRoll} disabled={isRolling} className="flex-1 gap-2 font-bold">
           <Dices className={`size-4 ${isRolling ? 'animate-spin' : ''}`} />
           {isRolling
             ? tc('characterSheet.combatView.diceRoller.rolling')

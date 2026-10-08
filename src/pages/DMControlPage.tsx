@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
@@ -34,6 +35,7 @@ import { DisplayModeToggle } from '@/components/battle-map/DisplayModeToggle';
 import { toast } from 'sonner';
 
 export default function DMControlPage() {
+  const { t: tc } = useTranslation('common');
   const { campaignSlug } = useParams<{ campaignSlug: string }>();
   const { campaignId } = useCampaignContext();
 
@@ -249,11 +251,9 @@ export default function DMControlPage() {
         <div>
           <div className="flex items-center gap-2">
             <Swords className="size-6 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">DM Control & Initiative Console</h1>
+            <h1 className="text-2xl font-bold text-foreground">{tc('dmControl.title')}</h1>
           </div>
-          <p className="text-sm text-muted-foreground mt-1">
-            Party HP management, initiative roller, and DM dice roller console.
-          </p>
+          <p className="text-sm text-muted-foreground mt-1">{tc('dmControl.subtitle')}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -262,11 +262,11 @@ export default function DMControlPage() {
             variant="outline"
             className="gap-2 text-rose-500 border-rose-500/30 hover:bg-rose-500/10"
           >
-            <Heart className="size-4 fill-rose-500/20" /> Heal All Party
+            <Heart className="size-4 fill-rose-500/20" /> {tc('dmControl.healAll')}
           </Button>
 
           <Button onClick={handleTriggerInitiatives} className="gap-2 bg-primary hover:bg-primary/90">
-            <Sparkles className="size-4" /> Roll Party Initiative
+            <Sparkles className="size-4" /> {tc('dmControl.rollInitiative')}
           </Button>
 
           {hasInitiatives && (
@@ -275,7 +275,7 @@ export default function DMControlPage() {
               onClick={handleResetInitiatives}
               className="gap-1.5 text-muted-foreground hover:text-destructive"
             >
-              <RotateCcw className="size-4" /> Reset Initiatives
+              <RotateCcw className="size-4" /> {tc('dmControl.resetInitiatives')}
             </Button>
           )}
         </div>
@@ -286,22 +286,17 @@ export default function DMControlPage() {
         <div className="flex items-center justify-between border-b pb-3">
           <div className="flex items-center gap-2">
             <Users className="size-5 text-purple-500" />
-            <h2 className="text-lg font-bold text-foreground">Party Roster & NPC Companions</h2>
+            <h2 className="text-lg font-bold text-foreground">{tc('dmControl.rosterTitle')}</h2>
           </div>
           <span className="text-xs text-muted-foreground font-mono">
-            {pcs.length} in party · {partyNpcIds.length} NPC{partyNpcIds.length === 1 ? '' : 's'}
+            {tc('dmControl.rosterCount', { pcs: pcs.length, count: partyNpcIds.length })}
           </span>
         </div>
 
-        <p className="text-xs text-muted-foreground">
-          NPCs added here appear in the party status bar and initiative tracker, and are included when you roll party
-          initiative or party checks.
-        </p>
+        <p className="text-xs text-muted-foreground">{tc('dmControl.rosterHint')}</p>
 
         {recruitableNpcs.length === 0 ? (
-          <div className="text-center py-6 text-muted-foreground text-sm">
-            No NPCs in this campaign yet. Create an NPC to add them to the party.
-          </div>
+          <div className="text-center py-6 text-muted-foreground text-sm">{tc('dmControl.noNpcs')}</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {recruitableNpcs.map((npc) => {
@@ -332,11 +327,11 @@ export default function DMControlPage() {
                   >
                     {inParty ? (
                       <>
-                        <UserMinus className="size-3.5" /> Remove
+                        <UserMinus className="size-3.5" /> {tc('dmControl.remove')}
                       </>
                     ) : (
                       <>
-                        <UserPlus className="size-3.5" /> Add to Party
+                        <UserPlus className="size-3.5" /> {tc('dmControl.addToParty')}
                       </>
                     )}
                   </Button>
@@ -365,12 +360,9 @@ export default function DMControlPage() {
           <div>
             <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
               <Eye className="size-5 text-sky-500" />
-              <span>Party Perception, Wisdom & Intelligence Checks</span>
+              <span>{tc('dmControl.checksTitle')}</span>
             </h2>
-            <p className="text-xs text-muted-foreground mt-1">
-              Passive scores, check modifiers, and quick rollers for Perception, Wisdom, and Intelligence for all party
-              members.
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">{tc('dmControl.checksHint')}</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -380,7 +372,7 @@ export default function DMControlPage() {
               onClick={() => handleBatchRollCheck('Perception')}
               className="gap-1.5 text-xs text-sky-500 border-sky-500/30 hover:bg-sky-500/10"
             >
-              <Eye className="size-3.5" /> Roll Party Perception
+              <Eye className="size-3.5" /> {tc('dmControl.rollPerception')}
             </Button>
             <Button
               size="sm"
@@ -388,7 +380,7 @@ export default function DMControlPage() {
               onClick={() => handleBatchRollCheck('Wisdom')}
               className="gap-1.5 text-xs text-purple-500 border-purple-500/30 hover:bg-purple-500/10"
             >
-              <Brain className="size-3.5" /> Roll Party Wisdom
+              <Brain className="size-3.5" /> {tc('dmControl.rollWisdom')}
             </Button>
             <Button
               size="sm"
@@ -396,13 +388,13 @@ export default function DMControlPage() {
               onClick={() => handleBatchRollCheck('Intelligence')}
               className="gap-1.5 text-xs text-amber-500 border-amber-500/30 hover:bg-amber-500/10"
             >
-              <BookOpen className="size-3.5" /> Roll Party Intelligence
+              <BookOpen className="size-3.5" /> {tc('dmControl.rollIntelligence')}
             </Button>
           </div>
         </div>
 
         {pcs.length === 0 ? (
-          <div className="text-center py-6 text-muted-foreground text-sm">No characters found in campaign.</div>
+          <div className="text-center py-6 text-muted-foreground text-sm">{tc('dmControl.noCharacters')}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {pcs.map((pc) => {
@@ -436,14 +428,14 @@ export default function DMControlPage() {
                     </div>
                     {stat.perceptionExpertise ? (
                       <Badge variant="outline" className="text-[10px] text-sky-500 border-sky-500/30 bg-sky-500/10">
-                        Expertise
+                        {tc('dmControl.expertise')}
                       </Badge>
                     ) : stat.perceptionProficient ? (
                       <Badge
                         variant="outline"
                         className="text-[10px] text-emerald-500 border-emerald-500/30 bg-emerald-500/10"
                       >
-                        Proficient
+                        {tc('dmControl.proficient')}
                       </Badge>
                     ) : null}
                   </div>
@@ -453,7 +445,7 @@ export default function DMControlPage() {
                     {/* Perception Box */}
                     <div className="p-2 rounded-lg bg-sky-500/10 border border-sky-500/20 space-y-1">
                       <div className="text-[10px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400 flex items-center justify-center gap-1">
-                        <Eye className="size-3" /> Perc.
+                        <Eye className="size-3" /> {tc('dmControl.perc')}
                       </div>
                       <div
                         className="text-lg font-black font-mono text-sky-600 dark:text-sky-400"
@@ -462,7 +454,7 @@ export default function DMControlPage() {
                         {stat.passivePerception}
                       </div>
                       <div className="text-[10px] font-mono text-muted-foreground">
-                        Mod: <span className="font-bold text-foreground">{perceptionModStr}</span>
+                        {tc('dmControl.mod')} <span className="font-bold text-foreground">{perceptionModStr}</span>
                       </div>
                       <Button
                         size="sm"
@@ -470,14 +462,14 @@ export default function DMControlPage() {
                         onClick={() => handleRollCheckForPC(pc, 'Perception', stat.perceptionBonus)}
                         className="h-6 w-full text-[10px] px-1 gap-1 text-sky-600 dark:text-sky-400 hover:bg-sky-500/20"
                       >
-                        <Dices className="size-2.5" /> Roll
+                        <Dices className="size-2.5" /> {tc('dmControl.roll')}
                       </Button>
                     </div>
 
                     {/* Wisdom Box */}
                     <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20 space-y-1">
                       <div className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center justify-center gap-1">
-                        <Brain className="size-3" /> Wis
+                        <Brain className="size-3" /> {tc('dmControl.wis')}
                       </div>
                       <div
                         className="text-lg font-black font-mono text-purple-600 dark:text-purple-400"
@@ -486,7 +478,8 @@ export default function DMControlPage() {
                         {stat.passiveWisdom}
                       </div>
                       <div className="text-[10px] font-mono text-muted-foreground">
-                        Mod: <span className="font-bold text-foreground">{wisModStr}</span> ({stat.wisScore})
+                        {tc('dmControl.mod')} <span className="font-bold text-foreground">{wisModStr}</span> (
+                        {stat.wisScore})
                       </div>
                       <Button
                         size="sm"
@@ -494,14 +487,14 @@ export default function DMControlPage() {
                         onClick={() => handleRollCheckForPC(pc, 'Wisdom', stat.wisMod)}
                         className="h-6 w-full text-[10px] px-1 gap-1 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20"
                       >
-                        <Dices className="size-2.5" /> Roll
+                        <Dices className="size-2.5" /> {tc('dmControl.roll')}
                       </Button>
                     </div>
 
                     {/* Intelligence Box */}
                     <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 space-y-1">
                       <div className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center justify-center gap-1">
-                        <BookOpen className="size-3" /> Int
+                        <BookOpen className="size-3" /> {tc('dmControl.int')}
                       </div>
                       <div
                         className="text-lg font-black font-mono text-amber-600 dark:text-amber-400"
@@ -510,7 +503,8 @@ export default function DMControlPage() {
                         {stat.passiveIntelligence}
                       </div>
                       <div className="text-[10px] font-mono text-muted-foreground">
-                        Mod: <span className="font-bold text-foreground">{intModStr}</span> ({stat.intScore})
+                        {tc('dmControl.mod')} <span className="font-bold text-foreground">{intModStr}</span> (
+                        {stat.intScore})
                       </div>
                       <Button
                         size="sm"
@@ -518,7 +512,7 @@ export default function DMControlPage() {
                         onClick={() => handleRollCheckForPC(pc, 'Intelligence', stat.intMod)}
                         className="h-6 w-full text-[10px] px-1 gap-1 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20"
                       >
-                        <Dices className="size-2.5" /> Roll
+                        <Dices className="size-2.5" /> {tc('dmControl.roll')}
                       </Button>
                     </div>
                   </div>
@@ -534,7 +528,7 @@ export default function DMControlPage() {
         <div className="flex items-center justify-between border-b pb-3">
           <div className="flex items-center gap-2">
             <Heart className="size-5 text-rose-500 fill-rose-500/20" />
-            <h2 className="text-lg font-bold text-foreground">Party HP & Character Management</h2>
+            <h2 className="text-lg font-bold text-foreground">{tc('dmControl.hpTitle')}</h2>
           </div>
           <span className="text-xs text-muted-foreground font-mono">
             {pcs.length} {pcs.length === 1 ? 'Character' : 'Characters'}
@@ -542,7 +536,7 @@ export default function DMControlPage() {
         </div>
 
         {pcs.length === 0 ? (
-          <div className="text-center py-6 text-muted-foreground text-sm">No characters found in campaign.</div>
+          <div className="text-center py-6 text-muted-foreground text-sm">{tc('dmControl.noCharacters')}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {pcs.map((pc) => {
@@ -602,9 +596,9 @@ export default function DMControlPage() {
                   {/* HP Progress Bar */}
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs font-bold font-mono">
-                      <span className="text-muted-foreground">Hit Points</span>
+                      <span className="text-muted-foreground">{tc('dmControl.hitPoints')}</span>
                       <span className={currentHp === 0 ? 'text-destructive font-black' : 'text-foreground'}>
-                        {currentHp} / {maxHp} HP ({percent}%)
+                        {tc('dmControl.hpLine', { current: currentHp, max: maxHp, percent })}
                       </span>
                     </div>
                     <div className="h-2.5 w-full bg-muted rounded-full overflow-hidden border">
@@ -669,7 +663,7 @@ export default function DMControlPage() {
                         onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, -maxHp)}
                         className="h-8 px-2 text-[11px] text-muted-foreground hover:text-destructive"
                       >
-                        0 HP
+                        {tc('dmControl.zeroHp')}
                       </Button>
                       <Button
                         size="sm"
@@ -677,7 +671,7 @@ export default function DMControlPage() {
                         onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, maxHp)}
                         className="h-8 px-2 text-[11px] text-emerald-600 hover:bg-emerald-500/10"
                       >
-                        Full
+                        {tc('dmControl.full')}
                       </Button>
                     </div>
                   </div>
@@ -686,13 +680,13 @@ export default function DMControlPage() {
                   <div className="border-t pt-2 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-1.5 text-muted-foreground truncate">
                       <Dices className="size-3 text-indigo-500 shrink-0" />
-                      <span className="font-semibold text-[11px]">Last Roll:</span>
+                      <span className="font-semibold text-[11px]">{tc('dmControl.lastRoll')}</span>
                       {lastRoll ? (
                         <span className="font-mono font-bold text-foreground">
                           {lastRoll.formula} = <span className="text-primary font-black">{lastRoll.total}</span>
                         </span>
                       ) : (
-                        <span className="italic text-[11px]">No rolls yet</span>
+                        <span className="italic text-[11px]">{tc('dmControl.noRollsYet')}</span>
                       )}
                     </div>
 
@@ -702,7 +696,7 @@ export default function DMControlPage() {
                       onClick={() => handleRollForPC(pc)}
                       className="h-7 text-[11px] gap-1 border-indigo-500/30 text-indigo-500 hover:bg-indigo-500/10"
                     >
-                      <Dices className="size-3" /> Roll d20
+                      <Dices className="size-3" /> {tc('dmControl.rollD20')}
                     </Button>
                   </div>
                 </div>
@@ -716,19 +710,19 @@ export default function DMControlPage() {
       <div className="bg-card border rounded-xl p-6 space-y-4">
         <div className="flex items-center justify-between border-b pb-3">
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <Swords className="size-5 text-amber-500" /> Current Party Initiatives
+            <Swords className="size-5 text-amber-500" /> {tc('dmControl.initiativesTitle')}
           </h2>
           {hasInitiatives ? (
             <Badge variant="default" className="bg-emerald-600">
-              Live Rolled
+              {tc('dmControl.liveRolled')}
             </Badge>
           ) : (
-            <Badge variant="secondary">No Active Rolls</Badge>
+            <Badge variant="secondary">{tc('dmControl.noActiveRolls')}</Badge>
           )}
         </div>
 
         {pcs.length === 0 ? (
-          <div className="text-center py-6 text-muted-foreground text-sm">No characters found in campaign.</div>
+          <div className="text-center py-6 text-muted-foreground text-sm">{tc('dmControl.noCharacters')}</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {pcs.map((pc) => {
@@ -743,7 +737,9 @@ export default function DMControlPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] text-muted-foreground uppercase font-bold">Initiative</div>
+                    <div className="text-[10px] text-muted-foreground uppercase font-bold">
+                      {tc('dmControl.initiative')}
+                    </div>
                     <div className="text-xl font-extrabold font-mono text-primary">
                       {init !== null ? (init >= 0 ? `+${init}` : init) : '--'}
                     </div>
@@ -759,11 +755,9 @@ export default function DMControlPage() {
       <div className="bg-card border rounded-xl p-6 space-y-6">
         <div className="border-b pb-3">
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <Dices className="size-5 text-indigo-500" /> DM Generic Dice Roller
+            <Dices className="size-5 text-indigo-500" /> {tc('dmControl.genericTitle')}
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Quickly roll d4, d6, d8, d10, d12, d20, or d100 with modifiers.
-          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">{tc('dmControl.genericHint')}</p>
         </div>
 
         {/* Dice Selector Bar */}
@@ -774,16 +768,16 @@ export default function DMControlPage() {
               variant="outline"
               onClick={() => handleGenericRoll(sides)}
               className="flex-1 min-w-[70px] h-12 text-sm font-bold hover:border-primary hover:text-primary"
-            >
-              d{sides}
-            </Button>
+            >{`d${sides}`}</Button>
           ))}
         </div>
 
         {/* Dice Controls */}
         <div className="flex items-center gap-4 max-w-sm">
           <div className="flex-1">
-            <label className="text-xs font-semibold text-muted-foreground block mb-1">Number of Dice</label>
+            <label className="text-xs font-semibold text-muted-foreground block mb-1">
+              {tc('dmControl.numberOfDice')}
+            </label>
             <Input
               type="number"
               min="1"
@@ -793,7 +787,7 @@ export default function DMControlPage() {
             />
           </div>
           <div className="flex-1">
-            <label className="text-xs font-semibold text-muted-foreground block mb-1">Modifier</label>
+            <label className="text-xs font-semibold text-muted-foreground block mb-1">{tc('dmControl.modifier')}</label>
             <Input type="number" value={modifier} onChange={(e) => setModifier(parseInt(e.target.value, 10) || 0)} />
           </div>
         </div>
@@ -801,7 +795,7 @@ export default function DMControlPage() {
         {/* Recent DM Roll History */}
         {rollHistory.length > 0 && (
           <div className="pt-2">
-            <h3 className="text-xs font-bold text-muted-foreground mb-2">Recent DM Rolls</h3>
+            <h3 className="text-xs font-bold text-muted-foreground mb-2">{tc('dmControl.recentRolls')}</h3>
             <div className="flex flex-wrap gap-2">
               {rollHistory.map((roll) => (
                 <div

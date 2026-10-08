@@ -9,7 +9,8 @@ const mockMutateInit = vi.fn();
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string, opts?: { current?: number; max?: number; percent?: number }) =>
+      key === 'dmControl.hpLine' ? `${opts?.current} / ${opts?.max} HP (${opts?.percent}%)` : key,
   }),
 }));
 
@@ -112,7 +113,7 @@ describe('DMControlPage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('DM Control & Initiative Console')).toBeInTheDocument();
+    expect(screen.getByText('dmControl.title')).toBeInTheDocument();
     expect(screen.getAllByText('Thorin Oakenshield').length).toBeGreaterThan(0);
     expect(screen.getByText('35 / 44 HP (80%)')).toBeInTheDocument();
     expect(screen.getByText('1d20 =')).toBeInTheDocument();
@@ -145,7 +146,7 @@ describe('DMControlPage', () => {
       </MemoryRouter>
     );
 
-    const healAllBtn = screen.getByText('Heal All Party');
+    const healAllBtn = screen.getByText('dmControl.healAll');
     fireEvent.click(healAllBtn);
 
     expect(mockMutateHP).toHaveBeenCalledWith({
@@ -163,9 +164,9 @@ describe('DMControlPage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Party Perception, Wisdom & Intelligence Checks')).toBeInTheDocument();
+    expect(screen.getByText('dmControl.checksTitle')).toBeInTheDocument();
 
-    const rollPartyPerception = screen.getByRole('button', { name: /Roll Party Perception/i });
+    const rollPartyPerception = screen.getByRole('button', { name: /dmControl.rollPerception/i });
     fireEvent.click(rollPartyPerception);
 
     expect(mockMutateRoll).toHaveBeenCalledWith({

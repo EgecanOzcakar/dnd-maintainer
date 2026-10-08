@@ -166,9 +166,7 @@ export function DiceRoller({
                   : 'bg-muted/50 text-muted-foreground border-border hover:border-primary/60 hover:text-foreground hover:bg-muted'
               }
             `}
-          >
-            d{d}
-          </button>
+          >{`d${d}`}</button>
         ))}
       </div>
 

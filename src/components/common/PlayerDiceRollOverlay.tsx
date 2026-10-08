@@ -208,8 +208,7 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
                 </Badge>
                 {isNat20 && (
                   <Badge className="bg-emerald-500 text-emerald-950 font-bold text-xs py-0.5 px-2.5 uppercase tracking-wider flex items-center gap-1 shadow-lg shadow-emerald-500/30 animate-pulse">
-                    <Sparkles className="size-3.5" />
-                    Nat 20!
+                    <Sparkles className="size-3.5" /> {tc('rollButtons.nat20')}
                   </Badge>
                 )}
                 {isNat1 && (
@@ -217,8 +216,7 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
                     variant="destructive"
                     className="font-bold text-xs py-0.5 px-2.5 uppercase tracking-wider flex items-center gap-1 shadow-lg shadow-rose-500/30 animate-bounce"
                   >
-                    <AlertCircle className="size-3.5" />
-                    Nat 1!
+                    <AlertCircle className="size-3.5" /> {tc('rollButtons.nat1')}
                   </Badge>
                 )}
               </div>
@@ -263,12 +261,12 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
                       <span className="text-5xl sm:text-6xl tracking-tighter drop-shadow-md">{roll.total}</span>
                       {isNat20 && (
                         <span className="text-[10px] font-sans uppercase font-black tracking-widest text-emerald-950/80 -mt-1">
-                          Critical Hit
+                          {tc('rollButtons.criticalHit')}
                         </span>
                       )}
                       {isNat1 && (
                         <span className="text-[10px] font-sans uppercase font-black tracking-widest text-rose-950/80 -mt-1">
-                          Critical Fail
+                          {tc('rollButtons.criticalFail')}
                         </span>
                       )}
                     </>
@@ -326,8 +324,7 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
                   </Badge>
                   {isNat20 && (
                     <Badge className="bg-emerald-500 text-emerald-950 hover:bg-emerald-400 text-[10px] py-0 px-1.5 font-bold uppercase tracking-wider flex items-center gap-0.5">
-                      <Sparkles className="size-2.5" />
-                      Nat 20!
+                      <Sparkles className="size-2.5" /> {tc('rollButtons.nat20')}
                     </Badge>
                   )}
                   {isNat1 && (
@@ -335,8 +332,7 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
                       variant="destructive"
                       className="text-[10px] py-0 px-1.5 font-bold uppercase tracking-wider flex items-center gap-0.5"
                     >
-                      <AlertCircle className="size-2.5" />
-                      Nat 1!
+                      <AlertCircle className="size-2.5" /> {tc('rollButtons.nat1')}
                     </Badge>
                   )}
                 </div>

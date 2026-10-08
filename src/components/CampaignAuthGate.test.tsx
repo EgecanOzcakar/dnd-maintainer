@@ -61,7 +61,7 @@ describe('CampaignAuthGate', () => {
     render(
       <MemoryRouter>
         <CampaignAuthGate campaign={mockDemoCampaign} campaignSlug={mockDemoCampaign.slug}>
-          <div data-testid="campaign-content">Welcome to the adventure!</div>
+          <div data-testid="campaign-content">{'Welcome to the adventure!'}</div>
         </CampaignAuthGate>
       </MemoryRouter>
     );
@@ -76,7 +76,7 @@ describe('CampaignAuthGate', () => {
     render(
       <MemoryRouter>
         <CampaignAuthGate campaign={mockProtectedCampaign} campaignSlug={mockProtectedCampaign.slug}>
-          <div data-testid="campaign-content">Unlocked Content</div>
+          <div data-testid="campaign-content">{'Unlocked Content'}</div>
         </CampaignAuthGate>
       </MemoryRouter>
     );
@@ -89,7 +89,7 @@ describe('CampaignAuthGate', () => {
     render(
       <MemoryRouter>
         <CampaignAuthGate campaign={mockProtectedCampaign} campaignSlug={mockProtectedCampaign.slug}>
-          <div data-testid="campaign-content">Secret Content</div>
+          <div data-testid="campaign-content">{'Secret Content'}</div>
         </CampaignAuthGate>
       </MemoryRouter>
     );
@@ -105,7 +105,7 @@ describe('CampaignAuthGate', () => {
     render(
       <MemoryRouter>
         <CampaignAuthGate campaign={mockProtectedCampaign} campaignSlug={mockProtectedCampaign.slug}>
-          <div data-testid="campaign-content">Secret Content</div>
+          <div data-testid="campaign-content">{'Secret Content'}</div>
         </CampaignAuthGate>
       </MemoryRouter>
     );
@@ -129,7 +129,7 @@ describe('CampaignAuthGate', () => {
     render(
       <MemoryRouter>
         <CampaignAuthGate campaign={mockProtectedCampaign} campaignSlug={mockProtectedCampaign.slug}>
-          <div data-testid="campaign-content">Secret Content</div>
+          <div data-testid="campaign-content">{'Secret Content'}</div>
         </CampaignAuthGate>
       </MemoryRouter>
     );

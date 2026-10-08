@@ -88,7 +88,7 @@ export function SavingThrowsPanel({
                     className="h-6 px-1.5 text-[10px] gap-0.5 text-primary hover:bg-primary/10"
                     title={`Roll ${abilityName} Saving Throw`}
                   >
-                    <Dices className="size-3" /> Roll
+                    <Dices className="size-3" /> {tc('rollButtons.roll')}
                   </Button>
                 )}
               </div>

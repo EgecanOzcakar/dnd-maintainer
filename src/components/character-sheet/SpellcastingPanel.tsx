@@ -9,10 +9,11 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Dices, AlertTriangle } from 'lucide-react';
 import { useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 
 type Spellcasting = NonNullable<ResolvedCharacter['spellcasting']>;
 
-function renderSpellBadge(id: string) {
+function renderSpellBadge(id: string, tc: TFunction<'common'>) {
   if (!isSpellId(id)) return null;
   const def = getSpellDef(id);
   if (!def) return null;
@@ -21,7 +22,7 @@ function renderSpellBadge(id: string) {
   if (cost === 'action') {
     return (
       <Badge variant="default" className="text-[9px] py-0 px-1 ml-1.5 bg-primary/80 shrink-0">
-        Action
+        {tc('spellcastingPanel.action')}
       </Badge>
     );
   }
@@ -31,7 +32,7 @@ function renderSpellBadge(id: string) {
         variant="secondary"
         className="text-[9px] py-0 px-1 ml-1.5 bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0"
       >
-        Bonus Action
+        {tc('spellcastingPanel.bonusAction')}
       </Badge>
     );
   }
@@ -41,7 +42,7 @@ function renderSpellBadge(id: string) {
         variant="secondary"
         className="text-[9px] py-0 px-1 ml-1.5 bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0"
       >
-        Reaction
+        {tc('spellcastingPanel.reaction')}
       </Badge>
     );
   }
@@ -131,6 +132,7 @@ function SpellItemRow({
   onSelectRollPreset?: (preset: RollPreset) => void;
 }) {
   const { t } = useTranslation('gamedata');
+  const { t: tc } = useTranslation('common');
   const [expanded, setExpanded] = useState(false);
 
   const def = isSpellId(id) ? getSpellDef(id) : null;
@@ -209,7 +211,7 @@ function SpellItemRow({
             </Badge>
           )}
 
-          {renderSpellBadge(id)}
+          {renderSpellBadge(id, tc)}
         </button>
 
         {onSelectRollPreset && (
@@ -221,7 +223,7 @@ function SpellItemRow({
             className="h-6 px-1.5 text-[10px] gap-0.5 text-indigo-500 hover:bg-indigo-500/10 shrink-0"
             title={`Select ${spellName} for Dice Roller`}
           >
-            <Dices className="size-3" /> Roll
+            <Dices className="size-3" /> {tc('rollButtons.roll')}
           </Button>
         )}
       </div>
@@ -232,16 +234,21 @@ function SpellItemRow({
           {def && (
             <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground/80 font-mono pt-1 border-t border-border/30">
               <span>
-                <strong className="text-foreground/80 font-sans">Range:</strong> {def.range}
+                <strong className="text-foreground/80 font-sans">{tc('spellcastingPanel.range')}</strong> {def.range}
               </span>
               <span>
-                <strong className="text-foreground/80 font-sans">Duration:</strong> {def.duration}
+                <strong className="text-foreground/80 font-sans">{tc('spellcastingPanel.duration')}</strong>{' '}
+                {def.duration}
               </span>
               {def.concentration && (
-                <span className="text-amber-600 dark:text-amber-400 font-sans font-semibold">Concentration</span>
+                <span className="text-amber-600 dark:text-amber-400 font-sans font-semibold">
+                  {tc('spellcastingPanel.concentration')}
+                </span>
               )}
               {def.ritual && (
-                <span className="text-purple-600 dark:text-purple-400 font-sans font-semibold">Ritual</span>
+                <span className="text-purple-600 dark:text-purple-400 font-sans font-semibold">
+                  {tc('spellcastingPanel.ritual')}
+                </span>
               )}
             </div>
           )}
@@ -264,6 +271,7 @@ function FeatureRow({
   saveAbility?: string;
   onSelectRollPreset?: (preset: RollPreset) => void;
 }) {
+  const { t: tc } = useTranslation('common');
   const [expanded, setExpanded] = useState(false);
 
   const handleSelectFeature = () => {
@@ -314,7 +322,7 @@ function FeatureRow({
             variant="secondary"
             className="text-[9px] py-0 px-1 ml-1.5 bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0"
           >
-            Ability / Action
+            {tc('spellcastingPanel.abilityAction')}
           </Badge>
 
           {saveDC !== undefined && (
@@ -336,7 +344,7 @@ function FeatureRow({
             className="h-6 px-1.5 text-[10px] gap-0.5 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 shrink-0"
             title={`Select ${name} for Dice Roller`}
           >
-            <Dices className="size-3" /> Roll
+            <Dices className="size-3" /> {tc('rollButtons.roll')}
           </Button>
         )}
       </div>
@@ -520,7 +528,7 @@ export function SpellcastingPanel({
       {spellcasting?.cannotCastSpells && (
         <div className="mb-4 p-3 bg-amber-500/15 border border-amber-500/40 rounded text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2 font-medium">
           <AlertTriangle className="size-4 shrink-0 text-amber-500" />
-          <span>Cannot Cast Spells — You are wearing armor without training.</span>
+          <span>{tc('spellcastingPanel.cannotCast')}</span>
         </div>
       )}
 
@@ -559,7 +567,7 @@ export function SpellcastingPanel({
         {activeFeatures.length > 0 && (
           <div>
             <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
-              Class Abilities & Actions
+              {tc('spellcastingPanel.classAbilities')}
             </div>
             <div className="space-y-1.5">
               {activeFeatures.map((rf, i) => {

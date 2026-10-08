@@ -31,8 +31,8 @@ describe('CommonImageDisplayer', () => {
   it('renders header title and placeholder state when no image active', () => {
     render(<CommonImageDisplayer campaignId="camp-1" />);
 
-    expect(screen.getByText('Common Image Displayer')).toBeInTheDocument();
-    expect(screen.getByText('No Image Currently Displayed')).toBeInTheDocument();
+    expect(screen.getByText('imageDisplayer.title')).toBeInTheDocument();
+    expect(screen.getByText('imageDisplayer.none')).toBeInTheDocument();
     expect(screen.getByText('Select Image')).toBeInTheDocument();
   });
 
@@ -42,7 +42,7 @@ describe('CommonImageDisplayer', () => {
     const selectBtn = screen.getByText('Select Image');
     fireEvent.click(selectBtn);
 
-    expect(screen.getByText('Preset Campaign Scenes')).toBeInTheDocument();
+    expect(screen.getByText('imageDisplayer.presets')).toBeInTheDocument();
     expect(screen.getByText(PRESET_SCENE_IMAGES[0].name)).toBeInTheDocument();
 
     const presetBtn = screen.getByText(PRESET_SCENE_IMAGES[0].name);
@@ -69,7 +69,7 @@ describe('CommonImageDisplayer', () => {
     fireEvent.change(urlInput, { target: { value: 'https://example.com/map.jpg' } });
     fireEvent.change(titleInput, { target: { value: 'Dungeon Map' } });
 
-    fireEvent.click(screen.getByText('Load'));
+    fireEvent.click(screen.getByText('imageDisplayer.load'));
 
     expect(mockMutateSharedImage).toHaveBeenCalledWith({
       campaignId: 'camp-1',

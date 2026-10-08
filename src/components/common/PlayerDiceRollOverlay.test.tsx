@@ -115,7 +115,7 @@ describe('PlayerDiceRollOverlay', () => {
       vi.advanceTimersByTime(650);
     });
 
-    expect(screen.getByText('Nat 20!')).toBeInTheDocument();
+    expect(screen.getByText('rollButtons.nat20')).toBeInTheDocument();
     expect(screen.getByText('25')).toBeInTheDocument();
   });
 
@@ -154,7 +154,7 @@ describe('PlayerDiceRollOverlay', () => {
       vi.advanceTimersByTime(650);
     });
 
-    expect(screen.getByText('Nat 1!')).toBeInTheDocument();
+    expect(screen.getByText('rollButtons.nat1')).toBeInTheDocument();
     expect(screen.getByText('8')).toBeInTheDocument();
   });
 

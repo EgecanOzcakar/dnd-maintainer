@@ -505,7 +505,7 @@ function CharacterSheetInner({
             <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-border/60">
               <div className="flex items-center gap-2">
                 <Dices className="size-5 text-indigo-500 animate-pulse" />
-                <h3 className="text-sm font-bold text-foreground">Dice Roller</h3>
+                <h3 className="text-sm font-bold text-foreground">{tc('rollButtons.diceRoller')}</h3>
               </div>
               <Button
                 variant="ghost"
@@ -534,7 +534,7 @@ function CharacterSheetInner({
             title="Open Dice Roller"
           >
             <Dices className="size-5" />
-            <span>Dice Roller</span>
+            <span>{tc('rollButtons.diceRoller')}</span>
           </button>
         )}
       </div>

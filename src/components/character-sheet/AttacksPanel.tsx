@@ -75,7 +75,7 @@ export function AttacksPanel({ attacks, weaponMasteries, onSelectRollPreset }: A
             <span>{tc('characterSheet.attacks.name')}</span>
             <span className="text-center">{tc('characterSheet.attacks.attackBonus')}</span>
             <span>{tc('characterSheet.attacks.damage')}</span>
-            <span className="text-right">Roll</span>
+            <span className="text-right">{tc('rollButtons.roll')}</span>
           </div>
 
           {attacks.map((attack, index) => {
@@ -147,7 +147,7 @@ export function AttacksPanel({ attacks, weaponMasteries, onSelectRollPreset }: A
                         className="h-6 px-1.5 text-[10px] gap-0.5 text-primary hover:bg-primary/10"
                         title="Roll Attack d20"
                       >
-                        <Dices className="size-3" /> Atk
+                        <Dices className="size-3" /> {tc('rollButtons.atk')}
                       </Button>
                       <Button
                         type="button"
@@ -157,7 +157,7 @@ export function AttacksPanel({ attacks, weaponMasteries, onSelectRollPreset }: A
                         className="h-6 px-1.5 text-[10px] text-emerald-600 hover:bg-emerald-500/10"
                         title="Roll Damage"
                       >
-                        Dmg
+                        {tc('rollButtons.dmg')}
                       </Button>
                     </div>
                   )}

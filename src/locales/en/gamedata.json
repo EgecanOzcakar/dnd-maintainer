@@ -3339,6 +3339,206 @@
     }
   },
   "spells": {
+    "blade-ward": {
+      "name": "Blade Ward",
+      "description": "You trace a protective sign and gain resistance to bludgeoning, piercing, and slashing damage from weapon attacks until the end of your next turn."
+    },
+    "eldritch-blast": {
+      "name": "Eldritch Blast",
+      "description": "You hurl a beam of crackling energy at a creature. On a hit it takes force damage, and the spell fires more beams as you gain levels."
+    },
+    "elementalism": {
+      "name": "Elementalism",
+      "description": "You exert control over the elements, creating a small harmless effect such as a gust of air, a flicker of flame, a puff of earth, or a splash of water."
+    },
+    "friends": {
+      "name": "Friends",
+      "description": "You gain advantage on Charisma checks against one creature that is not hostile to you, but it knows afterward that you used magic on it."
+    },
+    "sorcerous-burst": {
+      "name": "Sorcerous Burst",
+      "description": "You unleash raw magical energy at a target, dealing damage of a type you choose, with additional dice possible when the damage dice roll their maximum."
+    },
+    "starry-wisp": {
+      "name": "Starry Wisp",
+      "description": "You launch a mote of starlight at a creature or object, dealing radiant damage, and a creature hit sheds dim light until the end of your next turn."
+    },
+    "thaumaturgy": {
+      "name": "Thaumaturgy",
+      "description": "You manifest a minor wonder, such as a booming voice, flickering flames, tremors, or altered eyes, as a sign of divine power."
+    },
+    "thunderclap": {
+      "name": "Thunderclap",
+      "description": "You create a burst of thunderous sound audible far away. Creatures within reach must succeed on a Constitution save or take thunder damage."
+    },
+    "toll-the-dead": {
+      "name": "Toll the Dead",
+      "description": "You point at a creature and a mournful bell tolls. It must succeed on a Wisdom save or take necrotic damage, more if it is already wounded."
+    },
+    "true-strike": {
+      "name": "True Strike",
+      "description": "You guide a weapon with magic and make one attack with it using your spellcasting ability, possibly dealing extra radiant damage."
+    },
+    "vicious-mockery": {
+      "name": "Vicious Mockery",
+      "description": "You unleash a string of magically infused insults. The target must succeed on a Wisdom save or take psychic damage and have disadvantage on its next attack."
+    },
+    "word-of-radiance": {
+      "name": "Word of Radiance",
+      "description": "You utter a divine word and radiant light burns the enemies of your choice nearby, who must succeed on a Constitution save or take radiant damage."
+    },
+    "animal-friendship": {
+      "name": "Animal Friendship",
+      "description": "You convince a Beast that you mean it no harm. If it fails a Wisdom save it is charmed by you for the duration."
+    },
+    "armor-of-agathys": {
+      "name": "Armor of Agathys",
+      "description": "A protective frost gives you temporary hit points, and a creature that hits you in melee takes cold damage while those points last."
+    },
+    "color-spray": {
+      "name": "Color Spray",
+      "description": "A dazzling array of colors blinds creatures in a cone, starting with those that have the fewest hit points."
+    },
+    "comprehend-languages": {
+      "name": "Comprehend Languages",
+      "description": "For the duration you understand the literal meaning of any spoken language you hear and any written language you touch."
+    },
+    "compelled-duel": {
+      "name": "Compelled Duel",
+      "description": "You challenge a creature to duel. It has disadvantage on attacks against others and must save to move away from you."
+    },
+    "create-or-destroy-water": {
+      "name": "Create or Destroy Water",
+      "description": "You either create clean water in an open container or area, or destroy water or fog in an area."
+    },
+    "detect-evil-and-good": {
+      "name": "Detect Evil and Good",
+      "description": "You sense the presence and location of aberrations, celestials, elementals, fey, fiends, and undead, as well as consecrated or desecrated places, nearby."
+    },
+    "detect-poison-and-disease": {
+      "name": "Detect Poison and Disease",
+      "description": "You sense poisons, poisonous creatures, and diseases nearby, and can identify their kind and location."
+    },
+    "divine-favor": {
+      "name": "Divine Favor",
+      "description": "Radiant power fills your weapon attacks, causing them to deal extra radiant damage while the spell lasts."
+    },
+    "divine-smite": {
+      "name": "Divine Smite",
+      "description": "Just after you hit with a weapon or unarmed strike, you channel divine power to deal extra radiant damage, more against fiends and undead."
+    },
+    "entangle": {
+      "name": "Entangle",
+      "description": "Grasping weeds and vines sprout in a square area. Creatures there must succeed on a Strength save or be restrained."
+    },
+    "expeditious-retreat": {
+      "name": "Expeditious Retreat",
+      "description": "You surge with speed and can take the Dash action immediately and as a bonus action on each of your turns while the spell lasts."
+    },
+    "feather-fall": {
+      "name": "Feather Fall",
+      "description": "Falling creatures you choose descend slowly and take no damage when they land."
+    },
+    "find-familiar": {
+      "name": "Find Familiar",
+      "description": "You gain the service of a spirit that takes an animal form of your choice. It acts independently, can deliver touch spells, and can be dismissed or resummoned."
+    },
+    "floating-disk": {
+      "name": "Floating Disk",
+      "description": "You create a circular disk of force that follows you and carries a heavy load, hovering just above the ground."
+    },
+    "goodberry": {
+      "name": "Goodberry",
+      "description": "Up to ten berries appear, each restoring a hit point and providing a day of nourishment when eaten."
+    },
+    "grease": {
+      "name": "Grease",
+      "description": "Slick grease covers a square of ground, making it difficult terrain. Creatures there may fall prone."
+    },
+    "hail-of-thorns": {
+      "name": "Hail of Thorns",
+      "description": "Your next ranged weapon hit bursts into a spray of thorns, dealing piercing damage to the target and creatures near it."
+    },
+    "healing-word": {
+      "name": "Healing Word",
+      "description": "You speak a word of power and a creature you can see regains hit points."
+    },
+    "hex": {
+      "name": "Hex",
+      "description": "You curse a creature so your attacks deal extra necrotic damage to it, and it has disadvantage on checks with one ability."
+    },
+    "ice-knife": {
+      "name": "Ice Knife",
+      "description": "You hurl a shard of ice at a target. It then shatters, and creatures near the target must save or take cold damage."
+    },
+    "identify": {
+      "name": "Identify",
+      "description": "You learn the properties of a magic item or the spells affecting a creature or object you touch."
+    },
+    "illusory-script": {
+      "name": "Illusory Script",
+      "description": "You write on parchment in a way that only chosen creatures can read; to others it looks like an unknown script or a different message."
+    },
+    "inflict-wounds": {
+      "name": "Inflict Wounds",
+      "description": "A melee touch drains life from a creature, dealing heavy necrotic damage."
+    },
+    "jump": {
+      "name": "Jump",
+      "description": "A creature you touch can jump three times as far as normal for the duration."
+    },
+    "mage-armor": {
+      "name": "Mage Armor",
+      "description": "You touch an unarmored willing creature, and a protective force raises its base Armor Class."
+    },
+    "magic-missile": {
+      "name": "Magic Missile",
+      "description": "Three glowing darts of force strike creatures you choose and automatically hit, each dealing force damage."
+    },
+    "purify-food-and-drink": {
+      "name": "Purify Food and Drink",
+      "description": "Food and drink in a small area is cleansed of poison and spoilage."
+    },
+    "sanctuary": {
+      "name": "Sanctuary",
+      "description": "You ward a creature so attackers must save before targeting it. The ward ends if the creature attacks or casts a harmful spell."
+    },
+    "searing-smite": {
+      "name": "Searing Smite",
+      "description": "Your next weapon hit deals extra fire damage and sets the target ablaze, burning it each turn until it extinguishes the flames."
+    },
+    "shield": {
+      "name": "Shield",
+      "description": "An invisible barrier boosts your Armor Class against the triggering attack and blocks Magic Missile until your next turn."
+    },
+    "silent-image": {
+      "name": "Silent Image",
+      "description": "You create the image of an object, creature, or phenomenon that is purely visual, movable, and reveals itself on inspection."
+    },
+    "thunderous-smite": {
+      "name": "Thunderous Smite",
+      "description": "Your next weapon hit rings with thunder, dealing extra thunder damage and possibly shoving and knocking the target prone."
+    },
+    "thunderwave": {
+      "name": "Thunderwave",
+      "description": "A wave of thunderous force sweeps out from you, damaging and pushing creatures in the area, and booming audibly far away."
+    },
+    "unseen-servant": {
+      "name": "Unseen Servant",
+      "description": "An invisible, mindless force performs simple tasks for you, such as fetching, cleaning, and mending."
+    },
+    "witch-bolt": {
+      "name": "Witch Bolt",
+      "description": "A beam of crackling energy links you to a creature, dealing lightning damage, and you can keep zapping it each turn."
+    },
+    "wrathful-smite": {
+      "name": "Wrathful Smite",
+      "description": "Your next weapon hit deals extra psychic damage and may frighten the target, who must save or stay afraid."
+    },
+    "zephyr-strike": {
+      "name": "Zephyr Strike",
+      "description": "You move like the wind, ignoring opportunity attacks, gaining speed, and once dealing bonus force damage on a hit."
+    },
     "druidcraft": {
       "name": "Druidcraft",
       "description": "Whispering to the spirits of nature, you create one of the following effects: a tiny weather prediction, a harmless sensory effect, instant plant bloom or seed pod opening, or a lit or snuffed torch or campfire."

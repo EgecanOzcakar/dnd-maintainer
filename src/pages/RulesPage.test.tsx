@@ -13,19 +13,23 @@ const renderPage = () =>
     </MemoryRouter>
   );
 
+// The page renders hundreds of catalog rows; under a loaded full-suite run the debounced
+// search can take longer than the 1s default wait.
+const SLOW = { timeout: 5000 };
+
 describe('RulesPage', () => {
   it('searches after the debounce and groups results', async () => {
     renderPage();
     fireEvent.change(screen.getByLabelText('Search the rules'), { target: { value: 'fireball' } });
-    expect(await screen.findByRole('button', { name: /^Fireball/ })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /^Fireball/ }, SLOW)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /Spells/ })).toBeInTheDocument();
-    await waitFor(() => expect(screen.queryByRole('heading', { name: /Conditions/ })).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole('heading', { name: /Conditions/ })).not.toBeInTheDocument(), SLOW);
   });
 
   it('expands a spell to show casting details and mechanics', async () => {
     renderPage();
     fireEvent.change(screen.getByLabelText('Search the rules'), { target: { value: 'fireball' } });
-    fireEvent.click(await screen.findByRole('button', { name: /^Fireball/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /^Fireball/ }, SLOW));
     expect(screen.getByText('Casting time:')).toBeInTheDocument();
     expect(screen.getByText('Dexterity save')).toBeInTheDocument();
   });
@@ -44,6 +48,6 @@ describe('RulesPage', () => {
   it('shows the empty state', async () => {
     renderPage();
     fireEvent.change(screen.getByLabelText('Search the rules'), { target: { value: 'zzzzqqq' } });
-    expect(await screen.findByText('Nothing found')).toBeInTheDocument();
+    expect(await screen.findByText('Nothing found', {}, SLOW)).toBeInTheDocument();
   });
 });

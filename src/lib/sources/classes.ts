@@ -692,7 +692,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       EMPTY_LEVEL,
-      EMPTY_LEVEL,
+      { grants: [{ type: 'feature', feature: { id: 'cleric-improved-blessed-strikes' } }] },
       EMPTY_LEVEL,
       {
         grants: [
@@ -1035,13 +1035,45 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
+      { grants: [{ type: 'feature', feature: { id: 'fighter-extra-attack-2' } }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'fighter', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'fighter-indomitable-2' } },
+          { type: 'feature', feature: { id: 'fighter-studied-attacks' } },
+        ],
+      },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'fighter', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       {
         grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 5), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'fighter', 5),
+            from: null,
+            category: 'general',
+          },
           {
             type: 'weapon-mastery-choice',
             key: createChoiceKey('weapon-mastery-choice', 'class', 'fighter', 3),
@@ -1049,10 +1081,25 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'fighter-action-surge-2' } },
+          { type: 'feature', feature: { id: 'fighter-indomitable-3' } },
+        ],
+      },
       EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 6), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'fighter', 6),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
+      { grants: [{ type: 'feature', feature: { id: 'fighter-extra-attack-3' } }] },
     ],
   },
 
@@ -1606,16 +1653,46 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
+      { grants: [{ type: 'feature', feature: { id: 'rogue-reliable-talent' } }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'rogue', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
+      { grants: [{ type: 'feature', feature: { id: 'rogue-devious-strikes' } }] },
+      { grants: [{ type: 'feature', feature: { id: 'rogue-slippery-mind' } }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'rogue', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
+      { grants: [{ type: 'feature', feature: { id: 'rogue-elusive' } }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 5), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'rogue', 5),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
+      { grants: [{ type: 'feature', feature: { id: 'rogue-stroke-of-luck' } }] },
     ],
   },
 

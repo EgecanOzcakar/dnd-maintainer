@@ -2,7 +2,7 @@ import { isSpellId, getSpellDef } from '@/lib/sources/spells';
 import { getSpellDisplayMeta } from '@/lib/spell-display';
 import type { ResolvedCharacter } from '@/types/resolved';
 import type { AbilityKey } from '@/lib/dnd-helpers';
-import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
+import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { parseDiceFormula, extractDiceFromText } from '@/lib/dice-helpers';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

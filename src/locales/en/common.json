@@ -848,7 +848,48 @@
         "castingTime": "{{time}}",
         "concentration": "Concentration",
         "ritual": "Ritual",
-        "usesPerRest": "{{uses}} / {{regen}}"
+        "usesPerRest": "{{uses}} / {{regen}}",
+        "attacksPerAction_one": "1 attack per Attack action",
+        "attacksPerAction_other": "{{count}} attacks per Attack action",
+        "filters": {
+          "all": "All",
+          "attack": "Attack",
+          "action": "Action",
+          "bonus-action": "Bonus Action",
+          "reaction": "Reaction",
+          "other": "Other"
+        },
+        "activation": {
+          "action": "Action",
+          "bonus-action": "Bonus Action",
+          "reaction": "Reaction",
+          "free": "Free",
+          "special": "Special"
+        },
+        "uses_one": "{{count}} use",
+        "uses_other": "{{count}} uses",
+        "save": "{{ability}} save DC {{dc}}",
+        "heal": "Heal {{roll}}",
+        "weaponDamage": "(weapon type)",
+        "offHand": "off-hand",
+        "twoHanded": "{{dice}} two-handed",
+        "upcast": "+{{dice}} per slot level",
+        "basicActions": "Actions in Combat",
+        "basic": {
+          "dash": "Dash",
+          "disengage": "Disengage",
+          "dodge": "Dodge",
+          "help": "Help",
+          "hide": "Hide",
+          "influence": "Influence",
+          "magic": "Magic",
+          "ready": "Ready",
+          "search": "Search",
+          "study": "Study",
+          "utilize": "Utilize"
+        },
+        "grappleShove": "Grapple / Shove (Unarmed Strike option): STR or DEX save DC {{dc}}",
+        "opportunityAttack": "Reaction — Opportunity Attack: one melee attack when a creature you can see leaves your reach."
       }
     }
   },

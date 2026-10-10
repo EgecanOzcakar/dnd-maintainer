@@ -2,7 +2,9 @@ import { getLogger } from '@/lib/logger';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AbilityScoresPanel } from '@/components/character-sheet/AbilityScoresPanel';
-import { AttacksPanel } from '@/components/character-sheet/AttacksPanel';
+import { ActionsPanel } from '@/components/character-sheet/ActionsPanel';
+import { resolveActions } from '@/lib/resolver/actions';
+import type { ClassId } from '@/lib/dnd-helpers';
 import { BackstoryPanel } from '@/components/character-sheet/BackstoryPanel';
 import { CharacterSheetHeader } from '@/components/character-sheet/CharacterSheetHeader';
 import { PlayerSceneViewer } from '@/components/battle-map/PlayerSceneViewer';
@@ -42,7 +44,7 @@ import { useBuilderAutosave } from '@/hooks/useBuilderAutosave';
 import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
 import { InventoryTab } from '@/components/character-sheet/InventoryTab';
 import { DiceRoller } from '@/components/character-sheet/DiceRoller';
-import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
+import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { Dices, X } from 'lucide-react';
 
 import { supabase } from '@/lib/supabase';
@@ -90,6 +92,13 @@ function CharacterSheetInner({
   const [exportingPdf, setExportingPdf] = useState(false);
   const [rollPreset, setRollPreset] = useState<RollPreset | null>(null);
   const [isDiceRollerOpen, setIsDiceRollerOpen] = useState(false);
+
+  const resolvedActions = useMemo(() => {
+    if (!resolved || !build) return null;
+    const classLevels: Partial<Record<ClassId, number>> = {};
+    for (const lvl of build.levels) classLevels[lvl.classId] = Math.max(classLevels[lvl.classId] ?? 0, lvl.classLevel);
+    return resolveActions(resolved, classLevels);
+  }, [resolved, build]);
 
   const handleSelectRollPreset = useCallback((preset: RollPreset) => {
     setRollPreset(preset);
@@ -421,10 +430,11 @@ function CharacterSheetInner({
                   </>
                 )}
 
-                {resolved && (
-                  <AttacksPanel
-                    attacks={resolved.attacks}
-                    weaponMasteries={resolved.weaponMasteries}
+                {resolvedActions && resolved && (
+                  <ActionsPanel
+                    actions={resolvedActions.actions}
+                    attacksPerAction={resolvedActions.attacksPerAction}
+                    resolved={resolved}
                     onSelectRollPreset={handleSelectRollPreset}
                   />
                 )}

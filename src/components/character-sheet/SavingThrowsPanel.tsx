@@ -1,7 +1,7 @@
 import { BonusBreakdown } from '@/components/character-sheet/BonusBreakdown';
 import { Badge } from '@/components/ui/badge';
 import type { ResolvedCharacter } from '@/types/resolved';
-import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
+import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { formatSigned } from '@/lib/format';
 import { Button } from '@/components/ui/button';
 import { Dices } from 'lucide-react';

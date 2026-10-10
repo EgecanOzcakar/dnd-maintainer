@@ -4639,6 +4639,410 @@
       "name": "Sending",
       "description": "You send a short message of twenty-five words or fewer to a creature you are familiar with. The target can reply with a message of twenty-five words or fewer."
     },
+    "arcane-gate": {
+      "name": "Arcane Gate",
+      "description": "You open two linked portals on solid ground you can see. Creatures can step through one and emerge from the other."
+    },
+    "blade-barrier": {
+      "name": "Blade Barrier",
+      "description": "You raise a wall of whirling blades that damages creatures entering or ending their turn in it and provides three-quarters cover."
+    },
+    "bones-of-the-earth": {
+      "name": "Bones of the Earth",
+      "description": "Stone pillars erupt from the ground, damaging nearby creatures and possibly lifting them toward the ceiling, and leave difficult terrain."
+    },
+    "chain-lightning": {
+      "name": "Chain Lightning",
+      "description": "A bolt of lightning strikes a target and then arcs to other creatures nearby, each making a Dexterity save or taking heavy Lightning damage."
+    },
+    "circle-of-death": {
+      "name": "Circle of Death",
+      "description": "A sphere of necrotic energy bursts at a point, dealing heavy Necrotic damage to creatures in it that fail a Constitution save."
+    },
+    "conjure-fey": {
+      "name": "Conjure Fey",
+      "description": "You summon a fey creature that fights for you; if your concentration breaks it may turn hostile."
+    },
+    "contingency": {
+      "name": "Contingency",
+      "description": "You bind a spell of level 5 or lower to a trigger you define; when the trigger occurs, the spell takes effect on you automatically."
+    },
+    "create-undead": {
+      "name": "Create Undead",
+      "description": "You raise corpses as ghouls or other undead that you can command for a time."
+    },
+    "disintegrate": {
+      "name": "Disintegrate",
+      "description": "A thin green ray blasts a target with huge Force damage and reduces a creature killed by it to ash."
+    },
+    "drawmijs-instant-summons": {
+      "name": "Drawmij's Instant Summons",
+      "description": "You mark an item and can later call it into your hand from anywhere on the same plane."
+    },
+    "eyebite": {
+      "name": "Eyebite",
+      "description": "Your gaze can afflict a creature each turn, making it asleep, panicked, or sickened."
+    },
+    "find-the-path": {
+      "name": "Find the Path",
+      "description": "You learn the most direct route to a named location on your plane and know the distance and direction while you travel."
+    },
+    "forbiddance": {
+      "name": "Forbiddance",
+      "description": "You ward an area against teleportation and planar travel, and harm certain creature types that enter it."
+    },
+    "globe-of-invulnerability": {
+      "name": "Globe of Invulnerability",
+      "description": "A shimmering barrier surrounds you and blocks spells of level 5 or lower from affecting anything inside."
+    },
+    "guards-and-wards": {
+      "name": "Guards and Wards",
+      "description": "You protect a large structure with layered magical effects such as fog, locked doors, webs, and confusion."
+    },
+    "harm": {
+      "name": "Harm",
+      "description": "You inflict devastating necrotic damage on a creature that fails a Constitution save and reduce its hit point maximum."
+    },
+    "heal": {
+      "name": "Heal",
+      "description": "You restore a large number of hit points to a creature and end blindness, deafness, and many diseases afflicting it."
+    },
+    "heroes-feast": {
+      "name": "Heroes' Feast",
+      "description": "You conjure a great feast that cures ailments, grants resistance to poison, and boosts the hit points of those who partake."
+    },
+    "magic-jar": {
+      "name": "Magic Jar",
+      "description": "Your spirit enters a container, from which you can possess nearby creatures while your body lies helpless."
+    },
+    "mass-suggestion": {
+      "name": "Mass Suggestion",
+      "description": "You suggest a course of action to several creatures, and those who fail a Wisdom save pursue it."
+    },
+    "move-earth": {
+      "name": "Move Earth",
+      "description": "You reshape earth, sand, or clay in an area, raising, lowering, or moving terrain over time."
+    },
+    "otilukes-freezing-sphere": {
+      "name": "Otiluke's Freezing Sphere",
+      "description": "A frigid globe explodes at a point, dealing heavy Cold damage and freezing water on the surface."
+    },
+    "ottos-irresistible-dance": {
+      "name": "Otto's Irresistible Dance",
+      "description": "A creature is compelled to dance, suffering disadvantage on attacks and saves and giving others advantage against it."
+    },
+    "planar-ally": {
+      "name": "Planar Ally",
+      "description": "You beseech a divine entity to send an otherworldly servant, which helps you in exchange for a negotiated payment."
+    },
+    "programmed-illusion": {
+      "name": "Programmed Illusion",
+      "description": "You craft an illusion with sound and images that activates on a trigger you define."
+    },
+    "summon-fiend": {
+      "name": "Summon Fiend",
+      "description": "You call a fiendish spirit whose form and abilities depend on the type you choose, and it fights beside you."
+    },
+    "sunbeam": {
+      "name": "Sunbeam",
+      "description": "A line of brilliant radiance burns and blinds creatures, and you can repeat it on later turns."
+    },
+    "tashas-bubbling-cauldron": {
+      "name": "Tasha's Bubbling Cauldron",
+      "description": "You conjure a cauldron that brews potions anyone can ladle out for magical effects."
+    },
+    "transport-via-plants": {
+      "name": "Transport via Plants",
+      "description": "You link two large plants on the same plane, letting creatures step through one and exit the other."
+    },
+    "true-seeing": {
+      "name": "True Seeing",
+      "description": "A creature gains the ability to see through darkness, illusions, and invisibility, and perceive the true forms of things."
+    },
+    "wall-of-ice": {
+      "name": "Wall of Ice",
+      "description": "You raise a barrier of ice that blocks sight, can be shattered, and damages those who pass through its cold."
+    },
+    "wall-of-thorns": {
+      "name": "Wall of Thorns",
+      "description": "You grow a dense wall of brambles that hampers movement and damages creatures inside it."
+    },
+    "wind-walk": {
+      "name": "Wind Walk",
+      "description": "You and chosen allies become cloud-like and fly swiftly across great distances."
+    },
+    "word-of-recall": {
+      "name": "Word of Recall",
+      "description": "You and nearby willing creatures teleport instantly to a previously designated sanctuary."
+    },
+    "conjure-celestial": {
+      "name": "Conjure Celestial",
+      "description": "You summon a celestial that either attacks foes or heals allies, depending on the form you choose."
+    },
+    "delayed-blast-fireball": {
+      "name": "Delayed Blast Fireball",
+      "description": "A glowing bead grows in power each round until the spell ends and then explodes in a huge fiery blast."
+    },
+    "divine-word": {
+      "name": "Divine Word",
+      "description": "You utter a holy word that harms, banishes, or kills creatures depending on their remaining hit points."
+    },
+    "draconic-transformation": {
+      "name": "Draconic Transformation",
+      "description": "You take on draconic features with spectral wings and a breath weapon you can unleash."
+    },
+    "dream-of-the-blue-veil": {
+      "name": "Dream of the Blue Veil",
+      "description": "You and willing creatures are transported in a dream to another world, where you stay until the spell ends."
+    },
+    "etherealness": {
+      "name": "Etherealness",
+      "description": "You step into the Ethereal Plane, where you can pass through objects and unseen creatures."
+    },
+    "finger-of-death": {
+      "name": "Finger of Death",
+      "description": "You blast a creature with necrotic energy, and one killed by it rises as a zombie under your control."
+    },
+    "fire-storm": {
+      "name": "Fire Storm",
+      "description": "You call down sheets of flame in a block of cubes, burning creatures that fail a Dexterity save."
+    },
+    "forcecage": {
+      "name": "Forcecage",
+      "description": "You enclose an area in an invisible prison of force, either bars or a solid box, that resists most escapes."
+    },
+    "mirage-arcane": {
+      "name": "Mirage Arcane",
+      "description": "You transform the look, sound, and feel of terrain in a large area, which creatures can touch and enter."
+    },
+    "mordenkainens-magnificent-mansion": {
+      "name": "Mordenkainen's Magnificent Mansion",
+      "description": "You open a door to an extradimensional mansion with food, rooms, and invisible servants."
+    },
+    "mordenkainens-sword": {
+      "name": "Mordenkainen's Sword",
+      "description": "You conjure a spectral sword that attacks creatures you choose with force damage each turn."
+    },
+    "plane-shift": {
+      "name": "Plane Shift",
+      "description": "You and willing allies travel to another plane of existence, or you banish an unwilling creature there with a touch."
+    },
+    "power-word-fortify": {
+      "name": "Power Word Fortify",
+      "description": "You bolster several creatures with a pool of temporary hit points divided among them."
+    },
+    "prismatic-spray": {
+      "name": "Prismatic Spray",
+      "description": "Multicolored rays shoot from your hand in a cone, each creature suffering one random effect."
+    },
+    "project-image": {
+      "name": "Project Image",
+      "description": "You create an illusory double that you can see through, speak through, and cast spells through."
+    },
+    "regenerate": {
+      "name": "Regenerate",
+      "description": "You heal a creature over time and can restore lost body parts."
+    },
+    "resurrection": {
+      "name": "Resurrection",
+      "description": "You return a creature dead for up to a century to life with full hit points, imposing a lingering penalty."
+    },
+    "reverse-gravity": {
+      "name": "Reverse Gravity",
+      "description": "Gravity inverts in a cylinder, causing creatures and objects to fall upward."
+    },
+    "sequester": {
+      "name": "Sequester",
+      "description": "You hide a creature or object from detection and place it in suspended animation."
+    },
+    "simulacrum": {
+      "name": "Simulacrum",
+      "description": "You craft a duplicate of a beast or humanoid from snow and ice that obeys you."
+    },
+    "symbol": {
+      "name": "Symbol",
+      "description": "You inscribe a harmful glyph that triggers when disturbed, unleashing a chosen magical effect."
+    },
+    "teleport": {
+      "name": "Teleport",
+      "description": "You and nearby creatures instantly travel to a destination you know, with accuracy depending on your familiarity."
+    },
+    "temple-of-the-gods": {
+      "name": "Temple of the Gods",
+      "description": "You raise a divine temple that heals allies and hinders your enemies within it."
+    },
+    "whirlwind": {
+      "name": "Whirlwind",
+      "description": "A powerful cyclone damages and flings creatures, and you can move it each turn."
+    },
+    "crown-of-stars": {
+      "name": "Crown of Stars",
+      "description": "Seven stars orbit you, and you can launch them one at a time as ranged attacks."
+    },
+    "abi-dalzims-horrid-wilting": {
+      "name": "Abi-Dalzim's Horrid Wilting",
+      "description": "You drain the moisture from creatures in a cube, dealing heavy Necrotic damage, especially to plants and water creatures."
+    },
+    "animal-shapes": {
+      "name": "Animal Shapes",
+      "description": "You transform willing creatures into beasts of your choice."
+    },
+    "antimagic-field": {
+      "name": "Antimagic Field",
+      "description": "An invisible sphere around you suppresses magic and magical effects within it."
+    },
+    "antipathy-sympathy": {
+      "name": "Antipathy/Sympathy",
+      "description": "You make a target repel or attract creatures of a chosen kind."
+    },
+    "befuddlement": {
+      "name": "Befuddlement",
+      "description": "You blast a creature's mind with psychic energy, reducing its Intelligence and Charisma."
+    },
+    "clone": {
+      "name": "Clone",
+      "description": "You grow an inert duplicate of a creature that its soul can inhabit if the original dies."
+    },
+    "control-weather": {
+      "name": "Control Weather",
+      "description": "You change the weather over a wide area, adjusting precipitation, temperature, and wind."
+    },
+    "dark-star": {
+      "name": "Dark Star",
+      "description": "You create a zone of darkness and gravity that silences, blocks sight, and crushes those inside."
+    },
+    "demiplane": {
+      "name": "Demiplane",
+      "description": "You create a door to an empty extradimensional room that lasts for the duration."
+    },
+    "dominate-monster": {
+      "name": "Dominate Monster",
+      "description": "You try to seize control of a creature, which obeys your telepathic commands if it fails a Wisdom save."
+    },
+    "earthquake": {
+      "name": "Earthquake",
+      "description": "You shake the ground, toppling creatures, opening fissures, and collapsing structures."
+    },
+    "glibness": {
+      "name": "Glibness",
+      "description": "Your words become so persuasive that your Charisma checks are nearly assured of success and magic cannot reveal your lies."
+    },
+    "holy-aura": {
+      "name": "Holy Aura",
+      "description": "Radiant light protects allies, gives saving throw advantage, and blinds fiends and undead who strike them."
+    },
+    "illusory-dragon": {
+      "name": "Illusory Dragon",
+      "description": "You shape a huge illusory dragon that frightens foes and breathes terrifying damaging energy."
+    },
+    "incendiary-cloud": {
+      "name": "Incendiary Cloud",
+      "description": "A swirling cloud of smoke and embers blocks sight and burns those inside."
+    },
+    "maze": {
+      "name": "Maze",
+      "description": "You banish a creature into a labyrinthine demiplane from which it must find its way out."
+    },
+    "mind-blank": {
+      "name": "Mind Blank",
+      "description": "A creature becomes immune to psychic damage, divination, and most mind-reading or charm effects."
+    },
+    "power-word-stun": {
+      "name": "Power Word Stun",
+      "description": "You utter a word that stuns a creature with few hit points remaining."
+    },
+    "sunburst": {
+      "name": "Sunburst",
+      "description": "A brilliant explosion of radiant light damages and blinds creatures in a sphere and dispels darkness."
+    },
+    "telepathy": {
+      "name": "Telepathy",
+      "description": "You create a telepathic link with a willing creature on any plane."
+    },
+    "tsunami": {
+      "name": "Tsunami",
+      "description": "You raise a huge wall of water that crashes forward, drowning and sweeping away creatures."
+    },
+    "astral-projection": {
+      "name": "Astral Projection",
+      "description": "You and willing allies project astral forms into the Astral Plane, leaving your bodies behind."
+    },
+    "blade-of-disaster": {
+      "name": "Blade of Disaster",
+      "description": "You create a rift shaped like a blade that makes powerful attacks against creatures you choose."
+    },
+    "foresight": {
+      "name": "Foresight",
+      "description": "You grant a creature glimpses of the future, giving it advantage on key rolls and making it hard to ambush."
+    },
+    "gate": {
+      "name": "Gate",
+      "description": "You open a portal to another plane and can call a specific creature through it."
+    },
+    "imprisonment": {
+      "name": "Imprisonment",
+      "description": "You confine a creature using one of several magical methods, such as burial, chains, or slumber."
+    },
+    "invulnerability": {
+      "name": "Invulnerability",
+      "description": "You become immune to all damage for the duration."
+    },
+    "mass-heal": {
+      "name": "Mass Heal",
+      "description": "A surge of healing energy restores many hit points distributed among creatures you choose and cures their ailments."
+    },
+    "mass-polymorph": {
+      "name": "Mass Polymorph",
+      "description": "You transform several creatures into beasts, with their new shape replacing their statistics."
+    },
+    "meteor-swarm": {
+      "name": "Meteor Swarm",
+      "description": "Blazing spheres crash down at four points, dealing enormous fire and bludgeoning damage."
+    },
+    "power-word-heal": {
+      "name": "Power Word Heal",
+      "description": "You restore a creature to full hit points and end many conditions affecting it."
+    },
+    "power-word-kill": {
+      "name": "Power Word Kill",
+      "description": "You utter a word that kills a creature outright if it has few hit points, or deals heavy psychic damage otherwise."
+    },
+    "prismatic-wall": {
+      "name": "Prismatic Wall",
+      "description": "You raise a shimmering wall of seven layers, each with a different dangerous effect to those who cross it."
+    },
+    "psychic-scream": {
+      "name": "Psychic Scream",
+      "description": "You unleash a mental shriek at several creatures, dealing psychic damage and stunning those who fail a save."
+    },
+    "shapechange": {
+      "name": "Shapechange",
+      "description": "You assume the form of a creature of limited power and can change forms during the spell."
+    },
+    "storm-of-vengeance": {
+      "name": "Storm of Vengeance",
+      "description": "A churning storm cloud rains destruction, with different effects each round."
+    },
+    "time-stop": {
+      "name": "Time Stop",
+      "description": "You pause time for everyone else, gaining several consecutive turns to act."
+    },
+    "true-polymorph": {
+      "name": "True Polymorph",
+      "description": "You transform a creature into another creature, or an object into a creature or the reverse, potentially permanently."
+    },
+    "true-resurrection": {
+      "name": "True Resurrection",
+      "description": "You restore a dead creature to life, even without a body, with full hit points and no lingering penalties."
+    },
+    "weird": {
+      "name": "Weird",
+      "description": "Creatures in an area face their worst fears, taking psychic damage and becoming frightened."
+    },
+    "wish": {
+      "name": "Wish",
+      "description": "The mightiest of spells lets you duplicate another spell or attempt a greater effect at a price."
+    },
     "evards-black-tentacles": {
       "name": "Evard's Black Tentacles",
       "description": "Squirming tentacles fill a 20-foot square within range. Creatures in the area must succeed on a Dexterity save or take 3d6 Bludgeoning damage and have the Restrained condition while in the area."

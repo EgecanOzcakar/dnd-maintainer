@@ -64,8 +64,8 @@ describe('getSpellsForList', () => {
   });
 
   it('returns empty array for class with no matching spells', () => {
-    // No level-9 spells in the catalog
-    const result = getSpellsForList('druid', 9);
+    // Paladins never get level-9 spells
+    const result = getSpellsForList('paladin', 9);
     expect(result).toEqual([]);
   });
 });
@@ -176,5 +176,14 @@ describe('spell-grant catalog invariant', () => {
     }
 
     expect(missing, 'spell grants referencing uncatalogued spellIds').toEqual([]);
+  });
+});
+
+describe('level 6-9 spells', () => {
+  it('has every level and names each spell', () => {
+    for (const lvl of [6, 7, 8, 9]) expect(SPELL_CATALOG.some((s) => s.level === lvl)).toBe(true);
+    const names = gamedata.spells as Record<string, { name: string }>;
+    expect(SPELL_CATALOG.filter((s) => s.level >= 6).filter((s) => !names[s.id])).toEqual([]);
+    expect(getSpellsForList('wizard', 9).map((s) => s.id)).toContain('wish');
   });
 });

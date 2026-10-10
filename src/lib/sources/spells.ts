@@ -1,5 +1,6 @@
 import type { ClassId } from '@/lib/dnd-helpers';
 import type { SpellDef } from '@/types/spells';
+import { SPELLS_L6_L9 } from '@/lib/sources/spells-l6-l9';
 
 export const SPELL_CATALOG = [
   {
@@ -1967,6 +1968,7 @@ export const SPELL_CATALOG = [
     duration: '1 minute',
     nativeClasses: ['bard', 'sorcerer', 'wizard'],
   },
+  ...SPELLS_L6_L9,
 ] as const satisfies readonly SpellDef[];
 
 export type SpellId = (typeof SPELL_CATALOG)[number]['id'];

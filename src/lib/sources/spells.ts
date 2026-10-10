@@ -1,5 +1,9 @@
 import type { ClassId } from '@/lib/dnd-helpers';
 import type { SpellDef } from '@/types/spells';
+import { SPELLS_CANTRIPS_L1 } from '@/lib/sources/spells-cantrips-l1';
+import { SPELLS_L2_L3 } from '@/lib/sources/spells-l2-l3';
+import { SPELLS_L4_L5 } from '@/lib/sources/spells-l4-l5';
+import { SPELLS_L6_L9 } from '@/lib/sources/spells-l6-l9';
 
 export const SPELL_CATALOG = [
   {
@@ -52,7 +56,7 @@ export const SPELL_CATALOG = [
     range: '120 feet',
     components: { verbal: true, somatic: true, material: 'a copper wire' },
     duration: '1 round',
-    nativeClasses: ['bard', 'druid', 'sorcerer', 'wizard'],
+    nativeClasses: ['bard', 'sorcerer', 'wizard'],
   },
   {
     id: 'poison-spray',
@@ -348,7 +352,7 @@ export const SPELL_CATALOG = [
     range: '60 feet',
     components: { verbal: true, somatic: true, material: false },
     duration: '1 hour',
-    nativeClasses: ['cleric', 'druid', 'ranger', 'sorcerer'],
+    nativeClasses: ['cleric', 'druid', 'paladin', 'ranger', 'sorcerer'],
   },
   {
     id: 'fireball',
@@ -576,7 +580,7 @@ export const SPELL_CATALOG = [
     range: 'Touch',
     components: { verbal: true, somatic: true, material: false },
     duration: '1 hour',
-    nativeClasses: ['paladin', 'ranger', 'wizard'],
+    nativeClasses: ['paladin', 'ranger', 'sorcerer', 'wizard'],
   },
   {
     id: 'shield-of-faith',
@@ -831,11 +835,11 @@ export const SPELL_CATALOG = [
     level: 1,
     school: 'enchantment',
     ritual: false,
-    concentration: false,
+    concentration: true,
     castingTime: 'Action',
     range: '60 feet',
     components: { verbal: true, somatic: true, material: 'a pinch of sand, rose petals, or a cricket' },
-    duration: '1 minute',
+    duration: 'Up to 1 minute',
     nativeClasses: ['bard', 'sorcerer', 'wizard'],
   },
   // Circle of the Land — Temperate L3 (Druid level 3 → spell level 2)
@@ -966,7 +970,7 @@ export const SPELL_CATALOG = [
     level: 1,
     school: 'abjuration',
     ritual: false,
-    concentration: false,
+    concentration: true,
     castingTime: 'Action',
     range: 'Touch',
     components: {
@@ -974,7 +978,7 @@ export const SPELL_CATALOG = [
       somatic: true,
       material: 'holy water or powdered silver and iron, which the spell consumes',
     },
-    duration: '10 minutes',
+    duration: 'Up to 10 minutes',
     // 2024 PHB: native to cleric, druid, paladin, warlock, wizard
     nativeClasses: ['cleric', 'druid', 'paladin', 'warlock', 'wizard'],
   },
@@ -1241,7 +1245,7 @@ export const SPELL_CATALOG = [
     },
     duration: 'Up to 1 minute',
     // 2024 PHB: native to bard, cleric, warlock
-    nativeClasses: ['bard', 'cleric', 'warlock'],
+    nativeClasses: ['bard', 'cleric'],
   },
   {
     id: 'hunters-mark',
@@ -1967,6 +1971,10 @@ export const SPELL_CATALOG = [
     duration: '1 minute',
     nativeClasses: ['bard', 'sorcerer', 'wizard'],
   },
+  ...SPELLS_CANTRIPS_L1,
+  ...SPELLS_L2_L3,
+  ...SPELLS_L4_L5,
+  ...SPELLS_L6_L9,
 ] as const satisfies readonly SpellDef[];
 
 export type SpellId = (typeof SPELL_CATALOG)[number]['id'];

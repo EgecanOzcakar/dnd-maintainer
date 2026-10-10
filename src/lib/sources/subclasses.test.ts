@@ -112,48 +112,20 @@ describe('getSubclassSource — Berserker', () => {
     expect(getSubclassSource('berserker')).toBeDefined();
   });
 
-  it('berserker has 3 feature levels (L3, L6, L10)', () => {
+  it('berserker has 4 feature levels (L3, L6, L10, L14)', () => {
     const source = getSubclassSource('berserker');
-    expect(source?.features).toHaveLength(3);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10]);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
-  it('berserker level 3 grants 2 features: frenzy and mindless-rage', () => {
-    const source = getSubclassSource('berserker');
-    const level3 = source?.features.find((f) => f.classLevel === 3);
-    expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(2);
-    expect(level3?.grants).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ type: 'feature', feature: expect.objectContaining({ id: 'berserker-frenzy' }) }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'berserker-mindless-rage' }),
-        }),
-      ])
-    );
-  });
-
-  it('berserker level 6 grants retaliation feature', () => {
-    const source = getSubclassSource('berserker');
-    const level6 = source?.features.find((f) => f.classLevel === 6);
-    expect(level6).toBeDefined();
-    expect(level6?.grants).toHaveLength(1);
-    expect(level6?.grants[0]).toMatchObject({
-      type: 'feature',
-      feature: { id: 'berserker-retaliation' },
-    });
-  });
-
-  it('berserker level 10 grants intimidating-presence feature', () => {
-    const source = getSubclassSource('berserker');
-    const level10 = source?.features.find((f) => f.classLevel === 10);
-    expect(level10).toBeDefined();
-    expect(level10?.grants).toHaveLength(1);
-    expect(level10?.grants[0]).toMatchObject({
-      type: 'feature',
-      feature: { id: 'berserker-intimidating-presence' },
-    });
+  // 2024 PHB: Frenzy 3, Mindless Rage 6, Retaliation 10, Intimidating Presence 14
+  it.each([
+    [3, 'berserker-frenzy'],
+    [6, 'berserker-mindless-rage'],
+    [10, 'berserker-retaliation'],
+    [14, 'berserker-intimidating-presence'],
+  ])('berserker level %i grants only %s', (level, id) => {
+    const grants = getSubclassSource('berserker')?.features.find((f) => f.classLevel === level)?.grants;
+    expect(grants).toEqual([{ type: 'feature', feature: { id } }]);
   });
 });
 
@@ -162,17 +134,17 @@ describe('getSubclassSource — Wild Heart', () => {
     expect(getSubclassSource('wildheart')).toBeDefined();
   });
 
-  it('wildheart has 3 feature levels (L3, L6, L10)', () => {
+  it('wildheart has 4 feature levels (L3, L6, L10, L14)', () => {
     const source = getSubclassSource('wildheart');
-    expect(source?.features).toHaveLength(3);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
-  it('wildheart level 3 grants 2 grants: speak-with-animals spell and rage-of-the-wilds', () => {
+  it('wildheart level 3 grants speak-with-animals, rage-of-the-wilds and animal-speaker', () => {
     const source = getSubclassSource('wildheart');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(2);
+    expect(level3?.grants).toHaveLength(3);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -183,6 +155,10 @@ describe('getSubclassSource — Wild Heart', () => {
         expect.objectContaining({
           type: 'feature',
           feature: expect.objectContaining({ id: 'wildheart-rage-of-the-wilds' }),
+        }),
+        expect.objectContaining({
+          type: 'feature',
+          feature: expect.objectContaining({ id: 'wildheart-animal-speaker' }),
         }),
       ])
     );
@@ -199,16 +175,12 @@ describe('getSubclassSource — Wild Heart', () => {
     });
   });
 
-  it('wildheart level 10 grants commune-with-nature spell (always prepared)', () => {
-    const source = getSubclassSource('wildheart');
-    const level10 = source?.features.find((f) => f.classLevel === 10);
-    expect(level10).toBeDefined();
-    expect(level10?.grants).toHaveLength(1);
-    expect(level10?.grants[0]).toMatchObject({
-      type: 'spell',
-      spellId: 'commune-with-nature',
-      alwaysPrepared: true,
-    });
+  it('wildheart level 10 grants commune-with-nature (always prepared) and nature-speaker', () => {
+    const level10 = getSubclassSource('wildheart')?.features.find((f) => f.classLevel === 10);
+    expect(level10?.grants).toEqual([
+      { type: 'spell', spellId: 'commune-with-nature', alwaysPrepared: true },
+      { type: 'feature', feature: { id: 'wildheart-nature-speaker' } },
+    ]);
   });
 });
 
@@ -217,10 +189,10 @@ describe('getSubclassSource — World Tree', () => {
     expect(getSubclassSource('worldtree')).toBeDefined();
   });
 
-  it('worldtree has 3 feature levels (L3, L6, L10)', () => {
+  it('worldtree has 4 feature levels (L3, L6, L10, L14)', () => {
     const source = getSubclassSource('worldtree');
-    expect(source?.features).toHaveLength(3);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
   it('worldtree level 3 grants vitality-of-the-tree feature', () => {
@@ -262,10 +234,10 @@ describe('getSubclassSource — Zealot', () => {
     expect(getSubclassSource('zealot')).toBeDefined();
   });
 
-  it('zealot has 3 feature levels (L3, L6, L10)', () => {
+  it('zealot has 4 feature levels (L3, L6, L10, L14)', () => {
     const source = getSubclassSource('zealot');
-    expect(source?.features).toHaveLength(3);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
   it('zealot level 3 grants a damage-choice for Divine Fury and the Warrior of the Gods feature', () => {
@@ -317,10 +289,10 @@ describe('getSubclassSource — College of Dance', () => {
     expect(getSubclassSource('collegedance')).toBeDefined();
   });
 
-  it('collegedance has 2 feature levels (L3, L6)', () => {
+  it('collegedance has 3 feature levels (L3, L6, L14)', () => {
     const source = getSubclassSource('collegedance');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(3);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 14]);
   });
 
   it('collegedance level 3 grants 4 items: armor-class + 3 features (inspirational-dance, unarmored-defense, frolicking-steps)', () => {
@@ -375,10 +347,10 @@ describe('getSubclassSource — College of Glamour', () => {
     expect(getSubclassSource('collegeglamour')).toBeDefined();
   });
 
-  it('collegeglamour has 2 feature levels (L3, L6)', () => {
+  it('collegeglamour has 3 feature levels (L3, L6, L14)', () => {
     const source = getSubclassSource('collegeglamour');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(3);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 14]);
   });
 
   it('collegeglamour level 3 grants 2 features: mantle-of-inspiration and enthralling-performance', () => {
@@ -417,10 +389,10 @@ describe('getSubclassSource — College of Lore', () => {
     expect(getSubclassSource('collegelore')).toBeDefined();
   });
 
-  it('collegelore has 2 feature levels (L3, L6)', () => {
+  it('collegelore has 3 feature levels (L3, L6, L14)', () => {
     const source = getSubclassSource('collegelore');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(3);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 14]);
   });
 
   it('collegelore level 3 grants 2 items: skill proficiency-choice and cutting-words feature', () => {
@@ -469,10 +441,10 @@ describe('getSubclassSource — College of Valor', () => {
     expect(getSubclassSource('collegevalor')).toBeDefined();
   });
 
-  it('collegevalor has 2 feature levels (L3, L6)', () => {
+  it('collegevalor has 3 feature levels (L3, L6, L14)', () => {
     const source = getSubclassSource('collegevalor');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(3);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 14]);
   });
 
   it('collegevalor level 3 grants 4 items: medium armor, shields, martial weapons proficiencies and combat-inspiration', () => {
@@ -510,10 +482,10 @@ describe('getSubclassSource — Life Domain', () => {
     expect(getSubclassSource('lifedomain')).toBeDefined();
   });
 
-  it('lifedomain has 5 feature levels (L3, L5, L6, L7, L9)', () => {
+  it('lifedomain has 6 feature levels (L3, L5, L6, L7, L9, L17)', () => {
     const source = getSubclassSource('lifedomain');
-    expect(source?.features).toHaveLength(5);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9]);
+    expect(source?.features).toHaveLength(6);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9, 17]);
   });
 
   it('lifedomain level 3 grants heavy armor, disciple-of-life, preserve-life, and 4 domain spell grants', () => {
@@ -605,10 +577,10 @@ describe('getSubclassSource — Light Domain', () => {
     expect(getSubclassSource('lightdomain')).toBeDefined();
   });
 
-  it('lightdomain has 5 feature levels (L3, L5, L6, L7, L9)', () => {
+  it('lightdomain has 6 feature levels (L3, L5, L6, L7, L9, L17)', () => {
     const source = getSubclassSource('lightdomain');
-    expect(source?.features).toHaveLength(5);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9]);
+    expect(source?.features).toHaveLength(6);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9, 17]);
   });
 
   it('lightdomain level 3 grants light cantrip, warding-flare, radiance-of-the-dawn, and 4 domain spell grants', () => {
@@ -709,10 +681,10 @@ describe('getSubclassSource — Trickery Domain', () => {
     expect(getSubclassSource('trickerydomain')).toBeDefined();
   });
 
-  it('trickerydomain has 5 feature levels (L3, L5, L6, L7, L9)', () => {
+  it('trickerydomain has 6 feature levels (L3, L5, L6, L7, L9, L17)', () => {
     const source = getSubclassSource('trickerydomain');
-    expect(source?.features).toHaveLength(5);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9]);
+    expect(source?.features).toHaveLength(6);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9, 17]);
   });
 
   it('trickerydomain level 3 grants blessing-of-the-trickster, invoke-duplicity, and 4 domain spell grants', () => {
@@ -803,10 +775,10 @@ describe('getSubclassSource — War Domain', () => {
     expect(getSubclassSource('wardomain')).toBeDefined();
   });
 
-  it('wardomain has 5 feature levels (L3, L5, L6, L7, L9)', () => {
+  it('wardomain has 6 feature levels (L3, L5, L6, L7, L9, L17)', () => {
     const source = getSubclassSource('wardomain');
-    expect(source?.features).toHaveLength(5);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9]);
+    expect(source?.features).toHaveLength(6);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9, 17]);
   });
 
   it('wardomain level 3 grants heavy armor, martial weapons, war-priest + its PB pool, guided-strike, and 4 domain spell grants', () => {
@@ -902,10 +874,10 @@ describe('getSubclassSource — Circle of the Land', () => {
     expect(getSubclassSource('circleland')).toBeDefined();
   });
 
-  it('circleland has 3 feature levels (L3, L6, L10)', () => {
+  it('circleland has 4 feature levels (L3, L6, L10, L14)', () => {
     const source = getSubclassSource('circleland');
-    expect(source?.features).toHaveLength(3);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
   it('circleland level 3 grants lands-aid and terrain feature-choice (2024 PHB — no bonus-cantrip)', () => {
@@ -958,10 +930,10 @@ describe('getSubclassSource — Circle of the Moon', () => {
     expect(getSubclassSource('circlemoon')).toBeDefined();
   });
 
-  it('circlemoon has 3 feature levels (L3, L6, L10)', () => {
+  it('circlemoon has 4 feature levels (L3, L6, L10, L14)', () => {
     const source = getSubclassSource('circlemoon');
-    expect(source?.features).toHaveLength(3);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
   it('circlemoon level 3 grants 2 features: circle-forms and improved-wild-shape', () => {
@@ -1011,10 +983,10 @@ describe('getSubclassSource — Circle of the Sea', () => {
     expect(getSubclassSource('circlesea')).toBeDefined();
   });
 
-  it('circlesea has 3 feature levels (L3, L6, L10)', () => {
+  it('circlesea has 4 feature levels (L3, L6, L10, L14)', () => {
     const source = getSubclassSource('circlesea');
-    expect(source?.features).toHaveLength(3);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
   it('circlesea level 3 grants 1 feature: wrath-of-the-sea', () => {
@@ -1063,10 +1035,10 @@ describe('getSubclassSource — Circle of Stars', () => {
     expect(getSubclassSource('circlestars')).toBeDefined();
   });
 
-  it('circlestars has 3 feature levels (L3, L6, L10)', () => {
+  it('circlestars has 4 feature levels (L3, L6, L10, L14)', () => {
     const source = getSubclassSource('circlestars');
-    expect(source?.features).toHaveLength(3);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
   it('circlestars level 3 grants 2 features: star-map and starry-form', () => {
@@ -1240,10 +1212,10 @@ describe('getSubclassSource — Warrior of Mercy', () => {
     expect(getSubclassSource('warriorofmercy')).toBeDefined();
   });
 
-  it('warriorofmercy has 2 feature levels (L3, L6)', () => {
+  it('warriorofmercy has 4 feature levels (L3, L6, L11, L17)', () => {
     const source = getSubclassSource('warriorofmercy');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 11, 17]);
   });
 
   it('warriorofmercy level 3 grants Implements of Mercy proficiencies plus hand-of-healing and hand-of-harm', () => {
@@ -1288,10 +1260,10 @@ describe('getSubclassSource — Warrior of Shadow', () => {
     expect(getSubclassSource('warriorofshadow')).toBeDefined();
   });
 
-  it('warriorofshadow has 2 feature levels (L3, L6)', () => {
+  it('warriorofshadow has 4 feature levels (L3, L6, L11, L17)', () => {
     const source = getSubclassSource('warriorofshadow');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 11, 17]);
   });
 
   it('warriorofshadow level 3 grants features, spellcasting, and spells', () => {
@@ -1326,10 +1298,10 @@ describe('getSubclassSource — Warrior of the Elements', () => {
     expect(getSubclassSource('warriorofelements')).toBeDefined();
   });
 
-  it('warriorofelements has 2 feature levels (L3, L6)', () => {
+  it('warriorofelements has 4 feature levels (L3, L6, L11, L17)', () => {
     const source = getSubclassSource('warriorofelements');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 11, 17]);
   });
 
   it('warriorofelements level 3 grants 2 features: elemental-attunement and manipulate-elements', () => {
@@ -1368,10 +1340,10 @@ describe('getSubclassSource — Warrior of the Open Hand', () => {
     expect(getSubclassSource('warrioropenhand')).toBeDefined();
   });
 
-  it('warrioropenhand has 2 feature levels (L3, L6)', () => {
+  it('warrioropenhand has 4 feature levels (L3, L6, L11, L17)', () => {
     const source = getSubclassSource('warrioropenhand');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 11, 17]);
   });
 
   it('warrioropenhand level 3 grants 1 feature: open-hand-technique', () => {
@@ -1908,10 +1880,10 @@ describe('getSubclassSource — Beast Master', () => {
     expect(getSubclassSource('beastmaster')).toBeDefined();
   });
 
-  it('beastmaster has 2 feature levels (L3, L7)', () => {
+  it('beastmaster has 4 feature levels (L3, L7, L11, L15)', () => {
     const source = getSubclassSource('beastmaster');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 7]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 7, 11, 15]);
   });
 
   it('beastmaster level 3 grants 1 feature: primal-companion', () => {
@@ -1942,10 +1914,10 @@ describe('getSubclassSource — Fey Wanderer', () => {
     expect(getSubclassSource('feywanderer')).toBeDefined();
   });
 
-  it('feywanderer has 6 feature levels (L3, L5, L7, L9, L13, L17)', () => {
+  it('feywanderer has 8 feature levels (L3, L5, L7, L9, L11, L13, L15, L17)', () => {
     const source = getSubclassSource('feywanderer');
-    expect(source?.features).toHaveLength(6);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 7, 9, 13, 17]);
+    expect(source?.features).toHaveLength(8);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 7, 9, 11, 13, 15, 17]);
   });
 
   it('feywanderer level 3 grants 4 items: dreadful-strikes, skill proficiency-choice, otherworldly-glamour, charm-person', () => {
@@ -2051,10 +2023,10 @@ describe('getSubclassSource — Gloom Stalker', () => {
     expect(getSubclassSource('gloomstalker')).toBeDefined();
   });
 
-  it('gloomstalker has 6 feature levels (L3, L5, L7, L9, L13, L17)', () => {
+  it('gloomstalker has 8 feature levels (L3, L5, L7, L9, L11, L13, L15, L17)', () => {
     const source = getSubclassSource('gloomstalker');
-    expect(source?.features).toHaveLength(6);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 7, 9, 13, 17]);
+    expect(source?.features).toHaveLength(8);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 7, 9, 11, 13, 15, 17]);
   });
 
   it('gloomstalker level 3 grants 3 items: dread-ambusher, umbral-sight, disguise-self', () => {
@@ -2140,10 +2112,10 @@ describe('getSubclassSource — Hunter', () => {
     expect(getSubclassSource('hunter')).toBeDefined();
   });
 
-  it('hunter has 2 feature levels (L3, L7)', () => {
+  it('hunter has 4 feature levels (L3, L7, L11, L15)', () => {
     const source = getSubclassSource('hunter');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 7]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 7, 11, 15]);
   });
 
   it('hunter level 3 grants 2 items: hunters-lore and hunters-prey feature-choice', () => {
@@ -2211,10 +2183,10 @@ describe('getSubclassSource — Soulknife', () => {
     expect(getSubclassSource('soulknife')).toBeDefined();
   });
 
-  it('soulknife has 2 feature levels (L3, L9)', () => {
+  it('soulknife has 4 feature levels (L3, L9, L13, L17)', () => {
     const source = getSubclassSource('soulknife');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 9]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 9, 13, 17]);
   });
 
   it('soulknife level 3 grants psionic-power, the rogue-keyed psionic-energy pool, and psychic-blades', () => {

@@ -1954,6 +1954,218 @@
     "illusionist-illusory-reality": {
       "name": "Illusory Reality",
       "description": "When you cast an Illusion spell of level 1 or higher, you can choose one inanimate, nonmagical object that is part of the illusion and make that object real. You can do this on your turn as a Bonus Action while the spell persists. The object remains real for 1 minute; it can't deal damage or otherwise directly harm anyone."
+    },
+    "cleric-improved-blessed-strikes": {
+      "name": "Improved Blessed Strikes",
+      "description": "Your Blessed Strikes option grows stronger: Divine Strike deals 2d8 extra damage, or Potent Spellcasting also grants you or a creature within 60 feet Temporary Hit Points equal to twice your Wisdom modifier when you deal cantrip damage."
+    },
+    "fighter-extra-attack-2": {
+      "name": "Two Extra Attacks",
+      "description": "You can attack three times, instead of once, whenever you take the Attack action on your turn."
+    },
+    "fighter-indomitable-2": {
+      "name": "Indomitable (two uses)",
+      "description": "You can use Indomitable twice between long rests."
+    },
+    "fighter-studied-attacks": {
+      "name": "Studied Attacks",
+      "description": "If you make an attack roll against a creature and miss, you have Advantage on your next attack roll against that creature before the end of your next turn."
+    },
+    "fighter-action-surge-2": {
+      "name": "Action Surge (two uses)",
+      "description": "You can use Action Surge twice before a rest, but only once on a given turn."
+    },
+    "fighter-indomitable-3": {
+      "name": "Indomitable (three uses)",
+      "description": "You can use Indomitable three times between long rests."
+    },
+    "fighter-extra-attack-3": {
+      "name": "Three Extra Attacks",
+      "description": "You can attack four times, instead of once, whenever you take the Attack action on your turn."
+    },
+    "rogue-reliable-talent": {
+      "name": "Reliable Talent",
+      "description": "Whenever you make an ability check that uses one of your skill or tool proficiencies, you can treat a d20 roll of 9 or lower as a 10."
+    },
+    "rogue-devious-strikes": {
+      "name": "Devious Strikes",
+      "description": "Your Cunning Strike gains new options: Daze, Knock Out and Obscure."
+    },
+    "rogue-slippery-mind": {
+      "name": "Slippery Mind",
+      "description": "You gain proficiency in Wisdom and Charisma saving throws."
+    },
+    "rogue-elusive": {
+      "name": "Elusive",
+      "description": "No attack roll can have Advantage against you unless you have the Incapacitated condition."
+    },
+    "rogue-stroke-of-luck": {
+      "name": "Stroke of Luck",
+      "description": "If you fail a D20 Test, you can turn the roll into a 20. Once you use this feature, you can't use it again until you finish a short or long rest."
+    },
+    "arcanetrickster-versatile-trickster": {
+      "name": "Versatile Trickster",
+      "description": "When you use the Trip option of Cunning Strike, you can also target a creature within 5 feet of your Mage Hand with that option."
+    },
+    "arcanetrickster-spell-thief": {
+      "name": "Spell Thief",
+      "description": "When a creature casts a spell that targets you or includes you in its area, you can use your Reaction to force a save; on a failure you negate the spell's effect on you and steal knowledge of it for 8 hours. Once per long rest."
+    },
+    "assassin-envenom-weapons": {
+      "name": "Envenom Weapons",
+      "description": "When you use the Poison option of Cunning Strike, the target also takes 2d6 Poison damage whenever it fails the save, and this damage ignores Poison resistance."
+    },
+    "assassin-death-strike": {
+      "name": "Death Strike",
+      "description": "When you hit a creature with Sneak Attack on the first round of combat, it must succeed on a Constitution save or the attack's damage is doubled."
+    },
+    "beastmaster-bestial-fury": {
+      "name": "Bestial Fury",
+      "description": "When you command your Primal Companion to take the Beast's Strike action, it can use it twice, and the first time each turn it hits your Hunter's Mark target it deals extra Force damage."
+    },
+    "beastmaster-share-spells": {
+      "name": "Share Spells",
+      "description": "When you cast a spell targeting yourself, you can also affect your Primal Companion if it is within 30 feet of you."
+    },
+    "circleland-natures-sanctuary": {
+      "name": "Nature's Sanctuary",
+      "description": "As a Magic action you can expend a Wild Shape use to create a 15-foot spectral grove for 1 minute; you and allies inside have Half Cover and resistance to your current land's damage type."
+    },
+    "circlemoon-lunar-form": {
+      "name": "Lunar Form",
+      "description": "While in Wild Shape, once per turn you can deal an extra 2d10 Radiant damage on a hit, and when you use Moonlight Step you can bring a willing creature with you."
+    },
+    "circlesea-oceanic-gift": {
+      "name": "Oceanic Gift",
+      "description": "You can manifest your Wrath of the Sea emanation around a willing creature within 60 feet instead of yourself, or around both of you by expending two Wild Shape uses."
+    },
+    "circlestars-full-of-stars": {
+      "name": "Full of Stars",
+      "description": "While in your Starry Form, you have resistance to Bludgeoning, Piercing and Slashing damage."
+    },
+    "collegedance-tandem-footwork": {
+      "name": "Tandem Footwork",
+      "description": "When you roll Initiative, you can expend a Bardic Inspiration die to give yourself and allies within 30 feet a bonus to Initiative equal to the roll."
+    },
+    "collegeglamour-unbreakable-majesty": {
+      "name": "Unbreakable Majesty",
+      "description": "As a Bonus Action you assume a majestic presence for 1 minute; the first time each turn a creature hits you, it must succeed on a Charisma save or the attack misses."
+    },
+    "collegelore-peerless-skill": {
+      "name": "Peerless Skill",
+      "description": "When you make an ability check or attack roll and fail, you can expend a Bardic Inspiration die and add the roll; if you still fail, the die is not expended."
+    },
+    "collegevalor-battle-magic": {
+      "name": "Battle Magic",
+      "description": "After you cast a spell with a casting time of an action, you can make one weapon attack as a Bonus Action."
+    },
+    "feywanderer-fey-reinforcements": {
+      "name": "Fey Reinforcements",
+      "description": "You always have Summon Fey prepared and can cast it once per long rest without a slot or Concentration."
+    },
+    "feywanderer-misty-wanderer": {
+      "name": "Misty Wanderer",
+      "description": "You can cast Misty Step without a slot a number of times equal to your Wisdom modifier per long rest, and bring a willing creature within 5 feet along."
+    },
+    "gloomstalker-stalkers-flurry": {
+      "name": "Stalker's Flurry",
+      "description": "Your Dread Ambusher strikes gain new options: Sudden Strike (an extra attack against another creature within 5 feet) or Mass Fear (frighten creatures near the target)."
+    },
+    "gloomstalker-shadowy-dodge": {
+      "name": "Shadowy Dodge",
+      "description": "When a creature makes an attack roll against you, you can use your Reaction to impose Disadvantage on it, then teleport up to 30 feet to an unoccupied space you can see."
+    },
+    "hunter-superior-hunters-prey": {
+      "name": "Superior Hunter's Prey",
+      "description": "Once per turn, when you deal damage to your Hunter's Mark target, you can deal that spell's extra damage to a different creature within 30 feet of it."
+    },
+    "hunter-superior-hunters-defense": {
+      "name": "Superior Hunter's Defense",
+      "description": "When you take damage, you can use your Reaction to gain resistance to that damage and any other damage of the same type until the end of the current turn."
+    },
+    "lifedomain-supreme-healing": {
+      "name": "Supreme Healing",
+      "description": "When you would roll dice to restore Hit Points with a spell or Channel Divinity, use the highest number possible for each die instead."
+    },
+    "lightdomain-corona-of-light": {
+      "name": "Corona of Light",
+      "description": "As a Magic action you emit sunlight for 1 minute; enemies in the bright light have Disadvantage on saves against your Radiant Flare and spells that deal Fire or Radiant damage."
+    },
+    "soulknife-psychic-veil": {
+      "name": "Psychic Veil",
+      "description": "As a Magic action you become Invisible for 1 hour, ending early if you deal damage or force a save. Once per long rest, or by expending a Psionic Energy die."
+    },
+    "soulknife-rend-mind": {
+      "name": "Rend Mind",
+      "description": "When you deal Sneak Attack damage with your Psychic Blades, you can force the target to make a Wisdom save or be Stunned for 1 minute. Once per long rest, or by expending Psionic Energy dice."
+    },
+    "thief-use-magic-device": {
+      "name": "Use Magic Device",
+      "description": "You can attune to up to four magic items, use charges with a chance to not expend them, and use any Spell Scroll by making an Intelligence (Arcana) check."
+    },
+    "thief-thiefs-reflexes": {
+      "name": "Thief's Reflexes",
+      "description": "You can take two turns during the first round of any combat: your first at your normal Initiative and your second at your Initiative minus 10."
+    },
+    "trickerydomain-improved-duplicity": {
+      "name": "Improved Duplicity",
+      "description": "Your Invoke Duplicity illusion improves: you and allies have Advantage on attacks against creatures near it, and when it ends an ally within 5 feet can regain Hit Points."
+    },
+    "wardomain-avatar-of-battle": {
+      "name": "Avatar of Battle",
+      "description": "You gain resistance to Bludgeoning, Piercing and Slashing damage."
+    },
+    "warriorofelements-stride-of-the-elements": {
+      "name": "Stride of the Elements",
+      "description": "While your Elemental Attunement is active, you have a Fly Speed and a Swim Speed equal to your Speed."
+    },
+    "warriorofelements-elemental-epitome": {
+      "name": "Elemental Epitome",
+      "description": "While your Elemental Attunement is active you gain resistance to a chosen element, can deal extra elemental damage once per turn, and your Step of the Wind adds damage to creatures you pass."
+    },
+    "warriorofmercy-flurry-of-healing-and-harm": {
+      "name": "Flurry of Healing and Harm",
+      "description": "When you use Flurry of Blows, you can replace any of the Unarmed Strikes with Hand of Healing without spending Focus for the healing."
+    },
+    "warriorofmercy-hand-of-ultimate-mercy": {
+      "name": "Hand of Ultimate Mercy",
+      "description": "As a Magic action you can spend 5 Focus Points to return a creature that died within the last 24 hours to life with 4d10 plus your Wisdom modifier Hit Points. Once per long rest."
+    },
+    "warriorofshadow-improved-shadow-step": {
+      "name": "Improved Shadow Step",
+      "description": "When you use Shadow Step you can spend 1 Focus Point to remove the requirement that you start and end in Dim Light or Darkness, and make an Unarmed Strike right after you teleport."
+    },
+    "warriorofshadow-cloak-of-shadows": {
+      "name": "Cloak of Shadows",
+      "description": "As a Magic action you can spend 3 Focus Points to become Invisible and able to move through creatures and objects for 1 minute, and your Flurry of Blows costs no Focus."
+    },
+    "warrioropenhand-fleet-step": {
+      "name": "Fleet Step",
+      "description": "When you take a Bonus Action other than Step of the Wind, you can also use Step of the Wind immediately after it."
+    },
+    "warrioropenhand-quivering-palm": {
+      "name": "Quivering Palm",
+      "description": "When you hit with an Unarmed Strike you can spend 4 Focus Points to set lethal vibrations in the target; later you can end them to force a Constitution save that deals 10d12 Force damage, or half on a success."
+    },
+    "wildheart-animal-speaker": {
+      "name": "Animal Speaker",
+      "description": "You can cast Beast Sense and Speak with Animals as Rituals, using Wisdom as your spellcasting ability for them."
+    },
+    "wildheart-nature-speaker": {
+      "name": "Nature Speaker",
+      "description": "You can cast Commune with Nature as a Ritual, using Wisdom as your spellcasting ability for it."
+    },
+    "wildheart-power-of-the-wilds": {
+      "name": "Power of the Wilds",
+      "description": "Whenever you activate your Rage, you gain one of these options until it ends: Falcon (Fly Speed), Lion (enemies near you have Disadvantage against others), or Ram (knock Large or smaller creatures Prone on a hit)."
+    },
+    "worldtree-travel-along-the-tree": {
+      "name": "Travel Along the Tree",
+      "description": "When you activate your Rage, and as a Bonus Action while raging, you can teleport up to 60 feet; once per Rage you can extend this to 150 feet and bring up to six willing creatures along."
+    },
+    "zealot-rage-of-the-gods": {
+      "name": "Rage of the Gods",
+      "description": "When you activate your Rage you can assume a divine form for 1 minute: you gain a Fly Speed, resistance to Necrotic, Psychic and Radiant damage, and can spend a Rage use to save a creature from dropping to 0 Hit Points. Once per long rest."
     }
   },
   "subclasses": {
@@ -3339,6 +3551,206 @@
     }
   },
   "spells": {
+    "blade-ward": {
+      "name": "Blade Ward",
+      "description": "You trace a protective sign and gain resistance to bludgeoning, piercing, and slashing damage from weapon attacks until the end of your next turn."
+    },
+    "eldritch-blast": {
+      "name": "Eldritch Blast",
+      "description": "You hurl a beam of crackling energy at a creature. On a hit it takes force damage, and the spell fires more beams as you gain levels."
+    },
+    "elementalism": {
+      "name": "Elementalism",
+      "description": "You exert control over the elements, creating a small harmless effect such as a gust of air, a flicker of flame, a puff of earth, or a splash of water."
+    },
+    "friends": {
+      "name": "Friends",
+      "description": "You gain advantage on Charisma checks against one creature that is not hostile to you, but it knows afterward that you used magic on it."
+    },
+    "sorcerous-burst": {
+      "name": "Sorcerous Burst",
+      "description": "You unleash raw magical energy at a target, dealing damage of a type you choose, with additional dice possible when the damage dice roll their maximum."
+    },
+    "starry-wisp": {
+      "name": "Starry Wisp",
+      "description": "You launch a mote of starlight at a creature or object, dealing radiant damage, and a creature hit sheds dim light until the end of your next turn."
+    },
+    "thaumaturgy": {
+      "name": "Thaumaturgy",
+      "description": "You manifest a minor wonder, such as a booming voice, flickering flames, tremors, or altered eyes, as a sign of divine power."
+    },
+    "thunderclap": {
+      "name": "Thunderclap",
+      "description": "You create a burst of thunderous sound audible far away. Creatures within reach must succeed on a Constitution save or take thunder damage."
+    },
+    "toll-the-dead": {
+      "name": "Toll the Dead",
+      "description": "You point at a creature and a mournful bell tolls. It must succeed on a Wisdom save or take necrotic damage, more if it is already wounded."
+    },
+    "true-strike": {
+      "name": "True Strike",
+      "description": "You guide a weapon with magic and make one attack with it using your spellcasting ability, possibly dealing extra radiant damage."
+    },
+    "vicious-mockery": {
+      "name": "Vicious Mockery",
+      "description": "You unleash a string of magically infused insults. The target must succeed on a Wisdom save or take psychic damage and have disadvantage on its next attack."
+    },
+    "word-of-radiance": {
+      "name": "Word of Radiance",
+      "description": "You utter a divine word and radiant light burns the enemies of your choice nearby, who must succeed on a Constitution save or take radiant damage."
+    },
+    "animal-friendship": {
+      "name": "Animal Friendship",
+      "description": "You convince a Beast that you mean it no harm. If it fails a Wisdom save it is charmed by you for the duration."
+    },
+    "armor-of-agathys": {
+      "name": "Armor of Agathys",
+      "description": "A protective frost gives you temporary hit points, and a creature that hits you in melee takes cold damage while those points last."
+    },
+    "color-spray": {
+      "name": "Color Spray",
+      "description": "A dazzling array of colors blinds creatures in a cone, starting with those that have the fewest hit points."
+    },
+    "comprehend-languages": {
+      "name": "Comprehend Languages",
+      "description": "For the duration you understand the literal meaning of any spoken language you hear and any written language you touch."
+    },
+    "compelled-duel": {
+      "name": "Compelled Duel",
+      "description": "You challenge a creature to duel. It has disadvantage on attacks against others and must save to move away from you."
+    },
+    "create-or-destroy-water": {
+      "name": "Create or Destroy Water",
+      "description": "You either create clean water in an open container or area, or destroy water or fog in an area."
+    },
+    "detect-evil-and-good": {
+      "name": "Detect Evil and Good",
+      "description": "You sense the presence and location of aberrations, celestials, elementals, fey, fiends, and undead, as well as consecrated or desecrated places, nearby."
+    },
+    "detect-poison-and-disease": {
+      "name": "Detect Poison and Disease",
+      "description": "You sense poisons, poisonous creatures, and diseases nearby, and can identify their kind and location."
+    },
+    "divine-favor": {
+      "name": "Divine Favor",
+      "description": "Radiant power fills your weapon attacks, causing them to deal extra radiant damage while the spell lasts."
+    },
+    "divine-smite": {
+      "name": "Divine Smite",
+      "description": "Just after you hit with a weapon or unarmed strike, you channel divine power to deal extra radiant damage, more against fiends and undead."
+    },
+    "entangle": {
+      "name": "Entangle",
+      "description": "Grasping weeds and vines sprout in a square area. Creatures there must succeed on a Strength save or be restrained."
+    },
+    "expeditious-retreat": {
+      "name": "Expeditious Retreat",
+      "description": "You surge with speed and can take the Dash action immediately and as a bonus action on each of your turns while the spell lasts."
+    },
+    "feather-fall": {
+      "name": "Feather Fall",
+      "description": "Falling creatures you choose descend slowly and take no damage when they land."
+    },
+    "find-familiar": {
+      "name": "Find Familiar",
+      "description": "You gain the service of a spirit that takes an animal form of your choice. It acts independently, can deliver touch spells, and can be dismissed or resummoned."
+    },
+    "floating-disk": {
+      "name": "Floating Disk",
+      "description": "You create a circular disk of force that follows you and carries a heavy load, hovering just above the ground."
+    },
+    "goodberry": {
+      "name": "Goodberry",
+      "description": "Up to ten berries appear, each restoring a hit point and providing a day of nourishment when eaten."
+    },
+    "grease": {
+      "name": "Grease",
+      "description": "Slick grease covers a square of ground, making it difficult terrain. Creatures there may fall prone."
+    },
+    "hail-of-thorns": {
+      "name": "Hail of Thorns",
+      "description": "Your next ranged weapon hit bursts into a spray of thorns, dealing piercing damage to the target and creatures near it."
+    },
+    "healing-word": {
+      "name": "Healing Word",
+      "description": "You speak a word of power and a creature you can see regains hit points."
+    },
+    "hex": {
+      "name": "Hex",
+      "description": "You curse a creature so your attacks deal extra necrotic damage to it, and it has disadvantage on checks with one ability."
+    },
+    "ice-knife": {
+      "name": "Ice Knife",
+      "description": "You hurl a shard of ice at a target. It then shatters, and creatures near the target must save or take cold damage."
+    },
+    "identify": {
+      "name": "Identify",
+      "description": "You learn the properties of a magic item or the spells affecting a creature or object you touch."
+    },
+    "illusory-script": {
+      "name": "Illusory Script",
+      "description": "You write on parchment in a way that only chosen creatures can read; to others it looks like an unknown script or a different message."
+    },
+    "inflict-wounds": {
+      "name": "Inflict Wounds",
+      "description": "A melee touch drains life from a creature, dealing heavy necrotic damage."
+    },
+    "jump": {
+      "name": "Jump",
+      "description": "A creature you touch can jump three times as far as normal for the duration."
+    },
+    "mage-armor": {
+      "name": "Mage Armor",
+      "description": "You touch an unarmored willing creature, and a protective force raises its base Armor Class."
+    },
+    "magic-missile": {
+      "name": "Magic Missile",
+      "description": "Three glowing darts of force strike creatures you choose and automatically hit, each dealing force damage."
+    },
+    "purify-food-and-drink": {
+      "name": "Purify Food and Drink",
+      "description": "Food and drink in a small area is cleansed of poison and spoilage."
+    },
+    "sanctuary": {
+      "name": "Sanctuary",
+      "description": "You ward a creature so attackers must save before targeting it. The ward ends if the creature attacks or casts a harmful spell."
+    },
+    "searing-smite": {
+      "name": "Searing Smite",
+      "description": "Your next weapon hit deals extra fire damage and sets the target ablaze, burning it each turn until it extinguishes the flames."
+    },
+    "shield": {
+      "name": "Shield",
+      "description": "An invisible barrier boosts your Armor Class against the triggering attack and blocks Magic Missile until your next turn."
+    },
+    "silent-image": {
+      "name": "Silent Image",
+      "description": "You create the image of an object, creature, or phenomenon that is purely visual, movable, and reveals itself on inspection."
+    },
+    "thunderous-smite": {
+      "name": "Thunderous Smite",
+      "description": "Your next weapon hit rings with thunder, dealing extra thunder damage and possibly shoving and knocking the target prone."
+    },
+    "thunderwave": {
+      "name": "Thunderwave",
+      "description": "A wave of thunderous force sweeps out from you, damaging and pushing creatures in the area, and booming audibly far away."
+    },
+    "unseen-servant": {
+      "name": "Unseen Servant",
+      "description": "An invisible, mindless force performs simple tasks for you, such as fetching, cleaning, and mending."
+    },
+    "witch-bolt": {
+      "name": "Witch Bolt",
+      "description": "A beam of crackling energy links you to a creature, dealing lightning damage, and you can keep zapping it each turn."
+    },
+    "wrathful-smite": {
+      "name": "Wrathful Smite",
+      "description": "Your next weapon hit deals extra psychic damage and may frighten the target, who must save or stay afraid."
+    },
+    "zephyr-strike": {
+      "name": "Zephyr Strike",
+      "description": "You move like the wind, ignoring opportunity attacks, gaining speed, and once dealing bonus force damage on a hit."
+    },
     "druidcraft": {
       "name": "Druidcraft",
       "description": "Whispering to the spirits of nature, you create one of the following effects: a tiny weather prediction, a harmless sensory effect, instant plant bloom or seed pod opening, or a lit or snuffed torch or campfire."
@@ -3482,6 +3894,270 @@
     "invisibility": {
       "name": "Invisibility",
       "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early if the target attacks or casts a spell."
+    },
+    "melfs-acid-arrow": {
+      "name": "Melf's Acid Arrow",
+      "description": "You launch a shimmering green arrow at a target. On a hit it deals acid damage immediately and more at the end of the target's next turn; on a miss it still splashes for half damage."
+    },
+    "animal-messenger": {
+      "name": "Animal Messenger",
+      "description": "You send a Tiny beast carrying a short message to a location you describe, and it travels there within the duration to deliver the message to a recipient you specify."
+    },
+    "arcane-lock": {
+      "name": "Arcane Lock",
+      "description": "You magically seal a door, window, gate, or container. It stays locked until you choose otherwise, and only chosen creatures or a password can open it; knock and similar effects can still suppress it."
+    },
+    "arcane-vigor": {
+      "name": "Arcane Vigor",
+      "description": "You spend one or more Hit Point Dice, roll them, and heal yourself for the total plus your spellcasting ability modifier."
+    },
+    "augury": {
+      "name": "Augury",
+      "description": "You cast tokens to glimpse the likely outcome of a plan you intend to carry out within the next half hour, receiving a short omen such as weal, woe, or both."
+    },
+    "barkskin": {
+      "name": "Barkskin",
+      "description": "A willing creature's skin takes on a bark-like toughness, and its Armor Class can't be lower than a set value while the spell lasts."
+    },
+    "beast-sense": {
+      "name": "Beast Sense",
+      "description": "You touch a willing beast and link your mind to it, perceiving the world through its senses for as long as you maintain concentration."
+    },
+    "blindness-deafness": {
+      "name": "Blindness/Deafness",
+      "description": "You try to leave a creature blinded or deafened (your choice). The target repeats its Constitution save at the end of each of its turns to shake off the effect."
+    },
+    "branding-smite": {
+      "name": "Branding Smite",
+      "description": "Your next weapon hit deals extra radiant damage and makes the target glow, revealing it if invisible and preventing it from hiding or turning invisible."
+    },
+    "cloud-of-daggers": {
+      "name": "Cloud of Daggers",
+      "description": "You fill a small cube of air with whirling blades that cut creatures entering or ending their turn there."
+    },
+    "continual-flame": {
+      "name": "Continual Flame",
+      "description": "A heatless, torch-bright flame springs from an object you touch and burns until the spell is dispelled."
+    },
+    "cordon-of-arrows": {
+      "name": "Cordon of Arrows",
+      "description": "You plant ammunition in the ground. When a creature you didn't designate enters the area, a piece of ammunition shoots at it and then becomes nonmagical."
+    },
+    "crown-of-madness": {
+      "name": "Crown of Madness",
+      "description": "A humanoid you target is overcome by madness and must use its movement and action to attack a creature you choose, unless it succeeds on its save each turn."
+    },
+    "enlarge-reduce": {
+      "name": "Enlarge/Reduce",
+      "description": "You make a creature or object larger or smaller. Enlarging grants extra weapon damage and Strength advantage; reducing weakens the target's damage and gives it Strength disadvantage."
+    },
+    "enthrall": {
+      "name": "Enthrall",
+      "description": "You weave a compelling performance of words; creatures that fail their saves become so fixated on you that they have disadvantage on Perception checks to notice anyone else."
+    },
+    "find-steed": {
+      "name": "Find Steed",
+      "description": "You summon a loyal otherworldly steed that takes a form you choose, such as a warhorse or a camel, and it fights beside you as a bonded mount."
+    },
+    "find-traps": {
+      "name": "Find Traps",
+      "description": "You sense the presence of any traps within range and line of sight, learning what kind of danger each one poses, though not its exact location."
+    },
+    "flame-blade": {
+      "name": "Flame Blade",
+      "description": "A blade of fire appears in your hand and sheds light. You can use it to make melee spell attacks that deal fire damage."
+    },
+    "flaming-sphere": {
+      "name": "Flaming Sphere",
+      "description": "You create a rolling ball of fire that you can steer as a bonus action to ram into creatures, burning those it touches or ends beside."
+    },
+    "gentle-repose": {
+      "name": "Gentle Repose",
+      "description": "You preserve a corpse against decay and prevent it from becoming undead, which also delays the time limit on spells that raise the dead."
+    },
+    "gust-of-wind": {
+      "name": "Gust of Wind",
+      "description": "A strong wind blasts along a line, pushing creatures back, slowing movement against it, scattering gas, and snuffing small flames."
+    },
+    "healing-spirit": {
+      "name": "Healing Spirit",
+      "description": "You call a spirit of nature that restores hit points to creatures that move through or end their turn near it, a limited number of times per turn."
+    },
+    "heat-metal": {
+      "name": "Heat Metal",
+      "description": "You make a metal object glow red-hot, burning anyone touching it and forcing them to drop it or take disadvantage on checks and attacks."
+    },
+    "knock": {
+      "name": "Knock",
+      "description": "You unlock or free something that is stuck, barred, or locked, and a loud knock audible from far away can accompany the effect."
+    },
+    "levitate": {
+      "name": "Levitate",
+      "description": "You lift a creature or loose object into the air and can adjust its height each turn, though it can't move horizontally except by pushing off something."
+    },
+    "locate-animals-or-plants": {
+      "name": "Locate Animals or Plants",
+      "description": "You name a kind of beast or plant and learn the direction and distance to the closest one of that kind within a few miles."
+    },
+    "locate-object": {
+      "name": "Locate Object",
+      "description": "You sense the direction toward a familiar object or the nearest object of a described kind, provided it is within range."
+    },
+    "magic-mouth": {
+      "name": "Magic Mouth",
+      "description": "You place a spoken message on an object that it delivers once a trigger condition you describe occurs."
+    },
+    "mind-spike": {
+      "name": "Mind Spike",
+      "description": "You drive a psychic spike into a creature, dealing psychic damage and letting you know where it is for as long as you concentrate."
+    },
+    "mirror-image": {
+      "name": "Mirror Image",
+      "description": "Three illusory duplicates of you appear and shift around, causing attacks aimed at you to sometimes strike a duplicate instead and destroy it."
+    },
+    "nystuls-magic-aura": {
+      "name": "Nystul's Magic Aura",
+      "description": "You disguise a creature or object against divination and detection magic, making it seem nonmagical or giving it a false aura of your choosing."
+    },
+    "prayer-of-healing": {
+      "name": "Prayer of Healing",
+      "description": "After a short prayer, up to several creatures you choose regain hit points, and the spell can't be used again on the same creatures until they finish a long rest."
+    },
+    "protection-from-poison": {
+      "name": "Protection from Poison",
+      "description": "You neutralize a poison affecting a creature and give it advantage on saves against being poisoned and resistance to poison damage for the duration."
+    },
+    "shatter": {
+      "name": "Shatter",
+      "description": "A sudden ringing noise erupts at a point you choose, dealing thunder damage in a small sphere. Objects made of crystal or glass are especially vulnerable."
+    },
+    "shining-smite": {
+      "name": "Shining Smite",
+      "description": "Your weapon attacks deal extra radiant damage for the duration, and each hit makes the target shed light and be unable to benefit from being invisible."
+    },
+    "spider-climb": {
+      "name": "Spider Climb",
+      "description": "A willing creature gains the ability to climb walls and ceilings with its hands free, and gains a climb speed equal to its walking speed."
+    },
+    "spike-growth": {
+      "name": "Spike Growth",
+      "description": "The ground in an area becomes hard to spot and covered in thorns, hurting creatures who move through it."
+    },
+    "warding-bond": {
+      "name": "Warding Bond",
+      "description": "You bind yourself to a willing creature, granting it protection and resistance, but you take the damage it suffers."
+    },
+    "animate-dead": {
+      "name": "Animate Dead",
+      "description": "You raise a pile of bones or a corpse as a skeleton or zombie under your command. Re-casting the spell renews your control over earlier creations."
+    },
+    "aura-of-vitality": {
+      "name": "Aura of Vitality",
+      "description": "Healing energy radiates from you, and each turn you can use a bonus action to restore hit points to one creature in the aura."
+    },
+    "bestow-curse": {
+      "name": "Bestow Curse",
+      "description": "You lay a curse on a creature, choosing a penalty such as ability disadvantage, attack disadvantage against you, or extra damage you deal to it."
+    },
+    "blinding-smite": {
+      "name": "Blinding Smite",
+      "description": "Your next weapon hit deals extra radiant damage and may leave the target blinded until the spell ends or it overcomes the effect."
+    },
+    "call-lightning": {
+      "name": "Call Lightning",
+      "description": "You summon a storm cloud and call down bolts of lightning each turn to strike creatures beneath it."
+    },
+    "conjure-animals": {
+      "name": "Conjure Animals",
+      "description": "You summon fey spirits in the form of beasts that appear in unoccupied spaces and fight as your allies."
+    },
+    "conjure-barrage": {
+      "name": "Conjure Barrage",
+      "description": "You turn a piece of ammunition or thrown weapon into a volley that fills a cone, damaging creatures who fail their save."
+    },
+    "create-food-and-water": {
+      "name": "Create Food and Water",
+      "description": "You conjure enough food and fresh water to sustain a number of creatures for a day."
+    },
+    "elemental-weapon": {
+      "name": "Elemental Weapon",
+      "description": "A nonmagical weapon becomes magical, gains an attack bonus, and deals extra damage of an element you choose."
+    },
+    "feign-death": {
+      "name": "Feign Death",
+      "description": "A willing creature appears dead, becoming blinded and incapacitated, resistant to most damage, and immune to disease and poison effects."
+    },
+    "gaseous-form": {
+      "name": "Gaseous Form",
+      "description": "A willing creature becomes a misty cloud, gaining flying, resistances, and the ability to slip through narrow gaps but unable to speak or cast spells."
+    },
+    "glyph-of-warding": {
+      "name": "Glyph of Warding",
+      "description": "You inscribe a hidden glyph on a surface or within an object that releases an explosion of energy or a stored spell when its trigger is met."
+    },
+    "leomunds-tiny-hut": {
+      "name": "Leomund's Tiny Hut",
+      "description": "A dome of force surrounds you, sheltering up to nine creatures from weather and blocking creatures and spells from entering."
+    },
+    "lightning-arrow": {
+      "name": "Lightning Arrow",
+      "description": "The next ranged weapon attack you make becomes a bolt of lightning, dealing extra lightning damage and splashing nearby creatures."
+    },
+    "magic-circle": {
+      "name": "Magic Circle",
+      "description": "You draw a circle that protects against a type of creature, such as fiends or undead, or traps one within."
+    },
+    "major-image": {
+      "name": "Major Image",
+      "description": "You create a large image with sound, smell, and temperature that appears real until a creature investigates it and sees through it."
+    },
+    "meld-into-stone": {
+      "name": "Meld into Stone",
+      "description": "You merge into a stone object or surface large enough to hold you, remaining hidden and aware of your surroundings."
+    },
+    "phantom-steed": {
+      "name": "Phantom Steed",
+      "description": "A quasi-real horselike creature appears and serves as your mount, gaining speed and the ability to cross certain terrain."
+    },
+    "remove-curse": {
+      "name": "Remove Curse",
+      "description": "At your touch, all curses affecting a creature or object end, though a cursed item's attunement bond may remain."
+    },
+    "slow": {
+      "name": "Slow",
+      "description": "You slow several creatures, reducing their speed and AC, limiting their actions, and potentially wasting their spells."
+    },
+    "speak-with-dead": {
+      "name": "Speak with Dead",
+      "description": "You give a corpse the ability to answer a few questions, though it only knows what it knew in life and is not compelled to be truthful."
+    },
+    "speak-with-plants": {
+      "name": "Speak with Plants",
+      "description": "You can talk with plants nearby and ask them to move and answer questions about what has passed through, and you can make difficult terrain easy."
+    },
+    "summon-undead": {
+      "name": "Summon Undead",
+      "description": "You call forth an undead spirit that takes a form of your choice, fights alongside you, and obeys your commands."
+    },
+    "tongues": {
+      "name": "Tongues",
+      "description": "A creature you touch can understand any spoken language and be understood by any creature that knows at least one language."
+    },
+    "vampiric-touch": {
+      "name": "Vampiric Touch",
+      "description": "Your touch drains life from a target, dealing necrotic damage and healing you for half the damage dealt, and you can repeat the attack on later turns."
+    },
+    "water-breathing": {
+      "name": "Water Breathing",
+      "description": "Several creatures gain the ability to breathe underwater for the duration, though they can still breathe air."
+    },
+    "water-walk": {
+      "name": "Water Walk",
+      "description": "Several creatures can walk on liquid surfaces such as water, acid, mud, snow, quicksand, or lava as if it were solid ground."
+    },
+    "wind-wall": {
+      "name": "Wind Wall",
+      "description": "A wall of strong wind rises, pushing creatures back, scattering vapor and small objects, and blocking arrows and other missiles."
     },
     "pass-without-trace": {
       "name": "Pass Without Trace",

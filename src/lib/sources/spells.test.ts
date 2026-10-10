@@ -40,8 +40,8 @@ describe('SPELL_CATALOG', () => {
 describe('getSpellsForList', () => {
   it("returns all druid cantrips when filtered by classId='druid' and level=0", () => {
     const druidCantrips = getSpellsForList('druid', 0);
-    // All 10 catalog spells are druid cantrips
-    expect(druidCantrips.length).toBe(10);
+    // 2024 PHB druid cantrip list
+    expect(druidCantrips.length).toBe(12);
   });
 
   it('returns spells that include druid in nativeClasses', () => {
@@ -176,5 +176,33 @@ describe('spell-grant catalog invariant', () => {
     }
 
     expect(missing, 'spell grants referencing uncatalogued spellIds').toEqual([]);
+  });
+});
+
+describe('2024 PHB cantrips and level 1 lists', () => {
+  const ids = (cls: Parameters<typeof getSpellsForList>[0], lvl: number) => getSpellsForList(cls, lvl).map((s) => s.id);
+
+  it('sorcerer and wizard cantrips include 2024 additions', () => {
+    expect(ids('sorcerer', 0)).toEqual(expect.arrayContaining(['sorcerous-burst', 'elementalism', 'true-strike']));
+    expect(ids('wizard', 0)).toEqual(expect.arrayContaining(['thunderclap', 'blade-ward', 'toll-the-dead']));
+  });
+
+  it('paladin and ranger level 1 lists include signature spells', () => {
+    expect(ids('paladin', 1)).toEqual(expect.arrayContaining(['divine-smite', 'searing-smite', 'compelled-duel']));
+    expect(ids('ranger', 1)).toEqual(expect.arrayContaining(['hunters-mark', 'goodberry', 'zephyr-strike']));
+  });
+});
+
+describe('level 2 and 3 class spell lists', () => {
+  const ids = (cls: Parameters<typeof getSpellsForList>[0], lvl: number) => getSpellsForList(cls, lvl).map((s) => s.id);
+
+  it('sorcerer level 2 includes the full 2024 additions', () => {
+    expect(ids('sorcerer', 2)).toEqual(
+      expect.arrayContaining(['shatter', 'mirror-image', 'arcane-vigor', 'levitate', 'magic-weapon'])
+    );
+  });
+
+  it('paladin level 3 includes Daylight and Aura of Vitality', () => {
+    expect(ids('paladin', 3)).toEqual(expect.arrayContaining(['daylight', 'aura-of-vitality', 'magic-circle']));
   });
 });

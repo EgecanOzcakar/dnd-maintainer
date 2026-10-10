@@ -1,3 +1,4 @@
+import { getSpellsForList } from '@/lib/sources/spells';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ChoicePicker } from '@/components/character-builder/ChoicePicker';
@@ -444,12 +445,12 @@ const DRUID_CANTRIP_CHOICE: PendingChoice & { type: 'spell-choice' } = {
 };
 
 describe('ChoicePicker spell-choice', () => {
-  it('renders one checkbox per druid cantrip (10 total)', () => {
+  it('renders one checkbox per druid cantrip', () => {
     render(
       <ChoicePicker choice={DRUID_CANTRIP_CHOICE} currentDecision={undefined} onDecide={vi.fn()} onClear={vi.fn()} />
     );
     const checkboxes = screen.getAllByRole('checkbox');
-    expect(checkboxes).toHaveLength(10);
+    expect(checkboxes).toHaveLength(getSpellsForList('druid', 0).length);
   });
 
   it('no checkbox is checked when currentDecision is undefined', () => {

@@ -80,7 +80,9 @@ export function attacksPerAction(featureIds: ReadonlySet<string>): number {
 
 export function resolveActions(
   resolved: ResolvedCharacter,
-  classLevels: Readonly<Partial<Record<ClassId, number>>>
+  classLevels: Readonly<Partial<Record<ClassId, number>>>,
+  /** Leveled spells the character has prepared today; omit to list every known spell. */
+  preparedSpells?: readonly string[]
 ): ResolvedActions {
   const { abilities, proficiencyBonus: pb, spellcasting } = resolved;
   const characterLevel = Object.values(classLevels).reduce((sum, n) => sum + (n ?? 0), 0);
@@ -111,7 +113,7 @@ export function resolveActions(
   if (spellcasting && !spellcasting.cannotCastSpells) {
     const spellIds = new Set([
       ...spellcasting.cantrips,
-      ...spellcasting.knownSpells.map((s) => s.spellId),
+      ...(preparedSpells ?? spellcasting.knownSpells.map((s) => s.spellId)),
       ...spellcasting.alwaysPreparedSpells,
     ]);
     for (const spellId of spellIds) {

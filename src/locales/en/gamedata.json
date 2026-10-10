@@ -3483,6 +3483,270 @@
       "name": "Invisibility",
       "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early if the target attacks or casts a spell."
     },
+    "melfs-acid-arrow": {
+      "name": "Melf's Acid Arrow",
+      "description": "You launch a shimmering green arrow at a target. On a hit it deals acid damage immediately and more at the end of the target's next turn; on a miss it still splashes for half damage."
+    },
+    "animal-messenger": {
+      "name": "Animal Messenger",
+      "description": "You send a Tiny beast carrying a short message to a location you describe, and it travels there within the duration to deliver the message to a recipient you specify."
+    },
+    "arcane-lock": {
+      "name": "Arcane Lock",
+      "description": "You magically seal a door, window, gate, or container. It stays locked until you choose otherwise, and only chosen creatures or a password can open it; knock and similar effects can still suppress it."
+    },
+    "arcane-vigor": {
+      "name": "Arcane Vigor",
+      "description": "You spend one or more Hit Point Dice, roll them, and heal yourself for the total plus your spellcasting ability modifier."
+    },
+    "augury": {
+      "name": "Augury",
+      "description": "You cast tokens to glimpse the likely outcome of a plan you intend to carry out within the next half hour, receiving a short omen such as weal, woe, or both."
+    },
+    "barkskin": {
+      "name": "Barkskin",
+      "description": "A willing creature's skin takes on a bark-like toughness, and its Armor Class can't be lower than a set value while the spell lasts."
+    },
+    "beast-sense": {
+      "name": "Beast Sense",
+      "description": "You touch a willing beast and link your mind to it, perceiving the world through its senses for as long as you maintain concentration."
+    },
+    "blindness-deafness": {
+      "name": "Blindness/Deafness",
+      "description": "You try to leave a creature blinded or deafened (your choice). The target repeats its Constitution save at the end of each of its turns to shake off the effect."
+    },
+    "branding-smite": {
+      "name": "Branding Smite",
+      "description": "Your next weapon hit deals extra radiant damage and makes the target glow, revealing it if invisible and preventing it from hiding or turning invisible."
+    },
+    "cloud-of-daggers": {
+      "name": "Cloud of Daggers",
+      "description": "You fill a small cube of air with whirling blades that cut creatures entering or ending their turn there."
+    },
+    "continual-flame": {
+      "name": "Continual Flame",
+      "description": "A heatless, torch-bright flame springs from an object you touch and burns until the spell is dispelled."
+    },
+    "cordon-of-arrows": {
+      "name": "Cordon of Arrows",
+      "description": "You plant ammunition in the ground. When a creature you didn't designate enters the area, a piece of ammunition shoots at it and then becomes nonmagical."
+    },
+    "crown-of-madness": {
+      "name": "Crown of Madness",
+      "description": "A humanoid you target is overcome by madness and must use its movement and action to attack a creature you choose, unless it succeeds on its save each turn."
+    },
+    "enlarge-reduce": {
+      "name": "Enlarge/Reduce",
+      "description": "You make a creature or object larger or smaller. Enlarging grants extra weapon damage and Strength advantage; reducing weakens the target's damage and gives it Strength disadvantage."
+    },
+    "enthrall": {
+      "name": "Enthrall",
+      "description": "You weave a compelling performance of words; creatures that fail their saves become so fixated on you that they have disadvantage on Perception checks to notice anyone else."
+    },
+    "find-steed": {
+      "name": "Find Steed",
+      "description": "You summon a loyal otherworldly steed that takes a form you choose, such as a warhorse or a camel, and it fights beside you as a bonded mount."
+    },
+    "find-traps": {
+      "name": "Find Traps",
+      "description": "You sense the presence of any traps within range and line of sight, learning what kind of danger each one poses, though not its exact location."
+    },
+    "flame-blade": {
+      "name": "Flame Blade",
+      "description": "A blade of fire appears in your hand and sheds light. You can use it to make melee spell attacks that deal fire damage."
+    },
+    "flaming-sphere": {
+      "name": "Flaming Sphere",
+      "description": "You create a rolling ball of fire that you can steer as a bonus action to ram into creatures, burning those it touches or ends beside."
+    },
+    "gentle-repose": {
+      "name": "Gentle Repose",
+      "description": "You preserve a corpse against decay and prevent it from becoming undead, which also delays the time limit on spells that raise the dead."
+    },
+    "gust-of-wind": {
+      "name": "Gust of Wind",
+      "description": "A strong wind blasts along a line, pushing creatures back, slowing movement against it, scattering gas, and snuffing small flames."
+    },
+    "healing-spirit": {
+      "name": "Healing Spirit",
+      "description": "You call a spirit of nature that restores hit points to creatures that move through or end their turn near it, a limited number of times per turn."
+    },
+    "heat-metal": {
+      "name": "Heat Metal",
+      "description": "You make a metal object glow red-hot, burning anyone touching it and forcing them to drop it or take disadvantage on checks and attacks."
+    },
+    "knock": {
+      "name": "Knock",
+      "description": "You unlock or free something that is stuck, barred, or locked, and a loud knock audible from far away can accompany the effect."
+    },
+    "levitate": {
+      "name": "Levitate",
+      "description": "You lift a creature or loose object into the air and can adjust its height each turn, though it can't move horizontally except by pushing off something."
+    },
+    "locate-animals-or-plants": {
+      "name": "Locate Animals or Plants",
+      "description": "You name a kind of beast or plant and learn the direction and distance to the closest one of that kind within a few miles."
+    },
+    "locate-object": {
+      "name": "Locate Object",
+      "description": "You sense the direction toward a familiar object or the nearest object of a described kind, provided it is within range."
+    },
+    "magic-mouth": {
+      "name": "Magic Mouth",
+      "description": "You place a spoken message on an object that it delivers once a trigger condition you describe occurs."
+    },
+    "mind-spike": {
+      "name": "Mind Spike",
+      "description": "You drive a psychic spike into a creature, dealing psychic damage and letting you know where it is for as long as you concentrate."
+    },
+    "mirror-image": {
+      "name": "Mirror Image",
+      "description": "Three illusory duplicates of you appear and shift around, causing attacks aimed at you to sometimes strike a duplicate instead and destroy it."
+    },
+    "nystuls-magic-aura": {
+      "name": "Nystul's Magic Aura",
+      "description": "You disguise a creature or object against divination and detection magic, making it seem nonmagical or giving it a false aura of your choosing."
+    },
+    "prayer-of-healing": {
+      "name": "Prayer of Healing",
+      "description": "After a short prayer, up to several creatures you choose regain hit points, and the spell can't be used again on the same creatures until they finish a long rest."
+    },
+    "protection-from-poison": {
+      "name": "Protection from Poison",
+      "description": "You neutralize a poison affecting a creature and give it advantage on saves against being poisoned and resistance to poison damage for the duration."
+    },
+    "shatter": {
+      "name": "Shatter",
+      "description": "A sudden ringing noise erupts at a point you choose, dealing thunder damage in a small sphere. Objects made of crystal or glass are especially vulnerable."
+    },
+    "shining-smite": {
+      "name": "Shining Smite",
+      "description": "Your weapon attacks deal extra radiant damage for the duration, and each hit makes the target shed light and be unable to benefit from being invisible."
+    },
+    "spider-climb": {
+      "name": "Spider Climb",
+      "description": "A willing creature gains the ability to climb walls and ceilings with its hands free, and gains a climb speed equal to its walking speed."
+    },
+    "spike-growth": {
+      "name": "Spike Growth",
+      "description": "The ground in an area becomes hard to spot and covered in thorns, hurting creatures who move through it."
+    },
+    "warding-bond": {
+      "name": "Warding Bond",
+      "description": "You bind yourself to a willing creature, granting it protection and resistance, but you take the damage it suffers."
+    },
+    "animate-dead": {
+      "name": "Animate Dead",
+      "description": "You raise a pile of bones or a corpse as a skeleton or zombie under your command. Re-casting the spell renews your control over earlier creations."
+    },
+    "aura-of-vitality": {
+      "name": "Aura of Vitality",
+      "description": "Healing energy radiates from you, and each turn you can use a bonus action to restore hit points to one creature in the aura."
+    },
+    "bestow-curse": {
+      "name": "Bestow Curse",
+      "description": "You lay a curse on a creature, choosing a penalty such as ability disadvantage, attack disadvantage against you, or extra damage you deal to it."
+    },
+    "blinding-smite": {
+      "name": "Blinding Smite",
+      "description": "Your next weapon hit deals extra radiant damage and may leave the target blinded until the spell ends or it overcomes the effect."
+    },
+    "call-lightning": {
+      "name": "Call Lightning",
+      "description": "You summon a storm cloud and call down bolts of lightning each turn to strike creatures beneath it."
+    },
+    "conjure-animals": {
+      "name": "Conjure Animals",
+      "description": "You summon fey spirits in the form of beasts that appear in unoccupied spaces and fight as your allies."
+    },
+    "conjure-barrage": {
+      "name": "Conjure Barrage",
+      "description": "You turn a piece of ammunition or thrown weapon into a volley that fills a cone, damaging creatures who fail their save."
+    },
+    "create-food-and-water": {
+      "name": "Create Food and Water",
+      "description": "You conjure enough food and fresh water to sustain a number of creatures for a day."
+    },
+    "elemental-weapon": {
+      "name": "Elemental Weapon",
+      "description": "A nonmagical weapon becomes magical, gains an attack bonus, and deals extra damage of an element you choose."
+    },
+    "feign-death": {
+      "name": "Feign Death",
+      "description": "A willing creature appears dead, becoming blinded and incapacitated, resistant to most damage, and immune to disease and poison effects."
+    },
+    "gaseous-form": {
+      "name": "Gaseous Form",
+      "description": "A willing creature becomes a misty cloud, gaining flying, resistances, and the ability to slip through narrow gaps but unable to speak or cast spells."
+    },
+    "glyph-of-warding": {
+      "name": "Glyph of Warding",
+      "description": "You inscribe a hidden glyph on a surface or within an object that releases an explosion of energy or a stored spell when its trigger is met."
+    },
+    "leomunds-tiny-hut": {
+      "name": "Leomund's Tiny Hut",
+      "description": "A dome of force surrounds you, sheltering up to nine creatures from weather and blocking creatures and spells from entering."
+    },
+    "lightning-arrow": {
+      "name": "Lightning Arrow",
+      "description": "The next ranged weapon attack you make becomes a bolt of lightning, dealing extra lightning damage and splashing nearby creatures."
+    },
+    "magic-circle": {
+      "name": "Magic Circle",
+      "description": "You draw a circle that protects against a type of creature, such as fiends or undead, or traps one within."
+    },
+    "major-image": {
+      "name": "Major Image",
+      "description": "You create a large image with sound, smell, and temperature that appears real until a creature investigates it and sees through it."
+    },
+    "meld-into-stone": {
+      "name": "Meld into Stone",
+      "description": "You merge into a stone object or surface large enough to hold you, remaining hidden and aware of your surroundings."
+    },
+    "phantom-steed": {
+      "name": "Phantom Steed",
+      "description": "A quasi-real horselike creature appears and serves as your mount, gaining speed and the ability to cross certain terrain."
+    },
+    "remove-curse": {
+      "name": "Remove Curse",
+      "description": "At your touch, all curses affecting a creature or object end, though a cursed item's attunement bond may remain."
+    },
+    "slow": {
+      "name": "Slow",
+      "description": "You slow several creatures, reducing their speed and AC, limiting their actions, and potentially wasting their spells."
+    },
+    "speak-with-dead": {
+      "name": "Speak with Dead",
+      "description": "You give a corpse the ability to answer a few questions, though it only knows what it knew in life and is not compelled to be truthful."
+    },
+    "speak-with-plants": {
+      "name": "Speak with Plants",
+      "description": "You can talk with plants nearby and ask them to move and answer questions about what has passed through, and you can make difficult terrain easy."
+    },
+    "summon-undead": {
+      "name": "Summon Undead",
+      "description": "You call forth an undead spirit that takes a form of your choice, fights alongside you, and obeys your commands."
+    },
+    "tongues": {
+      "name": "Tongues",
+      "description": "A creature you touch can understand any spoken language and be understood by any creature that knows at least one language."
+    },
+    "vampiric-touch": {
+      "name": "Vampiric Touch",
+      "description": "Your touch drains life from a target, dealing necrotic damage and healing you for half the damage dealt, and you can repeat the attack on later turns."
+    },
+    "water-breathing": {
+      "name": "Water Breathing",
+      "description": "Several creatures gain the ability to breathe underwater for the duration, though they can still breathe air."
+    },
+    "water-walk": {
+      "name": "Water Walk",
+      "description": "Several creatures can walk on liquid surfaces such as water, acid, mud, snow, quicksand, or lava as if it were solid ground."
+    },
+    "wind-wall": {
+      "name": "Wind Wall",
+      "description": "A wall of strong wind rises, pushing creatures back, scattering vapor and small objects, and blocking arrows and other missiles."
+    },
     "pass-without-trace": {
       "name": "Pass Without Trace",
       "description": "A veil of shadows and silence radiates from you, masking you and your companions from detection. For the duration, each creature you choose within 30 feet of you (including you) has a +10 bonus to Dexterity (Stealth) checks and can't be tracked except by magical means."

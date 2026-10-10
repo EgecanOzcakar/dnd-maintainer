@@ -1,5 +1,6 @@
 import type { ClassId } from '@/lib/dnd-helpers';
 import type { SpellDef } from '@/types/spells';
+import { SPELLS_L2_L3 } from '@/lib/sources/spells-l2-l3';
 
 export const SPELL_CATALOG = [
   {
@@ -348,7 +349,7 @@ export const SPELL_CATALOG = [
     range: '60 feet',
     components: { verbal: true, somatic: true, material: false },
     duration: '1 hour',
-    nativeClasses: ['cleric', 'druid', 'ranger', 'sorcerer'],
+    nativeClasses: ['cleric', 'druid', 'paladin', 'ranger', 'sorcerer'],
   },
   {
     id: 'fireball',
@@ -576,7 +577,7 @@ export const SPELL_CATALOG = [
     range: 'Touch',
     components: { verbal: true, somatic: true, material: false },
     duration: '1 hour',
-    nativeClasses: ['paladin', 'ranger', 'wizard'],
+    nativeClasses: ['paladin', 'ranger', 'sorcerer', 'wizard'],
   },
   {
     id: 'shield-of-faith',
@@ -1967,6 +1968,7 @@ export const SPELL_CATALOG = [
     duration: '1 minute',
     nativeClasses: ['bard', 'sorcerer', 'wizard'],
   },
+  ...SPELLS_L2_L3,
 ] as const satisfies readonly SpellDef[];
 
 export type SpellId = (typeof SPELL_CATALOG)[number]['id'];

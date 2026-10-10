@@ -1175,7 +1175,8 @@
     "zoom": "Zoom",
     "remove": "Remove",
     "none": "No Image Currently Displayed",
-    "hint": "Select a preset scene, paste a URL, or upload artwork from the DM console to display it here."
+    "hint": "Select a preset scene, paste a URL, or upload artwork from the DM console to display it here.",
+    "uploadFailed": "Image upload failed — please try again"
   },
   "inventory": {
     "heading": "{{section}} & Inventory",

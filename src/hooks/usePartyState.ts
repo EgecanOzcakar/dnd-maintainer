@@ -209,6 +209,9 @@ export function useUpdateSharedImage() {
       campaignId: string;
       image: { url: string; title?: string; caption?: string } | null;
     }) => {
+      // dm_notes is polled every 2s by every client — inline image bytes there take the DB down.
+      if (image?.url.startsWith('data:'))
+        throw new Error('Inline data URLs cannot be shared; upload the image instead');
       const { data: campaign, error: fetchErr } = await supabase
         .from('campaigns')
         .select('dm_notes')

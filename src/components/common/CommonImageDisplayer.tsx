@@ -6,6 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { usePartyState, useUpdateSharedImage } from '@/hooks/usePartyState';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
+import { resizeImage } from '@/lib/resize-image';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('image-displayer');
 
 export interface DisplayImagePayload {
   url: string;
@@ -118,18 +123,23 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const dataUrl = evt.target?.result as string;
-      if (dataUrl) {
-        handleApplyImage({
-          url: dataUrl,
-          title: file.name.replace(/\.[^/.]+$/, ''),
-        });
-      }
-    };
-    reader.readAsDataURL(file);
     e.target.value = '';
+    // Upload to storage and share only the URL: a data URL in campaigns.dm_notes is polled
+    // every 2s by every client and once swamped the DB (4.6 MB row → timeouts on all writes).
+    const path = `scenes/${campaignId ?? 'local'}/${Date.now()}.jpg`;
+    resizeImage(file, 1280)
+      .then(async (blob) => {
+        const { error } = await supabase.storage
+          .from('character-portraits')
+          .upload(path, blob, { contentType: 'image/jpeg' });
+        if (error) throw error;
+        const { publicUrl } = supabase.storage.from('character-portraits').getPublicUrl(path).data;
+        await handleApplyImage({ url: publicUrl, title: file.name.replace(/\.[^/.]+$/, '') });
+      })
+      .catch((err: unknown) => {
+        logger.error('Scene image upload failed:', err);
+        toast.error(tc('imageDisplayer.uploadFailed'));
+      });
   };
 
   return (

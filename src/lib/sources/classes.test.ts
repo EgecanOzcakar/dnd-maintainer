@@ -27,10 +27,10 @@ describe('Fighter class levels 1–20 grant structures', () => {
     [5, 'fighter-tactical-shift'],
     [9, 'fighter-indomitable'],
     [9, 'fighter-tactical-master'],
-    [11, 'fighter-two-extra-attacks'],
+    [11, 'fighter-extra-attack-2'],
     [13, 'fighter-studied-attacks'],
-    [19, 'fighter-epic-boon'],
-    [20, 'fighter-three-extra-attacks'],
+
+    [20, 'fighter-extra-attack-3'],
   ])('level %i grants %s', (level, id) => {
     expect(featureIds(level)).toContain(id);
   });
@@ -44,8 +44,8 @@ describe('Fighter class levels 1–20 grant structures', () => {
     });
   });
 
-  it('grants ASI + feat-choice pairs at levels 4, 6, 8, 12, 14, 16 with sequential indices', () => {
-    [4, 6, 8, 12, 14, 16].forEach((level, i) => {
+  it('grants ASI + feat-choice pairs at levels 4, 6, 8, 12, 14, 16, 19 with sequential indices', () => {
+    [4, 6, 8, 12, 14, 16, 19].forEach((level, i) => {
       const grants = source?.levels[level - 1]?.grants ?? [];
       const asi = grants.find((g) => g.type === 'asi');
       expect(asi && asi.type === 'asi' && asi.key).toBe(createChoiceKey('asi', 'class', 'fighter', i));
@@ -92,8 +92,8 @@ describe('Fighter class levels 1–20 grant structures', () => {
     ]);
   });
 
-  it('levels 7, 15, 17, 18 have no class-level grants (subclass features injected separately)', () => {
-    [7, 15, 17, 18].forEach((level) => expect(source?.levels[level - 1]?.grants).toHaveLength(0));
+  it('levels 7, 15, 18 have no class-level grants (subclass features injected separately)', () => {
+    [7, 15, 18].forEach((level) => expect(source?.levels[level - 1]?.grants).toHaveLength(0));
   });
 });
 
@@ -223,10 +223,23 @@ describe('Rogue class grant structures', () => {
     }
   });
 
-  it('levels 11–20 are EMPTY_LEVEL', () => {
-    for (let i = 10; i < 20; i++) {
-      expect(source?.levels[i].grants).toHaveLength(0);
-    }
+  it.each([
+    [11, 'rogue-reliable-talent'],
+    [14, 'rogue-devious-strikes'],
+    [15, 'rogue-slippery-mind'],
+    [18, 'rogue-elusive'],
+    [20, 'rogue-stroke-of-luck'],
+  ])('level %i grants %s', (level, id) => {
+    expect(source?.levels[level - 1].grants).toEqual([{ type: 'feature', feature: { id } }]);
+  });
+
+  it.each([12, 16, 19])('level %i grants an ASI and a general feat choice', (level) => {
+    const types = source?.levels[level - 1].grants.map((g) => g.type);
+    expect(types).toEqual(['asi', 'feat-choice']);
+  });
+
+  it.each([13, 17])('level %i is empty (subclass tier level)', (level) => {
+    expect(source?.levels[level - 1].grants).toHaveLength(0);
   });
 
   it('level 1 has 4 bundle-choice grants', () => {
@@ -685,21 +698,12 @@ describe('Druid class grant structures', () => {
     expect(featureIds).toContain('druid-archdruid');
   });
 
-  it('level 1 has druidic, level 19 has epic-boon', () => {
-    const ids = (level: number) =>
-      source?.levels[level - 1].grants.flatMap((g) => (g.type === 'feature' ? [g.feature.id] : []));
-    expect(ids(1)).toContain('druid-druidic');
-    expect(ids(19)).toContain('druid-epic-boon');
-  });
-
-  it('Wild Shape uses are a stepped pool (2 / 3 at L6 / 4 at L17)', () => {
-    const pool = source?.levels[1].grants.find((g) => g.type === 'resource-pool');
-    expect(pool?.type === 'resource-pool' && pool.poolId).toBe('wild-shape');
-    expect(pool?.type === 'resource-pool' && pool.max.mode === 'level-steps' && pool.max.steps).toEqual([
-      { minLevel: 2, value: 2 },
-      { minLevel: 6, value: 3 },
-      { minLevel: 17, value: 4 },
-    ]);
+  it.each([
+    [18, 'druid-beast-spells'],
+    [19, 'druid-epic-boon'],
+  ])('level %i grants %s', (level, id) => {
+    const ids = source?.levels[level - 1].grants.flatMap((g) => (g.type === 'feature' ? [g.feature.id] : []));
+    expect(ids).toContain(id);
   });
 
   it('has ASIs at levels 4, 8, 12, 16 only', () => {
@@ -736,6 +740,15 @@ describe('Monk class grant structures', () => {
       .filter((g) => g.type === 'feature')
       .map((g) => (g.type === 'feature' ? g.feature.id : ''));
     expect(featureIds).toContain('monk-focus-points');
+  });
+
+  it('level 2 has a once-per-long-rest uncanny-metabolism pool', () => {
+    expect(source?.levels[1].grants).toContainEqual({
+      type: 'resource-pool',
+      poolId: 'uncanny-metabolism',
+      max: { mode: 'fixed', value: 1 },
+      regen: 'long-rest',
+    });
   });
 
   it('level 2 has resource-pool grant for focus-points', () => {

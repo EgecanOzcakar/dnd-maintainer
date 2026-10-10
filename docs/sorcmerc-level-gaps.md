@@ -1,8 +1,27 @@
 # The level-table gaps sorcmerc found, and what it filled them with
 
 Written by hand from `sorcmerc/tools/fill_levels.py`, which is the applied version
-of this list. Nothing here has been applied to `src/lib/sources/` — this is the
-reference so it can be.
+of this list.
+
+## Status (2026-10-10): applied
+
+Every row below is now in `src/lib/sources/`, using the ids listed here:
+
+- **Class features and ASIs**: all applied. The fighter and rogue ASIs use the next
+  free choice-key index per class, the same way sorcmerc did it.
+- **Subclass tiers**: all applied, with one exception. `zealot-divine-fury` is not
+  added as a separate feature, because Divine Fury was already modeled at level 3 as
+  the `damage-choice` grant with `featureIdPrefix: 'zealot-divine-fury'`.
+- **Wild Heart**: `wildheart-animal-speaker` and `wildheart-nature-speaker` join the
+  existing level-3 and level-10 entries rather than adding new entries at those
+  levels. `level-grants.ts` looks entries up with `.find(classLevel)`, so a second
+  entry at the same level would be ignored.
+- **Berserker**: tiers moved to Frenzy 3, Mindless Rage 6, Retaliation 10 and
+  Intimidating Presence 14.
+
+`docs/coverage-matrix.md` now reports classes 12/12 and subclasses 48/48 as
+structurally complete. The caveat at the end of this file still holds: nothing here
+has been checked against the book (`GOLDEN_VERIFIED` is still empty).
 
 `docs/coverage-matrix.md` already reports the same shape from the other side:
 classes 10/12 structurally complete, subclasses 20/48. The two partial classes

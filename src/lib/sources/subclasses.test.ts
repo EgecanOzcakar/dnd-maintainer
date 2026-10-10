@@ -104,48 +104,20 @@ describe('getSubclassSource — Berserker', () => {
     expect(getSubclassSource('berserker')).toBeDefined();
   });
 
-  it('berserker has 3 feature levels (L3, L6, L10)', () => {
+  it('berserker has 4 feature levels (L3, L6, L10, L14)', () => {
     const source = getSubclassSource('berserker');
-    expect(source?.features).toHaveLength(3);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10]);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
-  it('berserker level 3 grants 2 features: frenzy and mindless-rage', () => {
-    const source = getSubclassSource('berserker');
-    const level3 = source?.features.find((f) => f.classLevel === 3);
-    expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(2);
-    expect(level3?.grants).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ type: 'feature', feature: expect.objectContaining({ id: 'berserker-frenzy' }) }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'berserker-mindless-rage' }),
-        }),
-      ])
-    );
-  });
-
-  it('berserker level 6 grants retaliation feature', () => {
-    const source = getSubclassSource('berserker');
-    const level6 = source?.features.find((f) => f.classLevel === 6);
-    expect(level6).toBeDefined();
-    expect(level6?.grants).toHaveLength(1);
-    expect(level6?.grants[0]).toMatchObject({
-      type: 'feature',
-      feature: { id: 'berserker-retaliation' },
-    });
-  });
-
-  it('berserker level 10 grants intimidating-presence feature', () => {
-    const source = getSubclassSource('berserker');
-    const level10 = source?.features.find((f) => f.classLevel === 10);
-    expect(level10).toBeDefined();
-    expect(level10?.grants).toHaveLength(1);
-    expect(level10?.grants[0]).toMatchObject({
-      type: 'feature',
-      feature: { id: 'berserker-intimidating-presence' },
-    });
+  // 2024 PHB: Frenzy 3, Mindless Rage 6, Retaliation 10, Intimidating Presence 14
+  it.each([
+    [3, 'berserker-frenzy'],
+    [6, 'berserker-mindless-rage'],
+    [10, 'berserker-retaliation'],
+    [14, 'berserker-intimidating-presence'],
+  ])('berserker level %i grants only %s', (level, id) => {
+    const grants = getSubclassSource('berserker')?.features.find((f) => f.classLevel === level)?.grants;
+    expect(grants).toEqual([{ type: 'feature', feature: { id } }]);
   });
 });
 

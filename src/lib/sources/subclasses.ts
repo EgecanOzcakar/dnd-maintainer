@@ -477,10 +477,11 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           // Wild Shape mechanics (CR cap, resource pools) modeled as inert feature grant
           { type: 'feature', feature: { id: 'circlemoon-circle-forms' } },
           // Circle of the Moon spells (2024 PHB), gated by druid level like Circle of the Land.
-          // Missing from SPELL_CATALOG at time of writing: starry-wisp (L3), conjure-animals (L5),
-          // fount-of-moonlight (L7) — add once the catalog has them.
           { type: 'spell', spellId: 'cure-wounds', alwaysPrepared: true },
           { type: 'spell', spellId: 'moonbeam', alwaysPrepared: true },
+          { type: 'spell', spellId: 'starry-wisp', alwaysPrepared: true },
+          { type: 'spell', spellId: 'conjure-animals', alwaysPrepared: true, minClassLevel: 5 },
+          { type: 'spell', spellId: 'fount-of-moonlight', alwaysPrepared: true, minClassLevel: 7 },
           { type: 'spell', spellId: 'mass-cure-wounds', alwaysPrepared: true, minClassLevel: 9 },
         ],
       },
@@ -520,13 +521,17 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Wrath of the Sea aura within 10 ft on Wild Shape entry; Bonus Action cold/lightning damage
           { type: 'feature', feature: { id: 'circlesea-wrath-of-the-sea' } },
-          // Circle of the Sea spells (2024 PHB), gated by druid level. Missing from SPELL_CATALOG:
-          // gust-of-wind, shatter, thunderwave (L3), water-breathing (L5), control-water (L7),
-          // conjure-elemental (L9).
+          // Circle of the Sea spells (2024 PHB), gated by druid level.
           { type: 'spell', spellId: 'fog-cloud', alwaysPrepared: true },
+          { type: 'spell', spellId: 'gust-of-wind', alwaysPrepared: true },
           { type: 'spell', spellId: 'ray-of-frost', alwaysPrepared: true },
+          { type: 'spell', spellId: 'shatter', alwaysPrepared: true },
+          { type: 'spell', spellId: 'thunderwave', alwaysPrepared: true },
           { type: 'spell', spellId: 'lightning-bolt', alwaysPrepared: true, minClassLevel: 5 },
+          { type: 'spell', spellId: 'water-breathing', alwaysPrepared: true, minClassLevel: 5 },
+          { type: 'spell', spellId: 'control-water', alwaysPrepared: true, minClassLevel: 7 },
           { type: 'spell', spellId: 'ice-storm', alwaysPrepared: true, minClassLevel: 7 },
+          { type: 'spell', spellId: 'conjure-elemental', alwaysPrepared: true, minClassLevel: 9 },
           { type: 'spell', spellId: 'hold-monster', alwaysPrepared: true, minClassLevel: 9 },
         ],
       },

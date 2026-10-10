@@ -923,7 +923,14 @@ describe('getSubclassSource — Circle of the Moon', () => {
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3?.grants[0]).toMatchObject({ type: 'feature', feature: { id: 'circlemoon-circle-forms' } });
     const spells = level3?.grants.flatMap((g) => (g.type === 'spell' ? [g.spellId] : []));
-    expect(spells).toEqual(['cure-wounds', 'moonbeam', 'mass-cure-wounds']);
+    expect(spells).toEqual([
+      'cure-wounds',
+      'moonbeam',
+      'starry-wisp',
+      'conjure-animals',
+      'fount-of-moonlight',
+      'mass-cure-wounds',
+    ]);
   });
 
   it('circlemoon level 6 grants improved-circle-forms feature', () => {
@@ -970,7 +977,19 @@ describe('getSubclassSource — Circle of the Sea', () => {
       feature: { id: 'circlesea-wrath-of-the-sea' },
     });
     const spells = level3?.grants.flatMap((g) => (g.type === 'spell' ? [g.spellId] : []));
-    expect(spells).toEqual(['fog-cloud', 'ray-of-frost', 'lightning-bolt', 'ice-storm', 'hold-monster']);
+    expect(spells).toEqual([
+      'fog-cloud',
+      'gust-of-wind',
+      'ray-of-frost',
+      'shatter',
+      'thunderwave',
+      'lightning-bolt',
+      'water-breathing',
+      'control-water',
+      'ice-storm',
+      'conjure-elemental',
+      'hold-monster',
+    ]);
   });
 
   it('circlesea level 6 grants 2 items: walk-equivalent swim speed grant and aquatic-affinity feature', () => {

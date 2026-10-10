@@ -4,7 +4,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AbilityScoresPanel } from '@/components/character-sheet/AbilityScoresPanel';
 import { homebrewToActions, parseHomebrew } from '@/lib/homebrew';
 import { ActionsPanel } from '@/components/character-sheet/ActionsPanel';
+import { ActiveEffectsPanel } from '@/components/character-sheet/ActiveEffectsPanel';
 import { resolveActions } from '@/lib/resolver/actions';
+import { applyEffects } from '@/lib/resolver/effects';
 import { canPrepareSpells, getEffectivePrepared } from '@/lib/spell-preparation';
 import type { ClassId } from '@/lib/dnd-helpers';
 import { BackstoryPanel } from '@/components/character-sheet/BackstoryPanel';
@@ -97,15 +99,41 @@ function CharacterSheetInner({
   const [rollPreset, setRollPreset] = useState<RollPreset | null>(null);
   const [isDiceRollerOpen, setIsDiceRollerOpen] = useState(false);
 
+  const classLevels = useMemo(() => {
+    const levels: Partial<Record<ClassId, number>> = {};
+    for (const lvl of build?.levels ?? []) levels[lvl.classId] = Math.max(levels[lvl.classId] ?? 0, lvl.classLevel);
+    return levels;
+  }, [build]);
+
   const resolvedActions = useMemo(() => {
     if (!resolved || !build) return null;
-    const classLevels: Partial<Record<ClassId, number>> = {};
-    for (const lvl of build.levels) classLevels[lvl.classId] = Math.max(classLevels[lvl.classId] ?? 0, lvl.classLevel);
     const sc = resolved.spellcasting;
     const prepared = sc && canPrepareSpells(sc) ? getEffectivePrepared(character.prepared_spells, sc) : undefined;
     return resolveActions(resolved, classLevels, prepared);
-  }, [resolved, build, character.prepared_spells]);
+  }, [resolved, build, classLevels, character.prepared_spells]);
   const homebrew = useMemo(() => parseHomebrew(character.homebrew), [character.homebrew]);
+
+  // Effects apply to homebrew actions too (e.g. Bless on a custom attack).
+  const applied = useMemo(
+    () =>
+      resolved
+        ? applyEffects(resolved, [...(resolvedActions?.actions ?? []), ...homebrewToActions(homebrew, resolved)], {
+            activeEffects: character.active_effects ?? [],
+            conditions: character.conditions ?? [],
+            exhaustionLevel: character.exhaustion_level ?? 0,
+            classLevels,
+          })
+        : null,
+    [
+      resolved,
+      resolvedActions,
+      homebrew,
+      classLevels,
+      character.active_effects,
+      character.conditions,
+      character.exhaustion_level,
+    ]
+  );
 
   const handleSelectRollPreset = useCallback((preset: RollPreset) => {
     setRollPreset(preset);
@@ -190,7 +218,7 @@ function CharacterSheetInner({
 
   const handleLongRest = () => {
     if (!resolved) return;
-    handleUpdate({ ...buildRestUpdate('long', character, resolved), ...longRestHpUpdate() });
+    handleUpdate({ ...buildRestUpdate('long', character, resolved), ...longRestHpUpdate(), active_effects: [] });
   };
 
   const handleArchive = () => {
@@ -268,8 +296,8 @@ function CharacterSheetInner({
   // Combat stats — prefer resolved pipeline values, fall back to pre-calculated DB columns.
   // When buildError is set and resolved is null, these are stale values from the database.
   const isStale = buildError !== null && resolved === null;
-  const armorClass = resolved?.armorClass.effective ?? character.armor_class;
-  const speedValue = resolved?.speed.walk?.value ?? character.speed;
+  const armorClass = applied?.armorClass ?? character.armor_class;
+  const speedValue = applied?.speed.walk?.value ?? character.speed;
   const maxHP = resolved?.hitPoints.max ?? character.hit_points_max;
 
   // Ability scores — use resolved if available, else undefined (skip section)
@@ -390,6 +418,7 @@ function CharacterSheetInner({
                   savingThrows={savingThrows}
                   buildError={buildError}
                   onSelectRollPreset={handleSelectRollPreset}
+                  effects={applied?.savingThrows}
                 />
                 {skills ? (
                   <SkillsPanel skills={skills} onSelectRollPreset={handleSelectRollPreset} />
@@ -412,7 +441,7 @@ function CharacterSheetInner({
                   abilities={abilities}
                   armorClass={armorClass}
                   speedValue={speedValue}
-                  speed={resolved?.speed}
+                  speed={applied?.speed}
                   maxHP={maxHP}
                   profBonus={profBonus}
                   passivePerception={resolved ? 10 + resolved.skills.perception.bonus : null}
@@ -421,6 +450,15 @@ function CharacterSheetInner({
                 />
 
                 <ConditionsPanel character={character} onUpdate={handleUpdate} />
+
+                {resolved && applied && (
+                  <ActiveEffectsPanel
+                    resolved={resolved}
+                    active={character.active_effects ?? []}
+                    applied={applied}
+                    onChange={(active_effects) => handleUpdate({ active_effects })}
+                  />
+                )}
 
                 {resolved && (
                   <>
@@ -440,7 +478,7 @@ function CharacterSheetInner({
 
                 {resolvedActions && resolved && (
                   <ActionsPanel
-                    actions={[...resolvedActions.actions, ...homebrewToActions(homebrew, resolved)]}
+                    actions={applied?.actions ?? resolvedActions.actions}
                     homebrew={homebrew}
                     onChangeHomebrew={(next) => handleUpdate({ homebrew: next })}
                     attacksPerAction={resolvedActions.attacksPerAction}

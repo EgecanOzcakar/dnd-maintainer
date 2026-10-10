@@ -91,6 +91,8 @@ export interface Character {
   prepared_spells?: string[];
   /** Player-authored actions (raw JSON; validate with parseHomebrew). */
   homebrew?: unknown;
+  /** Toggled active-effect ids (see `src/lib/sources/active-effects.ts`). */
+  active_effects?: string[];
   hit_dice_used: Record<string, number> | null;
   /** null = at max HP */
   current_hp?: number | null;

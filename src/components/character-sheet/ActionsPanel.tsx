@@ -10,7 +10,9 @@ import { parseDiceFormula } from '@/lib/dice-helpers';
 import { formatSigned } from '@/lib/format';
 import { getItemNameKey } from '@/lib/sources/items';
 import { isSpellId } from '@/lib/sources/spells';
+import { RollModeBadge } from '@/components/character-sheet/ActiveEffectsPanel';
 import type { ResolvedAction, ResolvedRoll } from '@/lib/resolver/actions';
+import type { AdjustedAction } from '@/lib/resolver/effects';
 import type { ActivationType } from '@/types/actions';
 import type { ResolvedCharacter } from '@/types/resolved';
 
@@ -40,7 +42,7 @@ function matches(filter: Filter, a: { activation: ActivationType; isAttack?: boo
 }
 
 interface ActionsPanelProps {
-  readonly actions: readonly ResolvedAction[];
+  readonly actions: readonly AdjustedAction[];
   readonly attacksPerAction: number;
   readonly resolved: ResolvedCharacter;
   readonly onSelectRollPreset?: (preset: RollPreset) => void;
@@ -158,8 +160,10 @@ export function ActionsPanel({
                 >
                   <Dices className="size-3" />
                   {formatSigned(a.toHit)}
+                  {a.toHitExtra?.join('')}
                 </Button>
               )}
+              <RollModeBadge mode={a.mode} />
               {a.save && (
                 <span className="font-mono">
                   {tc('characterSheet.combatView.actions.save', {
@@ -176,7 +180,8 @@ export function ActionsPanel({
                   disabled={!a.damage.dice.includes('d')}
                   onClick={() => a.damage && roll(`${name} ${fmt(a.damage)}`, a.damage)}
                 >
-                  {fmt(a.damage)}{' '}
+                  {fmt(a.damage)}
+                  {a.damageExtra?.join('')}{' '}
                   {a.damage.type === 'weapon'
                     ? tc('characterSheet.combatView.actions.weaponDamage')
                     : t(`damageTypes.${a.damage.type}` as `damageTypes.${string}`, { defaultValue: a.damage.type })}

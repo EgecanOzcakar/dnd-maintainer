@@ -65,6 +65,7 @@ const TABLE_COLUMNS = {
     { name: 'conditions', type: 'text[]' },
     { name: 'prepared_spells', type: 'text[]' },
     { name: 'homebrew', type: 'jsonb' },
+    { name: 'active_effects', type: 'text[]' },
     { name: 'hit_dice_used', type: 'jsonb' },
     { name: 'spell_slots_used', type: 'jsonb' },
     { name: 'gender', type: 'text' },

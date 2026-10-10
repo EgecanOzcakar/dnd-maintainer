@@ -1298,5 +1298,25 @@
     "numberOfDice": "Number of Dice",
     "modifier": "Modifier",
     "recentRolls": "Recent DM Rolls"
+  },
+  "hitPoints": {
+    "title": "Hit Points",
+    "current": "Current",
+    "max": "Max",
+    "temp": "Temp",
+    "amount": "Amount",
+    "damage": "Damage",
+    "heal": "Heal",
+    "tempHp": "Temp HP",
+    "critical": "Critical hit",
+    "deathSaves": "Death Saves",
+    "successes": "Successes",
+    "failures": "Failures",
+    "success": "Success {{n}}",
+    "failure": "Failure {{n}}",
+    "rollDeathSave": "Roll death save",
+    "rolled": "Rolled {{roll}}",
+    "stable": "Stable",
+    "dead": "Dead — massive damage or three failed death saves."
   }
 }

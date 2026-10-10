@@ -88,6 +88,10 @@ export interface Character {
   exhaustion_level: ExhaustionLevel;
   conditions: ConditionId[];
   hit_dice_used: Record<string, number> | null;
+  /** null = at max HP */
+  current_hp?: number | null;
+  temp_hp?: number;
+  death_saves?: { successes: number; failures: number };
   spell_slots_used: Record<string, number> | null;
 }
 

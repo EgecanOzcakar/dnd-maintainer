@@ -215,8 +215,11 @@ export type Database = {
           hair_color: string | null
           height: string | null
           heroic_inspiration: boolean
+          current_hp: number | null
+          death_saves: Json
           hit_dice_used: Json
           hit_points_max: number | null
+          temp_hp: number
           id: string
           ideals: string | null
           is_active: boolean
@@ -260,8 +263,11 @@ export type Database = {
           hair_color?: string | null
           height?: string | null
           heroic_inspiration?: boolean
+          current_hp?: number | null
+          death_saves?: Json
           hit_dice_used?: Json
           hit_points_max?: number | null
+          temp_hp?: number
           id?: string
           ideals?: string | null
           is_active?: boolean
@@ -305,8 +311,11 @@ export type Database = {
           hair_color?: string | null
           height?: string | null
           heroic_inspiration?: boolean
+          current_hp?: number | null
+          death_saves?: Json
           hit_dice_used?: Json
           hit_points_max?: number | null
+          temp_hp?: number
           id?: string
           ideals?: string | null
           is_active?: boolean

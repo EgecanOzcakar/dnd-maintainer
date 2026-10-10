@@ -112,6 +112,9 @@ function buildSeedCharacter(campaignId: string): Character {
     exhaustion_level: 0 as const,
     conditions: [],
     hit_dice_used: null,
+    current_hp: null,
+    temp_hp: 0,
+    death_saves: { successes: 0, failures: 0 },
     spell_slots_used: null,
   };
 }

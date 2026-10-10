@@ -12,6 +12,8 @@ import { CombatPanel } from '@/components/character-sheet/CombatPanel';
 import { ConditionsPanel } from '@/components/character-sheet/ConditionsPanel';
 import { EquipmentPanel } from '@/components/character-sheet/EquipmentPanel';
 import { FeaturesPanel } from '@/components/character-sheet/FeaturesPanel';
+import { HitPointsPanel } from '@/components/character-sheet/HitPointsPanel';
+import { longRestHpUpdate } from '@/lib/hit-points';
 import { HitDicePanel } from '@/components/character-sheet/HitDicePanel';
 import { PendingChoicesPanel } from '@/components/character-sheet/PendingChoicesPanel';
 import { PersonalityPanel } from '@/components/character-sheet/PersonalityPanel';
@@ -183,7 +185,7 @@ function CharacterSheetInner({
 
   const handleLongRest = () => {
     if (!resolved) return;
-    handleUpdate(buildRestUpdate('long', character, resolved));
+    handleUpdate({ ...buildRestUpdate('long', character, resolved), ...longRestHpUpdate() });
   };
 
   const handleArchive = () => {
@@ -425,6 +427,7 @@ function CharacterSheetInner({
                         {tc('characterSheet.actions.longRest')}
                       </Button>
                     </div>
+                    <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleUpdate} />
                     <HitDicePanel resolved={resolved} character={character} onUpdate={handleUpdate} />
                     <SpellSlotsPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
                   </>

@@ -10,6 +10,6 @@ describe('species/feat action data', () => {
 
   it('healing hands rolls PB d4s', () => {
     const d = SPECIES_FEAT_ACTIONS['aasimar-healing-hands']?.heal?.dice;
-    expect([4, 5, 9, 17].map((l) => d && scaleDice(d, l))).toEqual(['1d4', '2d4', '3d4', '5d4']);
+    expect([4, 5, 9, 17].map((l) => d && scaleDice(d, l))).toEqual(['2d4', '3d4', '4d4', '6d4']);
   });
 });

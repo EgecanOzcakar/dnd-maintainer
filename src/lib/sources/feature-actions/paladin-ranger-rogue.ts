@@ -96,12 +96,12 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
     },
   },
   'hunter-superior-hunters-defense': { activation: 'reaction' },
-  // Primal Companion: Bonus Action to command it; its Beast's Strike uses your spell attack modifier.
-  // The beast's flat +2 damage bonus is not representable here, so only 1d8 + spellcasting modifier is modeled.
+  // Primal Companion: Bonus Action to command it; Beast's Strike uses your spell attack modifier
+  // and deals 1d8 + 2 + your spellcasting modifier.
   'beastmaster-primal-companion': {
     activation: 'bonus-action',
     attack: { ability: 'spellcasting' },
-    damage: { dice: '1d8', type: 'weapon', addMod: 'spellcasting' },
+    damage: { dice: '1d8', type: 'weapon', addMod: 'spellcasting', flat: 2 },
   },
   // Dreadful Strikes: once per turn per creature, 1d4 Psychic (1d6 from L11).
   'feywanderer-dreadful-strikes': {
@@ -140,8 +140,8 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
   'rogue-cunning-strike': { activation: 'special', save: { ability: 'con', dcAbility: 'dex' } },
   'rogue-stroke-of-luck': { activation: 'special' },
   'thief-fast-hands': { activation: 'bonus-action' },
-  // Assassinate: Round-1 bonus damage equals rogue level (flat, not representable as dice).
-  'assassin-assassinate': { activation: 'special' },
+  // Assassinate: on round 1, a hit deals extra damage equal to rogue level (weapon's type).
+  'assassin-assassinate': { activation: 'special', damage: { type: 'weapon', addLevel: true } },
   // Envenom Weapons: Poison Cunning Strike also deals 2d6 Poison on a failed Con save.
   'assassin-envenom-weapons': {
     activation: 'special',

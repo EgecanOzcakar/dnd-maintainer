@@ -13,8 +13,7 @@ export const SPELL_MECHANICS_L6_L9: Readonly<Record<string, SpellMechanics>> = {
   // Higher slots add one target, not dice.
   'chain-lightning': { save: 'dex', damage: { dice: '10d8', type: 'lightning' } },
   'circle-of-death': { save: 'con', damage: { dice: '8d8', type: 'necrotic', perSlot: '2d8' } },
-  // 10d6 + 40 force; the flat +40 is not representable.
-  disintegrate: { save: 'dex', damage: { dice: '10d6', type: 'force', perSlot: '3d6' } },
+  disintegrate: { save: 'dex', damage: { dice: '10d6', type: 'force', flat: 40, perSlot: '3d6' } },
   // 5d10 radiant or necrotic (caster's choice at cast time), no save; radiant shown.
   forbiddance: { damage: { dice: '5d10', type: 'radiant' } },
   harm: { save: 'con', damage: { dice: '14d6', type: 'necrotic' } },
@@ -31,14 +30,15 @@ export const SPELL_MECHANICS_L6_L9: Readonly<Record<string, SpellMechanics>> = {
   'delayed-blast-fireball': { save: 'con', damage: { dice: '12d6', type: 'fire', perSlot: '1d6' } },
   // Breath: 6d8 force, 60-ft cone.
   'draconic-transformation': { save: 'dex', damage: { dice: '6d8', type: 'force' } },
-  // 7d8 + 30 necrotic; the flat +30 is not representable.
-  'finger-of-death': { save: 'con', damage: { dice: '7d8', type: 'necrotic' } },
+  'finger-of-death': { save: 'con', damage: { dice: '7d8', type: 'necrotic', flat: 30 } },
   'fire-storm': { save: 'dex', damage: { dice: '7d10', type: 'fire' } },
   'mordenkainens-sword': { attack: 'melee', damage: { dice: '4d12', type: 'force' } },
   // Each ray differs (12d6 of the ray's type, or a non-damage effect); fire (ray 1) shown.
   'prismatic-spray': { save: 'dex', damage: { dice: '12d6', type: 'fire' } },
-  // 4d8 + 15 HP, then 1 HP at the start of each turn; the flat +15 is not representable.
-  regenerate: { heal: { dice: '4d8' } },
+  // 4d8 + 15 HP, then 1 HP at the start of each turn.
+  regenerate: { heal: { dice: '4d8', flat: 15 } },
+  // 70 HP, +10 per slot level above 6th.
+  heal: { heal: { flat: 70, flatPerSlot: 10 } },
   // Only the Death symbol deals damage (10d10 necrotic).
   symbol: { save: 'con', damage: { dice: '10d10', type: 'necrotic' } },
   whirlwind: { save: 'dex', damage: { dice: '10d6', type: 'bludgeoning' } },

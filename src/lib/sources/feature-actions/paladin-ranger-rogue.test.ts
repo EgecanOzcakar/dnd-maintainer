@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PALADIN_RANGER_ROGUE_ACTIONS as A } from './paladin-ranger-rogue';
+import { PALADIN_RANGER_ROGUE_ACTIONS as A } from '@/lib/sources/feature-actions/paladin-ranger-rogue';
 
 describe('paladin/ranger/rogue actions', () => {
   it('keeps Sneak Attack and Lay On Hands', () => {

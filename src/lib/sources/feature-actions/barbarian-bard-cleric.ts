@@ -72,9 +72,15 @@ export const BARBARIAN_BARD_CLERIC_ACTIONS: Readonly<Record<string, FeatureActio
   'worldtree-travel-along-the-tree': { activation: 'bonus-action' },
 
   // ─── Path of the Zealot ──────────────────────────────────────────────────────
-  // Divine Fury is 1d6 + half Barbarian level (rounded down); the level part cannot be modeled.
-  'zealot-divine-fury-necrotic': { activation: 'special', damage: { dice: '1d6', type: 'necrotic' } },
-  'zealot-divine-fury-radiant': { activation: 'special', damage: { dice: '1d6', type: 'radiant' } },
+  // Divine Fury: first hit each turn while raging, 1d6 + half Barbarian level.
+  'zealot-divine-fury-necrotic': {
+    activation: 'special',
+    damage: { dice: '1d6', type: 'necrotic', addLevel: 'half' },
+  },
+  'zealot-divine-fury-radiant': {
+    activation: 'special',
+    damage: { dice: '1d6', type: 'radiant', addLevel: 'half' },
+  },
   // Bonus Action: expend a d12 from the pool to regain HP equal to the roll.
   'zealot-warrior-of-the-gods': {
     activation: 'bonus-action',
@@ -163,17 +169,17 @@ export const BARBARIAN_BARD_CLERIC_ACTIONS: Readonly<Record<string, FeatureActio
   'cleric-greater-divine-intervention': { activation: 'action' },
 
   // ─── Life Domain ─────────────────────────────────────────────────────────────
-  // Magic action: restores 5 x Cleric level HP divided among creatures (not dice, not modeled).
-  'lifedomain-preserve-life': { activation: 'action', poolId: 'channel-divinity' },
+  // Magic action: restores 5 × Cleric level HP, divided among creatures within 30 ft.
+  'lifedomain-preserve-life': { activation: 'action', heal: { addLevel: 5 }, poolId: 'channel-divinity' },
 
   // ─── Light Domain ────────────────────────────────────────────────────────────
   // Reaction, WIS-mod uses per Long Rest (no pool granted).
   'lightdomain-warding-flare': { activation: 'reaction' },
-  // Magic action, CON save: 2d10 + Cleric level Radiant, half on success (the level part is not modeled).
+  // Magic action, CON save: 2d10 + Cleric level Radiant, half on success.
   'lightdomain-radiance-of-the-dawn': {
     activation: 'action',
     save: { ability: 'con', dcAbility: 'spellcasting' },
-    damage: { dice: '2d10', type: 'radiant' },
+    damage: { dice: '2d10', type: 'radiant', addLevel: true },
     poolId: 'channel-divinity',
   },
   'lightdomain-corona-of-light': { activation: 'action' },

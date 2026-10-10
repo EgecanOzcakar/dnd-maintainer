@@ -7,6 +7,7 @@ import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { parseDiceFormula } from '@/lib/dice-helpers';
 import { formatSigned } from '@/lib/format';
 import { getItemNameKey } from '@/lib/sources/items';
+import { isSpellId } from '@/lib/sources/spells';
 import type { ResolvedAction, ResolvedRoll } from '@/lib/resolver/actions';
 import type { ActivationType } from '@/types/actions';
 import type { ResolvedCharacter } from '@/types/resolved';
@@ -54,8 +55,12 @@ export function ActionsPanel({ actions, attacksPerAction, resolved, onSelectRoll
 
   const nameOf = (a: ResolvedAction) => {
     if (a.kind === 'weapon') return t(getItemNameKey('weapon', a.refId), { defaultValue: a.refId });
-    if (a.kind === 'spell') return t(`spells.${a.refId}.name` as never, { defaultValue: a.refId });
-    return t(`features.${a.refId}.name` as never, { defaultValue: a.refId });
+    if (a.kind === 'spell') return isSpellId(a.refId) ? t(`spells.${a.refId}.name`) : a.refId;
+    // Feat features are named `feat-<id>` and titled under `feats.<id>`.
+    const featName = t(`feats.${a.refId.replace(/^feat-/, '')}.name` as `feats.${string}.name`, {
+      defaultValue: a.refId,
+    });
+    return t(`features.${a.refId}.name` as `features.${string}.name`, { defaultValue: featName });
   };
 
   const roll = (contextLabel: string, r: ResolvedRoll | { dice: 'd20'; bonus: number }) => {
@@ -64,7 +69,7 @@ export function ActionsPanel({ actions, attacksPerAction, resolved, onSelectRoll
     onSelectRollPreset({ die: parsed.die, count: parsed.count, modifier: r.bonus, contextLabel });
   };
 
-  const fmt = (r: ResolvedRoll) => `${r.dice}${r.bonus !== 0 ? formatSigned(r.bonus) : ''}`;
+  const fmt = (r: ResolvedRoll) => (r.dice ? `${r.dice}${r.bonus !== 0 ? formatSigned(r.bonus) : ''}` : `${r.bonus}`);
   const visible = actions.filter((a) => matches(filter, a));
   const showBasics = filter === 'all' || filter === 'action';
 
@@ -154,7 +159,7 @@ export function ActionsPanel({ actions, attacksPerAction, resolved, onSelectRoll
                   {fmt(a.damage)}{' '}
                   {a.damage.type === 'weapon'
                     ? tc('characterSheet.combatView.actions.weaponDamage')
-                    : t(`damageTypes.${a.damage.type}` as never, { defaultValue: a.damage.type })}
+                    : t(`damageTypes.${a.damage.type}` as `damageTypes.${string}`, { defaultValue: a.damage.type })}
                 </Button>
               )}
               {a.heal && (

@@ -2,13 +2,22 @@ import type { ClassId } from '@/lib/dnd-helpers';
 import { FEATURE_ACTIONS } from '@/lib/sources/feature-actions';
 import { SPELL_MECHANICS } from '@/lib/sources/spell-mechanics';
 import { getSpellDef } from '@/lib/sources/spells';
-import type { ActionDamageType, ActivationType, ModSource, ScaledDice } from '@/types/actions';
+import type {
+  ActionDamage,
+  ActionDamageType,
+  ActionHeal,
+  ActivationType,
+  LevelBonus,
+  ModSource,
+  ScaledDice,
+  SpellMechanics,
+} from '@/types/actions';
 import type { AbilityKey } from '@/types/database';
 import type { DamageDice } from '@/types/items';
 import type { ResolvedCharacter, SpellLevel } from '@/types/resolved';
 
 export interface ResolvedRoll {
-  /** Dice expression, e.g. `2d6`, or `1` for a flat roll like a non-monk Unarmed Strike. */
+  /** Dice expression, e.g. `2d6`; `1` for a non-monk Unarmed Strike; empty for a flat amount. */
   readonly dice: string;
   readonly bonus: number;
 }
@@ -26,8 +35,8 @@ export interface ResolvedAction {
   readonly save?: { readonly ability: AbilityKey; readonly dc: number };
   readonly damage?: ResolvedRoll & { readonly type: ActionDamageType | string };
   readonly heal?: ResolvedRoll;
-  /** Extra dice per slot level above `spellLevel`. */
-  readonly upcast?: DamageDice;
+  /** Added per slot level above `spellLevel`: dice (`1d6`) or a flat amount (`10`). */
+  readonly upcast?: string;
   readonly spellLevel?: SpellLevel;
   readonly poolId?: string;
   readonly offHand?: boolean;
@@ -126,12 +135,18 @@ export function resolveActions(
         ...(mech.attack ? { toHit: pb + mod } : {}),
         ...(mech.save ? { save: { ability: mech.save, dc: 8 + pb + mod } } : {}),
         ...(mech.damage && damageDice
-          ? { damage: { dice: damageDice, bonus: mech.damage.addMod ? mod : 0, type: mech.damage.type } }
+          ? {
+              damage: {
+                dice: damageDice,
+                bonus: (mech.damage.addMod ? mod : 0) + (mech.damage.flat ?? 0),
+                type: mech.damage.type,
+              },
+            }
           : {}),
-        ...(mech.heal ? { heal: { dice: mech.heal.dice, bonus: mech.heal.addMod ? mod : 0 } } : {}),
-        ...((mech.damage?.perSlot ?? mech.heal?.perSlot)
-          ? { upcast: (mech.damage?.perSlot ?? mech.heal?.perSlot) as DamageDice }
+        ...(mech.heal
+          ? { heal: { dice: mech.heal.dice ?? '', bonus: (mech.heal.addMod ? mod : 0) + (mech.heal.flat ?? 0) } }
           : {}),
+        ...(upcastOf(mech) ? { upcast: upcastOf(mech) } : {}),
       });
     }
   }
@@ -146,25 +161,34 @@ export function resolveActions(
       meta.scaleClass ??
       (source.origin === 'class' ? source.id : source.origin === 'subclass' ? source.classId : undefined);
     const level = sourceClass ? (classLevels[sourceClass] ?? 0) : characterLevel;
-    const damageDice = meta.damage ? scaleDice(meta.damage.dice, level) : null;
-    const healDice = meta.heal ? scaleDice(meta.heal.dice, level) : null;
+    const levelBonus = (b?: LevelBonus) =>
+      b === undefined ? 0 : b === true ? level : b === 'half' ? Math.floor(level / 2) : b * level;
+    // A dice table whose first row is above the current level means "not yet": no roll.
+    const rollFor = (r: ActionDamage | ActionHeal | undefined): ResolvedRoll | null => {
+      if (!r) return null;
+      const dice = r.dice === undefined ? '' : scaleDice(r.dice, level);
+      if (dice === null) return null;
+      return { dice, bonus: modOf(r.addMod) + levelBonus(r.addLevel) + (r.flat ?? 0) };
+    };
+    const damageRoll = rollFor(meta.damage);
+    const healRoll = rollFor(meta.heal);
     actions.push({
       key: `feature:${feature.id}`,
       kind: 'feature',
       refId: feature.id,
       activation: meta.activation,
-      isAttack: Boolean(meta.attack || damageDice),
+      isAttack: Boolean(meta.attack || damageRoll),
       ...(meta.attack ? { toHit: pb + modOf(meta.attack.ability) } : {}),
       ...(meta.save ? { save: { ability: meta.save.ability, dc: 8 + pb + modOf(meta.save.dcAbility) } } : {}),
-      ...(meta.damage && damageDice
-        ? { damage: { dice: damageDice, bonus: modOf(meta.damage.addMod), type: meta.damage.type } }
-        : {}),
-      ...(meta.heal && healDice
-        ? { heal: { dice: healDice, bonus: modOf(meta.heal.addMod) + (meta.heal.addLevel ? level : 0) } }
-        : {}),
+      ...(meta.damage && damageRoll ? { damage: { ...damageRoll, type: meta.damage.type } } : {}),
+      ...(healRoll ? { heal: healRoll } : {}),
       ...(meta.poolId ? { poolId: meta.poolId } : {}),
     });
   }
 
   return { actions, attacksPerAction: attacksPerAction(new Set(resolved.features.map((f) => f.feature.id))) };
+}
+
+function upcastOf(mech: SpellMechanics): string | undefined {
+  return mech.damage?.perSlot ?? mech.heal?.perSlot ?? mech.heal?.flatPerSlot?.toString();
 }

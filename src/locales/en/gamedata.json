@@ -239,6 +239,34 @@
       "name": "Fighting Style",
       "description": "You adopt a particular style of fighting as your specialty."
     },
+    "fighter-tactical-mind": {
+      "name": "Tactical Mind",
+      "description": "When an ability check fails, you can spend a use of Second Wind to roll a d10 and add it to the check; if it still fails, the use is not spent."
+    },
+    "fighter-tactical-shift": {
+      "name": "Tactical Shift",
+      "description": "Whenever you use Second Wind, you can move up to half your Speed without provoking opportunity attacks."
+    },
+    "fighter-tactical-master": {
+      "name": "Tactical Master",
+      "description": "When you attack with a weapon whose mastery you have, you can swap that property for Push, Sap, or Slow for the attack."
+    },
+    "fighter-two-extra-attacks": {
+      "name": "Two Extra Attacks",
+      "description": "You can attack three times, instead of once, whenever you take the Attack action on your turn."
+    },
+    "fighter-studied-attacks": {
+      "name": "Studied Attacks",
+      "description": "After you miss a creature with an attack roll, you have Advantage on your next attack roll against it before the end of your next turn."
+    },
+    "fighter-epic-boon": {
+      "name": "Epic Boon",
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify."
+    },
+    "fighter-three-extra-attacks": {
+      "name": "Three Extra Attacks",
+      "description": "You can attack four times, instead of once, whenever you take the Attack action on your turn."
+    },
     "fighter-second-wind": {
       "name": "Second Wind",
       "description": "You have a limited well of stamina that you can draw on to protect yourself from harm."
@@ -259,9 +287,13 @@
       "name": "Improved Critical",
       "description": "Your weapon attacks score a critical hit on a roll of 19 or 20."
     },
+    "champion-heroic-warrior": {
+      "name": "Heroic Warrior",
+      "description": "During combat, you can give yourself Heroic Inspiration at the start of each of your turns if you do not already have it."
+    },
     "champion-remarkable-athlete": {
       "name": "Remarkable Athlete",
-      "description": "Add half your proficiency bonus (round up) to any STR, DEX, or CON checks that don't already use your proficiency bonus."
+      "description": "You have Advantage on Initiative rolls and Athletics checks, and after scoring a Critical Hit you can move up to half your Speed without provoking opportunity attacks."
     },
     "champion-additional-fighting-style": {
       "name": "Additional Fighting Style",
@@ -279,6 +311,10 @@
       "name": "Combat Superiority",
       "description": "Learn three maneuvers and gain four superiority dice (d8s) to fuel them."
     },
+    "battlemaster-student-of-war": {
+      "name": "Student of War",
+      "description": "You gain proficiency with one type of Artisan's Tools of your choice and one skill from a short list of martial skills."
+    },
     "battlemaster-know-your-enemy": {
       "name": "Know Your Enemy",
       "description": "As a Bonus Action, you can study a creature you can observe for at least 1 round. You learn how the creature compares to you in two characteristics of your choice: STR score, DEX score, CON score, AC, current HP, total class levels (if any), or Fighter levels (if any)."
@@ -292,12 +328,16 @@
       "description": "When you roll initiative and have no superiority dice remaining, you regain one."
     },
     "battlemaster-superior-combat-superiority": {
-      "name": "Superior Combat Superiority",
+      "name": "Ultimate Combat Superiority",
       "description": "Superiority dice become d12s."
     },
     "eldritchknight-spellcasting": {
       "name": "Spellcasting",
       "description": "Learn two cantrips and three 1st-level wizard spells. Intelligence is your spellcasting ability."
+    },
+    "eldritchknight-war-bond": {
+      "name": "War Bond",
+      "description": "You can bond with up to two weapons during a Short Rest, summon a bonded weapon to your hand as a Bonus Action, and cannot be disarmed of it."
     },
     "eldritchknight-war-magic": {
       "name": "War Magic",
@@ -339,6 +379,14 @@
       "name": "Implements of Mercy",
       "description": "You gain proficiency in the Insight and Medicine skills, and proficiency with the Herbalism Kit."
     },
+    "warriorofmercy-flurry-of-healing-and-harm": {
+      "name": "Flurry of Healing and Harm",
+      "description": "When you use Flurry of Blows, you can replace each Unarmed Strike with a use of Hand of Healing at no Focus Point cost, and Hand of Harm can be used on each strike."
+    },
+    "warriorofmercy-hand-of-ultimate-mercy": {
+      "name": "Hand of Ultimate Mercy",
+      "description": "As a Magic action you touch a creature that died within the last 24 hours, spend Focus Points, and return it to life with some Hit Points. Usable once per Long Rest."
+    },
     "warriorofmercy-hand-of-healing": {
       "name": "Hand of Healing",
       "description": "Focus Point: when you use Flurry of Blows, you can replace one of the strikes with a healing touch — the target regains Hit Points equal to a roll of your Martial Arts die + your Wisdom modifier."
@@ -355,6 +403,14 @@
       "name": "Shadow Arts",
       "description": "You gain the Minor Illusion cantrip (WIS is your spellcasting ability). You can also spend Focus Points to cast the following spells without material components, using your Monk level as the spellcaster level and WIS as your spellcasting ability: Darkness (1 Focus Point), Darkvision (1 Focus Point), Pass without Trace (2 Focus Points), Silence (2 Focus Points)."
     },
+    "warriorofshadow-improved-shadow-step": {
+      "name": "Improved Shadow Step",
+      "description": "When you use Shadow Step, you can make an Unarmed Strike as part of the same bonus action, and you can use it with no light restrictions by spending a Focus Point."
+    },
+    "warriorofshadow-cloak-of-shadows": {
+      "name": "Cloak of Shadows",
+      "description": "As a Magic action, you shroud yourself in shadow, gaining Invisibility until the end of your next turn or until you attack, cast a spell, or deal damage."
+    },
     "warriorofshadow-shadow-step": {
       "name": "Shadow Step",
       "description": "Bonus Action: while in dim light or darkness, teleport up to 60 feet to an unoccupied space you can see that is also in dim light or darkness. The first melee attack you make before the end of the current turn has Advantage."
@@ -362,6 +418,14 @@
     "warriorofelements-elemental-attunement": {
       "name": "Elemental Attunement",
       "description": "Focus Point: as a Bonus Action, infuse your Unarmed Strikes with elemental energy, choosing Acid, Cold, Fire, Lightning, or Thunder. This lasts 10 minutes. While active, your Unarmed Strikes deal extra damage of the chosen type equal to a roll of your Martial Arts die, and you can push the target up to 10 feet away from you on a hit."
+    },
+    "warriorofelements-stride-of-the-elements": {
+      "name": "Stride of the Elements",
+      "description": "While Elemental Attunement is active, you gain a Fly Speed and a Swim Speed equal to your Speed."
+    },
+    "warriorofelements-elemental-epitome": {
+      "name": "Elemental Epitome",
+      "description": "While Elemental Attunement is active, you gain resistance to a chosen elemental damage type, extra damage on your Speed bursts, and an extra effect when you Dash."
     },
     "warriorofelements-manipulate-elements": {
       "name": "Manipulate Elements",
@@ -374,6 +438,14 @@
     "warrioropenhand-open-hand-technique": {
       "name": "Open Hand Technique",
       "description": "When you hit a creature with one of the attacks granted by your Flurry of Blows, you can impose one of the following effects on that target: it must succeed on a STR saving throw or be knocked Prone; it must succeed on a STR saving throw or be pushed up to 15 feet away from you; or it can't take Reactions until the end of your next turn (no saving throw)."
+    },
+    "warrioropenhand-fleet-step": {
+      "name": "Fleet Step",
+      "description": "When you take a Bonus Action other than Step of the Wind, you can also use Step of the Wind immediately afterward."
+    },
+    "warrioropenhand-quivering-palm": {
+      "name": "Quivering Palm",
+      "description": "After you hit with an Unarmed Strike, you can spend Focus Points to set up lethal vibrations in the target, then end them later to force a Constitution save or deal heavy Force damage."
     },
     "warrioropenhand-wholeness-of-body": {
       "name": "Wholeness of Body",
@@ -1299,6 +1371,14 @@
       "name": "Primal Order: Magician",
       "description": "You know one extra Druid cantrip. In addition, your mystical connection to nature gives you a bonus to Intelligence (Arcana) checks equal to your Wisdom modifier."
     },
+    "druid-druidic": {
+      "name": "Druidic",
+      "description": "You know the secret druidic code language and can hide messages in it; you always have Speak with Animals prepared."
+    },
+    "druid-epic-boon": {
+      "name": "Epic Boon",
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify."
+    },
     "druid-primal-order-warden": {
       "name": "Primal Order: Warden",
       "description": "Trained for battle, you gain proficiency with Martial weapons and the ability to wear Medium armor."
@@ -1347,6 +1427,10 @@
       "name": "Land's Aid",
       "description": "As a Magic action, expend a use of Channel Nature to create a 10-foot radius bloom of vegetation centered on a point within 60 feet. Creatures of your choice within the bloom regain 2d6 Hit Points; other creatures make a CON save or take 2d6 Necrotic damage (save halves). The bloom persists until the start of your next turn."
     },
+    "circleland-natures-sanctuary": {
+      "name": "Nature's Sanctuary",
+      "description": "As a Magic action, you spend Wild Shape to conjure spectral trees and vines that grant half or three-quarters cover to creatures in a 15-foot cube, and you can use a reaction to hinder attackers."
+    },
     "circleland-natural-recovery": {
       "name": "Natural Recovery",
       "description": "During a Short Rest, you can recover expended spell slots with a combined level equal to half your Druid level (rounded up). You can't recover a slot of 6th level or higher. You can use this feature once per Long Rest."
@@ -1375,6 +1459,14 @@
       "name": "Circle Forms",
       "description": "You can use Wild Shape to transform into a Beast with a CR equal to one-third your Druid level (rounded down, minimum CR 1). Beasts with a Swim or Fly speed are available starting at level 3."
     },
+    "circlemoon-moonlight-step": {
+      "name": "Moonlight Step",
+      "description": "As a Bonus Action you teleport up to 30 feet and gain Advantage on your next attack before the end of the turn. You can do this a number of times equal to your proficiency bonus per Long Rest."
+    },
+    "circlemoon-lunar-form": {
+      "name": "Lunar Form",
+      "description": "Once on each of your turns while in Wild Shape, one hit adds extra Radiant damage, and you can bring a nearby creature along when you use Moonlight Step."
+    },
     "circlemoon-improved-wild-shape": {
       "name": "Improved Wild Shape",
       "description": "You can use Wild Shape as a Bonus Action. In addition, you regain 2 expended uses of Wild Shape whenever you finish a Short Rest."
@@ -1391,6 +1483,10 @@
       "name": "Wrath of the Sea",
       "description": "When you enter Wild Shape, you conjure a Wrath of the Sea aura within 10 feet of you that lasts until your Wild Shape ends. As a Bonus Action on each of your turns, you can choose Cold or Lightning damage and deal that damage to one creature within the aura (no save)."
     },
+    "circlesea-oceanic-gift": {
+      "name": "Oceanic Gift",
+      "description": "Instead of surrounding yourself with Wrath of the Sea, you can emanate it from a willing creature within reach, or from both of you, by spending an extra use of Wild Shape."
+    },
     "circlesea-aquatic-affinity": {
       "name": "Aquatic Affinity",
       "description": "You can breathe underwater, and you gain a Swim speed equal to your walking speed."
@@ -1402,6 +1498,10 @@
     "circlestars-star-map": {
       "name": "Star Map",
       "description": "You have a star map that serves as a spellcasting focus and grants access to your three constellation forms — Archer, Chalice, and Dragon — usable when you activate Starry Form."
+    },
+    "circlestars-full-of-stars": {
+      "name": "Full of Stars",
+      "description": "While in Starry Form, you have resistance to Bludgeoning, Piercing, and Slashing damage."
     },
     "circlestars-starry-form": {
       "name": "Starry Form",
@@ -1418,6 +1518,10 @@
     "monk-martial-arts": {
       "name": "Martial Arts",
       "description": "Your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons."
+    },
+    "monk-deflect-energy": {
+      "name": "Deflect Energy",
+      "description": "You can use Deflect Attacks against attacks that deal any damage type, not just bludgeoning, piercing, or slashing."
     },
     "monk-unarmored-defense": {
       "name": "Unarmored Defense",

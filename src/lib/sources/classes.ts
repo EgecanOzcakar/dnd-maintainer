@@ -797,11 +797,27 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             ],
           },
           { type: 'armor-class', calculation: { mode: 'armored' } },
+          { type: 'feature', feature: { id: 'druid-druidic' } },
         ],
       },
       {
         grants: [
           { type: 'feature', feature: { id: 'druid-wild-shape' } },
+          // Wild Shape uses: 2 (L2), 3 (L6), 4 (L17). A Short Rest regains one use; modeled as long-rest only.
+          {
+            type: 'resource-pool',
+            poolId: 'wild-shape',
+            max: {
+              mode: 'level-steps',
+              classId: 'druid',
+              steps: [
+                { minLevel: 2, value: 2 },
+                { minLevel: 6, value: 3 },
+                { minLevel: 17, value: 4 },
+              ],
+            },
+            regen: 'long-rest',
+          },
           { type: 'feature', feature: { id: 'druid-wild-companion' } },
         ],
       },
@@ -892,17 +908,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'druid-beast-spells' } }] },
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'druid', 4), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'druid', 4),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
+      { grants: [{ type: 'feature', feature: { id: 'druid-epic-boon' } }] },
       { grants: [{ type: 'feature', feature: { id: 'druid-archdruid' } }] },
     ],
   },
@@ -957,6 +963,21 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             count: 3,
           },
           { type: 'feature', feature: { id: 'fighter-second-wind' } },
+          // Second Wind uses: 2 (L1), 3 (L4), 4 (L10). Short Rest regains one use, Long Rest all; modeled as short-rest.
+          {
+            type: 'resource-pool',
+            poolId: 'second-wind',
+            max: {
+              mode: 'level-steps',
+              classId: 'fighter',
+              steps: [
+                { minLevel: 1, value: 2 },
+                { minLevel: 4, value: 3 },
+                { minLevel: 10, value: 4 },
+              ],
+            },
+            regen: 'short-rest',
+          },
           {
             type: 'bundle-choice',
             key: createChoiceKey('bundle-choice', 'class', 'fighter', 0),
@@ -983,7 +1004,26 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'fighter-action-surge' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'fighter-action-surge' } },
+          // Action Surge: 1 use (L2), 2 uses (L17)
+          {
+            type: 'resource-pool',
+            poolId: 'action-surge',
+            max: {
+              mode: 'level-steps',
+              classId: 'fighter',
+              steps: [
+                { minLevel: 2, value: 1 },
+                { minLevel: 17, value: 2 },
+              ],
+            },
+            regen: 'short-rest',
+          },
+          { type: 'feature', feature: { id: 'fighter-tactical-mind' } },
+        ],
+      },
       { grants: [{ type: 'subclass', classId: 'fighter', key: createChoiceKey('subclass', 'class', 'fighter', 0) }] },
       {
         grants: [
@@ -1001,7 +1041,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'fighter-extra-attack' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'fighter-extra-attack' } },
+          { type: 'feature', feature: { id: 'fighter-tactical-shift' } },
+        ],
+      },
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 1), points: 2, from: null },
@@ -1025,7 +1070,27 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'fighter-indomitable' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'fighter-indomitable' } },
+          // Indomitable: 1 use (L9), 2 uses (L13), 3 uses (L17)
+          {
+            type: 'resource-pool',
+            poolId: 'indomitable',
+            max: {
+              mode: 'level-steps',
+              classId: 'fighter',
+              steps: [
+                { minLevel: 9, value: 1 },
+                { minLevel: 13, value: 2 },
+                { minLevel: 17, value: 3 },
+              ],
+            },
+            regen: 'long-rest',
+          },
+          { type: 'feature', feature: { id: 'fighter-tactical-master' } },
+        ],
+      },
       {
         grants: [
           {
@@ -1035,13 +1100,40 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
+      { grants: [{ type: 'feature', feature: { id: 'fighter-two-extra-attacks' } }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 3), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'fighter', 3),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
+      { grants: [{ type: 'feature', feature: { id: 'fighter-studied-attacks' } }] },
+      {
+        grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 4), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'fighter', 4),
+            from: null,
+            category: 'general',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       {
         grants: [
+          { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 5), points: 2, from: null },
+          {
+            type: 'feat-choice',
+            key: createChoiceKey('feat-choice', 'class', 'fighter', 5),
+            from: null,
+            category: 'general',
+          },
           {
             type: 'weapon-mastery-choice',
             key: createChoiceKey('weapon-mastery-choice', 'class', 'fighter', 3),
@@ -1051,8 +1143,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
+      { grants: [{ type: 'feature', feature: { id: 'fighter-epic-boon' } }] },
+      { grants: [{ type: 'feature', feature: { id: 'fighter-three-extra-attacks' } }] },
     ],
   },
 
@@ -1126,12 +1218,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'monk-empowered-strikes' } }] },
-      {
-        grants: [
-          { type: 'feature', feature: { id: 'monk-evasion' } },
-          { type: 'feature', feature: { id: 'monk-stillness-of-mind' } },
-        ],
-      },
+      { grants: [{ type: 'feature', feature: { id: 'monk-evasion' } }] },
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'monk', 1), points: 2, from: null },
@@ -1160,12 +1247,20 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             from: null,
             category: 'general',
           },
+        ],
+      },
+      { grants: [{ type: 'feature', feature: { id: 'monk-deflect-energy' } }] },
+      {
+        grants: [
           { type: 'feature', feature: { id: 'monk-disciplined-survivor' } },
+          // Proficiency in all saving throws (STR and DEX already granted at L1)
+          { type: 'proficiency', category: 'saving-throw', id: 'con' },
+          { type: 'proficiency', category: 'saving-throw', id: 'int' },
+          { type: 'proficiency', category: 'saving-throw', id: 'wis' },
+          { type: 'proficiency', category: 'saving-throw', id: 'cha' },
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'monk-perfect-focus' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'monk-diamond-soul' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'monk-superior-defense' } }] },
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'monk', 3), points: 2, from: null },
@@ -1178,19 +1273,9 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       EMPTY_LEVEL,
-      { grants: [{ type: 'feature', feature: { id: 'monk-body-and-mind' } }] },
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'monk', 4), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'monk', 4),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
+      { grants: [{ type: 'feature', feature: { id: 'monk-superior-defense' } }] },
       { grants: [{ type: 'feature', feature: { id: 'monk-epic-boon' } }] },
+      { grants: [{ type: 'feature', feature: { id: 'monk-body-and-mind' } }] },
     ],
   },
 

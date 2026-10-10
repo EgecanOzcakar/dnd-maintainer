@@ -7,144 +7,93 @@ import type { ClassId } from '@/lib/dnd-helpers';
 import type { Grant, FeatureChoiceGrant } from '@/types/grants';
 import gamedata from '@/locales/en/gamedata.json';
 
-describe('Fighter class levels 2–10 grant structures', () => {
+describe('Fighter class levels 1–20 grant structures', () => {
   const source = getClassSource('fighter' as ClassId);
+  const featureIds = (level: number) =>
+    (source?.levels[level - 1]?.grants ?? []).flatMap((g) => (g.type === 'feature' ? [g.feature.id] : []));
+  const poolOf = (level: number, poolId: string) =>
+    source?.levels[level - 1]?.grants.find((g) => g.type === 'resource-pool' && g.poolId === poolId);
 
-  it('source is defined', () => {
+  it('source is defined with 20 levels', () => {
     expect(source).toBeDefined();
+    expect(source?.levels).toHaveLength(20);
   });
 
-  it('level 2 grants fighter-action-surge feature', () => {
-    const level2 = source?.levels[1];
-    expect(level2?.grants).toHaveLength(1);
-    const grant = level2?.grants[0];
-    expect(grant?.type).toBe('feature');
-    if (grant?.type === 'feature') {
-      expect(grant.feature.id).toBe('fighter-action-surge');
-    }
+  it.each([
+    [1, 'fighter-second-wind'],
+    [2, 'fighter-action-surge'],
+    [2, 'fighter-tactical-mind'],
+    [5, 'fighter-extra-attack'],
+    [5, 'fighter-tactical-shift'],
+    [9, 'fighter-indomitable'],
+    [9, 'fighter-tactical-master'],
+    [11, 'fighter-two-extra-attacks'],
+    [13, 'fighter-studied-attacks'],
+    [19, 'fighter-epic-boon'],
+    [20, 'fighter-three-extra-attacks'],
+  ])('level %i grants %s', (level, id) => {
+    expect(featureIds(level)).toContain(id);
   });
 
   it('level 3 grants a subclass choice for fighter', () => {
-    const level3 = source?.levels[2];
-    expect(level3?.grants).toHaveLength(1);
-    const grant = level3?.grants[0];
-    expect(grant?.type).toBe('subclass');
-    if (grant?.type === 'subclass') {
-      expect(grant.classId).toBe('fighter');
-      expect(grant.key).toBe(createChoiceKey('subclass', 'class', 'fighter', 0));
-    }
+    const grant = source?.levels[2]?.grants[0];
+    expect(grant).toEqual({
+      type: 'subclass',
+      classId: 'fighter',
+      key: createChoiceKey('subclass', 'class', 'fighter', 0),
+    });
   });
 
-  it('level 4 grants an ASI, a companion feat-choice, and a weapon mastery choice', () => {
-    const level4 = source?.levels[3];
-    // ASI + companion feat-choice + weapon-mastery-choice = 3 grants
-    expect(level4?.grants).toHaveLength(3);
-    const asiGrant = level4?.grants.find((g) => g.type === 'asi');
-    expect(asiGrant?.type).toBe('asi');
-    if (asiGrant?.type === 'asi') {
-      expect(asiGrant.points).toBe(2);
-      expect(asiGrant.key).toBe(createChoiceKey('asi', 'class', 'fighter', 0));
-    }
-    const featChoiceGrant = level4?.grants.find((g) => g.type === 'feat-choice');
-    expect(featChoiceGrant?.type).toBe('feat-choice');
-    if (featChoiceGrant?.type === 'feat-choice') {
-      expect(featChoiceGrant.key).toBe(createChoiceKey('feat-choice', 'class', 'fighter', 0));
-      expect(featChoiceGrant.category).toBe('general');
-    }
-    const masteryGrant = level4?.grants.find((g) => g.type === 'weapon-mastery-choice');
-    expect(masteryGrant?.type).toBe('weapon-mastery-choice');
-    if (masteryGrant?.type === 'weapon-mastery-choice') {
-      expect(masteryGrant.count).toBe(1);
-    }
+  it('grants ASI + feat-choice pairs at levels 4, 6, 8, 12, 14, 16 with sequential indices', () => {
+    [4, 6, 8, 12, 14, 16].forEach((level, i) => {
+      const grants = source?.levels[level - 1]?.grants ?? [];
+      const asi = grants.find((g) => g.type === 'asi');
+      expect(asi && asi.type === 'asi' && asi.key).toBe(createChoiceKey('asi', 'class', 'fighter', i));
+      const feat = grants.find((g) => g.type === 'feat-choice');
+      expect(feat && feat.type === 'feat-choice' && feat.key).toBe(
+        createChoiceKey('feat-choice', 'class', 'fighter', i)
+      );
+    });
   });
 
-  it('level 5 grants fighter-extra-attack feature', () => {
-    const level5 = source?.levels[4];
-    expect(level5?.grants).toHaveLength(1);
-    const grant = level5?.grants[0];
-    expect(grant?.type).toBe('feature');
-    if (grant?.type === 'feature') {
-      expect(grant.feature.id).toBe('fighter-extra-attack');
-    }
+  it('grants weapon mastery choices at levels 4, 10, 16 (indices 1, 2, 3)', () => {
+    [
+      [4, 1],
+      [10, 2],
+      [16, 3],
+    ].forEach(([level, index]) => {
+      const grant = source?.levels[level - 1]?.grants.find((g) => g.type === 'weapon-mastery-choice');
+      expect(grant && grant.type === 'weapon-mastery-choice' && grant.key).toBe(
+        createChoiceKey('weapon-mastery-choice', 'class', 'fighter', index)
+      );
+    });
   });
 
-  it('level 6 grants an ASI with 2 points (index 1) and companion feat-choice', () => {
-    const level6 = source?.levels[5];
-    // ASI + companion feat-choice = 2 grants
-    expect(level6?.grants).toHaveLength(2);
-    const asiGrant = level6?.grants.find((g) => g.type === 'asi');
-    expect(asiGrant?.type).toBe('asi');
-    if (asiGrant?.type === 'asi') {
-      expect(asiGrant.points).toBe(2);
-      expect(asiGrant.key).toBe(createChoiceKey('asi', 'class', 'fighter', 1));
-    }
-    const featChoiceGrant = level6?.grants.find((g) => g.type === 'feat-choice');
-    expect(featChoiceGrant?.type).toBe('feat-choice');
-    if (featChoiceGrant?.type === 'feat-choice') {
-      expect(featChoiceGrant.key).toBe(createChoiceKey('feat-choice', 'class', 'fighter', 1));
-    }
+  it('models Second Wind, Action Surge and Indomitable as stepped resource pools', () => {
+    const steps = (level: number, id: string) => {
+      const pool = poolOf(level, id);
+      return pool && pool.type === 'resource-pool' && pool.max.mode === 'level-steps'
+        ? pool.max.steps.map((s) => [s.minLevel, s.value])
+        : null;
+    };
+    expect(steps(1, 'second-wind')).toEqual([
+      [1, 2],
+      [4, 3],
+      [10, 4],
+    ]);
+    expect(steps(2, 'action-surge')).toEqual([
+      [2, 1],
+      [17, 2],
+    ]);
+    expect(steps(9, 'indomitable')).toEqual([
+      [9, 1],
+      [13, 2],
+      [17, 3],
+    ]);
   });
 
-  it('level 7 has no class-level grants (subclass features injected separately)', () => {
-    const level7 = source?.levels[6];
-    expect(level7?.grants).toHaveLength(0);
-  });
-
-  it('level 8 grants an ASI with 2 points (index 2) and companion feat-choice', () => {
-    const level8 = source?.levels[7];
-    // ASI + companion feat-choice = 2 grants
-    expect(level8?.grants).toHaveLength(2);
-    const asiGrant = level8?.grants.find((g) => g.type === 'asi');
-    expect(asiGrant?.type).toBe('asi');
-    if (asiGrant?.type === 'asi') {
-      expect(asiGrant.points).toBe(2);
-      expect(asiGrant.key).toBe(createChoiceKey('asi', 'class', 'fighter', 2));
-    }
-    const featChoiceGrant = level8?.grants.find((g) => g.type === 'feat-choice');
-    expect(featChoiceGrant?.type).toBe('feat-choice');
-    if (featChoiceGrant?.type === 'feat-choice') {
-      expect(featChoiceGrant.key).toBe(createChoiceKey('feat-choice', 'class', 'fighter', 2));
-    }
-  });
-
-  it('level 9 grants fighter-indomitable feature', () => {
-    const level9 = source?.levels[8];
-    expect(level9?.grants).toHaveLength(1);
-    const grant = level9?.grants[0];
-    expect(grant?.type).toBe('feature');
-    if (grant?.type === 'feature') {
-      expect(grant.feature.id).toBe('fighter-indomitable');
-    }
-  });
-
-  it('level 10 grants a weapon mastery choice', () => {
-    const level10 = source?.levels[9];
-    expect(level10?.grants).toHaveLength(1);
-    const grant = level10?.grants[0];
-    expect(grant?.type).toBe('weapon-mastery-choice');
-    if (grant?.type === 'weapon-mastery-choice') {
-      expect(grant.count).toBe(1);
-    }
-  });
-
-  it('level 11 and beyond have no grants (empty stubs)', () => {
-    const level11 = source?.levels[10];
-    expect(level11?.grants).toHaveLength(0);
-  });
-
-  it('level 16 grants a weapon mastery choice (index 3)', () => {
-    const level16 = source?.levels[15];
-    expect(level16?.grants).toHaveLength(1);
-    const grant = level16?.grants[0];
-    expect(grant?.type).toBe('weapon-mastery-choice');
-    if (grant?.type === 'weapon-mastery-choice') {
-      expect(grant.count).toBe(1);
-      expect(grant.key).toBe(createChoiceKey('weapon-mastery-choice', 'class', 'fighter', 3));
-    }
-  });
-
-  it('still has 20 levels total', () => {
-    expect(source?.levels).toHaveLength(20);
+  it('levels 7, 15, 17, 18 have no class-level grants (subclass features injected separately)', () => {
+    [7, 15, 17, 18].forEach((level) => expect(source?.levels[level - 1]?.grants).toHaveLength(0));
   });
 });
 
@@ -735,6 +684,28 @@ describe('Druid class grant structures', () => {
       .map((g) => (g.type === 'feature' ? g.feature.id : ''));
     expect(featureIds).toContain('druid-archdruid');
   });
+
+  it('level 1 has druidic, level 19 has epic-boon', () => {
+    const ids = (level: number) =>
+      source?.levels[level - 1].grants.flatMap((g) => (g.type === 'feature' ? [g.feature.id] : []));
+    expect(ids(1)).toContain('druid-druidic');
+    expect(ids(19)).toContain('druid-epic-boon');
+  });
+
+  it('Wild Shape uses are a stepped pool (2 / 3 at L6 / 4 at L17)', () => {
+    const pool = source?.levels[1].grants.find((g) => g.type === 'resource-pool');
+    expect(pool?.type === 'resource-pool' && pool.poolId).toBe('wild-shape');
+    expect(pool?.type === 'resource-pool' && pool.max.mode === 'level-steps' && pool.max.steps).toEqual([
+      { minLevel: 2, value: 2 },
+      { minLevel: 6, value: 3 },
+      { minLevel: 17, value: 4 },
+    ]);
+  });
+
+  it('has ASIs at levels 4, 8, 12, 16 only', () => {
+    const asiLevels = (source?.levels ?? []).flatMap((l, i) => (l.grants.some((g) => g.type === 'asi') ? [i + 1] : []));
+    expect(asiLevels).toEqual([4, 8, 12, 16]);
+  });
 });
 
 describe('Monk class grant structures', () => {
@@ -802,11 +773,35 @@ describe('Monk class grant structures', () => {
     expect(featureIds).toContain('monk-slow-fall');
   });
 
-  it('level 20 has epic-boon feature', () => {
-    const featureIds = source?.levels[19].grants
-      .filter((g) => g.type === 'feature')
-      .map((g) => (g.type === 'feature' ? g.feature.id : ''));
-    expect(featureIds).toContain('monk-epic-boon');
+  it.each([
+    [5, 'monk-extra-attack'],
+    [5, 'monk-stunning-strike'],
+    [6, 'monk-empowered-strikes'],
+    [7, 'monk-evasion'],
+    [9, 'monk-acrobatic-movement'],
+    [10, 'monk-heightened-focus'],
+    [10, 'monk-self-restoration'],
+    [13, 'monk-deflect-energy'],
+    [14, 'monk-disciplined-survivor'],
+    [15, 'monk-perfect-focus'],
+    [18, 'monk-superior-defense'],
+    [19, 'monk-epic-boon'],
+    [20, 'monk-body-and-mind'],
+  ])('level %i has %s feature', (level, id) => {
+    const featureIds = source?.levels[level - 1].grants.flatMap((g) => (g.type === 'feature' ? [g.feature.id] : []));
+    expect(featureIds).toContain(id);
+  });
+
+  it('Disciplined Survivor (level 14) grants proficiency in the remaining saving throws', () => {
+    const saves = source?.levels[13].grants.flatMap((g) =>
+      g.type === 'proficiency' && g.category === 'saving-throw' ? [g.id] : []
+    );
+    expect(saves).toEqual(['con', 'int', 'wis', 'cha']);
+  });
+
+  it('has ASIs at levels 4, 8, 12, 16 only', () => {
+    const asiLevels = (source?.levels ?? []).flatMap((l, i) => (l.grants.some((g) => g.type === 'asi') ? [i + 1] : []));
+    expect(asiLevels).toEqual([4, 8, 12, 16]);
   });
 });
 

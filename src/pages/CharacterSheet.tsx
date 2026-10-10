@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AbilityScoresPanel } from '@/components/character-sheet/AbilityScoresPanel';
 import { ActionsPanel } from '@/components/character-sheet/ActionsPanel';
 import { resolveActions } from '@/lib/resolver/actions';
+import { canPrepareSpells, getEffectivePrepared } from '@/lib/spell-preparation';
 import type { ClassId } from '@/lib/dnd-helpers';
 import { BackstoryPanel } from '@/components/character-sheet/BackstoryPanel';
 import { CharacterSheetHeader } from '@/components/character-sheet/CharacterSheetHeader';
@@ -99,8 +100,10 @@ function CharacterSheetInner({
     if (!resolved || !build) return null;
     const classLevels: Partial<Record<ClassId, number>> = {};
     for (const lvl of build.levels) classLevels[lvl.classId] = Math.max(classLevels[lvl.classId] ?? 0, lvl.classLevel);
-    return resolveActions(resolved, classLevels);
-  }, [resolved, build]);
+    const sc = resolved.spellcasting;
+    const prepared = sc && canPrepareSpells(sc) ? getEffectivePrepared(character.prepared_spells, sc) : undefined;
+    return resolveActions(resolved, classLevels, prepared);
+  }, [resolved, build, character.prepared_spells]);
 
   const handleSelectRollPreset = useCallback((preset: RollPreset) => {
     setRollPreset(preset);
@@ -454,6 +457,9 @@ function CharacterSheetInner({
                     spellcasting={resolved?.spellcasting}
                     resolved={resolved}
                     onSelectRollPreset={handleSelectRollPreset}
+                    classId={character.class}
+                    preparedSpells={character.prepared_spells}
+                    onChangePrepared={(prepared_spells) => handleUpdate({ prepared_spells })}
                   />
                 )}
                 {hasPersonality && (

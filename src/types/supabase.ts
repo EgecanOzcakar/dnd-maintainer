@@ -207,6 +207,7 @@ export type Database = {
           character_type: string
           class: string | null
           conditions: string[]
+          prepared_spells: string[]
           created_at: string
           exhaustion_level: number
           eye_color: string | null
@@ -255,6 +256,7 @@ export type Database = {
           character_type: string
           class?: string | null
           conditions?: string[]
+          prepared_spells?: string[]
           created_at?: string
           exhaustion_level?: number
           eye_color?: string | null
@@ -303,6 +305,7 @@ export type Database = {
           character_type?: string
           class?: string | null
           conditions?: string[]
+          prepared_spells?: string[]
           created_at?: string
           exhaustion_level?: number
           eye_color?: string | null

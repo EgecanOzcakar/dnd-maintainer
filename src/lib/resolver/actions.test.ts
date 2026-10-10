@@ -123,6 +123,12 @@ describe('resolveActions', () => {
     });
   });
 
+  it('with a prepared list, only cantrips, always-prepared and prepared spells are listed', () => {
+    const refs = resolveActions(resolved, { wizard: 1 }, ['burning-hands']).actions.map((a) => a.refId);
+    expect(refs).toEqual(expect.arrayContaining(['fire-bolt', 'cure-wounds', 'burning-hands']));
+    expect(refs).not.toContain('magic-missile');
+  });
+
   it('save spell: DC 8 + proficiency + casting mod, with upcast dice', () => {
     expect(byRef(1)['burning-hands']).toMatchObject({
       save: { ability: 'dex', dc: 8 + 3 + 4 },

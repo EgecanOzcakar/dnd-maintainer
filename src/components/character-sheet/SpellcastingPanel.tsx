@@ -6,6 +6,8 @@ import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { parseDiceFormula, extractDiceFromText } from '@/lib/dice-helpers';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { SpellPreparationDialog } from '@/components/character-sheet/SpellPreparationDialog';
+import { canPrepareSpells, getEffectivePrepared, getPreparationPool } from '@/lib/spell-preparation';
 import { ChevronDown, ChevronRight, Dices, AlertTriangle } from 'lucide-react';
 import { useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -362,17 +364,32 @@ export function SpellcastingPanel({
   spellcasting,
   resolved,
   onSelectRollPreset,
+  classId = null,
+  preparedSpells,
+  onChangePrepared,
 }: {
   spellcasting?: Spellcasting | null;
   resolved?: ResolvedCharacter;
   onSelectRollPreset?: (preset: RollPreset) => void;
+  /** Class that supplies the preparation pool (whole-list casters). */
+  classId?: string | null;
+  /** Stored `characters.prepared_spells`; empty falls back to known spells. */
+  preparedSpells?: readonly string[] | null;
+  /** Persist a new prepared list. Omit for a read-only panel. */
+  onChangePrepared?: (prepared: string[]) => void;
 }) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
+  const [prepDialogOpen, setPrepDialogOpen] = useState(false);
+  const prepSc = spellcasting && canPrepareSpells(spellcasting) ? spellcasting : null;
+  const prepared = prepSc ? getEffectivePrepared(preparedSpells, prepSc) : [];
 
   // Group knownSpells by level, ascending
+  const listedSpells = prepSc
+    ? prepared.map((spellId) => ({ spellId, spellLevel: getSpellDef(spellId)?.level ?? 1 }))
+    : (spellcasting?.knownSpells ?? []);
   const spellsByLevel =
-    spellcasting?.knownSpells.reduce<Record<number, string[]>>((acc, { spellId, spellLevel }) => {
+    listedSpells.reduce<Record<number, string[]>>((acc, { spellId, spellLevel }) => {
       const group = acc[spellLevel] ?? [];
       group.push(spellId);
       return { ...acc, [spellLevel]: group };
@@ -592,6 +609,19 @@ export function SpellcastingPanel({
           </div>
         )}
 
+        {prepSc && (
+          <div className="flex items-center justify-between gap-2">
+            <div className="text-sm font-semibold">
+              {tc('spellPrep.prepared', { count: prepared.length, max: prepSc.preparedCount })}
+            </div>
+            {onChangePrepared && (
+              <Button type="button" size="sm" variant="outline" onClick={() => setPrepDialogOpen(true)}>
+                {tc('spellPrep.button')}
+              </Button>
+            )}
+          </div>
+        )}
+
         {spellcasting && spellcasting.knownSpells.length > 0 && (
           <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
             {tc('characterSheet.sections.knownSpells')}
@@ -666,6 +696,16 @@ export function SpellcastingPanel({
             );
           })}
       </div>
+      {prepSc && onChangePrepared && (
+        <SpellPreparationDialog
+          open={prepDialogOpen}
+          onOpenChange={setPrepDialogOpen}
+          pool={getPreparationPool(classId, prepSc)}
+          prepared={prepared}
+          cap={prepSc.preparedCount}
+          onChange={onChangePrepared}
+        />
+      )}
     </div>
   );
 }

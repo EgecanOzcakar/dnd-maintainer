@@ -1437,5 +1437,16 @@
     "natural20": "Natural 20",
     "natural1": "Natural 1",
     "unknownRoller": "Unknown"
+  },
+  "spellPrep": {
+    "prepared": "Prepared {{count}} / {{max}}",
+    "button": "Prepare Spells",
+    "title": "Prepare Spells",
+    "description": "Choose the spells you have prepared. You can change this after a Long Rest.",
+    "capReached": "You have prepared the maximum number of spells. Unprepare one to choose another.",
+    "levelHeading": "Level {{level}}",
+    "alwaysPreparedNote": "Cantrips and always-prepared spells do not count against your limit.",
+    "empty": "No spells available to prepare.",
+    "done": "Done"
   }
 }

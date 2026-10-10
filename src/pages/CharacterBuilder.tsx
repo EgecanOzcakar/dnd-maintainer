@@ -111,6 +111,7 @@ function buildSeedCharacter(campaignId: string): Character {
     heroic_inspiration: false,
     exhaustion_level: 0 as const,
     conditions: [],
+    prepared_spells: [],
     hit_dice_used: null,
     current_hp: null,
     temp_hp: 0,

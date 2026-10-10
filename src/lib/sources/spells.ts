@@ -1,5 +1,6 @@
 import type { ClassId } from '@/lib/dnd-helpers';
 import type { SpellDef } from '@/types/spells';
+import { SPELLS_L4_L5 } from './spells-l4-l5';
 
 export const SPELL_CATALOG = [
   {
@@ -639,7 +640,7 @@ export const SPELL_CATALOG = [
     range: 'Self',
     components: { verbal: true, somatic: true, material: 'a bit of phosphorus or a firefly' },
     duration: '10 minutes',
-    nativeClasses: ['wizard'],
+    nativeClasses: ['sorcerer', 'wizard'],
   },
   {
     id: 'freedom-of-movement',
@@ -957,7 +958,7 @@ export const SPELL_CATALOG = [
       material: 'a few grains of sugar, some kernels of grain, and a smear of fat',
     },
     duration: 'Up to 10 minutes',
-    nativeClasses: ['cleric', 'druid', 'ranger', 'sorcerer'],
+    nativeClasses: ['cleric', 'druid', 'sorcerer'],
   },
   // ── Paladin oath spells (added for issue #150) ────────────────────────────
   // Devotion L3
@@ -1767,7 +1768,7 @@ export const SPELL_CATALOG = [
     components: { verbal: true, somatic: true, material: false },
     duration: 'Up to 1 minute',
     // 2024 PHB: native to druid, ranger
-    nativeClasses: ['druid', 'ranger'],
+    nativeClasses: ['druid', 'sorcerer'],
   },
   {
     id: 'geas',
@@ -1893,7 +1894,7 @@ export const SPELL_CATALOG = [
     range: '120 feet',
     components: { verbal: true, somatic: true, material: false },
     duration: '1 minute',
-    nativeClasses: ['sorcerer', 'wizard'],
+    nativeClasses: ['bard', 'sorcerer', 'wizard'],
   },
   {
     id: 'chill-touch',
@@ -1967,6 +1968,7 @@ export const SPELL_CATALOG = [
     duration: '1 minute',
     nativeClasses: ['bard', 'sorcerer', 'wizard'],
   },
+  ...SPELLS_L4_L5,
 ] as const satisfies readonly SpellDef[];
 
 export type SpellId = (typeof SPELL_CATALOG)[number]['id'];

@@ -178,3 +178,15 @@ describe('spell-grant catalog invariant', () => {
     expect(missing, 'spell grants referencing uncatalogued spellIds').toEqual([]);
   });
 });
+
+describe('level 4/5 spell lists', () => {
+  it.each([
+    ['wizard', 4, 'otilukes-resilient-sphere'],
+    ['wizard', 5, 'jallarzis-storm-of-radiance'],
+    ['bard', 4, 'fount-of-moonlight'],
+    ['paladin', 5, 'banishing-smite'],
+    ['ranger', 5, 'wrath-of-nature'],
+  ] as const)('%s level %i includes %s', (cls, lvl, id) => {
+    expect(getSpellsForList(cls, lvl).map((s) => s.id)).toContain(id);
+  });
+});

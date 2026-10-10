@@ -127,20 +127,27 @@ describe('Fighter class levels 2–10 grant structures', () => {
     }
   });
 
-  it('level 11 and beyond have no grants (empty stubs)', () => {
-    const level11 = source?.levels[10];
-    expect(level11?.grants).toHaveLength(0);
+  it.each([
+    [11, ['fighter-extra-attack-2']],
+    [13, ['fighter-indomitable-2', 'fighter-studied-attacks']],
+    [17, ['fighter-action-surge-2', 'fighter-indomitable-3']],
+    [20, ['fighter-extra-attack-3']],
+  ])('level %i grants %j', (level, ids) => {
+    const featureIds = source?.levels[level - 1].grants.flatMap((g) => (g.type === 'feature' ? [g.feature.id] : []));
+    expect(featureIds).toEqual(ids);
   });
 
-  it('level 16 grants a weapon mastery choice (index 3)', () => {
-    const level16 = source?.levels[15];
-    expect(level16?.grants).toHaveLength(1);
-    const grant = level16?.grants[0];
-    expect(grant?.type).toBe('weapon-mastery-choice');
-    if (grant?.type === 'weapon-mastery-choice') {
-      expect(grant.count).toBe(1);
-      expect(grant.key).toBe(createChoiceKey('weapon-mastery-choice', 'class', 'fighter', 3));
-    }
+  it.each([12, 14, 16, 19])('level %i grants an ASI and a general feat choice', (level) => {
+    const types = source?.levels[level - 1].grants.map((g) => g.type);
+    expect(types).toEqual(expect.arrayContaining(['asi', 'feat-choice']));
+  });
+
+  it('level 16 also grants a weapon mastery choice (index 3)', () => {
+    const grant = source?.levels[15].grants.find((g) => g.type === 'weapon-mastery-choice');
+    expect(grant).toMatchObject({
+      count: 1,
+      key: createChoiceKey('weapon-mastery-choice', 'class', 'fighter', 3),
+    });
   });
 
   it('still has 20 levels total', () => {
@@ -274,10 +281,23 @@ describe('Rogue class grant structures', () => {
     }
   });
 
-  it('levels 11–20 are EMPTY_LEVEL', () => {
-    for (let i = 10; i < 20; i++) {
-      expect(source?.levels[i].grants).toHaveLength(0);
-    }
+  it.each([
+    [11, 'rogue-reliable-talent'],
+    [14, 'rogue-devious-strikes'],
+    [15, 'rogue-slippery-mind'],
+    [18, 'rogue-elusive'],
+    [20, 'rogue-stroke-of-luck'],
+  ])('level %i grants %s', (level, id) => {
+    expect(source?.levels[level - 1].grants).toEqual([{ type: 'feature', feature: { id } }]);
+  });
+
+  it.each([12, 16, 19])('level %i grants an ASI and a general feat choice', (level) => {
+    const types = source?.levels[level - 1].grants.map((g) => g.type);
+    expect(types).toEqual(['asi', 'feat-choice']);
+  });
+
+  it.each([13, 17])('level %i is empty (subclass tier level)', (level) => {
+    expect(source?.levels[level - 1].grants).toHaveLength(0);
   });
 
   it('level 1 has 4 bundle-choice grants', () => {

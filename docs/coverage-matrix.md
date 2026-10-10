@@ -20,17 +20,17 @@ missing: 0 · stub: 0 · partial: 0 · complete: 12 · golden-verified: 0/12
 | id | status | detail | golden |
 | --- | --- | --- | --- |
 | barbarian | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
-| bard | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
+| bard | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
 | cleric | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
-| druid | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
+| druid | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
 | fighter | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
-| monk | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
-| paladin | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
-| ranger | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
-| rogue | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
-| sorcerer | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
-| warlock | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
-| wizard | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
+| monk | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
+| paladin | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
+| ranger | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
+| rogue | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
+| sorcerer | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
+| warlock | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
+| wizard | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
 
 ### subclasses — 48/48 structurally complete (100%)
 

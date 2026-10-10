@@ -239,6 +239,18 @@
       "name": "Fighting Style",
       "description": "You adopt a particular style of fighting as your specialty."
     },
+    "fighter-tactical-mind": {
+      "name": "Tactical Mind",
+      "description": "When an ability check fails, you can spend a use of Second Wind to roll a d10 and add it to the check; if it still fails, the use is not spent."
+    },
+    "fighter-tactical-shift": {
+      "name": "Tactical Shift",
+      "description": "Whenever you use Second Wind, you can move up to half your Speed without provoking opportunity attacks."
+    },
+    "fighter-tactical-master": {
+      "name": "Tactical Master",
+      "description": "When you attack with a weapon whose mastery you have, you can swap that property for Push, Sap, or Slow for the attack."
+    },
     "fighter-second-wind": {
       "name": "Second Wind",
       "description": "You have a limited well of stamina that you can draw on to protect yourself from harm."
@@ -259,9 +271,13 @@
       "name": "Improved Critical",
       "description": "Your weapon attacks score a critical hit on a roll of 19 or 20."
     },
+    "champion-heroic-warrior": {
+      "name": "Heroic Warrior",
+      "description": "During combat, you can give yourself Heroic Inspiration at the start of each of your turns if you do not already have it."
+    },
     "champion-remarkable-athlete": {
       "name": "Remarkable Athlete",
-      "description": "Add half your proficiency bonus (round up) to any STR, DEX, or CON checks that don't already use your proficiency bonus."
+      "description": "You have Advantage on Initiative rolls and Athletics checks, and after scoring a Critical Hit you can move up to half your Speed without provoking opportunity attacks."
     },
     "champion-additional-fighting-style": {
       "name": "Additional Fighting Style",
@@ -279,6 +295,10 @@
       "name": "Combat Superiority",
       "description": "Learn three maneuvers and gain four superiority dice (d8s) to fuel them."
     },
+    "battlemaster-student-of-war": {
+      "name": "Student of War",
+      "description": "You gain proficiency with one type of Artisan's Tools of your choice and one skill from a short list of martial skills."
+    },
     "battlemaster-know-your-enemy": {
       "name": "Know Your Enemy",
       "description": "As a Bonus Action, you can study a creature you can observe for at least 1 round. You learn how the creature compares to you in two characteristics of your choice: STR score, DEX score, CON score, AC, current HP, total class levels (if any), or Fighter levels (if any)."
@@ -292,12 +312,16 @@
       "description": "When you roll initiative and have no superiority dice remaining, you regain one."
     },
     "battlemaster-superior-combat-superiority": {
-      "name": "Superior Combat Superiority",
+      "name": "Ultimate Combat Superiority",
       "description": "Superiority dice become d12s."
     },
     "eldritchknight-spellcasting": {
       "name": "Spellcasting",
       "description": "Learn two cantrips and three 1st-level wizard spells. Intelligence is your spellcasting ability."
+    },
+    "eldritchknight-war-bond": {
+      "name": "War Bond",
+      "description": "You can bond with up to two weapons during a Short Rest, summon a bonded weapon to your hand as a Bonus Action, and cannot be disarmed of it."
     },
     "eldritchknight-war-magic": {
       "name": "War Magic",
@@ -527,6 +551,42 @@
       "name": "Sneak Attack",
       "description": "Once per turn, deal extra 1d6 damage to one creature you hit with a finesse or ranged weapon attack if you have advantage or an ally is within 5 feet of the target. Scales to ceil(level/2)d6."
     },
+    "rogue-steady-aim": {
+      "name": "Steady Aim",
+      "description": "As a Bonus Action, give yourself Advantage on your next attack roll this turn, but only if you haven't moved and your Speed becomes 0 until the end of the turn."
+    },
+    "rogue-cunning-strike": {
+      "name": "Cunning Strike",
+      "description": "When you deal Sneak Attack damage, you can give up Sneak Attack dice to add an effect such as Poison, Trip, or Withdraw; targets make a save against your DC."
+    },
+    "rogue-reliable-talent": {
+      "name": "Reliable Talent",
+      "description": "When you make an ability check using a skill or tool you are proficient in, any d20 roll of 9 or lower counts as a 10."
+    },
+    "rogue-improved-cunning-strike": {
+      "name": "Improved Cunning Strike",
+      "description": "You can apply two Cunning Strike effects to a single Sneak Attack, paying the dice cost of each."
+    },
+    "rogue-devious-strikes": {
+      "name": "Devious Strikes",
+      "description": "Unlocks stronger Cunning Strike options: Daze, Knock Out, and Obscure."
+    },
+    "rogue-slippery-mind": {
+      "name": "Slippery Mind",
+      "description": "You gain proficiency in Wisdom and Charisma saving throws."
+    },
+    "rogue-elusive": {
+      "name": "Elusive",
+      "description": "Attack rolls against you can't have Advantage unless you are Incapacitated."
+    },
+    "rogue-epic-boon": {
+      "name": "Epic Boon",
+      "description": "You gain an Epic Boon feat or another feat of your choice."
+    },
+    "rogue-stroke-of-luck": {
+      "name": "Stroke of Luck",
+      "description": "Once per rest, turn a missed attack into a hit or treat a failed d20 Test as a 20."
+    },
     "rogue-thieves-cant": {
       "name": "Thieves' Cant",
       "description": "You have learned thieves' cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation."
@@ -547,25 +607,49 @@
       "name": "Fast Hands",
       "description": "Use Cunning Action to make a Sleight of Hand check, use thieves' tools to disarm a trap or open a lock, or take the Use an Object action."
     },
+    "thief-use-magic-device": {
+      "name": "Use Magic Device",
+      "description": "You can attune to more magic items, and you can sometimes avoid spending charges or use any spell scroll."
+    },
+    "thief-thiefs-reflexes": {
+      "name": "Thief's Reflexes",
+      "description": "In the first round of combat you take two turns, one at your normal initiative and one at initiative minus 10."
+    },
     "thief-second-story-work": {
       "name": "Second-Story Work",
       "description": "You gain a Climb Speed equal to your Speed. In addition, when you make a running jump, the distance you cover increases by a number of feet equal to your DEX modifier."
     },
     "thief-supreme-sneak": {
       "name": "Supreme Sneak",
-      "description": "You gain Expertise in the Stealth skill. In addition, you can take the Hide action as a Bonus Action."
+      "description": "You gain a Cunning Strike option, Stealth Attack, that lets you keep from losing Hidden status when you strike."
     },
     "assassin-assassinate": {
       "name": "Assassinate",
       "description": "You are at your deadliest when you get the drop on your foes. You have Advantage on attack rolls against any creature that hasn't taken a turn yet in combat. In addition, any hit you score against a creature that is Surprised is a Critical Hit."
     },
+    "assassin-envenom-weapons": {
+      "name": "Envenom Weapons",
+      "description": "Your Poison Cunning Strike deals extra poison damage and ignores poison resistance on a failed save."
+    },
+    "assassin-death-strike": {
+      "name": "Death Strike",
+      "description": "When you hit on the first round of combat, the target must succeed on a Constitution save or take double Sneak Attack damage."
+    },
     "assassin-infiltration-expertise": {
       "name": "Infiltration Expertise",
-      "description": "You can spend 7 days and 25 GP to establish a false identity. You also gain Expertise in the Deception skill if you don't already have it."
+      "description": "You can flawlessly mimic another person's speech and writing, and your Steady Aim no longer reduces your Speed to 0."
     },
     "arcanetrickster-mage-hand-legerdemain": {
       "name": "Mage Hand Legerdemain",
       "description": "When you cast mage hand, you can make it invisible and use it to stow/retrieve objects or use thieves' tools at range."
+    },
+    "arcanetrickster-versatile-trickster": {
+      "name": "Versatile Trickster",
+      "description": "You can use your Mage Hand to distract a creature, giving you Advantage on attacks against it."
+    },
+    "arcanetrickster-spell-thief": {
+      "name": "Spell Thief",
+      "description": "When a creature casts a spell at you, you can negate its effect on you and steal the spell for a time, once per Long Rest."
     },
     "arcanetrickster-magical-ambush": {
       "name": "Magical Ambush",
@@ -747,6 +831,14 @@
       "name": "Psionic Power",
       "description": "You have a pool of Psionic Energy dice that fuel your psionic abilities. The die size scales with your proficiency bonus: d6 (PB +2), d8 (PB +3), d10 (PB +4), d12 (PB +5 or +6). You start each Long Rest with 4 dice; a Short Rest replenishes 1. Two options enabled at L3: Psi-Bolstered Knack — when you fail an ability check using a skill or tool you are proficient in, you can roll one Psionic Energy die and add it to the check; if this causes the check to succeed, the die is not expended; Psychic Whispers — as an Action, choose a number of creatures equal to your Proficiency Bonus that you can see within 1 mile; those creatures can communicate telepathically with you in a language you both know for up to 1 hour; this uses 1 Psionic Energy die."
     },
+    "soulknife-psychic-veil": {
+      "name": "Psychic Veil",
+      "description": "You can turn Invisible for a while by spending a Psionic Energy die or once per Long Rest for free."
+    },
+    "soulknife-rend-mind": {
+      "name": "Rend Mind",
+      "description": "When you deal Sneak Attack damage with Psychic Blades, you can force a Wisdom save or leave the target Stunned."
+    },
     "soulknife-psychic-blades": {
       "name": "Psychic Blades",
       "description": "As part of the Attack action or as a Bonus Action, you can manifest a glowing psychic blade from your hand to make a melee attack against a creature within reach. The blade deals 1d6 Psychic damage on a hit, using your Dexterity modifier for the attack and damage rolls. If you make this attack as a Bonus Action as part of a two-weapon fighting sequence, the off-hand blade deals 1d8 Psychic damage instead. The blades vanish immediately after an attack and have the Finesse property for the purpose of qualifying for Sneak Attack. No weapon proficiency or material components are required."
@@ -775,6 +867,30 @@
       "name": "Rage of the Wilds",
       "description": "When you activate your Rage, you choose a Beast Spirit (Bear, Eagle, Elk, Tiger, or Wolf) and gain its associated benefit for the duration of your Rage."
     },
+    "wildheart-animal-speaker": {
+      "name": "Animal Speaker",
+      "description": "You can cast Beast Sense and Speak with Animals as rituals, using Wisdom as your spellcasting ability."
+    },
+    "wildheart-aspect-owl": {
+      "name": "Aspect of the Wilds: Owl",
+      "description": "You have Darkvision out to 60 feet, or 60 feet more if you already have it."
+    },
+    "wildheart-aspect-panther": {
+      "name": "Aspect of the Wilds: Panther",
+      "description": "You gain a Climb Speed equal to your Speed."
+    },
+    "wildheart-aspect-salmon": {
+      "name": "Aspect of the Wilds: Salmon",
+      "description": "You gain a Swim Speed equal to your Speed."
+    },
+    "wildheart-nature-speaker": {
+      "name": "Nature Speaker",
+      "description": "You can cast Commune with Nature as a ritual, using Wisdom as your spellcasting ability."
+    },
+    "wildheart-power-of-the-wilds": {
+      "name": "Power of the Wilds",
+      "description": "While raging, pick a power: Falcon (flying speed while unarmored), Lion (nearby foes have Disadvantage against others), or Ram (knock Large or smaller foes Prone)."
+    },
     "wildheart-aspect-of-the-wilds": {
       "name": "Aspect of the Wilds",
       "description": "You gain an ongoing benefit based on the Beast Spirit you chose at level 3; this benefit can be changed on a Long Rest. Bear: resistance to one damage type. Eagle: you don't need to sleep and can't be forced to sleep. Elk: your Speed increases by 15 feet. Tiger: add d6 to one damage roll per turn. Wolf: knock a creature prone when you hit it with an opportunity attack."
@@ -782,6 +898,10 @@
     "worldtree-vitality-of-the-tree": {
       "name": "Vitality of the Tree",
       "description": "When you activate your Rage, you gain Temporary Hit Points equal to your Barbarian level plus your CON modifier. As a Bonus Action while raging, you can grant 1d6 Temporary Hit Points to one creature within 60 feet of you."
+    },
+    "worldtree-travel-along-the-tree": {
+      "name": "Travel along the Tree",
+      "description": "When you rage and as a Bonus Action, you can teleport up to 60 feet to an unoccupied space you can see; once per Rage you can also bring up to six willing creatures within 10 feet."
     },
     "worldtree-branches-of-the-tree": {
       "name": "Branches of the Tree",
@@ -794,6 +914,10 @@
     "zealot-divine-fury-radiant": {
       "name": "Divine Fury (Radiant)",
       "description": "While raging, the first creature you hit on each of your turns takes an extra 1d6 + half your Barbarian level (rounded down) radiant damage."
+    },
+    "zealot-rage-of-the-gods": {
+      "name": "Rage of the Gods",
+      "description": "Once per Long Rest, while raging you can assume a divine form: fly, resist several damage types, and revive a nearby ally."
     },
     "zealot-divine-fury-necrotic": {
       "name": "Divine Fury (Necrotic)",
@@ -811,29 +935,33 @@
       "name": "Zealous Presence",
       "description": "As a Bonus Action, you unleash a battle cry infused with divine energy. Up to 10 creatures of your choice within 60 feet of you gain Advantage on attack rolls and saving throws until the start of your next turn. Once you use this feature, you can't use it again until you finish a Long Rest."
     },
-    "collegedance-inspirational-dance": {
-      "name": "Inspirational Dance",
-      "description": "When you hit a creature with an Unarmed Strike, you can expend one use of your Bardic Inspiration and roll the Bardic Inspiration die. The Unarmed Strike deals extra damage equal to the number rolled, and you gain a bonus to your AC equal to the number rolled until the start of your next turn."
+    "collegedance-dazzling-footwork": {
+      "name": "Dazzling Footwork",
+      "description": "While unarmored and unshielded you gain Unarmored Defense (10 + Dex + Cha), Advantage on Performance checks that involve dancing, and Agile Strikes; you can also add a Bardic Inspiration die to unarmed strike damage."
     },
-    "collegedance-unarmored-defense": {
-      "name": "Unarmored Defense (College of Dance)",
-      "description": "While you aren't wearing armor or wielding a Shield, your AC equals 10 plus your Dexterity modifier plus your Bardic Inspiration die size modifier (determined by your Bard level)."
+    "collegedance-inspiring-movement": {
+      "name": "Inspiring Movement",
+      "description": "As a Reaction when an enemy ends its move within 5 feet, spend a Bardic Inspiration die to move half your Speed without provoking, and an ally within 30 feet can do the same."
     },
-    "collegedance-frolicking-steps": {
-      "name": "Frolicking Steps",
-      "description": "When you take the Dash action, you can move through the space of any hostile creature once during that action."
+    "collegedance-tandem-footwork": {
+      "name": "Tandem Footwork",
+      "description": "When you roll Initiative, you can spend a Bardic Inspiration die to add its roll plus your Charisma modifier to the initiative of yourself and allies within 30 feet."
     },
-    "collegedance-dance-of-victory": {
-      "name": "Dance of Victory",
-      "description": "When you use Bardic Inspiration to add damage to an attack, the target takes additional damage equal to your Bardic Inspiration die at the start of your next turn."
+    "collegedance-leading-evasion": {
+      "name": "Leading Evasion",
+      "description": "When you make a Dexterity save for half damage you take none on a success and half on a failure, and nearby allies who share your space gain the same benefit."
     },
     "collegeglamour-mantle-of-inspiration": {
       "name": "Mantle of Inspiration",
       "description": "As a Bonus Action, you expend one use of your Bardic Inspiration and choose a number of creatures within 60 feet equal to your CHA modifier (minimum 1). Each creature gains Temporary Hit Points equal to your Bardic Inspiration die roll, plus a free Reaction to move up to their speed without provoking Opportunity Attacks."
     },
-    "collegeglamour-enthralling-performance": {
-      "name": "Enthralling Performance",
-      "description": "If you perform for at least 1 minute, you can attempt to inspire wonder in your audience. Each humanoid within 60 feet that watched and listened must succeed on a WIS save (DC = 8 + your proficiency bonus + your CHA modifier) or be charmed for 1 hour. While charmed, the creature regards you as a wondrous performer; it is not hostile toward you. The effect ends if the creature takes damage. You can use this feature once per Short or Long Rest."
+    "collegeglamour-beguiling-magic": {
+      "name": "Beguiling Magic",
+      "description": "Charm Person and Mirror Image are always prepared; after casting an Enchantment or Illusion spell you can make a creature Frightened or Charmed (Wisdom save). Once per Long Rest or by spending Bardic Inspiration."
+    },
+    "collegeglamour-unbreakable-majesty": {
+      "name": "Unbreakable Majesty",
+      "description": "As a Bonus Action, assume a majestic presence for a minute; creatures that attack you must first succeed on a Charisma save or miss and lose the attack."
     },
     "collegeglamour-mantle-of-majesty": {
       "name": "Mantle of Majesty",
@@ -843,13 +971,25 @@
       "name": "Cutting Words",
       "description": "As a Reaction when a creature you can see within 60 feet makes an attack roll, ability check, or damage roll, you expend one use of your Bardic Inspiration and subtract the number rolled from the creature's roll."
     },
-    "collegelore-magical-secrets": {
-      "name": "Magical Secrets",
-      "description": "You have plundered magical knowledge from a wide spectrum of disciplines. Choose two spells from any class's spell list, including this one. The chosen spells count as Bard spells for you and are added to your Bard spell list."
+    "collegelore-magical-discoveries": {
+      "name": "Magical Discoveries",
+      "description": "You learn two spells of your choice from the Cleric, Druid, or Wizard lists; they count as Bard spells for you."
+    },
+    "collegelore-peerless-skill": {
+      "name": "Peerless Skill",
+      "description": "When you fail an ability check or attack roll, you can spend a Bardic Inspiration die and add it to the roll, possibly turning the failure into a success."
     },
     "collegevalor-combat-inspiration": {
       "name": "Combat Inspiration",
       "description": "A creature that has a Bardic Inspiration die from you can use it to add the result to a weapon attack's damage roll, or as a Reaction when it is hit by an attack to add the result to its AC against that attack."
+    },
+    "collegevalor-martial-training": {
+      "name": "Martial Training",
+      "description": "You gain training with Medium armor, Shields, and Martial weapons, and can use a musical instrument as a spellcasting focus."
+    },
+    "collegevalor-battle-magic": {
+      "name": "Battle Magic",
+      "description": "After casting a spell that uses your action, you can make one weapon attack as a Bonus Action."
     },
     "collegevalor-extra-attack": {
       "name": "Extra Attack",
@@ -1195,17 +1335,25 @@
       "name": "Divine Order: Protector",
       "description": "Trained for battle, you gain proficiency with Martial weapons and training with Heavy armor."
     },
+    "cleric-divine-spark": {
+      "name": "Divine Spark",
+      "description": "Use Channel Divinity to heal a creature within 30 feet or deal Radiant or Necrotic damage to it (save for half); the dice scale with your Cleric level."
+    },
+    "cleric-turn-undead": {
+      "name": "Turn Undead",
+      "description": "Use Channel Divinity to force undead within 30 feet to make a Wisdom save or be Frightened and Incapacitated for a minute."
+    },
     "cleric-divine-order-thaumaturge": {
       "name": "Divine Order: Thaumaturge",
       "description": "You know one extra Cleric cantrip of your choice, and your mystical connection grants you a bonus to Intelligence (Arcana) and Intelligence (Religion) checks equal to your Wisdom modifier (minimum +1)."
     },
     "cleric-channel-divinity": {
       "name": "Channel Divinity",
-      "description": "You gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects."
+      "description": "Channel divine energy for magical effects. You have 2 uses, regain one on a Short Rest and all on a Long Rest. Divine Spark and Turn Undead are always available; your domain adds more options."
     },
-    "cleric-smite-undead": {
-      "name": "Smite Undead",
-      "description": "You can cause your Turn Undead feature to smite the undead. When you use Turn Undead, you can expend a spell slot to deal Radiant damage to undead that fail their saving throws."
+    "cleric-sear-undead": {
+      "name": "Sear Undead",
+      "description": "When you use Turn Undead, you roll Wisdom-modifier d8s of Radiant damage (minimum 1) against each undead creature that fails the save."
     },
     "cleric-blessed-strikes-divine-strike": {
       "name": "Blessed Strikes: Divine Strike",
@@ -1220,12 +1368,20 @@
       "description": "You can call on your deity to intervene on your behalf. As an action, describe the assistance you seek, and roll percentile dice."
     },
     "cleric-channel-divinity-3": {
-      "name": "Channel Divinity (3/Rest)",
-      "description": "You can use Channel Divinity three times between rests."
+      "name": "Channel Divinity (3 Uses)",
+      "description": "From level 6 you have three Channel Divinity uses. You regain one on a Short Rest and all on a Long Rest."
     },
     "cleric-greater-divine-intervention": {
       "name": "Greater Divine Intervention",
       "description": "Your Divine Intervention now always succeeds. Once you use it, you can't use it again until 2d4 days have passed."
+    },
+    "cleric-channel-divinity-4": {
+      "name": "Channel Divinity (4 Uses)",
+      "description": "From level 18 you have four Channel Divinity uses. You regain one on a Short Rest and all on a Long Rest."
+    },
+    "cleric-improved-blessed-strikes": {
+      "name": "Improved Blessed Strikes",
+      "description": "Your Blessed Strikes option improves: Divine Strike damage becomes 2d8, or Potent Spellcasting lets cantrips grant temporary hit points equal to twice your Wisdom modifier."
     },
     "lifedomain-domain-spells": {
       "name": "Life Domain Spells",
@@ -1242,6 +1398,10 @@
     "lifedomain-blessed-healer": {
       "name": "Blessed Healer",
       "description": "The healing spells you cast on others heal you as well. When you cast a spell with a spell slot of 1st level or higher that restores Hit Points to a creature other than you, you regain Hit Points equal to 2 + the spell's level."
+    },
+    "lifedomain-supreme-healing": {
+      "name": "Supreme Healing",
+      "description": "When you restore hit points with a spell or Channel Divinity, you do not roll the dice; you use the maximum number instead."
     },
     "lightdomain-domain-spells": {
       "name": "Light Domain Spells",
@@ -1263,6 +1423,10 @@
       "name": "Improved Warding Flare",
       "description": "You can also use your Warding Flare when a creature that you can see within 30 feet of you attacks a target other than you."
     },
+    "lightdomain-corona-of-light": {
+      "name": "Corona of Light",
+      "description": "Use Channel Divinity to emit a 60-foot aura of sunlight for a minute; enemies in it have Disadvantage on saves against Fire and Radiant spells."
+    },
     "trickerydomain-domain-spells": {
       "name": "Trickery Domain Spells",
       "description": "Your domain connection lets you always have certain spells prepared. These spells don't count against the number of spells you can prepare each day: Charm Person, Disguise Self (L1); Mirror Image, Pass Without Trace (L3); Blink, Dispel Magic (L5); Dimension Door, Polymorph (L7); Dominate Person, Modify Memory (L9)."
@@ -1278,6 +1442,10 @@
     "trickerydomain-tricksters-transposition": {
       "name": "Trickster's Transposition",
       "description": "Whenever you create your illusory duplicate, you can swap places with it once on each of your turns as a Bonus Action."
+    },
+    "trickerydomain-improved-duplicity": {
+      "name": "Improved Duplicity",
+      "description": "Invoke Duplicity can create up to four duplicates, which you can move as a Bonus Action and use to gain Advantage on attacks against creatures near them."
     },
     "wardomain-domain-spells": {
       "name": "War Domain Spells",
@@ -1295,9 +1463,21 @@
       "name": "War God's Blessing",
       "description": "You can use your Reaction to expend one use of your Channel Divinity and give an attack roll made by a creature within 30 feet of you a +10 bonus. You make this choice after you see the roll but before the DM says whether it hits or misses."
     },
+    "wardomain-avatar-of-battle": {
+      "name": "Avatar of Battle",
+      "description": "You have Resistance to Bludgeoning, Piercing, and Slashing damage."
+    },
     "druid-primal-order-magician": {
       "name": "Primal Order: Magician",
       "description": "You know one extra Druid cantrip. In addition, your mystical connection to nature gives you a bonus to Intelligence (Arcana) checks equal to your Wisdom modifier."
+    },
+    "druid-druidic": {
+      "name": "Druidic",
+      "description": "You know the secret druidic code language and can hide messages in it; you always have Speak with Animals prepared."
+    },
+    "druid-epic-boon": {
+      "name": "Epic Boon",
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify."
     },
     "druid-primal-order-warden": {
       "name": "Primal Order: Warden",
@@ -1375,6 +1555,10 @@
       "name": "Circle Forms",
       "description": "You can use Wild Shape to transform into a Beast with a CR equal to one-third your Druid level (rounded down, minimum CR 1). Beasts with a Swim or Fly speed are available starting at level 3."
     },
+    "circlemoon-moonlight-step": {
+      "name": "Moonlight Step",
+      "description": "As a Bonus Action you teleport up to 30 feet and gain Advantage on your next attack before the end of the turn. You can do this a number of times equal to your proficiency bonus per Long Rest."
+    },
     "circlemoon-improved-wild-shape": {
       "name": "Improved Wild Shape",
       "description": "You can use Wild Shape as a Bonus Action. In addition, you regain 2 expended uses of Wild Shape whenever you finish a Short Rest."
@@ -1418,6 +1602,10 @@
     "monk-martial-arts": {
       "name": "Martial Arts",
       "description": "Your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons."
+    },
+    "monk-deflect-energy": {
+      "name": "Deflect Energy",
+      "description": "You can use Deflect Attacks against attacks that deal any damage type, not just bludgeoning, piercing, or slashing."
     },
     "monk-unarmored-defense": {
       "name": "Unarmored Defense",
@@ -1635,6 +1823,14 @@
       "name": "Primal Companion",
       "description": "You magically summon a primal beast — a Beast of the Land, Sea, or Sky — by expending one spell slot. The beast obeys your commands and uses your Proficiency Bonus in place of its own. Its stat block scales with your Ranger level. On each of your turns, you can command the beast to take an action as a Bonus Action. If the beast is slain, you can resummon it by expending a spell slot."
     },
+    "beastmaster-bestial-fury": {
+      "name": "Bestial Fury",
+      "description": "Your companion's attacks are empowered: once per turn it adds extra Force damage on a hit, and its attacks can benefit from your Hunter's Mark."
+    },
+    "beastmaster-share-spells": {
+      "name": "Share Spells",
+      "description": "When you cast a spell targeting only yourself, your companion also gains its effect if it is close enough."
+    },
     "beastmaster-exceptional-training": {
       "name": "Exceptional Training",
       "description": "Your primal companion's capabilities improve. When you use Hunter's Mark on a creature, your companion can also mark the same creature without expending a use of Hunter's Mark. In addition, when you command your companion to take an action, it can also take any combat action as a Bonus Action on the same turn."
@@ -1642,6 +1838,14 @@
     "feywanderer-dreadful-strikes": {
       "name": "Dreadful Strikes",
       "description": "You can augment your weapon strikes with mind-scarring magic drawn from the murky Feywild. When you hit a creature with a weapon, you can deal an extra 1d4 Psychic damage to the target, which can take this extra damage only once per turn."
+    },
+    "feywanderer-fey-reinforcements": {
+      "name": "Fey Reinforcements",
+      "description": "You can cast Summon Fey once per Long Rest without a slot or material components, and the Dreadful Strikes die increases to a d6."
+    },
+    "feywanderer-misty-wanderer": {
+      "name": "Misty Wanderer",
+      "description": "You can cast Misty Step without a slot a number of times equal to your Wisdom modifier per Long Rest, bringing along a nearby willing ally."
     },
     "feywanderer-otherworldly-glamour": {
       "name": "Otherworldly Glamour",
@@ -1655,6 +1859,14 @@
       "name": "Dread Ambusher",
       "description": "On the first turn of each combat, you gain two benefits: your walking speed increases by 10 feet, and if you make an attack with a weapon as part of the Attack action, you can make one additional attack as part of that action. That extra attack deals 1d8 extra damage of the weapon's type on a hit. You also add your Wisdom modifier to your initiative rolls."
     },
+    "gloomstalker-stalkers-flurry": {
+      "name": "Stalker's Flurry",
+      "description": "Once per turn, when you miss with a weapon attack, you can make another weapon attack as part of the same action."
+    },
+    "gloomstalker-shadowy-dodge": {
+      "name": "Shadowy Dodge",
+      "description": "As a Reaction when attacked without Advantage, impose Disadvantage on the attack and teleport a short distance."
+    },
     "gloomstalker-umbral-sight": {
       "name": "Umbral Sight",
       "description": "You gain Darkvision to a range of 60 feet. If you already have Darkvision, its range increases by 30 feet. You are also naturally adept at hiding from creatures that rely on Darkvision — you are invisible to creatures with Darkvision when they try to detect you using that sense."
@@ -1666,6 +1878,14 @@
     "hunter-hunters-lore": {
       "name": "Hunter's Lore",
       "description": "When you use Hunter's Mark on a creature, you immediately learn whether the creature has any damage Immunities or Resistances and what they are."
+    },
+    "hunter-superior-hunters-prey": {
+      "name": "Superior Hunter's Prey",
+      "description": "Once per turn, damage from your Hunter's Mark can also be applied to a second creature near the marked target."
+    },
+    "hunter-superior-hunters-defense": {
+      "name": "Superior Hunter's Defense",
+      "description": "As a Reaction when you take damage, gain Resistance to that damage type until the end of the turn."
     },
     "hunter-hunters-prey": {
       "name": "Hunter's Prey",
@@ -1694,6 +1914,18 @@
     "ranger-favored-enemy": {
       "name": "Favored Enemy",
       "description": "You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them."
+    },
+    "ranger-precise-hunter": {
+      "name": "Precise Hunter",
+      "description": "You have Advantage on attack rolls against the creature currently marked by your Hunter's Mark."
+    },
+    "ranger-feral-senses": {
+      "name": "Feral Senses",
+      "description": "You gain Blindsight out to 30 feet, letting you perceive creatures without relying on sight."
+    },
+    "ranger-foe-slayer": {
+      "name": "Foe Slayer",
+      "description": "Your Hunter's Mark damage die becomes a d10 instead of a d6."
     },
     "ranger-weapon-mastery": {
       "name": "Weapon Mastery",
@@ -1742,6 +1974,10 @@
     "sorcerer-innate-sorcery": {
       "name": "Innate Sorcery",
       "description": "An event in your past, or in the past of a parent or ancestor, left an indelible mark on you, infusing you with a mote of magic. This unpredictable magic is a sorcery that is part of you."
+    },
+    "sorcerer-epic-boon": {
+      "name": "Epic Boon",
+      "description": "At this level you pick an Epic Boon feat (or another feat you qualify for)."
     },
     "sorcerer-font-of-magic": {
       "name": "Font of Magic",
@@ -1811,6 +2047,102 @@
       "name": "Eldritch Invocations",
       "description": "In your study of occult lore, you have unearthed Eldritch Invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability."
     },
+    "warlock-pact-magic": {
+      "name": "Pact Magic",
+      "description": "Your spell slots come from a small pool that all share one level and refill on a Short or Long Rest."
+    },
+    "warlock-contact-patron": {
+      "name": "Contact Patron",
+      "description": "You can reach out to your patron with Contact Other Plane, without a slot or components, once per Long Rest and with no risk from the save."
+    },
+    "warlock-epic-boon": {
+      "name": "Epic Boon",
+      "description": "At this level you pick an Epic Boon feat (or another feat you qualify for)."
+    },
+    "warlock-invocation-agonizing-blast": {
+      "name": "Agonizing Blast",
+      "description": "Add your Charisma modifier to the damage of a chosen Warlock cantrip."
+    },
+    "warlock-invocation-armor-of-shadows": {
+      "name": "Armor of Shadows",
+      "description": "You can cast Mage Armor on yourself at will without a slot or material components."
+    },
+    "warlock-invocation-ascendant-step": {
+      "name": "Ascendant Step",
+      "description": "You can cast Levitate on yourself at will without a slot or material components."
+    },
+    "warlock-invocation-devils-sight": {
+      "name": "Devil’s Sight",
+      "description": "You can see normally in darkness, magical or not, out to 120 feet."
+    },
+    "warlock-invocation-devouring-blade": {
+      "name": "Devouring Blade",
+      "description": "Your pact weapon attacks give you an extra attack when you take the Attack action."
+    },
+    "warlock-invocation-eldritch-mind": {
+      "name": "Eldritch Mind",
+      "description": "You have Advantage on Constitution saves made to maintain Concentration."
+    },
+    "warlock-invocation-eldritch-smite": {
+      "name": "Eldritch Smite",
+      "description": "Once per turn when you hit with your pact weapon, expend a Pact slot to deal extra Force damage and knock a target prone."
+    },
+    "warlock-invocation-fiendish-vigor": {
+      "name": "Fiendish Vigor",
+      "description": "You can cast False Life on yourself at its lowest level without a slot or material components."
+    },
+    "warlock-invocation-gaze-of-two-minds": {
+      "name": "Gaze of Two Minds",
+      "description": "You can touch a willing creature and perceive through its senses until the end of your next turn."
+    },
+    "warlock-invocation-lessons-of-the-first-ones": {
+      "name": "Lessons of the First Ones",
+      "description": "You gain an Origin feat of your choice."
+    },
+    "warlock-invocation-lifedrinker": {
+      "name": "Lifedrinker",
+      "description": "Your pact weapon deals extra Necrotic, Psychic, or Radiant damage equal to your Charisma modifier."
+    },
+    "warlock-invocation-mask-of-many-faces": {
+      "name": "Mask of Many Faces",
+      "description": "You can cast Disguise Self at will without a slot."
+    },
+    "warlock-invocation-master-of-myriad-forms": {
+      "name": "Master of Myriad Forms",
+      "description": "You can cast Alter Self at will without a slot."
+    },
+    "warlock-invocation-misty-visions": {
+      "name": "Misty Visions",
+      "description": "You can cast Silent Image at will without a slot or components."
+    },
+    "warlock-invocation-one-with-shadows": {
+      "name": "One with Shadows",
+      "description": "While in dim light or darkness you can turn Invisible until you move or take an action or Reaction."
+    },
+    "warlock-invocation-otherworldly-leap": {
+      "name": "Otherworldly Leap",
+      "description": "You can cast Jump on yourself at will without a slot or material components."
+    },
+    "warlock-invocation-repelling-blast": {
+      "name": "Repelling Blast",
+      "description": "When you hit a creature with a chosen Warlock cantrip attack, you can push it 10 feet away."
+    },
+    "warlock-invocation-thirsting-blade": {
+      "name": "Thirsting Blade",
+      "description": "You can make two attacks with your pact weapon when you take the Attack action."
+    },
+    "warlock-invocation-visions-of-distant-realms": {
+      "name": "Visions of Distant Realms",
+      "description": "You can cast Arcane Eye at will without a slot."
+    },
+    "warlock-invocation-whispers-of-the-grave": {
+      "name": "Whispers of the Grave",
+      "description": "You can cast Speak with Dead at will without a slot."
+    },
+    "warlock-invocation-witch-sight": {
+      "name": "Witch Sight",
+      "description": "You can see the true form of shapechangers and creatures hidden by illusion within 30 feet."
+    },
     "warlock-magical-cunning": {
       "name": "Magical Cunning",
       "description": "You can perform an esoteric rite for 1 minute. At the end of it, you regain expended Pact Magic spell slots up to half of their maximum number (round up)."
@@ -1858,6 +2190,14 @@
     "wizard-arcane-recovery": {
       "name": "Arcane Recovery",
       "description": "You have learned to regain some of your magical energy by studying your spellbook. Once per day when you finish a short rest, you can choose expended spell slots to recover."
+    },
+    "wizard-ritual-adept": {
+      "name": "Ritual Adept",
+      "description": "You can cast any spell in your spellbook as a ritual if it has the Ritual tag, without preparing it."
+    },
+    "wizard-epic-boon": {
+      "name": "Epic Boon",
+      "description": "At this level you pick an Epic Boon feat (or another feat you qualify for)."
     },
     "wizard-scholar": {
       "name": "Scholar",
@@ -1955,10 +2295,6 @@
       "name": "Illusory Reality",
       "description": "When you cast an Illusion spell of level 1 or higher, you can choose one inanimate, nonmagical object that is part of the illusion and make that object real. You can do this on your turn as a Bonus Action while the spell persists. The object remains real for 1 minute; it can't deal damage or otherwise directly harm anyone."
     },
-    "cleric-improved-blessed-strikes": {
-      "name": "Improved Blessed Strikes",
-      "description": "Your Blessed Strikes option grows stronger: Divine Strike deals 2d8 extra damage, or Potent Spellcasting also grants you or a creature within 60 feet Temporary Hit Points equal to twice your Wisdom modifier when you deal cantrip damage."
-    },
     "fighter-extra-attack-2": {
       "name": "Two Extra Attacks",
       "description": "You can attack three times, instead of once, whenever you take the Attack action on your turn."
@@ -1983,50 +2319,6 @@
       "name": "Three Extra Attacks",
       "description": "You can attack four times, instead of once, whenever you take the Attack action on your turn."
     },
-    "rogue-reliable-talent": {
-      "name": "Reliable Talent",
-      "description": "Whenever you make an ability check that uses one of your skill or tool proficiencies, you can treat a d20 roll of 9 or lower as a 10."
-    },
-    "rogue-devious-strikes": {
-      "name": "Devious Strikes",
-      "description": "Your Cunning Strike gains new options: Daze, Knock Out and Obscure."
-    },
-    "rogue-slippery-mind": {
-      "name": "Slippery Mind",
-      "description": "You gain proficiency in Wisdom and Charisma saving throws."
-    },
-    "rogue-elusive": {
-      "name": "Elusive",
-      "description": "No attack roll can have Advantage against you unless you have the Incapacitated condition."
-    },
-    "rogue-stroke-of-luck": {
-      "name": "Stroke of Luck",
-      "description": "If you fail a D20 Test, you can turn the roll into a 20. Once you use this feature, you can't use it again until you finish a short or long rest."
-    },
-    "arcanetrickster-versatile-trickster": {
-      "name": "Versatile Trickster",
-      "description": "When you use the Trip option of Cunning Strike, you can also target a creature within 5 feet of your Mage Hand with that option."
-    },
-    "arcanetrickster-spell-thief": {
-      "name": "Spell Thief",
-      "description": "When a creature casts a spell that targets you or includes you in its area, you can use your Reaction to force a save; on a failure you negate the spell's effect on you and steal knowledge of it for 8 hours. Once per long rest."
-    },
-    "assassin-envenom-weapons": {
-      "name": "Envenom Weapons",
-      "description": "When you use the Poison option of Cunning Strike, the target also takes 2d6 Poison damage whenever it fails the save, and this damage ignores Poison resistance."
-    },
-    "assassin-death-strike": {
-      "name": "Death Strike",
-      "description": "When you hit a creature with Sneak Attack on the first round of combat, it must succeed on a Constitution save or the attack's damage is doubled."
-    },
-    "beastmaster-bestial-fury": {
-      "name": "Bestial Fury",
-      "description": "When you command your Primal Companion to take the Beast's Strike action, it can use it twice, and the first time each turn it hits your Hunter's Mark target it deals extra Force damage."
-    },
-    "beastmaster-share-spells": {
-      "name": "Share Spells",
-      "description": "When you cast a spell targeting yourself, you can also affect your Primal Companion if it is within 30 feet of you."
-    },
     "circleland-natures-sanctuary": {
       "name": "Nature's Sanctuary",
       "description": "As a Magic action you can expend a Wild Shape use to create a 15-foot spectral grove for 1 minute; you and allies inside have Half Cover and resistance to your current land's damage type."
@@ -2042,78 +2334,6 @@
     "circlestars-full-of-stars": {
       "name": "Full of Stars",
       "description": "While in your Starry Form, you have resistance to Bludgeoning, Piercing and Slashing damage."
-    },
-    "collegedance-tandem-footwork": {
-      "name": "Tandem Footwork",
-      "description": "When you roll Initiative, you can expend a Bardic Inspiration die to give yourself and allies within 30 feet a bonus to Initiative equal to the roll."
-    },
-    "collegeglamour-unbreakable-majesty": {
-      "name": "Unbreakable Majesty",
-      "description": "As a Bonus Action you assume a majestic presence for 1 minute; the first time each turn a creature hits you, it must succeed on a Charisma save or the attack misses."
-    },
-    "collegelore-peerless-skill": {
-      "name": "Peerless Skill",
-      "description": "When you make an ability check or attack roll and fail, you can expend a Bardic Inspiration die and add the roll; if you still fail, the die is not expended."
-    },
-    "collegevalor-battle-magic": {
-      "name": "Battle Magic",
-      "description": "After you cast a spell with a casting time of an action, you can make one weapon attack as a Bonus Action."
-    },
-    "feywanderer-fey-reinforcements": {
-      "name": "Fey Reinforcements",
-      "description": "You always have Summon Fey prepared and can cast it once per long rest without a slot or Concentration."
-    },
-    "feywanderer-misty-wanderer": {
-      "name": "Misty Wanderer",
-      "description": "You can cast Misty Step without a slot a number of times equal to your Wisdom modifier per long rest, and bring a willing creature within 5 feet along."
-    },
-    "gloomstalker-stalkers-flurry": {
-      "name": "Stalker's Flurry",
-      "description": "Your Dread Ambusher strikes gain new options: Sudden Strike (an extra attack against another creature within 5 feet) or Mass Fear (frighten creatures near the target)."
-    },
-    "gloomstalker-shadowy-dodge": {
-      "name": "Shadowy Dodge",
-      "description": "When a creature makes an attack roll against you, you can use your Reaction to impose Disadvantage on it, then teleport up to 30 feet to an unoccupied space you can see."
-    },
-    "hunter-superior-hunters-prey": {
-      "name": "Superior Hunter's Prey",
-      "description": "Once per turn, when you deal damage to your Hunter's Mark target, you can deal that spell's extra damage to a different creature within 30 feet of it."
-    },
-    "hunter-superior-hunters-defense": {
-      "name": "Superior Hunter's Defense",
-      "description": "When you take damage, you can use your Reaction to gain resistance to that damage and any other damage of the same type until the end of the current turn."
-    },
-    "lifedomain-supreme-healing": {
-      "name": "Supreme Healing",
-      "description": "When you would roll dice to restore Hit Points with a spell or Channel Divinity, use the highest number possible for each die instead."
-    },
-    "lightdomain-corona-of-light": {
-      "name": "Corona of Light",
-      "description": "As a Magic action you emit sunlight for 1 minute; enemies in the bright light have Disadvantage on saves against your Radiant Flare and spells that deal Fire or Radiant damage."
-    },
-    "soulknife-psychic-veil": {
-      "name": "Psychic Veil",
-      "description": "As a Magic action you become Invisible for 1 hour, ending early if you deal damage or force a save. Once per long rest, or by expending a Psionic Energy die."
-    },
-    "soulknife-rend-mind": {
-      "name": "Rend Mind",
-      "description": "When you deal Sneak Attack damage with your Psychic Blades, you can force the target to make a Wisdom save or be Stunned for 1 minute. Once per long rest, or by expending Psionic Energy dice."
-    },
-    "thief-use-magic-device": {
-      "name": "Use Magic Device",
-      "description": "You can attune to up to four magic items, use charges with a chance to not expend them, and use any Spell Scroll by making an Intelligence (Arcana) check."
-    },
-    "thief-thiefs-reflexes": {
-      "name": "Thief's Reflexes",
-      "description": "You can take two turns during the first round of any combat: your first at your normal Initiative and your second at your Initiative minus 10."
-    },
-    "trickerydomain-improved-duplicity": {
-      "name": "Improved Duplicity",
-      "description": "Your Invoke Duplicity illusion improves: you and allies have Advantage on attacks against creatures near it, and when it ends an ally within 5 feet can regain Hit Points."
-    },
-    "wardomain-avatar-of-battle": {
-      "name": "Avatar of Battle",
-      "description": "You gain resistance to Bludgeoning, Piercing and Slashing damage."
     },
     "warriorofelements-stride-of-the-elements": {
       "name": "Stride of the Elements",
@@ -2146,26 +2366,6 @@
     "warrioropenhand-quivering-palm": {
       "name": "Quivering Palm",
       "description": "When you hit with an Unarmed Strike you can spend 4 Focus Points to set lethal vibrations in the target; later you can end them to force a Constitution save that deals 10d12 Force damage, or half on a success."
-    },
-    "wildheart-animal-speaker": {
-      "name": "Animal Speaker",
-      "description": "You can cast Beast Sense and Speak with Animals as Rituals, using Wisdom as your spellcasting ability for them."
-    },
-    "wildheart-nature-speaker": {
-      "name": "Nature Speaker",
-      "description": "You can cast Commune with Nature as a Ritual, using Wisdom as your spellcasting ability for it."
-    },
-    "wildheart-power-of-the-wilds": {
-      "name": "Power of the Wilds",
-      "description": "Whenever you activate your Rage, you gain one of these options until it ends: Falcon (Fly Speed), Lion (enemies near you have Disadvantage against others), or Ram (knock Large or smaller creatures Prone on a hit)."
-    },
-    "worldtree-travel-along-the-tree": {
-      "name": "Travel Along the Tree",
-      "description": "When you activate your Rage, and as a Bonus Action while raging, you can teleport up to 60 feet; once per Rage you can extend this to 150 feet and bring up to six willing creatures along."
-    },
-    "zealot-rage-of-the-gods": {
-      "name": "Rage of the Gods",
-      "description": "When you activate your Rage you can assume a divine form for 1 minute: you gain a Fly Speed, resistance to Necrotic, Psychic and Radiant damage, and can spend a Rage use to save a creature from dropping to 0 Hit Points. Once per long rest."
     }
   },
   "subclasses": {
@@ -4307,6 +4507,194 @@
       "name": "Polymorph",
       "description": "This spell transforms a creature that you can see within range into a new form. An unwilling creature must make a Wisdom saving throw to avoid the effect. The spell has no effect on a shapechanger or a creature with 0 Hit Points. The transformation lasts for the duration, or until the target drops to 0 Hit Points or dies."
     },
+    "aura-of-purity": {
+      "name": "Aura of Purity",
+      "description": "A protective aura surrounds you and your allies nearby, granting resistance to Poison damage and advantage on saves against several conditions such as Blinded, Charmed, Deafened, Frightened, Paralyzed, and Stunned, while also ending a poisoned condition at the start of each of their turns."
+    },
+    "control-water": {
+      "name": "Control Water",
+      "description": "You bend a body of water in range to your will. You can flood an area, part the water to open a trench, redirect its flow, or whip it into a whirlpool that drags creatures around and damages them."
+    },
+    "divination": {
+      "name": "Divination",
+      "description": "You contact a god or a divine servant and ask one question about a goal, event, or activity planned within the next 7 days. The DM gives a truthful reply, which may be a short phrase, a cryptic rhyme, or an omen."
+    },
+    "conjure-minor-elementals": {
+      "name": "Conjure Minor Elementals",
+      "description": "You call forth spectral elemental spirits that fill the air around you. Creatures in the area take extra damage whenever they are hit by your attacks, and the spirits harry anyone who moves through them."
+    },
+    "conjure-woodland-beings": {
+      "name": "Conjure Woodland Beings",
+      "description": "Fey spirits swirl around you in a protective emanation. Enemies that enter or start their turn there are struck by wild fey magic, taking radiant damage unless they succeed on a Wisdom save."
+    },
+    "fabricate": {
+      "name": "Fabricate",
+      "description": "You convert raw materials into finished goods of the same material. Wood becomes a bridge, flax becomes rope, and stone becomes a statue, within limits on volume and complexity."
+    },
+    "find-greater-steed": {
+      "name": "Find Greater Steed",
+      "description": "You summon a mighty otherworldly mount, such as a griffon or pegasus, that serves as a loyal companion. It shares your spells that target only you and returns to its home when it drops to 0 Hit Points."
+    },
+    "fount-of-moonlight": {
+      "name": "Fount of Moonlight",
+      "description": "You glow with a cool lunar radiance, shedding bright light around you. Your melee strikes deal extra radiant damage, and attackers who hit you are dazzled and blinded unless they resist."
+    },
+    "giant-insect": {
+      "name": "Giant Insect",
+      "description": "You summon a gigantic spider, centipede, or wasp, a spirit that fights beside you. It attacks on your command using a bonus action and carries out a ranged or melee strike depending on its form."
+    },
+    "grasping-vine": {
+      "name": "Grasping Vine",
+      "description": "A creeping vine erupts from the ground and seizes a creature, dragging it toward the vine. You can redirect the vine each turn with a bonus action to snare another target."
+    },
+    "hallucinatory-terrain": {
+      "name": "Hallucinatory Terrain",
+      "description": "You make natural terrain in a large area look, sound, and smell like a different natural terrain. Physical interaction reveals the illusion, and a careful investigation can see through it."
+    },
+    "leomunds-secret-chest": {
+      "name": "Leomund's Secret Chest",
+      "description": "You hide a chest and its contents on the Ethereal Plane, leaving only a tiny replica behind. While you hold the replica you can summon the chest back or send it away again."
+    },
+    "locate-creature": {
+      "name": "Locate Creature",
+      "description": "You sense the direction to a specific creature or creature type you know within a long distance. Running water or a barrier of lead blocks the search."
+    },
+    "mordenkainens-faithful-hound": {
+      "name": "Mordenkainen's Faithful Hound",
+      "description": "You conjure a spectral guard dog that watches over an area. It barks to warn you of intruders and bites hostile creatures that come near, and only you can see it."
+    },
+    "mordenkainens-private-sanctum": {
+      "name": "Mordenkainen's Private Sanctum",
+      "description": "You seal a room or structure against prying and intrusion. You choose protections such as blocked sight, silenced sound, sensor blocking, and barriers against teleportation or planar travel."
+    },
+    "otilukes-resilient-sphere": {
+      "name": "Otiluke's Resilient Sphere",
+      "description": "A shimmering sphere of force encloses a creature or object, shielding it from harm and keeping it trapped. The sphere can be rolled along the ground, carrying its occupant with it."
+    },
+    "phantasmal-killer": {
+      "name": "Phantasmal Killer",
+      "description": "You pull a creature's deepest fear from its mind and manifest it as a terror only that creature sees. It is frightened and suffers psychic damage each turn until it breaks free of the illusion."
+    },
+    "sickening-radiance": {
+      "name": "Sickening Radiance",
+      "description": "Dim green light fills an area, dealing radiant damage to creatures within it and sapping their strength with levels of exhaustion. The light also stops creatures within it from being invisible."
+    },
+    "staggering-smite": {
+      "name": "Staggering Smite",
+      "description": "Your next weapon hit channels psychic force into the target, dealing extra psychic damage and leaving it reeling, with disadvantage on attacks and ability checks until the end of its next turn unless it succeeds on a Wisdom save."
+    },
+    "stone-shape": {
+      "name": "Stone Shape",
+      "description": "You reshape a piece of stone into any form that suits you, such as a weapon, a door, or an idol, with only simple details possible."
+    },
+    "summon-elemental": {
+      "name": "Summon Elemental",
+      "description": "You call forth an elemental spirit that appears as an air, earth, fire, or water elemental. It fights alongside you and obeys your commands, with its form and damage type matching the element chosen."
+    },
+    "summon-greater-demon": {
+      "name": "Summon Greater Demon",
+      "description": "You summon a fiendish demon that appears hostile to everyone unless you keep control of it. If it breaks free, it can turn on you, so maintain your focus and command it carefully."
+    },
+    "vitriolic-sphere": {
+      "name": "Vitriolic Sphere",
+      "description": "You hurl a glowing ball of acid that explodes in a large burst, dealing heavy acid damage on impact and leaving lingering acid damage at the end of the next turn."
+    },
+    "antilife-shell": {
+      "name": "Antilife Shell",
+      "description": "A shimmering barrier around you keeps out most living creatures. Creatures other than Constructs and Undead cannot willingly pass into it, though they can still use ranged attacks and spells against those inside."
+    },
+    "awaken": {
+      "name": "Awaken",
+      "description": "After a long ritual you grant a beast or plant sapience, giving it Intelligence and the ability to speak. The awakened creature is charmed by you for a while and may become a loyal friend."
+    },
+    "banishing-smite": {
+      "name": "Banishing Smite",
+      "description": "Your next weapon hit deals extra force damage and, if the target is left badly hurt, banishes it to another plane. Extraplanar creatures are removed for good."
+    },
+    "bigbys-hand": {
+      "name": "Bigby's Hand",
+      "description": "You conjure a giant spectral hand that obeys your commands. You can use it to punch, shove, grapple, or shield, making it a flexible tool for both offense and defense."
+    },
+    "circle-of-power": {
+      "name": "Circle of Power",
+      "description": "Divine energy radiates around you, granting you and your allies advantage on saves against spells and magical effects, and halving damage from effects that would normally deal half on a successful save."
+    },
+    "cloudkill": {
+      "name": "Cloudkill",
+      "description": "A sickly green fog fills a wide sphere, poisoning anyone who ends their turn in it or enters it. The cloud drifts away from you each round and sinks to the ground."
+    },
+    "conjure-elemental": {
+      "name": "Conjure Elemental",
+      "description": "You call forth a powerful elemental spirit that fights for you. If your concentration slips, the elemental may turn hostile and attack you."
+    },
+    "conjure-volley": {
+      "name": "Conjure Volley",
+      "description": "You fire or throw a piece of ammunition or a weapon into the air and it multiplies into a rain of projectiles that pummels creatures in a wide area."
+    },
+    "contact-other-plane": {
+      "name": "Contact Other Plane",
+      "description": "You mentally reach out to an otherworldly entity and ask it up to five questions. You gain truthful answers but risk psychic damage and a temporary mental breakdown if you fail a save."
+    },
+    "contagion": {
+      "name": "Contagion",
+      "description": "A touch infects a creature with a magical disease. Over several failed saves the target can become poisoned, blinded, slowed, or weakened by one of several named maladies."
+    },
+    "creation": {
+      "name": "Creation",
+      "description": "You pull wisps of shadow from the Shadowfell to craft a nonliving object of vegetable or mineral matter. The object lasts for a time based on its material before it fades away."
+    },
+    "dispel-evil-and-good": {
+      "name": "Dispel Evil and Good",
+      "description": "Holy energy surrounds you, protecting you from aberrations, celestials, elementals, fey, fiends, and undead. You can also use it to break enchantments or banish an extraplanar creature."
+    },
+    "dream": {
+      "name": "Dream",
+      "description": "You shape a dream for a sleeping creature, either delivering a message or sending a nightmare that deals psychic damage and robs it of rest."
+    },
+    "hallow": {
+      "name": "Hallow",
+      "description": "You consecrate a large area against a type of creature, keeping them out and bestowing an additional effect of your choice, such as warding against fear or granting a bonus to the area's inhabitants."
+    },
+    "holy-weapon": {
+      "name": "Holy Weapon",
+      "description": "You imbue a weapon with holy power so that its hits deal extra radiant damage and it sheds light. You can end the spell early to unleash a blast of radiance."
+    },
+    "jallarzis-storm-of-radiance": {
+      "name": "Jallarzi's Storm of Radiance",
+      "description": "A swirling storm of radiant and thunder energy fills an area, dealing damage to creatures inside and blinding or deafening them. You can move the storm each turn to follow your enemies."
+    },
+    "passwall": {
+      "name": "Passwall",
+      "description": "You open a passage through a wooden, plaster, or stone surface, creating a temporary tunnel that you and others can walk through."
+    },
+    "planar-binding": {
+      "name": "Planar Binding",
+      "description": "You bind a celestial, elemental, fey, or fiend to your service for a long time. If the target resists, it must be a creature you have already contained or otherwise confined."
+    },
+    "raise-dead": {
+      "name": "Raise Dead",
+      "description": "You return a recently dead creature to life with 1 Hit Point, but it suffers a lingering penalty to its d20 rolls that fades with rest. The spell cannot restore missing body parts."
+    },
+    "reincarnate": {
+      "name": "Reincarnate",
+      "description": "You touch a dead humanoid and its soul returns in a brand-new body of a random species, granting it a fresh form and the traits that come with it."
+    },
+    "swift-quiver": {
+      "name": "Swift Quiver",
+      "description": "You enchant a quiver to supply you with ammunition and let you make additional ranged attacks each turn as a bonus action."
+    },
+    "synaptic-static": {
+      "name": "Synaptic Static",
+      "description": "You detonate a burst of psychic energy that deals heavy psychic damage and leaves creatures confused, imposing a penalty to their attack rolls, ability checks, and concentration for a short time."
+    },
+    "teleportation-circle": {
+      "name": "Teleportation Circle",
+      "description": "You draw a magic circle that links to a permanent teleportation circle you know. Creatures who step in are instantly transported to the matching destination."
+    },
+    "wrath-of-nature": {
+      "name": "Wrath of Nature",
+      "description": "The plants, rocks, and trees in an area awaken to strike your enemies. Grasping brush, hurled stones, and lashing boughs attack creatures in the area at your command."
+    },
     "insect-plague": {
       "name": "Insect Plague",
       "description": "Swarming, biting locusts fill a 20-foot-radius Sphere centered on a point you choose within range. The Sphere spreads around corners. The Sphere remains for the duration, and its area is Lightly Obscured. The swarm's area is Difficult Terrain. Each creature in the Sphere when it appears and each creature that enters it during a turn or ends its turn there must make a Constitution saving throw, taking 4d10 Piercing damage on a failed save, or half as much on a successful save."
@@ -4450,6 +4838,410 @@
     "sending": {
       "name": "Sending",
       "description": "You send a short message of twenty-five words or fewer to a creature you are familiar with. The target can reply with a message of twenty-five words or fewer."
+    },
+    "arcane-gate": {
+      "name": "Arcane Gate",
+      "description": "You open two linked portals on solid ground you can see. Creatures can step through one and emerge from the other."
+    },
+    "blade-barrier": {
+      "name": "Blade Barrier",
+      "description": "You raise a wall of whirling blades that damages creatures entering or ending their turn in it and provides three-quarters cover."
+    },
+    "bones-of-the-earth": {
+      "name": "Bones of the Earth",
+      "description": "Stone pillars erupt from the ground, damaging nearby creatures and possibly lifting them toward the ceiling, and leave difficult terrain."
+    },
+    "chain-lightning": {
+      "name": "Chain Lightning",
+      "description": "A bolt of lightning strikes a target and then arcs to other creatures nearby, each making a Dexterity save or taking heavy Lightning damage."
+    },
+    "circle-of-death": {
+      "name": "Circle of Death",
+      "description": "A sphere of necrotic energy bursts at a point, dealing heavy Necrotic damage to creatures in it that fail a Constitution save."
+    },
+    "conjure-fey": {
+      "name": "Conjure Fey",
+      "description": "You summon a fey creature that fights for you; if your concentration breaks it may turn hostile."
+    },
+    "contingency": {
+      "name": "Contingency",
+      "description": "You bind a spell of level 5 or lower to a trigger you define; when the trigger occurs, the spell takes effect on you automatically."
+    },
+    "create-undead": {
+      "name": "Create Undead",
+      "description": "You raise corpses as ghouls or other undead that you can command for a time."
+    },
+    "disintegrate": {
+      "name": "Disintegrate",
+      "description": "A thin green ray blasts a target with huge Force damage and reduces a creature killed by it to ash."
+    },
+    "drawmijs-instant-summons": {
+      "name": "Drawmij's Instant Summons",
+      "description": "You mark an item and can later call it into your hand from anywhere on the same plane."
+    },
+    "eyebite": {
+      "name": "Eyebite",
+      "description": "Your gaze can afflict a creature each turn, making it asleep, panicked, or sickened."
+    },
+    "find-the-path": {
+      "name": "Find the Path",
+      "description": "You learn the most direct route to a named location on your plane and know the distance and direction while you travel."
+    },
+    "forbiddance": {
+      "name": "Forbiddance",
+      "description": "You ward an area against teleportation and planar travel, and harm certain creature types that enter it."
+    },
+    "globe-of-invulnerability": {
+      "name": "Globe of Invulnerability",
+      "description": "A shimmering barrier surrounds you and blocks spells of level 5 or lower from affecting anything inside."
+    },
+    "guards-and-wards": {
+      "name": "Guards and Wards",
+      "description": "You protect a large structure with layered magical effects such as fog, locked doors, webs, and confusion."
+    },
+    "harm": {
+      "name": "Harm",
+      "description": "You inflict devastating necrotic damage on a creature that fails a Constitution save and reduce its hit point maximum."
+    },
+    "heal": {
+      "name": "Heal",
+      "description": "You restore a large number of hit points to a creature and end blindness, deafness, and many diseases afflicting it."
+    },
+    "heroes-feast": {
+      "name": "Heroes' Feast",
+      "description": "You conjure a great feast that cures ailments, grants resistance to poison, and boosts the hit points of those who partake."
+    },
+    "magic-jar": {
+      "name": "Magic Jar",
+      "description": "Your spirit enters a container, from which you can possess nearby creatures while your body lies helpless."
+    },
+    "mass-suggestion": {
+      "name": "Mass Suggestion",
+      "description": "You suggest a course of action to several creatures, and those who fail a Wisdom save pursue it."
+    },
+    "move-earth": {
+      "name": "Move Earth",
+      "description": "You reshape earth, sand, or clay in an area, raising, lowering, or moving terrain over time."
+    },
+    "otilukes-freezing-sphere": {
+      "name": "Otiluke's Freezing Sphere",
+      "description": "A frigid globe explodes at a point, dealing heavy Cold damage and freezing water on the surface."
+    },
+    "ottos-irresistible-dance": {
+      "name": "Otto's Irresistible Dance",
+      "description": "A creature is compelled to dance, suffering disadvantage on attacks and saves and giving others advantage against it."
+    },
+    "planar-ally": {
+      "name": "Planar Ally",
+      "description": "You beseech a divine entity to send an otherworldly servant, which helps you in exchange for a negotiated payment."
+    },
+    "programmed-illusion": {
+      "name": "Programmed Illusion",
+      "description": "You craft an illusion with sound and images that activates on a trigger you define."
+    },
+    "summon-fiend": {
+      "name": "Summon Fiend",
+      "description": "You call a fiendish spirit whose form and abilities depend on the type you choose, and it fights beside you."
+    },
+    "sunbeam": {
+      "name": "Sunbeam",
+      "description": "A line of brilliant radiance burns and blinds creatures, and you can repeat it on later turns."
+    },
+    "tashas-bubbling-cauldron": {
+      "name": "Tasha's Bubbling Cauldron",
+      "description": "You conjure a cauldron that brews potions anyone can ladle out for magical effects."
+    },
+    "transport-via-plants": {
+      "name": "Transport via Plants",
+      "description": "You link two large plants on the same plane, letting creatures step through one and exit the other."
+    },
+    "true-seeing": {
+      "name": "True Seeing",
+      "description": "A creature gains the ability to see through darkness, illusions, and invisibility, and perceive the true forms of things."
+    },
+    "wall-of-ice": {
+      "name": "Wall of Ice",
+      "description": "You raise a barrier of ice that blocks sight, can be shattered, and damages those who pass through its cold."
+    },
+    "wall-of-thorns": {
+      "name": "Wall of Thorns",
+      "description": "You grow a dense wall of brambles that hampers movement and damages creatures inside it."
+    },
+    "wind-walk": {
+      "name": "Wind Walk",
+      "description": "You and chosen allies become cloud-like and fly swiftly across great distances."
+    },
+    "word-of-recall": {
+      "name": "Word of Recall",
+      "description": "You and nearby willing creatures teleport instantly to a previously designated sanctuary."
+    },
+    "conjure-celestial": {
+      "name": "Conjure Celestial",
+      "description": "You summon a celestial that either attacks foes or heals allies, depending on the form you choose."
+    },
+    "delayed-blast-fireball": {
+      "name": "Delayed Blast Fireball",
+      "description": "A glowing bead grows in power each round until the spell ends and then explodes in a huge fiery blast."
+    },
+    "divine-word": {
+      "name": "Divine Word",
+      "description": "You utter a holy word that harms, banishes, or kills creatures depending on their remaining hit points."
+    },
+    "draconic-transformation": {
+      "name": "Draconic Transformation",
+      "description": "You take on draconic features with spectral wings and a breath weapon you can unleash."
+    },
+    "dream-of-the-blue-veil": {
+      "name": "Dream of the Blue Veil",
+      "description": "You and willing creatures are transported in a dream to another world, where you stay until the spell ends."
+    },
+    "etherealness": {
+      "name": "Etherealness",
+      "description": "You step into the Ethereal Plane, where you can pass through objects and unseen creatures."
+    },
+    "finger-of-death": {
+      "name": "Finger of Death",
+      "description": "You blast a creature with necrotic energy, and one killed by it rises as a zombie under your control."
+    },
+    "fire-storm": {
+      "name": "Fire Storm",
+      "description": "You call down sheets of flame in a block of cubes, burning creatures that fail a Dexterity save."
+    },
+    "forcecage": {
+      "name": "Forcecage",
+      "description": "You enclose an area in an invisible prison of force, either bars or a solid box, that resists most escapes."
+    },
+    "mirage-arcane": {
+      "name": "Mirage Arcane",
+      "description": "You transform the look, sound, and feel of terrain in a large area, which creatures can touch and enter."
+    },
+    "mordenkainens-magnificent-mansion": {
+      "name": "Mordenkainen's Magnificent Mansion",
+      "description": "You open a door to an extradimensional mansion with food, rooms, and invisible servants."
+    },
+    "mordenkainens-sword": {
+      "name": "Mordenkainen's Sword",
+      "description": "You conjure a spectral sword that attacks creatures you choose with force damage each turn."
+    },
+    "plane-shift": {
+      "name": "Plane Shift",
+      "description": "You and willing allies travel to another plane of existence, or you banish an unwilling creature there with a touch."
+    },
+    "power-word-fortify": {
+      "name": "Power Word Fortify",
+      "description": "You bolster several creatures with a pool of temporary hit points divided among them."
+    },
+    "prismatic-spray": {
+      "name": "Prismatic Spray",
+      "description": "Multicolored rays shoot from your hand in a cone, each creature suffering one random effect."
+    },
+    "project-image": {
+      "name": "Project Image",
+      "description": "You create an illusory double that you can see through, speak through, and cast spells through."
+    },
+    "regenerate": {
+      "name": "Regenerate",
+      "description": "You heal a creature over time and can restore lost body parts."
+    },
+    "resurrection": {
+      "name": "Resurrection",
+      "description": "You return a creature dead for up to a century to life with full hit points, imposing a lingering penalty."
+    },
+    "reverse-gravity": {
+      "name": "Reverse Gravity",
+      "description": "Gravity inverts in a cylinder, causing creatures and objects to fall upward."
+    },
+    "sequester": {
+      "name": "Sequester",
+      "description": "You hide a creature or object from detection and place it in suspended animation."
+    },
+    "simulacrum": {
+      "name": "Simulacrum",
+      "description": "You craft a duplicate of a beast or humanoid from snow and ice that obeys you."
+    },
+    "symbol": {
+      "name": "Symbol",
+      "description": "You inscribe a harmful glyph that triggers when disturbed, unleashing a chosen magical effect."
+    },
+    "teleport": {
+      "name": "Teleport",
+      "description": "You and nearby creatures instantly travel to a destination you know, with accuracy depending on your familiarity."
+    },
+    "temple-of-the-gods": {
+      "name": "Temple of the Gods",
+      "description": "You raise a divine temple that heals allies and hinders your enemies within it."
+    },
+    "whirlwind": {
+      "name": "Whirlwind",
+      "description": "A powerful cyclone damages and flings creatures, and you can move it each turn."
+    },
+    "crown-of-stars": {
+      "name": "Crown of Stars",
+      "description": "Seven stars orbit you, and you can launch them one at a time as ranged attacks."
+    },
+    "abi-dalzims-horrid-wilting": {
+      "name": "Abi-Dalzim's Horrid Wilting",
+      "description": "You drain the moisture from creatures in a cube, dealing heavy Necrotic damage, especially to plants and water creatures."
+    },
+    "animal-shapes": {
+      "name": "Animal Shapes",
+      "description": "You transform willing creatures into beasts of your choice."
+    },
+    "antimagic-field": {
+      "name": "Antimagic Field",
+      "description": "An invisible sphere around you suppresses magic and magical effects within it."
+    },
+    "antipathy-sympathy": {
+      "name": "Antipathy/Sympathy",
+      "description": "You make a target repel or attract creatures of a chosen kind."
+    },
+    "befuddlement": {
+      "name": "Befuddlement",
+      "description": "You blast a creature's mind with psychic energy, reducing its Intelligence and Charisma."
+    },
+    "clone": {
+      "name": "Clone",
+      "description": "You grow an inert duplicate of a creature that its soul can inhabit if the original dies."
+    },
+    "control-weather": {
+      "name": "Control Weather",
+      "description": "You change the weather over a wide area, adjusting precipitation, temperature, and wind."
+    },
+    "dark-star": {
+      "name": "Dark Star",
+      "description": "You create a zone of darkness and gravity that silences, blocks sight, and crushes those inside."
+    },
+    "demiplane": {
+      "name": "Demiplane",
+      "description": "You create a door to an empty extradimensional room that lasts for the duration."
+    },
+    "dominate-monster": {
+      "name": "Dominate Monster",
+      "description": "You try to seize control of a creature, which obeys your telepathic commands if it fails a Wisdom save."
+    },
+    "earthquake": {
+      "name": "Earthquake",
+      "description": "You shake the ground, toppling creatures, opening fissures, and collapsing structures."
+    },
+    "glibness": {
+      "name": "Glibness",
+      "description": "Your words become so persuasive that your Charisma checks are nearly assured of success and magic cannot reveal your lies."
+    },
+    "holy-aura": {
+      "name": "Holy Aura",
+      "description": "Radiant light protects allies, gives saving throw advantage, and blinds fiends and undead who strike them."
+    },
+    "illusory-dragon": {
+      "name": "Illusory Dragon",
+      "description": "You shape a huge illusory dragon that frightens foes and breathes terrifying damaging energy."
+    },
+    "incendiary-cloud": {
+      "name": "Incendiary Cloud",
+      "description": "A swirling cloud of smoke and embers blocks sight and burns those inside."
+    },
+    "maze": {
+      "name": "Maze",
+      "description": "You banish a creature into a labyrinthine demiplane from which it must find its way out."
+    },
+    "mind-blank": {
+      "name": "Mind Blank",
+      "description": "A creature becomes immune to psychic damage, divination, and most mind-reading or charm effects."
+    },
+    "power-word-stun": {
+      "name": "Power Word Stun",
+      "description": "You utter a word that stuns a creature with few hit points remaining."
+    },
+    "sunburst": {
+      "name": "Sunburst",
+      "description": "A brilliant explosion of radiant light damages and blinds creatures in a sphere and dispels darkness."
+    },
+    "telepathy": {
+      "name": "Telepathy",
+      "description": "You create a telepathic link with a willing creature on any plane."
+    },
+    "tsunami": {
+      "name": "Tsunami",
+      "description": "You raise a huge wall of water that crashes forward, drowning and sweeping away creatures."
+    },
+    "astral-projection": {
+      "name": "Astral Projection",
+      "description": "You and willing allies project astral forms into the Astral Plane, leaving your bodies behind."
+    },
+    "blade-of-disaster": {
+      "name": "Blade of Disaster",
+      "description": "You create a rift shaped like a blade that makes powerful attacks against creatures you choose."
+    },
+    "foresight": {
+      "name": "Foresight",
+      "description": "You grant a creature glimpses of the future, giving it advantage on key rolls and making it hard to ambush."
+    },
+    "gate": {
+      "name": "Gate",
+      "description": "You open a portal to another plane and can call a specific creature through it."
+    },
+    "imprisonment": {
+      "name": "Imprisonment",
+      "description": "You confine a creature using one of several magical methods, such as burial, chains, or slumber."
+    },
+    "invulnerability": {
+      "name": "Invulnerability",
+      "description": "You become immune to all damage for the duration."
+    },
+    "mass-heal": {
+      "name": "Mass Heal",
+      "description": "A surge of healing energy restores many hit points distributed among creatures you choose and cures their ailments."
+    },
+    "mass-polymorph": {
+      "name": "Mass Polymorph",
+      "description": "You transform several creatures into beasts, with their new shape replacing their statistics."
+    },
+    "meteor-swarm": {
+      "name": "Meteor Swarm",
+      "description": "Blazing spheres crash down at four points, dealing enormous fire and bludgeoning damage."
+    },
+    "power-word-heal": {
+      "name": "Power Word Heal",
+      "description": "You restore a creature to full hit points and end many conditions affecting it."
+    },
+    "power-word-kill": {
+      "name": "Power Word Kill",
+      "description": "You utter a word that kills a creature outright if it has few hit points, or deals heavy psychic damage otherwise."
+    },
+    "prismatic-wall": {
+      "name": "Prismatic Wall",
+      "description": "You raise a shimmering wall of seven layers, each with a different dangerous effect to those who cross it."
+    },
+    "psychic-scream": {
+      "name": "Psychic Scream",
+      "description": "You unleash a mental shriek at several creatures, dealing psychic damage and stunning those who fail a save."
+    },
+    "shapechange": {
+      "name": "Shapechange",
+      "description": "You assume the form of a creature of limited power and can change forms during the spell."
+    },
+    "storm-of-vengeance": {
+      "name": "Storm of Vengeance",
+      "description": "A churning storm cloud rains destruction, with different effects each round."
+    },
+    "time-stop": {
+      "name": "Time Stop",
+      "description": "You pause time for everyone else, gaining several consecutive turns to act."
+    },
+    "true-polymorph": {
+      "name": "True Polymorph",
+      "description": "You transform a creature into another creature, or an object into a creature or the reverse, potentially permanently."
+    },
+    "true-resurrection": {
+      "name": "True Resurrection",
+      "description": "You restore a dead creature to life, even without a body, with full hit points and no lingering penalties."
+    },
+    "weird": {
+      "name": "Weird",
+      "description": "Creatures in an area face their worst fears, taking psychic damage and becoming frightened."
+    },
+    "wish": {
+      "name": "Wish",
+      "description": "The mightiest of spells lets you duplicate another spell or attempt a greater effect at a price."
     },
     "evards-black-tentacles": {
       "name": "Evard's Black Tentacles",

@@ -32,7 +32,7 @@ describe('getGrantsForLevel', () => {
     const preview = getGrantsForLevel('fighter', 3, 'champion');
     expect(preview.classGrants).toHaveLength(1);
     expect(preview.classGrants[0].type).toBe('subclass');
-    expect(preview.subclassGrants).toHaveLength(1);
+    expect(preview.subclassGrants).toHaveLength(2);
     expect(preview.subclassGrants[0].type).toBe('feature');
   });
 
@@ -52,7 +52,7 @@ describe('getGrantsForLevel', () => {
     expect(preview.classGrants).toHaveLength(0);
     expect(preview.subclassGrants).toHaveLength(2);
     expect(preview.subclassGrants[0].type).toBe('feature');
-    expect(preview.subclassGrants[1].type).toBe('ability-check-bonus');
+    expect(preview.subclassGrants[1].type).toBe('fighting-style-choice');
   });
 
   it('returns empty subclass grants when subclassId belongs to a different class', () => {

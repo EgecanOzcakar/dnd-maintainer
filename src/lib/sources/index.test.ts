@@ -80,8 +80,8 @@ describe('getClassSource', () => {
 
   it('fighter level 1 has correct grant count', () => {
     const source = getClassSource('fighter' as Parameters<typeof getClassSource>[0]);
-    // 1 hit-die + 4 armor + 2 weapon + 2 saving-throw + 1 skill-choice + 1 armor-class + 1 fighting-style-choice + 1 weapon-mastery-choice + 1 feature + 4 bundle-choice = 18
-    expect(source?.levels[0].grants).toHaveLength(18);
+    // 1 hit-die + 4 armor + 2 weapon + 2 saving-throw + 1 skill-choice + 1 armor-class + 1 fighting-style-choice + 1 weapon-mastery-choice + 1 feature + 1 resource-pool (second-wind) + 4 bundle-choice = 19
+    expect(source?.levels[0].grants).toHaveLength(19);
   });
 });
 
@@ -260,7 +260,7 @@ describe('collectBundles', () => {
     expect(subclassBundles).toHaveLength(1);
     const subclassBundle = subclassBundles[0];
     expect(subclassBundle.source.origin === 'subclass' && subclassBundle.source.id).toBe('champion');
-    expect(subclassBundle.grants).toHaveLength(1);
+    expect(subclassBundle.grants).toHaveLength(2);
     const grant = subclassBundle.grants[0];
     expect(grant.type).toBe('feature');
     if (grant.type === 'feature') {

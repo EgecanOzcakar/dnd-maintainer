@@ -64,8 +64,8 @@ describe('getSpellsForList', () => {
   });
 
   it('returns empty array for class with no matching spells', () => {
-    // No level-9 spells in the catalog
-    const result = getSpellsForList('druid', 9);
+    // Paladins never get level-9 spells
+    const result = getSpellsForList('paladin', 9);
     expect(result).toEqual([]);
   });
 });
@@ -204,5 +204,26 @@ describe('level 2 and 3 class spell lists', () => {
 
   it('paladin level 3 includes Daylight and Aura of Vitality', () => {
     expect(ids('paladin', 3)).toEqual(expect.arrayContaining(['daylight', 'aura-of-vitality', 'magic-circle']));
+  });
+});
+
+describe('level 4/5 spell lists', () => {
+  it.each([
+    ['wizard', 4, 'otilukes-resilient-sphere'],
+    ['wizard', 5, 'jallarzis-storm-of-radiance'],
+    ['bard', 4, 'fount-of-moonlight'],
+    ['paladin', 5, 'banishing-smite'],
+    ['ranger', 5, 'wrath-of-nature'],
+  ] as const)('%s level %i includes %s', (cls, lvl, id) => {
+    expect(getSpellsForList(cls, lvl).map((s) => s.id)).toContain(id);
+  });
+});
+
+describe('level 6-9 spells', () => {
+  it('has every level and names each spell', () => {
+    for (const lvl of [6, 7, 8, 9]) expect(SPELL_CATALOG.some((s) => s.level === lvl)).toBe(true);
+    const names = gamedata.spells as Record<string, { name: string }>;
+    expect(SPELL_CATALOG.filter((s) => s.level >= 6).filter((s) => !names[s.id])).toEqual([]);
+    expect(getSpellsForList('wizard', 9).map((s) => s.id)).toContain('wish');
   });
 });

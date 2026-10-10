@@ -89,6 +89,8 @@ export interface Character {
   conditions: ConditionId[];
   /** Daily prepared leveled spells; empty = fall back to known spells. */
   prepared_spells?: string[];
+  /** Player-authored actions (raw JSON; validate with parseHomebrew). */
+  homebrew?: unknown;
   hit_dice_used: Record<string, number> | null;
   /** null = at max HP */
   current_hp?: number | null;

@@ -42,6 +42,10 @@ export interface ResolvedAction {
   readonly offHand?: boolean;
   /** Two-handed damage dice for a Versatile weapon. */
   readonly versatileDice?: DamageDice;
+  /** Homebrew rows: literal display name (instead of an i18n lookup) and the source entry id. */
+  readonly name?: string;
+  readonly homebrewId?: string;
+  readonly usesPerRest?: { readonly max: number; readonly rest: 'short' | 'long' };
 }
 
 export interface ResolvedActions {

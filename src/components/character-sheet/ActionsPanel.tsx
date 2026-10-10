@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dices } from 'lucide-react';
+import { Dices, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { RollPreset } from '@/components/character-sheet/roll-preset';
+import { HomebrewDialog } from '@/components/character-sheet/HomebrewDialog';
+import type { HomebrewAction } from '@/lib/homebrew';
 import { parseDiceFormula } from '@/lib/dice-helpers';
 import { formatSigned } from '@/lib/format';
 import { getItemNameKey } from '@/lib/sources/items';
@@ -42,18 +44,30 @@ interface ActionsPanelProps {
   readonly attacksPerAction: number;
   readonly resolved: ResolvedCharacter;
   readonly onSelectRollPreset?: (preset: RollPreset) => void;
+  /** Custom entries behind the homebrew rows; with `onChangeHomebrew`, enables add/edit/delete. */
+  readonly homebrew?: readonly HomebrewAction[];
+  readonly onChangeHomebrew?: (next: HomebrewAction[]) => void;
 }
 
-export function ActionsPanel({ actions, attacksPerAction, resolved, onSelectRollPreset }: ActionsPanelProps) {
+export function ActionsPanel({
+  actions,
+  attacksPerAction,
+  resolved,
+  onSelectRollPreset,
+  homebrew = [],
+  onChangeHomebrew,
+}: ActionsPanelProps) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
   const [filter, setFilter] = useState<Filter>('all');
+  const [dialog, setDialog] = useState<{ entry?: HomebrewAction } | null>(null);
 
   const poolMax = new Map(resolved.resourcePools.map((p) => [p.poolId, p.max]));
   // Grapple / Shove (Unarmed Strike options): save DC 8 + STR mod + proficiency.
   const unarmedDC = 8 + resolved.abilities.str.modifier + resolved.proficiencyBonus;
 
   const nameOf = (a: ResolvedAction) => {
+    if (a.name) return a.name;
     if (a.kind === 'weapon') return t(getItemNameKey('weapon', a.refId), { defaultValue: a.refId });
     if (a.kind === 'spell') return isSpellId(a.refId) ? t(`spells.${a.refId}.name`) : a.refId;
     // Feat features are named `feat-<id>` and titled under `feats.<id>`.
@@ -183,6 +197,34 @@ export function ActionsPanel({ actions, attacksPerAction, resolved, onSelectRoll
                   {tc('characterSheet.combatView.actions.twoHanded', { dice: a.versatileDice })}
                 </span>
               )}
+              {a.usesPerRest && (
+                <span className="text-muted-foreground">
+                  {tc('homebrew.usesPerRest', {
+                    count: a.usesPerRest.max,
+                    rest: tc(`homebrew.rest.${a.usesPerRest.rest}`),
+                  })}
+                </span>
+              )}
+              {a.homebrewId && onChangeHomebrew && (
+                <span className="flex gap-0.5">
+                  <Button
+                    size="icon-sm"
+                    variant="ghost"
+                    aria-label={tc('homebrew.edit', { name })}
+                    onClick={() => setDialog({ entry: homebrew.find((h) => h.id === a.homebrewId) })}
+                  >
+                    <Pencil className="size-3" />
+                  </Button>
+                  <Button
+                    size="icon-sm"
+                    variant="ghost"
+                    aria-label={tc('homebrew.remove', { name })}
+                    onClick={() => onChangeHomebrew(homebrew.filter((h) => h.id !== a.homebrewId))}
+                  >
+                    <Trash2 className="size-3" />
+                  </Button>
+                </span>
+              )}
               {a.upcast && (
                 <span className="text-muted-foreground">
                   {tc('characterSheet.combatView.actions.upcast', { dice: a.upcast })}
@@ -192,6 +234,27 @@ export function ActionsPanel({ actions, attacksPerAction, resolved, onSelectRoll
           );
         })}
       </ul>
+
+      {onChangeHomebrew && (
+        <Button size="sm" variant="outline" className="mt-3" onClick={() => setDialog({})}>
+          <Plus className="size-3" />
+          {tc('homebrew.addButton')}
+        </Button>
+      )}
+      {dialog && onChangeHomebrew && (
+        <HomebrewDialog
+          open
+          entry={dialog.entry}
+          onOpenChange={(o) => !o && setDialog(null)}
+          onSave={(saved) =>
+            onChangeHomebrew(
+              homebrew.some((h) => h.id === saved.id)
+                ? homebrew.map((h) => (h.id === saved.id ? saved : h))
+                : [...homebrew, saved]
+            )
+          }
+        />
+      )}
 
       {showBasics && (
         <div className="mt-4">

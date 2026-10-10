@@ -2,6 +2,7 @@ import { getLogger } from '@/lib/logger';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AbilityScoresPanel } from '@/components/character-sheet/AbilityScoresPanel';
+import { homebrewToActions, parseHomebrew } from '@/lib/homebrew';
 import { ActionsPanel } from '@/components/character-sheet/ActionsPanel';
 import { resolveActions } from '@/lib/resolver/actions';
 import { canPrepareSpells, getEffectivePrepared } from '@/lib/spell-preparation';
@@ -104,6 +105,7 @@ function CharacterSheetInner({
     const prepared = sc && canPrepareSpells(sc) ? getEffectivePrepared(character.prepared_spells, sc) : undefined;
     return resolveActions(resolved, classLevels, prepared);
   }, [resolved, build, character.prepared_spells]);
+  const homebrew = useMemo(() => parseHomebrew(character.homebrew), [character.homebrew]);
 
   const handleSelectRollPreset = useCallback((preset: RollPreset) => {
     setRollPreset(preset);
@@ -438,7 +440,9 @@ function CharacterSheetInner({
 
                 {resolvedActions && resolved && (
                   <ActionsPanel
-                    actions={resolvedActions.actions}
+                    actions={[...resolvedActions.actions, ...homebrewToActions(homebrew, resolved)]}
+                    homebrew={homebrew}
+                    onChangeHomebrew={(next) => handleUpdate({ homebrew: next })}
                     attacksPerAction={resolvedActions.attacksPerAction}
                     resolved={resolved}
                     onSelectRollPreset={handleSelectRollPreset}

@@ -208,6 +208,7 @@ export type Database = {
           class: string | null
           conditions: string[]
           prepared_spells: string[]
+          homebrew: Json
           created_at: string
           exhaustion_level: number
           eye_color: string | null
@@ -257,6 +258,7 @@ export type Database = {
           class?: string | null
           conditions?: string[]
           prepared_spells?: string[]
+          homebrew?: Json
           created_at?: string
           exhaustion_level?: number
           eye_color?: string | null
@@ -306,6 +308,7 @@ export type Database = {
           class?: string | null
           conditions?: string[]
           prepared_spells?: string[]
+          homebrew?: Json
           created_at?: string
           exhaustion_level?: number
           eye_color?: string | null

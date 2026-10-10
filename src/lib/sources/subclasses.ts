@@ -1293,7 +1293,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 9,
         grants: [
-          { type: 'skill-expertise', skill: 'stealth' },
+          // Supreme Sneak (2024 PHB): Stealth Attack Cunning Strike option — no Expertise.
           { type: 'feature', feature: { id: 'thief-supreme-sneak' } },
         ],
       },
@@ -1314,7 +1314,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 9,
         grants: [
-          { type: 'skill-expertise', skill: 'deception' },
+          // Infiltration Expertise (2024 PHB): Masterful Mimicry + Roving Aim — no Expertise grant.
           { type: 'feature', feature: { id: 'assassin-infiltration-expertise' } },
         ],
       },

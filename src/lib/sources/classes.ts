@@ -1271,6 +1271,17 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'spellcasting', ability: 'cha', source: 'class' },
           { type: 'feature', feature: { id: 'paladin-lay-on-hands' } },
+          // Lay On Hands pool: 5 x Paladin level HP, refreshed on a Long Rest.
+          {
+            type: 'resource-pool',
+            poolId: 'lay-on-hands',
+            max: {
+              mode: 'level-steps',
+              classId: 'paladin',
+              steps: Array.from({ length: 20 }, (_, i) => ({ minLevel: i + 1, value: (i + 1) * 5 })),
+            },
+            regen: 'long-rest',
+          },
           { type: 'feature', feature: { id: 'paladin-divine-sense' } },
           { type: 'armor-class', calculation: { mode: 'armored' } },
           {
@@ -1289,18 +1300,36 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       {
         grants: [
+          // Paladin's Smite (id kept as divine-smite): always-prepared Divine Smite spell is not in the catalog yet.
           { type: 'feature', feature: { id: 'paladin-divine-smite' } },
-          { type: 'feature', feature: { id: 'paladin-channel-divinity' } },
-          // Channel Divinity uses = Proficiency Bonus per rest (2024 PHB); regained on a Short or Long Rest.
           {
-            type: 'resource-pool',
-            poolId: 'channel-divinity',
-            max: { mode: 'proficiency-bonus', classId: 'paladin' },
-            regen: 'short-rest',
+            type: 'fighting-style-choice',
+            key: createChoiceKey('fighting-style-choice', 'class', 'paladin', 0),
+            count: 1,
+            from: FIGHTING_STYLE_IDS,
           },
         ],
       },
-      { grants: [{ type: 'subclass', classId: 'paladin', key: createChoiceKey('subclass', 'class', 'paladin', 0) }] },
+      {
+        grants: [
+          { type: 'subclass', classId: 'paladin', key: createChoiceKey('subclass', 'class', 'paladin', 0) },
+          { type: 'feature', feature: { id: 'paladin-channel-divinity' } },
+          // Channel Divinity (2024 PHB): 2 uses at L3, 3 at L11; 1 regained on a Short Rest, all on a Long Rest.
+          {
+            type: 'resource-pool',
+            poolId: 'channel-divinity',
+            max: {
+              mode: 'level-steps',
+              classId: 'paladin',
+              steps: [
+                { minLevel: 3, value: 2 },
+                { minLevel: 11, value: 3 },
+              ],
+            },
+            regen: { mode: 'compound', shortRestAmount: 1 },
+          },
+        ],
+      },
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 0), points: 2, from: null },
@@ -1315,6 +1344,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'feature', feature: { id: 'paladin-extra-attack' } },
+          // Faithful Steed: always-prepared Find Steed is not in the catalog yet.
           { type: 'feature', feature: { id: 'paladin-faithful-steed' } },
         ],
       },
@@ -1361,18 +1391,9 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'paladin-aura-expansion' } }] },
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'paladin', 4), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'paladin', 4),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
       { grants: [{ type: 'feature', feature: { id: 'paladin-epic-boon' } }] },
+      // L20: the Oath capstone comes from the subclass.
+      EMPTY_LEVEL,
     ],
   },
 
@@ -1414,6 +1435,33 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'feature', feature: { id: 'ranger-favored-enemy' } },
           { type: 'feature', feature: { id: 'ranger-weapon-mastery' } },
+          // Favored Enemy: Hunter's Mark always prepared, with free casts (2/3/4/5/6 at L1/5/9/13/17) per Long Rest.
+          { type: 'spell', spellId: 'hunters-mark', alwaysPrepared: true },
+          {
+            type: 'resource-pool',
+            poolId: 'favored-enemy',
+            max: {
+              mode: 'level-steps',
+              classId: 'ranger',
+              steps: [
+                { minLevel: 1, value: 2 },
+                { minLevel: 5, value: 3 },
+                { minLevel: 9, value: 4 },
+                { minLevel: 13, value: 5 },
+                { minLevel: 17, value: 6 },
+              ],
+            },
+            regen: 'long-rest',
+          },
+          // Spellcasting starts at Level 1 in the 2024 PHB.
+          { type: 'spellcasting', ability: 'wis', source: 'class' },
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'class', 'ranger', 0),
+            count: 2,
+            spellList: 'ranger',
+            spellLevel: 1,
+          },
           { type: 'armor-class', calculation: { mode: 'armored' } },
           {
             type: 'weapon-mastery-choice',
@@ -1424,21 +1472,27 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       {
         grants: [
-          { type: 'spellcasting', ability: 'wis', source: 'class' },
           { type: 'feature', feature: { id: 'ranger-deft-explorer' } },
+          // Deft Explorer: Expertise in one proficient skill + two languages.
+          {
+            type: 'expertise-choice',
+            key: createChoiceKey('expertise-choice', 'class', 'ranger', 0),
+            count: 1,
+            from: null,
+            fromTools: [],
+          },
+          {
+            type: 'proficiency-choice',
+            category: 'language',
+            key: createChoiceKey('language-choice', 'class', 'ranger', 0),
+            count: 2,
+            from: null,
+          },
           {
             type: 'fighting-style-choice',
             key: createChoiceKey('fighting-style-choice', 'class', 'ranger', 0),
             count: 1,
             from: FIGHTING_STYLE_IDS,
-          },
-          // Spells Prepared: 2 at Level 1 (2024 PHB)
-          {
-            type: 'spell-choice',
-            key: createChoiceKey('spell-choice', 'class', 'ranger', 0),
-            count: 2,
-            spellList: 'ranger',
-            spellLevel: 1,
           },
         ],
       },
@@ -1459,19 +1513,9 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       { grants: [{ type: 'feature', feature: { id: 'ranger-extra-attack' } }] },
       {
         grants: [
-          {
-            type: 'expertise-choice',
-            key: createChoiceKey('expertise-choice', 'class', 'ranger', 0),
-            count: 2,
-            from: null,
-            fromTools: [],
-          },
           // Roving (L6, 2024 PHB): climb + swim equal to walking speed. The +10
           // walking-speed bump (and its heavy-armor restriction) stays in feature
-          // text — needs additive-speed and conditional-grant infrastructure
-          // that don't exist yet. The co-located expertise-choice is itself
-          // misplaced in 2024 (PHB has Expertise at L9, not L6) — see issue
-          // tracker for the full Ranger feature-placement audit.
+          // text — needs additive-speed and conditional-grant infrastructure.
           { type: 'feature', feature: { id: 'ranger-roving' } },
           { type: 'speed', mode: 'climb', value: 'walk-equivalent' },
           { type: 'speed', mode: 'swim', value: 'walk-equivalent' },
@@ -1489,7 +1533,17 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'ranger-conjure-barrage' } }] },
+      {
+        grants: [
+          {
+            type: 'expertise-choice',
+            key: createChoiceKey('expertise-choice', 'class', 'ranger', 1),
+            count: 2,
+            from: null,
+            fromTools: [],
+          },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'ranger-tireless' } }] },
       EMPTY_LEVEL,
       {
@@ -1517,20 +1571,10 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'ranger-conjure-volley' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'ranger-swift-quiver' } }] },
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'ranger', 4), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'ranger', 4),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
+      { grants: [{ type: 'feature', feature: { id: 'ranger-precise-hunter' } }] },
+      { grants: [{ type: 'feature', feature: { id: 'ranger-feral-senses' } }] },
       { grants: [{ type: 'feature', feature: { id: 'ranger-epic-boon' } }] },
+      { grants: [{ type: 'feature', feature: { id: 'ranger-foe-slayer' } }] },
     ],
   },
 
@@ -1605,7 +1649,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'rogue-cunning-action' } }] },
-      { grants: [{ type: 'subclass', classId: 'rogue', key: createChoiceKey('subclass', 'class', 'rogue', 0) }] },
+      {
+        grants: [
+          { type: 'subclass', classId: 'rogue', key: createChoiceKey('subclass', 'class', 'rogue', 0) },
+          { type: 'feature', feature: { id: 'rogue-steady-aim' } },
+        ],
+      },
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 0), points: 2, from: null },
@@ -1617,7 +1666,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'rogue-uncanny-dodge' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'rogue-uncanny-dodge' } },
+          { type: 'feature', feature: { id: 'rogue-cunning-strike' } },
+        ],
+      },
       {
         grants: [
           {
@@ -1629,7 +1683,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'rogue-evasion' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'rogue-evasion' } },
+          { type: 'feature', feature: { id: 'rogue-reliable-talent' } },
+        ],
+      },
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 1), points: 2, from: null },
@@ -1653,7 +1712,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'rogue-reliable-talent' } }] },
+      { grants: [{ type: 'feature', feature: { id: 'rogue-improved-cunning-strike' } }] },
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 3), points: 2, from: null },
@@ -1667,7 +1726,13 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'rogue-devious-strikes' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'rogue-slippery-mind' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'rogue-slippery-mind' } },
+          { type: 'proficiency', category: 'saving-throw', id: 'wis' },
+          { type: 'proficiency', category: 'saving-throw', id: 'cha' },
+        ],
+      },
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 4), points: 2, from: null },
@@ -1681,17 +1746,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'rogue-elusive' } }] },
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'rogue', 5), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'rogue', 5),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
+      { grants: [{ type: 'feature', feature: { id: 'rogue-epic-boon' } }] },
       { grants: [{ type: 'feature', feature: { id: 'rogue-stroke-of-luck' } }] },
     ],
   },

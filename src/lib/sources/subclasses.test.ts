@@ -6,36 +6,28 @@ import type { CharacterBuild } from '@/types/choices';
 import type { ClassId, SpeciesId, BackgroundId } from '@/lib/dnd-helpers';
 import { resolveCharacter } from '@/lib/resolver';
 
-describe('assassin skill-expertise grant', () => {
-  it('assassin level 9 has exactly 2 grants: feature and skill-expertise: deception', () => {
+describe('assassin full table', () => {
+  it('has features at L3, L9, L13, L17 and no Deception expertise (2024 PHB)', () => {
     const source = getSubclassSource('assassin');
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 9, 13, 17]);
     const level9 = source?.features.find((f) => f.classLevel === 9);
-    expect(level9).toBeDefined();
-    expect(level9!.grants).toHaveLength(2);
-    expect(level9!.grants).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'assassin-infiltration-expertise' }),
-        }),
-        expect.objectContaining({ type: 'skill-expertise', skill: 'deception' }),
-      ])
-    );
+    expect(level9!.grants).toEqual([
+      expect.objectContaining({
+        type: 'feature',
+        feature: expect.objectContaining({ id: 'assassin-infiltration-expertise' }),
+      }),
+    ]);
   });
 });
 
-describe('thief skill-expertise grant', () => {
-  it('thief level 9 has exactly 2 grants: feature and skill-expertise: stealth', () => {
+describe('thief full table', () => {
+  it('has features at L3, L9, L13, L17 and no Stealth expertise (2024 PHB)', () => {
     const source = getSubclassSource('thief');
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 9, 13, 17]);
     const level9 = source?.features.find((f) => f.classLevel === 9);
-    expect(level9).toBeDefined();
-    expect(level9!.grants).toHaveLength(2);
-    expect(level9!.grants).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ type: 'feature', feature: expect.objectContaining({ id: 'thief-supreme-sneak' }) }),
-        expect.objectContaining({ type: 'skill-expertise', skill: 'stealth' }),
-      ])
-    );
+    expect(level9!.grants).toEqual([
+      expect.objectContaining({ type: 'feature', feature: expect.objectContaining({ id: 'thief-supreme-sneak' }) }),
+    ]);
   });
 
   it('thief level 3 has Second-Story Work walk-equivalent climb grant (2024 PHB)', () => {

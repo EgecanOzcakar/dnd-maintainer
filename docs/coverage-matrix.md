@@ -25,9 +25,9 @@ missing: 0 · stub: 0 · partial: 0 · complete: 12 · golden-verified: 0/12
 | druid | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
 | fighter | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
 | monk | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
-| paladin | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
-| ranger | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
-| rogue | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
+| paladin | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
+| ranger | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
+| rogue | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
 | sorcerer | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
 | warlock | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
 | wizard | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |

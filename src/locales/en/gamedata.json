@@ -527,6 +527,42 @@
       "name": "Sneak Attack",
       "description": "Once per turn, deal extra 1d6 damage to one creature you hit with a finesse or ranged weapon attack if you have advantage or an ally is within 5 feet of the target. Scales to ceil(level/2)d6."
     },
+    "rogue-steady-aim": {
+      "name": "Steady Aim",
+      "description": "As a Bonus Action, give yourself Advantage on your next attack roll this turn, but only if you haven't moved and your Speed becomes 0 until the end of the turn."
+    },
+    "rogue-cunning-strike": {
+      "name": "Cunning Strike",
+      "description": "When you deal Sneak Attack damage, you can give up Sneak Attack dice to add an effect such as Poison, Trip, or Withdraw; targets make a save against your DC."
+    },
+    "rogue-reliable-talent": {
+      "name": "Reliable Talent",
+      "description": "When you make an ability check using a skill or tool you are proficient in, any d20 roll of 9 or lower counts as a 10."
+    },
+    "rogue-improved-cunning-strike": {
+      "name": "Improved Cunning Strike",
+      "description": "You can apply two Cunning Strike effects to a single Sneak Attack, paying the dice cost of each."
+    },
+    "rogue-devious-strikes": {
+      "name": "Devious Strikes",
+      "description": "Unlocks stronger Cunning Strike options: Daze, Knock Out, and Obscure."
+    },
+    "rogue-slippery-mind": {
+      "name": "Slippery Mind",
+      "description": "You gain proficiency in Wisdom and Charisma saving throws."
+    },
+    "rogue-elusive": {
+      "name": "Elusive",
+      "description": "Attack rolls against you can't have Advantage unless you are Incapacitated."
+    },
+    "rogue-epic-boon": {
+      "name": "Epic Boon",
+      "description": "You gain an Epic Boon feat or another feat of your choice."
+    },
+    "rogue-stroke-of-luck": {
+      "name": "Stroke of Luck",
+      "description": "Once per rest, turn a missed attack into a hit or treat a failed d20 Test as a 20."
+    },
     "rogue-thieves-cant": {
       "name": "Thieves' Cant",
       "description": "You have learned thieves' cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation."
@@ -547,25 +583,49 @@
       "name": "Fast Hands",
       "description": "Use Cunning Action to make a Sleight of Hand check, use thieves' tools to disarm a trap or open a lock, or take the Use an Object action."
     },
+    "thief-use-magic-device": {
+      "name": "Use Magic Device",
+      "description": "You can attune to more magic items, and you can sometimes avoid spending charges or use any spell scroll."
+    },
+    "thief-thiefs-reflexes": {
+      "name": "Thief's Reflexes",
+      "description": "In the first round of combat you take two turns, one at your normal initiative and one at initiative minus 10."
+    },
     "thief-second-story-work": {
       "name": "Second-Story Work",
       "description": "You gain a Climb Speed equal to your Speed. In addition, when you make a running jump, the distance you cover increases by a number of feet equal to your DEX modifier."
     },
     "thief-supreme-sneak": {
       "name": "Supreme Sneak",
-      "description": "You gain Expertise in the Stealth skill. In addition, you can take the Hide action as a Bonus Action."
+      "description": "You gain a Cunning Strike option, Stealth Attack, that lets you keep from losing Hidden status when you strike."
     },
     "assassin-assassinate": {
       "name": "Assassinate",
       "description": "You are at your deadliest when you get the drop on your foes. You have Advantage on attack rolls against any creature that hasn't taken a turn yet in combat. In addition, any hit you score against a creature that is Surprised is a Critical Hit."
     },
+    "assassin-envenom-weapons": {
+      "name": "Envenom Weapons",
+      "description": "Your Poison Cunning Strike deals extra poison damage and ignores poison resistance on a failed save."
+    },
+    "assassin-death-strike": {
+      "name": "Death Strike",
+      "description": "When you hit on the first round of combat, the target must succeed on a Constitution save or take double Sneak Attack damage."
+    },
     "assassin-infiltration-expertise": {
       "name": "Infiltration Expertise",
-      "description": "You can spend 7 days and 25 GP to establish a false identity. You also gain Expertise in the Deception skill if you don't already have it."
+      "description": "You can flawlessly mimic another person's speech and writing, and your Steady Aim no longer reduces your Speed to 0."
     },
     "arcanetrickster-mage-hand-legerdemain": {
       "name": "Mage Hand Legerdemain",
       "description": "When you cast mage hand, you can make it invisible and use it to stow/retrieve objects or use thieves' tools at range."
+    },
+    "arcanetrickster-versatile-trickster": {
+      "name": "Versatile Trickster",
+      "description": "You can use your Mage Hand to distract a creature, giving you Advantage on attacks against it."
+    },
+    "arcanetrickster-spell-thief": {
+      "name": "Spell Thief",
+      "description": "When a creature casts a spell at you, you can negate its effect on you and steal the spell for a time, once per Long Rest."
     },
     "arcanetrickster-magical-ambush": {
       "name": "Magical Ambush",
@@ -746,6 +806,14 @@
     "soulknife-psionic-power": {
       "name": "Psionic Power",
       "description": "You have a pool of Psionic Energy dice that fuel your psionic abilities. The die size scales with your proficiency bonus: d6 (PB +2), d8 (PB +3), d10 (PB +4), d12 (PB +5 or +6). You start each Long Rest with 4 dice; a Short Rest replenishes 1. Two options enabled at L3: Psi-Bolstered Knack — when you fail an ability check using a skill or tool you are proficient in, you can roll one Psionic Energy die and add it to the check; if this causes the check to succeed, the die is not expended; Psychic Whispers — as an Action, choose a number of creatures equal to your Proficiency Bonus that you can see within 1 mile; those creatures can communicate telepathically with you in a language you both know for up to 1 hour; this uses 1 Psionic Energy die."
+    },
+    "soulknife-psychic-veil": {
+      "name": "Psychic Veil",
+      "description": "You can turn Invisible for a while by spending a Psionic Energy die or once per Long Rest for free."
+    },
+    "soulknife-rend-mind": {
+      "name": "Rend Mind",
+      "description": "When you deal Sneak Attack damage with Psychic Blades, you can force a Wisdom save or leave the target Stunned."
     },
     "soulknife-psychic-blades": {
       "name": "Psychic Blades",
@@ -1635,6 +1703,14 @@
       "name": "Primal Companion",
       "description": "You magically summon a primal beast — a Beast of the Land, Sea, or Sky — by expending one spell slot. The beast obeys your commands and uses your Proficiency Bonus in place of its own. Its stat block scales with your Ranger level. On each of your turns, you can command the beast to take an action as a Bonus Action. If the beast is slain, you can resummon it by expending a spell slot."
     },
+    "beastmaster-bestial-fury": {
+      "name": "Bestial Fury",
+      "description": "Your companion's attacks are empowered: once per turn it adds extra Force damage on a hit, and its attacks can benefit from your Hunter's Mark."
+    },
+    "beastmaster-share-spells": {
+      "name": "Share Spells",
+      "description": "When you cast a spell targeting only yourself, your companion also gains its effect if it is close enough."
+    },
     "beastmaster-exceptional-training": {
       "name": "Exceptional Training",
       "description": "Your primal companion's capabilities improve. When you use Hunter's Mark on a creature, your companion can also mark the same creature without expending a use of Hunter's Mark. In addition, when you command your companion to take an action, it can also take any combat action as a Bonus Action on the same turn."
@@ -1642,6 +1718,14 @@
     "feywanderer-dreadful-strikes": {
       "name": "Dreadful Strikes",
       "description": "You can augment your weapon strikes with mind-scarring magic drawn from the murky Feywild. When you hit a creature with a weapon, you can deal an extra 1d4 Psychic damage to the target, which can take this extra damage only once per turn."
+    },
+    "feywanderer-fey-reinforcements": {
+      "name": "Fey Reinforcements",
+      "description": "You can cast Summon Fey once per Long Rest without a slot or material components, and the Dreadful Strikes die increases to a d6."
+    },
+    "feywanderer-misty-wanderer": {
+      "name": "Misty Wanderer",
+      "description": "You can cast Misty Step without a slot a number of times equal to your Wisdom modifier per Long Rest, bringing along a nearby willing ally."
     },
     "feywanderer-otherworldly-glamour": {
       "name": "Otherworldly Glamour",
@@ -1655,6 +1739,14 @@
       "name": "Dread Ambusher",
       "description": "On the first turn of each combat, you gain two benefits: your walking speed increases by 10 feet, and if you make an attack with a weapon as part of the Attack action, you can make one additional attack as part of that action. That extra attack deals 1d8 extra damage of the weapon's type on a hit. You also add your Wisdom modifier to your initiative rolls."
     },
+    "gloomstalker-stalkers-flurry": {
+      "name": "Stalker's Flurry",
+      "description": "Once per turn, when you miss with a weapon attack, you can make another weapon attack as part of the same action."
+    },
+    "gloomstalker-shadowy-dodge": {
+      "name": "Shadowy Dodge",
+      "description": "As a Reaction when attacked without Advantage, impose Disadvantage on the attack and teleport a short distance."
+    },
     "gloomstalker-umbral-sight": {
       "name": "Umbral Sight",
       "description": "You gain Darkvision to a range of 60 feet. If you already have Darkvision, its range increases by 30 feet. You are also naturally adept at hiding from creatures that rely on Darkvision — you are invisible to creatures with Darkvision when they try to detect you using that sense."
@@ -1666,6 +1758,14 @@
     "hunter-hunters-lore": {
       "name": "Hunter's Lore",
       "description": "When you use Hunter's Mark on a creature, you immediately learn whether the creature has any damage Immunities or Resistances and what they are."
+    },
+    "hunter-superior-hunters-prey": {
+      "name": "Superior Hunter's Prey",
+      "description": "Once per turn, damage from your Hunter's Mark can also be applied to a second creature near the marked target."
+    },
+    "hunter-superior-hunters-defense": {
+      "name": "Superior Hunter's Defense",
+      "description": "As a Reaction when you take damage, gain Resistance to that damage type until the end of the turn."
     },
     "hunter-hunters-prey": {
       "name": "Hunter's Prey",
@@ -1694,6 +1794,18 @@
     "ranger-favored-enemy": {
       "name": "Favored Enemy",
       "description": "You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them."
+    },
+    "ranger-precise-hunter": {
+      "name": "Precise Hunter",
+      "description": "You have Advantage on attack rolls against the creature currently marked by your Hunter's Mark."
+    },
+    "ranger-feral-senses": {
+      "name": "Feral Senses",
+      "description": "You gain Blindsight out to 30 feet, letting you perceive creatures without relying on sight."
+    },
+    "ranger-foe-slayer": {
+      "name": "Foe Slayer",
+      "description": "Your Hunter's Mark damage die becomes a d10 instead of a d6."
     },
     "ranger-weapon-mastery": {
       "name": "Weapon Mastery",
@@ -1983,50 +2095,6 @@
       "name": "Three Extra Attacks",
       "description": "You can attack four times, instead of once, whenever you take the Attack action on your turn."
     },
-    "rogue-reliable-talent": {
-      "name": "Reliable Talent",
-      "description": "Whenever you make an ability check that uses one of your skill or tool proficiencies, you can treat a d20 roll of 9 or lower as a 10."
-    },
-    "rogue-devious-strikes": {
-      "name": "Devious Strikes",
-      "description": "Your Cunning Strike gains new options: Daze, Knock Out and Obscure."
-    },
-    "rogue-slippery-mind": {
-      "name": "Slippery Mind",
-      "description": "You gain proficiency in Wisdom and Charisma saving throws."
-    },
-    "rogue-elusive": {
-      "name": "Elusive",
-      "description": "No attack roll can have Advantage against you unless you have the Incapacitated condition."
-    },
-    "rogue-stroke-of-luck": {
-      "name": "Stroke of Luck",
-      "description": "If you fail a D20 Test, you can turn the roll into a 20. Once you use this feature, you can't use it again until you finish a short or long rest."
-    },
-    "arcanetrickster-versatile-trickster": {
-      "name": "Versatile Trickster",
-      "description": "When you use the Trip option of Cunning Strike, you can also target a creature within 5 feet of your Mage Hand with that option."
-    },
-    "arcanetrickster-spell-thief": {
-      "name": "Spell Thief",
-      "description": "When a creature casts a spell that targets you or includes you in its area, you can use your Reaction to force a save; on a failure you negate the spell's effect on you and steal knowledge of it for 8 hours. Once per long rest."
-    },
-    "assassin-envenom-weapons": {
-      "name": "Envenom Weapons",
-      "description": "When you use the Poison option of Cunning Strike, the target also takes 2d6 Poison damage whenever it fails the save, and this damage ignores Poison resistance."
-    },
-    "assassin-death-strike": {
-      "name": "Death Strike",
-      "description": "When you hit a creature with Sneak Attack on the first round of combat, it must succeed on a Constitution save or the attack's damage is doubled."
-    },
-    "beastmaster-bestial-fury": {
-      "name": "Bestial Fury",
-      "description": "When you command your Primal Companion to take the Beast's Strike action, it can use it twice, and the first time each turn it hits your Hunter's Mark target it deals extra Force damage."
-    },
-    "beastmaster-share-spells": {
-      "name": "Share Spells",
-      "description": "When you cast a spell targeting yourself, you can also affect your Primal Companion if it is within 30 feet of you."
-    },
     "circleland-natures-sanctuary": {
       "name": "Nature's Sanctuary",
       "description": "As a Magic action you can expend a Wild Shape use to create a 15-foot spectral grove for 1 minute; you and allies inside have Half Cover and resistance to your current land's damage type."
@@ -2059,30 +2127,6 @@
       "name": "Battle Magic",
       "description": "After you cast a spell with a casting time of an action, you can make one weapon attack as a Bonus Action."
     },
-    "feywanderer-fey-reinforcements": {
-      "name": "Fey Reinforcements",
-      "description": "You always have Summon Fey prepared and can cast it once per long rest without a slot or Concentration."
-    },
-    "feywanderer-misty-wanderer": {
-      "name": "Misty Wanderer",
-      "description": "You can cast Misty Step without a slot a number of times equal to your Wisdom modifier per long rest, and bring a willing creature within 5 feet along."
-    },
-    "gloomstalker-stalkers-flurry": {
-      "name": "Stalker's Flurry",
-      "description": "Your Dread Ambusher strikes gain new options: Sudden Strike (an extra attack against another creature within 5 feet) or Mass Fear (frighten creatures near the target)."
-    },
-    "gloomstalker-shadowy-dodge": {
-      "name": "Shadowy Dodge",
-      "description": "When a creature makes an attack roll against you, you can use your Reaction to impose Disadvantage on it, then teleport up to 30 feet to an unoccupied space you can see."
-    },
-    "hunter-superior-hunters-prey": {
-      "name": "Superior Hunter's Prey",
-      "description": "Once per turn, when you deal damage to your Hunter's Mark target, you can deal that spell's extra damage to a different creature within 30 feet of it."
-    },
-    "hunter-superior-hunters-defense": {
-      "name": "Superior Hunter's Defense",
-      "description": "When you take damage, you can use your Reaction to gain resistance to that damage and any other damage of the same type until the end of the current turn."
-    },
     "lifedomain-supreme-healing": {
       "name": "Supreme Healing",
       "description": "When you would roll dice to restore Hit Points with a spell or Channel Divinity, use the highest number possible for each die instead."
@@ -2090,22 +2134,6 @@
     "lightdomain-corona-of-light": {
       "name": "Corona of Light",
       "description": "As a Magic action you emit sunlight for 1 minute; enemies in the bright light have Disadvantage on saves against your Radiant Flare and spells that deal Fire or Radiant damage."
-    },
-    "soulknife-psychic-veil": {
-      "name": "Psychic Veil",
-      "description": "As a Magic action you become Invisible for 1 hour, ending early if you deal damage or force a save. Once per long rest, or by expending a Psionic Energy die."
-    },
-    "soulknife-rend-mind": {
-      "name": "Rend Mind",
-      "description": "When you deal Sneak Attack damage with your Psychic Blades, you can force the target to make a Wisdom save or be Stunned for 1 minute. Once per long rest, or by expending Psionic Energy dice."
-    },
-    "thief-use-magic-device": {
-      "name": "Use Magic Device",
-      "description": "You can attune to up to four magic items, use charges with a chance to not expend them, and use any Spell Scroll by making an Intelligence (Arcana) check."
-    },
-    "thief-thiefs-reflexes": {
-      "name": "Thief's Reflexes",
-      "description": "You can take two turns during the first round of any combat: your first at your normal Initiative and your second at your Initiative minus 10."
     },
     "trickerydomain-improved-duplicity": {
       "name": "Improved Duplicity",

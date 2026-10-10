@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Dices, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useRecordCharacterRoll } from '@/hooks/usePartyState';
+import { useAddRoll, useRollLog } from '@/hooks/useRollLog';
+import { rollDice, type D20Mode } from '@/lib/dice-roll';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -15,16 +17,15 @@ export interface DiceRollResult {
   readonly modifier: number;
   readonly rolls: readonly number[];
   readonly total: number;
+  /** Dice counted toward the total (differs from `rolls` with advantage/disadvantage). */
+  readonly kept?: readonly number[];
+  readonly natural?: 'nat20' | 'nat1' | null;
 }
 
 const DIE_SIZES: DieSize[] = [4, 6, 8, 10, 12, 20, 100];
 const MAX_HISTORY = 10;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function rollDie(size: DieSize): number {
-  return Math.floor(Math.random() * size) + 1;
-}
 
 let rollIdCounter = 0;
 
@@ -60,6 +61,8 @@ interface DiceRollerProps {
   readonly presetCount?: number;
   /** If provided, shown above the roller as context label. */
   readonly contextLabel?: string;
+  /** 'damage' shows the critical-hit toggle even for a d20; default infers from the die. */
+  readonly presetKind?: 'd20' | 'damage';
   /** Compact mode hides the history panel. */
   readonly compact?: boolean;
   /** Optional character ID for sync with party roll tracker. */
@@ -74,6 +77,7 @@ export function DiceRoller({
   presetModifier,
   presetDie,
   presetCount,
+  presetKind,
   contextLabel,
   compact = false,
   characterId,
@@ -82,6 +86,10 @@ export function DiceRoller({
 }: DiceRollerProps) {
   const { t: tc } = useTranslation('common');
   const recordRoll = useRecordCharacterRoll();
+  const addRoll = useAddRoll();
+  const { data: sharedLog = [] } = useRollLog(compact ? undefined : campaignId);
+  const [mode, setMode] = useState<D20Mode>('normal');
+  const [crit, setCrit] = useState(false);
 
   const [selectedDie, setSelectedDie] = useState<DieSize>(presetDie ?? 20);
   const [count, setCount] = useState<number>(presetCount ?? 1);
@@ -98,8 +106,8 @@ export function DiceRoller({
     if (rollTimeout.current) clearTimeout(rollTimeout.current);
 
     rollTimeout.current = setTimeout(() => {
-      const rolls = Array.from({ length: Math.max(1, count) }, () => rollDie(selectedDie));
-      const total = rolls.reduce((s, v) => s + v, 0) + modifier;
+      const out = rollDice({ die: selectedDie, count, modifier, mode, crit });
+      const { rolls, total } = out;
       const entry: DiceRollResult = {
         id: ++rollIdCounter,
         die: selectedDie,
@@ -107,6 +115,8 @@ export function DiceRoller({
         modifier,
         rolls,
         total,
+        kept: out.kept,
+        natural: out.natural,
       };
       setLastResult(entry);
       setHistory((prev) => [entry, ...prev].slice(0, MAX_HISTORY));
@@ -114,23 +124,38 @@ export function DiceRoller({
 
       if (onRoll) onRoll(entry);
 
+      if (campaignId) {
+        addRoll.mutate({
+          campaign_id: campaignId,
+          character_id: characterId ?? null,
+          label: contextLabel ?? null,
+          formula: out.formula,
+          result: total,
+          detail: { rolls, kept: out.kept, natural: out.natural },
+        });
+      }
       if (characterId && campaignId) {
-        const modSignStr = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-        const formula = `${count}d${selectedDie}${modifier !== 0 ? modSignStr : ''}`;
         recordRoll.mutate({
           campaignId,
           characterId,
-          roll: {
-            formula,
-            total,
-            rolls,
-            modifier,
-            label: contextLabel,
-          },
+          roll: { formula: out.formula, total, rolls, modifier, label: contextLabel },
         });
       }
     }, 320);
-  }, [isRolling, count, selectedDie, modifier, onRoll, characterId, campaignId, recordRoll, contextLabel]);
+  }, [
+    isRolling,
+    count,
+    selectedDie,
+    modifier,
+    mode,
+    crit,
+    onRoll,
+    characterId,
+    campaignId,
+    recordRoll,
+    addRoll,
+    contextLabel,
+  ]);
 
   // Keep preset values in sync when parent changes them (e.g. clicking a spell's Roll button)
   const [lastPresetKey, setLastPresetKey] = useState('');
@@ -140,6 +165,8 @@ export function DiceRoller({
     (presetDie !== undefined || presetCount !== undefined || presetModifier !== undefined)
   ) {
     setLastPresetKey(presetKey);
+    setMode('normal');
+    setCrit(false);
     if (presetDie !== undefined) setSelectedDie(presetDie);
     if (presetCount !== undefined) setCount(presetCount);
     if (presetModifier !== undefined) setModifier(presetModifier);
@@ -200,13 +227,46 @@ export function DiceRoller({
         </div>
       </div>
 
+      {/* Advantage / disadvantage (single d20) and critical hit (damage) */}
+      <div className="flex flex-wrap gap-1.5">
+        {selectedDie === 20 && count === 1 && !crit && (
+          <>
+            {(['advantage', 'disadvantage'] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                aria-pressed={mode === m}
+                onClick={() => setMode(mode === m ? 'normal' : m)}
+                className={`px-2.5 py-1 rounded-md text-xs font-bold border ${
+                  mode === m ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted/50 border-border'
+                }`}
+              >
+                {tc(`diceLog.${m}`)}
+              </button>
+            ))}
+          </>
+        )}
+        {(presetKind === 'damage' || selectedDie !== 20) && (
+          <button
+            type="button"
+            aria-pressed={crit}
+            onClick={() => setCrit(!crit)}
+            className={`px-2.5 py-1 rounded-md text-xs font-bold border ${
+              crit ? 'bg-destructive text-white border-destructive' : 'bg-muted/50 border-border'
+            }`}
+          >
+            {tc('diceLog.critical')}
+          </button>
+        )}
+      </div>
+
       {/* Roll button + result */}
       <div className="flex items-center gap-3">
         <Button onClick={handleRoll} disabled={isRolling} className="flex-1 gap-2 font-bold">
           <Dices className={`size-4 ${isRolling ? 'animate-spin' : ''}`} />
           {isRolling
             ? tc('characterSheet.combatView.diceRoller.rolling')
-            : `${count}d${selectedDie}${modifier !== 0 ? ` ${modSign}` : ''}`}
+            : `${count * (crit ? 2 : 1)}d${selectedDie}${modifier !== 0 ? ` ${modSign}` : ''}`}
         </Button>
 
         {lastResult && (
@@ -219,21 +279,72 @@ export function DiceRoller({
             </div>
             <div
               className={`text-3xl font-black leading-tight ${
-                lastResult.rolls.length === 1 && lastResult.rolls[0] === lastResult.die
+                lastResult.natural === 'nat20'
                   ? 'text-green-500'
-                  : lastResult.rolls.length === 1 && lastResult.rolls[0] === 1
+                  : lastResult.natural === 'nat1'
                     ? 'text-destructive'
                     : 'text-foreground'
               }`}
             >
               {lastResult.total}
             </div>
+            {lastResult.natural && (
+              <div className="text-[10px] font-bold">
+                {tc(lastResult.natural === 'nat20' ? 'diceLog.natural20' : 'diceLog.natural1')}
+              </div>
+            )}
+            {lastResult.kept && lastResult.kept.length < lastResult.rolls.length && (
+              <div className="text-[10px] text-muted-foreground font-mono">
+                {lastResult.rolls.map((r, i) => (
+                  <span
+                    key={i}
+                    className={
+                      r === lastResult.kept?.[0] && i === lastResult.rolls.indexOf(r) ? 'font-bold' : 'line-through'
+                    }
+                  >
+                    {i > 0 ? ' / ' : ''}
+                    {r}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* Roll history */}
-      {!compact && (
+      {/* Shared campaign roll log */}
+      {!compact && campaignId && (
+        <div>
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
+            {tc('diceLog.title')}
+          </span>
+          {sharedLog.length === 0 ? (
+            <p className="text-xs text-muted-foreground italic">{tc('diceLog.empty')}</p>
+          ) : (
+            <div className="max-h-48 overflow-y-auto">
+              {sharedLog.map((r) => (
+                <div
+                  key={r.id}
+                  className="flex items-center justify-between gap-2 py-1 border-b border-border/40 last:border-0 text-xs"
+                >
+                  <span className="truncate">
+                    <span className="font-semibold">{r.characters?.name ?? tc('diceLog.unknownRoller')}</span>
+                    {r.label ? ` · ${r.label}` : ''}
+                    <span className="text-muted-foreground font-mono"> {r.formula}</span>
+                  </span>
+                  <span className="flex items-center gap-1.5 shrink-0">
+                    <span className="text-muted-foreground/60 text-[10px]">[{r.detail?.rolls?.join(', ')}]</span>
+                    <span className="font-bold text-sm">{r.result}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Local roll history (no campaign context) */}
+      {!compact && !campaignId && (
         <div>
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">

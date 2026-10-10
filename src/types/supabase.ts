@@ -450,6 +450,54 @@ export type Database = {
           },
         ]
       }
+      roll_log: {
+        Row: {
+          campaign_id: string
+          character_id: string | null
+          created_at: string | null
+          detail: Json | null
+          formula: string | null
+          id: string
+          label: string | null
+          result: number | null
+        }
+        Insert: {
+          campaign_id: string
+          character_id?: string | null
+          created_at?: string | null
+          detail?: Json | null
+          formula?: string | null
+          id?: string
+          label?: string | null
+          result?: number | null
+        }
+        Update: {
+          campaign_id?: string
+          character_id?: string | null
+          created_at?: string | null
+          detail?: Json | null
+          formula?: string | null
+          id?: string
+          label?: string | null
+          result?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roll_log_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roll_log_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sessions: {
         Row: {
           campaign_id: string

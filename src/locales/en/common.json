@@ -1426,5 +1426,15 @@
         "description": "Use a nonmagical object, such as operating a device or applying a tool, when it needs an action."
       }
     }
+  },
+  "diceLog": {
+    "title": "Campaign Rolls",
+    "empty": "No shared rolls yet",
+    "advantage": "Advantage",
+    "disadvantage": "Disadvantage",
+    "critical": "Critical hit (double dice)",
+    "natural20": "Natural 20",
+    "natural1": "Natural 1",
+    "unknownRoller": "Unknown"
   }
 }

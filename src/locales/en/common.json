@@ -1448,5 +1448,35 @@
     "alwaysPreparedNote": "Cantrips and always-prepared spells do not count against your limit.",
     "empty": "No spells available to prepare.",
     "done": "Done"
+  },
+  "activeEffects": {
+    "title": "Active Effects",
+    "hint": "Toggle effects that change your numbers. A Long Rest clears them.",
+    "names": {
+      "rage": "Rage",
+      "bless": "Bless",
+      "bane": "Bane",
+      "shield-of-faith": "Shield of Faith",
+      "shield": "Shield",
+      "haste": "Haste",
+      "hunters-mark": "Hunter's Mark",
+      "hex": "Hex",
+      "dodge": "Dodge",
+      "reckless-attack": "Reckless Attack",
+      "mage-armor": "Mage Armor",
+      "barkskin": "Barkskin",
+      "invisible": "Invisible"
+    },
+    "badge": {
+      "adv": "ADV",
+      "dis": "DIS"
+    },
+    "summary": {
+      "checks": "{{ability}} checks",
+      "saves": "{{ability}} saves",
+      "attacksAgainst": "Attacks against you",
+      "resistances": "Resistance: {{types}}",
+      "d20Penalty": "{{value}} to every d20 test"
+    }
   }
 }

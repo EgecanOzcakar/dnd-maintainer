@@ -1855,6 +1855,10 @@
       "name": "Innate Sorcery",
       "description": "An event in your past, or in the past of a parent or ancestor, left an indelible mark on you, infusing you with a mote of magic. This unpredictable magic is a sorcery that is part of you."
     },
+    "sorcerer-epic-boon": {
+      "name": "Epic Boon",
+      "description": "At this level you pick an Epic Boon feat (or another feat you qualify for)."
+    },
     "sorcerer-font-of-magic": {
       "name": "Font of Magic",
       "description": "You tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects."
@@ -1923,6 +1927,102 @@
       "name": "Eldritch Invocations",
       "description": "In your study of occult lore, you have unearthed Eldritch Invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability."
     },
+    "warlock-pact-magic": {
+      "name": "Pact Magic",
+      "description": "Your spell slots come from a small pool that all share one level and refill on a Short or Long Rest."
+    },
+    "warlock-contact-patron": {
+      "name": "Contact Patron",
+      "description": "You can reach out to your patron with Contact Other Plane, without a slot or components, once per Long Rest and with no risk from the save."
+    },
+    "warlock-epic-boon": {
+      "name": "Epic Boon",
+      "description": "At this level you pick an Epic Boon feat (or another feat you qualify for)."
+    },
+    "warlock-invocation-agonizing-blast": {
+      "name": "Agonizing Blast",
+      "description": "Add your Charisma modifier to the damage of a chosen Warlock cantrip."
+    },
+    "warlock-invocation-armor-of-shadows": {
+      "name": "Armor of Shadows",
+      "description": "You can cast Mage Armor on yourself at will without a slot or material components."
+    },
+    "warlock-invocation-ascendant-step": {
+      "name": "Ascendant Step",
+      "description": "You can cast Levitate on yourself at will without a slot or material components."
+    },
+    "warlock-invocation-devils-sight": {
+      "name": "Devil’s Sight",
+      "description": "You can see normally in darkness, magical or not, out to 120 feet."
+    },
+    "warlock-invocation-devouring-blade": {
+      "name": "Devouring Blade",
+      "description": "Your pact weapon attacks give you an extra attack when you take the Attack action."
+    },
+    "warlock-invocation-eldritch-mind": {
+      "name": "Eldritch Mind",
+      "description": "You have Advantage on Constitution saves made to maintain Concentration."
+    },
+    "warlock-invocation-eldritch-smite": {
+      "name": "Eldritch Smite",
+      "description": "Once per turn when you hit with your pact weapon, expend a Pact slot to deal extra Force damage and knock a target prone."
+    },
+    "warlock-invocation-fiendish-vigor": {
+      "name": "Fiendish Vigor",
+      "description": "You can cast False Life on yourself at its lowest level without a slot or material components."
+    },
+    "warlock-invocation-gaze-of-two-minds": {
+      "name": "Gaze of Two Minds",
+      "description": "You can touch a willing creature and perceive through its senses until the end of your next turn."
+    },
+    "warlock-invocation-lessons-of-the-first-ones": {
+      "name": "Lessons of the First Ones",
+      "description": "You gain an Origin feat of your choice."
+    },
+    "warlock-invocation-lifedrinker": {
+      "name": "Lifedrinker",
+      "description": "Your pact weapon deals extra Necrotic, Psychic, or Radiant damage equal to your Charisma modifier."
+    },
+    "warlock-invocation-mask-of-many-faces": {
+      "name": "Mask of Many Faces",
+      "description": "You can cast Disguise Self at will without a slot."
+    },
+    "warlock-invocation-master-of-myriad-forms": {
+      "name": "Master of Myriad Forms",
+      "description": "You can cast Alter Self at will without a slot."
+    },
+    "warlock-invocation-misty-visions": {
+      "name": "Misty Visions",
+      "description": "You can cast Silent Image at will without a slot or components."
+    },
+    "warlock-invocation-one-with-shadows": {
+      "name": "One with Shadows",
+      "description": "While in dim light or darkness you can turn Invisible until you move or take an action or Reaction."
+    },
+    "warlock-invocation-otherworldly-leap": {
+      "name": "Otherworldly Leap",
+      "description": "You can cast Jump on yourself at will without a slot or material components."
+    },
+    "warlock-invocation-repelling-blast": {
+      "name": "Repelling Blast",
+      "description": "When you hit a creature with a chosen Warlock cantrip attack, you can push it 10 feet away."
+    },
+    "warlock-invocation-thirsting-blade": {
+      "name": "Thirsting Blade",
+      "description": "You can make two attacks with your pact weapon when you take the Attack action."
+    },
+    "warlock-invocation-visions-of-distant-realms": {
+      "name": "Visions of Distant Realms",
+      "description": "You can cast Arcane Eye at will without a slot."
+    },
+    "warlock-invocation-whispers-of-the-grave": {
+      "name": "Whispers of the Grave",
+      "description": "You can cast Speak with Dead at will without a slot."
+    },
+    "warlock-invocation-witch-sight": {
+      "name": "Witch Sight",
+      "description": "You can see the true form of shapechangers and creatures hidden by illusion within 30 feet."
+    },
     "warlock-magical-cunning": {
       "name": "Magical Cunning",
       "description": "You can perform an esoteric rite for 1 minute. At the end of it, you regain expended Pact Magic spell slots up to half of their maximum number (round up)."
@@ -1970,6 +2070,14 @@
     "wizard-arcane-recovery": {
       "name": "Arcane Recovery",
       "description": "You have learned to regain some of your magical energy by studying your spellbook. Once per day when you finish a short rest, you can choose expended spell slots to recover."
+    },
+    "wizard-ritual-adept": {
+      "name": "Ritual Adept",
+      "description": "You can cast any spell in your spellbook as a ritual if it has the Ritual tag, without preparing it."
+    },
+    "wizard-epic-boon": {
+      "name": "Epic Boon",
+      "description": "At this level you pick an Epic Boon feat (or another feat you qualify for)."
     },
     "wizard-scholar": {
       "name": "Scholar",

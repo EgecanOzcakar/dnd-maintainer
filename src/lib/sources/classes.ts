@@ -1,5 +1,5 @@
 import { makeQuickBuild, type ClassSource } from '@/types/sources';
-import type { FeatureChoiceGrant } from '@/types/grants';
+import type { FeatureChoiceGrant, Grant, SpellChoiceGrant } from '@/types/grants';
 import { createChoiceKey } from '@/types/choices';
 import { FIGHTING_STYLE_IDS } from '@/lib/dnd-helpers';
 
@@ -71,6 +71,95 @@ const SORCERER_METAMAGIC_OPTIONS: FeatureChoiceGrant['options'] = [
     grants: [{ type: 'feature', feature: { id: 'metamagic-twinned-spell' } }],
   },
 ];
+
+type FullCasterId = 'sorcerer' | 'warlock' | 'wizard';
+
+/** A spell-choice grant: `count` picks of exactly `spellLevel` from the class list (0 = cantrips). */
+const spellPick = (classId: FullCasterId, n: number, count: number, spellLevel: SpellChoiceGrant['spellLevel']) =>
+  ({
+    type: 'spell-choice',
+    key: createChoiceKey('spell-choice', 'class', classId, n),
+    count,
+    spellList: classId,
+    spellLevel,
+  }) as const satisfies SpellChoiceGrant;
+
+/** Standard ASI-or-General-feat pair for the nth Ability Score Improvement of a class. */
+const asiOrFeat = (classId: FullCasterId, n: number): readonly Grant[] => [
+  { type: 'asi', key: createChoiceKey('asi', 'class', classId, n), points: 2, from: null },
+  {
+    type: 'feat-choice',
+    key: createChoiceKey('feat-choice', 'class', classId, n),
+    from: null,
+    category: 'general',
+  },
+];
+
+/** Level 19 Epic Boon: display feature plus an Epic Boon feat pick (reuses the old level-19 feat-choice key). */
+const epicBoon = (classId: FullCasterId, n: number): readonly Grant[] => [
+  { type: 'feature', feature: { id: `${classId}-epic-boon` } },
+  {
+    type: 'feat-choice',
+    key: createChoiceKey('feat-choice', 'class', classId, n),
+    from: null,
+    category: 'epicBoon',
+  },
+];
+
+const metamagicPick = (n: number): Grant => ({
+  type: 'feature-choice',
+  key: createChoiceKey('feature-choice', 'class', 'sorcerer', n),
+  options: SORCERER_METAMAGIC_OPTIONS,
+});
+
+const WARLOCK_INVOCATIONS = [
+  ['blade', 'warlock-pact-of-the-blade'],
+  ['chain', 'warlock-pact-of-the-chain'],
+  ['tome', 'warlock-pact-of-the-tome'],
+  ...[
+    'agonizing-blast',
+    'armor-of-shadows',
+    'ascendant-step',
+    'devils-sight',
+    'devouring-blade',
+    'eldritch-mind',
+    'eldritch-smite',
+    'fiendish-vigor',
+    'gaze-of-two-minds',
+    'lessons-of-the-first-ones',
+    'lifedrinker',
+    'mask-of-many-faces',
+    'master-of-myriad-forms',
+    'misty-visions',
+    'one-with-shadows',
+    'otherworldly-leap',
+    'repelling-blast',
+    'thirsting-blade',
+    'visions-of-distant-realms',
+    'whispers-of-the-grave',
+    'witch-sight',
+  ].map((id) => [id, `warlock-invocation-${id}`] as const),
+] as const;
+
+// Prerequisites (level/pact/cantrip) are not modelled; the player is trusted to pick legal invocations.
+const WARLOCK_INVOCATION_OPTIONS = WARLOCK_INVOCATIONS.map(([optionId, featureId]) => ({
+  optionId,
+  featureId,
+  grants: [{ type: 'feature', feature: { id: featureId } }],
+})) as unknown as FeatureChoiceGrant['options'];
+
+const invocationPick = (n: number): Grant => ({
+  type: 'feature-choice',
+  key: createChoiceKey('feature-choice', 'class', 'warlock', n),
+  options: WARLOCK_INVOCATION_OPTIONS,
+});
+
+const longRestPool = (poolId: string, value = 1): Grant => ({
+  type: 'resource-pool',
+  poolId,
+  max: { mode: 'fixed', value },
+  regen: 'long-rest',
+});
 
 export const CLASS_SOURCES: readonly ClassSource[] = [
   // ─── Barbarian ───────────────────────────────────────────────────────────────
@@ -1752,6 +1841,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
   },
 
   // ─── Sorcerer ─────────────────────────────────────────────────────────────
+  // Prepared spells (2024 table): 2,4,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22.
+  // Cantrips: 4 (L1), 5 (L4), 6 (L10). Each level's new spells are picked at that level's highest slot level.
   {
     id: 'sorcerer',
     primaryAbility: 'cha',
@@ -1780,23 +1871,10 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'spellcasting', ability: 'cha', source: 'class' },
           { type: 'feature', feature: { id: 'sorcerer-innate-sorcery' } },
+          longRestPool('innate-sorcery', 2),
           { type: 'armor-class', calculation: { mode: 'armored' } },
-          // Cantrips: 4 at Level 1
-          {
-            type: 'spell-choice',
-            key: createChoiceKey('spell-choice', 'class', 'sorcerer', 0),
-            count: 4,
-            spellList: 'sorcerer',
-            spellLevel: 0,
-          },
-          // Spells Known: 2 at Level 1
-          {
-            type: 'spell-choice',
-            key: createChoiceKey('spell-choice', 'class', 'sorcerer', 1),
-            count: 2,
-            spellList: 'sorcerer',
-            spellLevel: 1,
-          },
+          spellPick('sorcerer', 0, 4, 0),
+          spellPick('sorcerer', 1, 2, 1),
         ],
       },
       {
@@ -1809,118 +1887,58 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             max: { mode: 'class-level', classId: 'sorcerer' },
             regen: 'long-rest',
           },
-          {
-            type: 'feature-choice',
-            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 0),
-            options: SORCERER_METAMAGIC_OPTIONS,
-          },
-          {
-            type: 'feature-choice',
-            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 1),
-            options: SORCERER_METAMAGIC_OPTIONS,
-          },
+          metamagicPick(0),
+          metamagicPick(1),
+          spellPick('sorcerer', 2, 2, 1),
         ],
       },
-      { grants: [{ type: 'subclass', classId: 'sorcerer', key: createChoiceKey('subclass', 'class', 'sorcerer', 0) }] },
       {
         grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 0), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'sorcerer', 0),
-            from: null,
-            category: 'general',
-          },
+          { type: 'subclass', classId: 'sorcerer', key: createChoiceKey('subclass', 'class', 'sorcerer', 0) },
+          spellPick('sorcerer', 3, 2, 2),
         ],
       },
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      { grants: [{ type: 'feature', feature: { id: 'sorcerer-sorcery-incarnate' } }] },
+      { grants: [...asiOrFeat('sorcerer', 0), spellPick('sorcerer', 4, 1, 0), spellPick('sorcerer', 5, 1, 2)] },
       {
         grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 1), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'sorcerer', 1),
-            from: null,
-            category: 'general',
-          },
+          { type: 'feature', feature: { id: 'sorcerer-sorcerous-restoration' } },
+          longRestPool('sorcerous-restoration'),
+          spellPick('sorcerer', 6, 2, 3),
         ],
       },
-      EMPTY_LEVEL,
+      { grants: [spellPick('sorcerer', 7, 1, 3)] },
+      {
+        grants: [{ type: 'feature', feature: { id: 'sorcerer-sorcery-incarnate' } }, spellPick('sorcerer', 8, 1, 4)],
+      },
+      { grants: [...asiOrFeat('sorcerer', 1), spellPick('sorcerer', 9, 1, 4)] },
+      { grants: [spellPick('sorcerer', 10, 2, 5)] },
       {
         grants: [
           { type: 'feature', feature: { id: 'sorcerer-metamagic-options' } },
-          {
-            type: 'feature-choice',
-            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 2),
-            options: SORCERER_METAMAGIC_OPTIONS,
-          },
-          {
-            type: 'feature-choice',
-            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 3),
-            options: SORCERER_METAMAGIC_OPTIONS,
-          },
+          metamagicPick(2),
+          metamagicPick(3),
+          spellPick('sorcerer', 11, 1, 0),
+          spellPick('sorcerer', 12, 1, 5),
         ],
       },
+      { grants: [spellPick('sorcerer', 13, 1, 6)] },
+      { grants: asiOrFeat('sorcerer', 2) },
+      { grants: [spellPick('sorcerer', 14, 1, 7)] },
       EMPTY_LEVEL,
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 2), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'sorcerer', 2),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 3), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'sorcerer', 3),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
-      EMPTY_LEVEL,
-      {
-        grants: [
-          { type: 'feature', feature: { id: 'sorcerer-arcane-apotheosis' } },
-          {
-            type: 'feature-choice',
-            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 4),
-            options: SORCERER_METAMAGIC_OPTIONS,
-          },
-          {
-            type: 'feature-choice',
-            key: createChoiceKey('feature-choice', 'class', 'sorcerer', 5),
-            options: SORCERER_METAMAGIC_OPTIONS,
-          },
-        ],
-      },
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'sorcerer', 4), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'sorcerer', 4),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
-      { grants: [{ type: 'feature', feature: { id: 'sorcerer-sorcerous-restoration' } }] },
+      { grants: [spellPick('sorcerer', 15, 1, 8)] },
+      { grants: asiOrFeat('sorcerer', 3) },
+      // L17: two more Metamagic options (moved from L18; choice keys 4/5 unchanged)
+      { grants: [metamagicPick(4), metamagicPick(5), spellPick('sorcerer', 16, 1, 9)] },
+      { grants: [spellPick('sorcerer', 17, 1, 9)] },
+      { grants: [...epicBoon('sorcerer', 4), spellPick('sorcerer', 18, 1, 9)] },
+      { grants: [{ type: 'feature', feature: { id: 'sorcerer-arcane-apotheosis' } }, spellPick('sorcerer', 19, 1, 9)] },
     ],
   },
 
   // ─── Warlock ──────────────────────────────────────────────────────────────
+  // Prepared spells (2024 table): 2,3,4,5,6,7,8,9,10,10,11,11,12,12,13,13,14,14,15,15 (picked at the Pact slot level).
+  // Cantrips: 2 (L1), 3 (L4), 4 (L10). Invocations: 1,3,3,5,5,6,6,7,7,7,7,8,8,8,9,9,9,10,10,10.
+  // Pact of the Blade/Chain/Tome are Eldritch Invocations in 2024 (choice 0 keeps its old option ids).
   {
     id: 'warlock',
     primaryAbility: 'cha',
@@ -1946,124 +1964,84 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'spellcasting', ability: 'cha', source: 'class' },
           { type: 'feature', feature: { id: 'warlock-eldritch-invocations' } },
-          { type: 'feature', feature: { id: 'warlock-magical-cunning' } },
+          { type: 'feature', feature: { id: 'warlock-pact-magic' } },
+          invocationPick(0),
           { type: 'armor-class', calculation: { mode: 'armored' } },
-          // Cantrips: 2 at Level 1
-          {
-            type: 'spell-choice',
-            key: createChoiceKey('spell-choice', 'class', 'warlock', 0),
-            count: 2,
-            spellList: 'warlock',
-            spellLevel: 0,
-          },
-          // Spells Known: 2 at Level 1
-          {
-            type: 'spell-choice',
-            key: createChoiceKey('spell-choice', 'class', 'warlock', 1),
-            count: 2,
-            spellList: 'warlock',
-            spellLevel: 1,
-          },
+          spellPick('warlock', 0, 2, 0),
+          spellPick('warlock', 1, 2, 1),
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'warlock-pact-magic-enhancement' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'warlock-magical-cunning' } },
+          longRestPool('magical-cunning'),
+          invocationPick(1),
+          invocationPick(2),
+          spellPick('warlock', 2, 1, 1),
+        ],
+      },
       {
         grants: [
           { type: 'subclass', classId: 'warlock', key: createChoiceKey('subclass', 'class', 'warlock', 0) },
-          {
-            type: 'feature-choice',
-            key: createChoiceKey('feature-choice', 'class', 'warlock', 0),
-            options: [
-              {
-                optionId: 'blade',
-                featureId: 'warlock-pact-of-the-blade',
-                grants: [{ type: 'feature', feature: { id: 'warlock-pact-of-the-blade' } }],
-              },
-              {
-                optionId: 'chain',
-                featureId: 'warlock-pact-of-the-chain',
-                grants: [{ type: 'feature', feature: { id: 'warlock-pact-of-the-chain' } }],
-              },
-              {
-                optionId: 'tome',
-                featureId: 'warlock-pact-of-the-tome',
-                grants: [{ type: 'feature', feature: { id: 'warlock-pact-of-the-tome' } }],
-              },
-            ],
-          },
+          spellPick('warlock', 3, 1, 2),
         ],
       },
+      { grants: [...asiOrFeat('warlock', 0), spellPick('warlock', 4, 1, 0), spellPick('warlock', 5, 1, 2)] },
+      { grants: [invocationPick(3), invocationPick(4), spellPick('warlock', 6, 1, 3)] },
+      { grants: [spellPick('warlock', 7, 1, 3)] },
+      { grants: [invocationPick(5), spellPick('warlock', 8, 1, 4)] },
+      { grants: [...asiOrFeat('warlock', 1), spellPick('warlock', 9, 1, 4)] },
       {
         grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 0), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'warlock', 0),
-            from: null,
-            category: 'general',
-          },
+          { type: 'feature', feature: { id: 'warlock-contact-patron' } },
+          longRestPool('contact-patron'),
+          invocationPick(6),
+          spellPick('warlock', 10, 1, 5),
         ],
       },
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
+      { grants: [spellPick('warlock', 11, 1, 0)] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'warlock-mystic-arcanum-6' } },
+          spellPick('warlock', 13, 1, 6),
+          spellPick('warlock', 12, 1, 5),
+        ],
+      },
+      { grants: [...asiOrFeat('warlock', 2), invocationPick(7)] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'warlock-mystic-arcanum-7' } },
+          spellPick('warlock', 15, 1, 7),
+          spellPick('warlock', 14, 1, 5),
+        ],
+      },
       EMPTY_LEVEL,
       {
         grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 1), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'warlock', 1),
-            from: null,
-            category: 'general',
-          },
+          { type: 'feature', feature: { id: 'warlock-mystic-arcanum-8' } },
+          spellPick('warlock', 17, 1, 8),
+          spellPick('warlock', 16, 1, 5),
+          invocationPick(8),
         ],
       },
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      { grants: [{ type: 'feature', feature: { id: 'warlock-mystic-arcanum-6' } }] },
+      { grants: asiOrFeat('warlock', 3) },
       {
         grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 2), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'warlock', 2),
-            from: null,
-            category: 'general',
-          },
+          { type: 'feature', feature: { id: 'warlock-mystic-arcanum-9' } },
+          spellPick('warlock', 19, 1, 9),
+          spellPick('warlock', 18, 1, 5),
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'warlock-mystic-arcanum-7' } }] },
-      EMPTY_LEVEL,
-      { grants: [{ type: 'feature', feature: { id: 'warlock-mystic-arcanum-8' } }] },
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 3), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'warlock', 3),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
-      { grants: [{ type: 'feature', feature: { id: 'warlock-mystic-arcanum-9' } }] },
-      EMPTY_LEVEL,
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'warlock', 4), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'warlock', 4),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
-      { grants: [{ type: 'feature', feature: { id: 'warlock-eldritch-master' } }] },
+      { grants: [invocationPick(9)] },
+      { grants: [...epicBoon('warlock', 4), spellPick('warlock', 20, 1, 5)] },
+      { grants: [{ type: 'feature', feature: { id: 'warlock-eldritch-master' } }, longRestPool('eldritch-master')] },
     ],
   },
 
   // ─── Wizard ───────────────────────────────────────────────────────────────
+  // Cantrips: 3 (L1), 4 (L4), 5 (L10). Spellbook: 6 spells at L1, +2 per level (picked at the highest slot level).
+  // NOTE: the 2024 prepared-spell count is a table (4,5,6,7,9,10,11,12,14,15,16,16,17,18,19,21,22,23,24,25),
+  // but getPreparedSpellCount() in dnd-helpers still uses level + INT mod.
   {
     id: 'wizard',
     primaryAbility: 'int',
@@ -2091,95 +2069,63 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             from: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'religion'],
           },
           { type: 'spellcasting', ability: 'int', source: 'class' },
+          { type: 'feature', feature: { id: 'wizard-ritual-adept' } },
           { type: 'feature', feature: { id: 'wizard-arcane-recovery' } },
+          longRestPool('arcane-recovery'),
           { type: 'armor-class', calculation: { mode: 'armored' } },
-          // Cantrips: 3 at Level 1
-          {
-            type: 'spell-choice',
-            key: createChoiceKey('spell-choice', 'class', 'wizard', 0),
-            count: 3,
-            spellList: 'wizard',
-            spellLevel: 0,
-          },
-          // Spellbook initial spells: 6 Level 1 spells
-          {
-            type: 'spell-choice',
-            key: createChoiceKey('spell-choice', 'class', 'wizard', 1),
-            count: 6,
-            spellList: 'wizard',
-            spellLevel: 1,
-          },
+          spellPick('wizard', 0, 3, 0),
+          spellPick('wizard', 1, 6, 1),
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'wizard-scholar' } }] },
-      { grants: [{ type: 'subclass', classId: 'wizard', key: createChoiceKey('subclass', 'class', 'wizard', 0) }] },
       {
         grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 0), points: 2, from: null },
+          { type: 'feature', feature: { id: 'wizard-scholar' } },
           {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'wizard', 0),
-            from: null,
-            category: 'general',
+            type: 'expertise-choice',
+            key: createChoiceKey('expertise-choice', 'class', 'wizard', 0),
+            count: 1,
+            from: ['arcana', 'history', 'investigation', 'medicine', 'nature', 'religion'],
+            fromTools: [],
           },
+          spellPick('wizard', 2, 2, 1),
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'wizard-memorize-spell' } }] },
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
       {
         grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 1), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'wizard', 1),
-            from: null,
-            category: 'general',
-          },
+          { type: 'subclass', classId: 'wizard', key: createChoiceKey('subclass', 'class', 'wizard', 0) },
+          spellPick('wizard', 3, 2, 2),
         ],
       },
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
+      { grants: [...asiOrFeat('wizard', 0), spellPick('wizard', 4, 1, 0), spellPick('wizard', 5, 2, 2)] },
+      {
+        grants: [{ type: 'feature', feature: { id: 'wizard-memorize-spell' } }, spellPick('wizard', 6, 2, 3)],
+      },
+      { grants: [spellPick('wizard', 7, 2, 3)] },
+      { grants: [spellPick('wizard', 8, 2, 4)] },
+      { grants: [...asiOrFeat('wizard', 1), spellPick('wizard', 9, 2, 4)] },
+      { grants: [spellPick('wizard', 10, 2, 5)] },
+      { grants: [spellPick('wizard', 11, 1, 0), spellPick('wizard', 12, 2, 5)] },
+      { grants: [spellPick('wizard', 13, 2, 6)] },
+      { grants: [...asiOrFeat('wizard', 2), spellPick('wizard', 14, 2, 6)] },
+      { grants: [spellPick('wizard', 15, 2, 7)] },
+      { grants: [spellPick('wizard', 16, 2, 7)] },
+      { grants: [spellPick('wizard', 17, 2, 8)] },
+      { grants: [...asiOrFeat('wizard', 3), spellPick('wizard', 18, 2, 8)] },
+      { grants: [spellPick('wizard', 19, 2, 9)] },
+      { grants: [{ type: 'feature', feature: { id: 'wizard-spell-mastery' } }, spellPick('wizard', 20, 2, 9)] },
+      { grants: [...epicBoon('wizard', 4), spellPick('wizard', 21, 2, 9)] },
       {
         grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 2), points: 2, from: null },
+          { type: 'feature', feature: { id: 'wizard-signature-spells' } },
           {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'wizard', 2),
-            from: null,
-            category: 'general',
+            type: 'resource-pool',
+            poolId: 'signature-spells',
+            max: { mode: 'fixed', value: 2 },
+            regen: 'short-rest',
           },
+          spellPick('wizard', 22, 2, 9),
         ],
       },
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      EMPTY_LEVEL,
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 3), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'wizard', 3),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
-      EMPTY_LEVEL,
-      { grants: [{ type: 'feature', feature: { id: 'wizard-spell-mastery' } }] },
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'wizard', 4), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'wizard', 4),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
-      { grants: [{ type: 'feature', feature: { id: 'wizard-signature-spells' } }] },
     ],
   },
 ];

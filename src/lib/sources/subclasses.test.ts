@@ -6,36 +6,28 @@ import type { CharacterBuild } from '@/types/choices';
 import type { ClassId, SpeciesId, BackgroundId } from '@/lib/dnd-helpers';
 import { resolveCharacter } from '@/lib/resolver';
 
-describe('assassin skill-expertise grant', () => {
-  it('assassin level 9 has exactly 2 grants: feature and skill-expertise: deception', () => {
+describe('assassin full table', () => {
+  it('has features at L3, L9, L13, L17 and no Deception expertise (2024 PHB)', () => {
     const source = getSubclassSource('assassin');
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 9, 13, 17]);
     const level9 = source?.features.find((f) => f.classLevel === 9);
-    expect(level9).toBeDefined();
-    expect(level9!.grants).toHaveLength(2);
-    expect(level9!.grants).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'assassin-infiltration-expertise' }),
-        }),
-        expect.objectContaining({ type: 'skill-expertise', skill: 'deception' }),
-      ])
-    );
+    expect(level9!.grants).toEqual([
+      expect.objectContaining({
+        type: 'feature',
+        feature: expect.objectContaining({ id: 'assassin-infiltration-expertise' }),
+      }),
+    ]);
   });
 });
 
-describe('thief skill-expertise grant', () => {
-  it('thief level 9 has exactly 2 grants: feature and skill-expertise: stealth', () => {
+describe('thief full table', () => {
+  it('has features at L3, L9, L13, L17 and no Stealth expertise (2024 PHB)', () => {
     const source = getSubclassSource('thief');
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 9, 13, 17]);
     const level9 = source?.features.find((f) => f.classLevel === 9);
-    expect(level9).toBeDefined();
-    expect(level9!.grants).toHaveLength(2);
-    expect(level9!.grants).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ type: 'feature', feature: expect.objectContaining({ id: 'thief-supreme-sneak' }) }),
-        expect.objectContaining({ type: 'skill-expertise', skill: 'stealth' }),
-      ])
-    );
+    expect(level9!.grants).toEqual([
+      expect.objectContaining({ type: 'feature', feature: expect.objectContaining({ id: 'thief-supreme-sneak' }) }),
+    ]);
   });
 
   it('thief level 3 has Second-Story Work walk-equivalent climb grant (2024 PHB)', () => {
@@ -1908,10 +1900,10 @@ describe('getSubclassSource — Beast Master', () => {
     expect(getSubclassSource('beastmaster')).toBeDefined();
   });
 
-  it('beastmaster has 2 feature levels (L3, L7)', () => {
+  it('beastmaster has 4 feature levels (L3, L7, L11, L15)', () => {
     const source = getSubclassSource('beastmaster');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 7]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 7, 11, 15]);
   });
 
   it('beastmaster level 3 grants 1 feature: primal-companion', () => {
@@ -1942,10 +1934,10 @@ describe('getSubclassSource — Fey Wanderer', () => {
     expect(getSubclassSource('feywanderer')).toBeDefined();
   });
 
-  it('feywanderer has 6 feature levels (L3, L5, L7, L9, L13, L17)', () => {
+  it('feywanderer has 8 feature levels (L3, L5, L7, L9, L11, L13, L15, L17)', () => {
     const source = getSubclassSource('feywanderer');
-    expect(source?.features).toHaveLength(6);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 7, 9, 13, 17]);
+    expect(source?.features).toHaveLength(8);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 7, 9, 11, 13, 15, 17]);
   });
 
   it('feywanderer level 3 grants 4 items: dreadful-strikes, skill proficiency-choice, otherworldly-glamour, charm-person', () => {
@@ -2051,10 +2043,10 @@ describe('getSubclassSource — Gloom Stalker', () => {
     expect(getSubclassSource('gloomstalker')).toBeDefined();
   });
 
-  it('gloomstalker has 6 feature levels (L3, L5, L7, L9, L13, L17)', () => {
+  it('gloomstalker has 8 feature levels (L3, L5, L7, L9, L11, L13, L15, L17)', () => {
     const source = getSubclassSource('gloomstalker');
-    expect(source?.features).toHaveLength(6);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 7, 9, 13, 17]);
+    expect(source?.features).toHaveLength(8);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 7, 9, 11, 13, 15, 17]);
   });
 
   it('gloomstalker level 3 grants 3 items: dread-ambusher, umbral-sight, disguise-self', () => {
@@ -2140,10 +2132,10 @@ describe('getSubclassSource — Hunter', () => {
     expect(getSubclassSource('hunter')).toBeDefined();
   });
 
-  it('hunter has 2 feature levels (L3, L7)', () => {
+  it('hunter has 4 feature levels (L3, L7, L11, L15)', () => {
     const source = getSubclassSource('hunter');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 7]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 7, 11, 15]);
   });
 
   it('hunter level 3 grants 2 items: hunters-lore and hunters-prey feature-choice', () => {
@@ -2211,10 +2203,10 @@ describe('getSubclassSource — Soulknife', () => {
     expect(getSubclassSource('soulknife')).toBeDefined();
   });
 
-  it('soulknife has 2 feature levels (L3, L9)', () => {
+  it('soulknife has 4 feature levels (L3, L9, L13, L17)', () => {
     const source = getSubclassSource('soulknife');
-    expect(source?.features).toHaveLength(2);
-    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 9]);
+    expect(source?.features).toHaveLength(4);
+    expect(source?.features.map((f) => f.classLevel)).toEqual([3, 9, 13, 17]);
   });
 
   it('soulknife level 3 grants psionic-power, the rogue-keyed psionic-energy pool, and psychic-blades', () => {

@@ -1084,6 +1084,20 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'beastmaster-exceptional-training' } },
         ],
       },
+      {
+        classLevel: 11,
+        grants: [
+          // Bestial Fury: companion deals extra 1d11 Force damage once per turn; Hunter's Mark synergy
+          { type: 'feature', feature: { id: 'beastmaster-bestial-fury' } },
+        ],
+      },
+      {
+        classLevel: 15,
+        grants: [
+          // Share Spells: spells you cast on yourself also affect your companion within 30 ft
+          { type: 'feature', feature: { id: 'beastmaster-share-spells' } },
+        ],
+      },
     ] satisfies readonly SubclassFeature[],
   },
   feywanderer: {
@@ -1131,10 +1145,24 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         ],
       },
       {
+        classLevel: 11,
+        grants: [
+          // Fey Reinforcements: cast Summon Fey without a slot once per Long Rest, no Material component; Dreadful Strikes die becomes d6
+          { type: 'feature', feature: { id: 'feywanderer-fey-reinforcements' } },
+        ],
+      },
+      {
         classLevel: 13,
         grants: [
           // Fey Wanderer Spells — L13 tier
           { type: 'spell', spellId: 'dimension-door', alwaysPrepared: true },
+        ],
+      },
+      {
+        classLevel: 15,
+        grants: [
+          // Misty Wanderer: cast Misty Step without a slot (WIS mod times per Long Rest), bringing one ally along
+          { type: 'feature', feature: { id: 'feywanderer-misty-wanderer' } },
         ],
       },
       {
@@ -1185,6 +1213,20 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Gloom Stalker Spells — L9 tier
           { type: 'spell', spellId: 'fear', alwaysPrepared: true },
+        ],
+      },
+      {
+        classLevel: 11,
+        grants: [
+          // Stalker's Flurry: once per turn on a weapon miss, make another weapon attack as part of the same action
+          { type: 'feature', feature: { id: 'gloomstalker-stalkers-flurry' } },
+        ],
+      },
+      {
+        classLevel: 15,
+        grants: [
+          // Shadowy Dodge: Reaction to impose Disadvantage on an attack and teleport 30 ft
+          { type: 'feature', feature: { id: 'gloomstalker-shadowy-dodge' } },
         ],
       },
       {
@@ -1251,6 +1293,20 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           },
         ],
       },
+      {
+        classLevel: 11,
+        grants: [
+          // Superior Hunter's Prey: once per turn, Hunter's Mark damage also hits a second creature within 30 ft
+          { type: 'feature', feature: { id: 'hunter-superior-hunters-prey' } },
+        ],
+      },
+      {
+        classLevel: 15,
+        grants: [
+          // Superior Hunter's Defense: Reaction to gain Resistance to one damage type until end of turn
+          { type: 'feature', feature: { id: 'hunter-superior-hunters-defense' } },
+        ],
+      },
     ] satisfies readonly SubclassFeature[],
   },
   // Rogue
@@ -1269,8 +1325,22 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 9,
         grants: [
-          { type: 'skill-expertise', skill: 'stealth' },
+          // Supreme Sneak (2024 PHB): Stealth Attack Cunning Strike option — no Expertise.
           { type: 'feature', feature: { id: 'thief-supreme-sneak' } },
+        ],
+      },
+      {
+        classLevel: 13,
+        grants: [
+          // Use Magic Device: attune to 4 more items, charge-saving and scroll use
+          { type: 'feature', feature: { id: 'thief-use-magic-device' } },
+        ],
+      },
+      {
+        classLevel: 17,
+        grants: [
+          // Thief's Reflexes: take two turns in the first round of combat
+          { type: 'feature', feature: { id: 'thief-thiefs-reflexes' } },
         ],
       },
     ],
@@ -1288,8 +1358,22 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 9,
         grants: [
-          { type: 'skill-expertise', skill: 'deception' },
+          // Infiltration Expertise (2024 PHB): Masterful Mimicry + Roving Aim — no Expertise grant.
           { type: 'feature', feature: { id: 'assassin-infiltration-expertise' } },
+        ],
+      },
+      {
+        classLevel: 13,
+        grants: [
+          // Envenom Weapons: Poison Cunning Strike deals extra 2d6 poison damage
+          { type: 'feature', feature: { id: 'assassin-envenom-weapons' } },
+        ],
+      },
+      {
+        classLevel: 17,
+        grants: [
+          // Death Strike: first-turn Sneak Attack hit forces CON save or double damage
+          { type: 'feature', feature: { id: 'assassin-death-strike' } },
         ],
       },
     ],
@@ -1304,6 +1388,20 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         ],
       },
       { classLevel: 9, grants: [{ type: 'feature', feature: { id: 'arcanetrickster-magical-ambush' } }] },
+      {
+        classLevel: 13,
+        grants: [
+          // Versatile Trickster: Mage Hand distraction gives Advantage on attacks
+          { type: 'feature', feature: { id: 'arcanetrickster-versatile-trickster' } },
+        ],
+      },
+      {
+        classLevel: 17,
+        grants: [
+          // Spell Thief: steal a spell cast at you, once per Long Rest
+          { type: 'feature', feature: { id: 'arcanetrickster-spell-thief' } },
+        ],
+      },
     ],
   },
   soulknife: {
@@ -1350,6 +1448,20 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Umbrella feature for Soul Blades options (Homing Strikes, Psychic Teleportation).
           { type: 'feature', feature: { id: 'soulknife-soul-blades' } },
+        ],
+      },
+      {
+        classLevel: 13,
+        grants: [
+          // Psychic Veil: become Invisible for 1 hour (Psionic Energy die refreshes use)
+          { type: 'feature', feature: { id: 'soulknife-psychic-veil' } },
+        ],
+      },
+      {
+        classLevel: 17,
+        grants: [
+          // Rend Mind: Sneak Attack can Stun on failed WIS save
+          { type: 'feature', feature: { id: 'soulknife-rend-mind' } },
         ],
       },
     ] satisfies readonly SubclassFeature[],

@@ -2,6 +2,7 @@ import type { ClassId } from '@/lib/dnd-helpers';
 import type { SubclassFeature, SubclassSource } from '@/types/sources';
 import { createChoiceKey } from '@/types/choices';
 import { FIGHTING_STYLE_IDS } from '@/lib/dnd-helpers';
+import { ARTISAN_TOOL_IDS } from '@/lib/sources/tool-groups';
 
 export const SUBCLASS_IDS_BY_CLASS = {
   barbarian: ['berserker', 'wildheart', 'worldtree', 'zealot'],
@@ -461,7 +462,10 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         classLevel: 10,
         grants: [{ type: 'feature', feature: { id: 'circleland-natures-ward' } }],
       },
-      { classLevel: 14, grants: [{ type: 'feature', feature: { id: 'circleland-natures-sanctuary' } }] },
+      {
+        classLevel: 14,
+        grants: [{ type: 'feature', feature: { id: 'circleland-natures-sanctuary' } }],
+      },
     ] satisfies readonly SubclassFeature[],
   },
   circlemoon: {
@@ -472,8 +476,12 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           // Circle Forms: Wild Shape up to CR = floor(druid level / 3), min CR 1; swim/fly speed allowed at L3
           // Wild Shape mechanics (CR cap, resource pools) modeled as inert feature grant
           { type: 'feature', feature: { id: 'circlemoon-circle-forms' } },
-          // Improved Wild Shape: use Wild Shape as Bonus Action; 2 uses replenish on Short Rest
-          { type: 'feature', feature: { id: 'circlemoon-improved-wild-shape' } },
+          // Circle of the Moon spells (2024 PHB), gated by druid level like Circle of the Land.
+          // Missing from SPELL_CATALOG at time of writing: starry-wisp (L3), conjure-animals (L5),
+          // fount-of-moonlight (L7) — add once the catalog has them.
+          { type: 'spell', spellId: 'cure-wounds', alwaysPrepared: true },
+          { type: 'spell', spellId: 'moonbeam', alwaysPrepared: true },
+          { type: 'spell', spellId: 'mass-cure-wounds', alwaysPrepared: true, minClassLevel: 9 },
         ],
       },
       {
@@ -486,11 +494,23 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 10,
         grants: [
-          // Expend 2 Wild Shape uses to transform into an Air/Earth/Fire/Water Elemental
-          { type: 'feature', feature: { id: 'circlemoon-elemental-wild-shape' } },
+          // Moonlight Step: teleport 30 ft as a Bonus Action with Advantage on next attack; PB uses per Long Rest
+          { type: 'feature', feature: { id: 'circlemoon-moonlight-step' } },
+          {
+            type: 'resource-pool',
+            poolId: 'moonlight-step',
+            max: { mode: 'proficiency-bonus', classId: 'druid' },
+            regen: 'long-rest',
+          },
         ],
       },
-      { classLevel: 14, grants: [{ type: 'feature', feature: { id: 'circlemoon-lunar-form' } }] },
+      {
+        classLevel: 14,
+        grants: [
+          // Lunar Form: extra Radiant damage once per turn in Wild Shape; share Moonlight Step teleport
+          { type: 'feature', feature: { id: 'circlemoon-lunar-form' } },
+        ],
+      },
     ] satisfies readonly SubclassFeature[],
   },
   circlesea: {
@@ -500,6 +520,14 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Wrath of the Sea aura within 10 ft on Wild Shape entry; Bonus Action cold/lightning damage
           { type: 'feature', feature: { id: 'circlesea-wrath-of-the-sea' } },
+          // Circle of the Sea spells (2024 PHB), gated by druid level. Missing from SPELL_CATALOG:
+          // gust-of-wind, shatter, thunderwave (L3), water-breathing (L5), control-water (L7),
+          // conjure-elemental (L9).
+          { type: 'spell', spellId: 'fog-cloud', alwaysPrepared: true },
+          { type: 'spell', spellId: 'ray-of-frost', alwaysPrepared: true },
+          { type: 'spell', spellId: 'lightning-bolt', alwaysPrepared: true, minClassLevel: 5 },
+          { type: 'spell', spellId: 'ice-storm', alwaysPrepared: true, minClassLevel: 7 },
+          { type: 'spell', spellId: 'hold-monster', alwaysPrepared: true, minClassLevel: 9 },
         ],
       },
       {
@@ -521,7 +549,13 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'speed', mode: 'fly', value: 30, condition: 'not-enclosed' },
         ],
       },
-      { classLevel: 14, grants: [{ type: 'feature', feature: { id: 'circlesea-oceanic-gift' } }] },
+      {
+        classLevel: 14,
+        grants: [
+          // Oceanic Gift: Wrath of the Sea aura can be extended to an ally; inert
+          { type: 'feature', feature: { id: 'circlesea-oceanic-gift' } },
+        ],
+      },
     ] satisfies readonly SubclassFeature[],
   },
   circlestars: {
@@ -531,6 +565,15 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Star Map: grants access to Archer/Chalice/Dragon constellation forms on Wild Shape activation
           { type: 'feature', feature: { id: 'circlestars-star-map' } },
+          // Star Map: Guidance cantrip and Guiding Bolt always prepared; Guiding Bolt can be cast free PB times per Long Rest
+          { type: 'spell', spellId: 'guidance', alwaysPrepared: false },
+          { type: 'spell', spellId: 'guiding-bolt', alwaysPrepared: true },
+          {
+            type: 'resource-pool',
+            poolId: 'star-map-guiding-bolt',
+            max: { mode: 'proficiency-bonus', classId: 'druid' },
+            regen: 'long-rest',
+          },
           // Starry Form: use Wild Shape to manifest a constellation (Archer, Chalice, or Dragon)
           { type: 'feature', feature: { id: 'circlestars-starry-form' } },
         ],
@@ -552,29 +595,30 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'circlestars-twinkling-constellations' } },
         ],
       },
-      { classLevel: 14, grants: [{ type: 'feature', feature: { id: 'circlestars-full-of-stars' } }] },
+      {
+        classLevel: 14,
+        grants: [
+          // Full of Stars: Bludgeoning/Piercing/Slashing resistance only while in Starry Form (conditional, so inert)
+          { type: 'feature', feature: { id: 'circlestars-full-of-stars' } },
+        ],
+      },
     ] satisfies readonly SubclassFeature[],
   },
   // Fighter
   champion: {
     features: [
-      { classLevel: 3, grants: [{ type: 'feature', feature: { id: 'champion-improved-critical' } }] },
       {
-        classLevel: 7,
+        classLevel: 3,
         grants: [
+          { type: 'feature', feature: { id: 'champion-improved-critical' } },
+          // 2024: Advantage on Initiative and Athletics checks (not expressible as a grant)
           { type: 'feature', feature: { id: 'champion-remarkable-athlete' } },
-          {
-            type: 'ability-check-bonus',
-            abilities: ['str', 'dex', 'con'],
-            value: 'half-proficiency',
-            onlyWhenNotProficient: true,
-            featureId: 'champion-remarkable-athlete',
-          },
         ],
       },
       {
-        classLevel: 10,
+        classLevel: 7,
         grants: [
+          { type: 'feature', feature: { id: 'champion-additional-fighting-style' } },
           {
             type: 'fighting-style-choice',
             key: createChoiceKey('fighting-style-choice', 'class', 'fighter', 1),
@@ -583,22 +627,80 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           },
         ],
       },
+      { classLevel: 10, grants: [{ type: 'feature', feature: { id: 'champion-heroic-warrior' } }] },
       { classLevel: 15, grants: [{ type: 'feature', feature: { id: 'champion-superior-critical' } }] },
       { classLevel: 18, grants: [{ type: 'feature', feature: { id: 'champion-survivor' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   battlemaster: {
     features: [
-      { classLevel: 3, grants: [{ type: 'feature', feature: { id: 'battlemaster-combat-superiority' } }] },
+      {
+        classLevel: 3,
+        grants: [
+          { type: 'feature', feature: { id: 'battlemaster-combat-superiority' } },
+          // Superiority Dice: 4 (L3), 5 (L7), 6 (L15); die d8 -> d10 (L10) -> d12 (L18); regained on Short or Long Rest
+          {
+            type: 'resource-pool',
+            poolId: 'superiority-dice',
+            max: {
+              mode: 'level-steps',
+              classId: 'fighter',
+              steps: [
+                { minLevel: 3, value: 4 },
+                { minLevel: 7, value: 5 },
+                { minLevel: 15, value: 6 },
+              ],
+            },
+            regen: 'short-rest',
+            dieSizeSteps: [
+              { minLevel: 3, dieSize: 8 },
+              { minLevel: 10, dieSize: 10 },
+              { minLevel: 18, dieSize: 12 },
+            ],
+          },
+          { type: 'feature', feature: { id: 'battlemaster-student-of-war' } },
+          {
+            type: 'proficiency-choice',
+            category: 'tool',
+            key: createChoiceKey('tool-choice', 'subclass', 'battlemaster', 0),
+            count: 1,
+            from: ARTISAN_TOOL_IDS,
+          },
+          {
+            type: 'proficiency-choice',
+            category: 'skill',
+            key: createChoiceKey('skill-choice', 'subclass', 'battlemaster', 0),
+            count: 1,
+            from: [
+              'acrobatics',
+              'animalhandling',
+              'history',
+              'insight',
+              'intimidation',
+              'persuasion',
+              'perception',
+              'survival',
+            ],
+          },
+        ],
+      },
       { classLevel: 7, grants: [{ type: 'feature', feature: { id: 'battlemaster-know-your-enemy' } }] },
       { classLevel: 10, grants: [{ type: 'feature', feature: { id: 'battlemaster-improved-combat-superiority' } }] },
       { classLevel: 15, grants: [{ type: 'feature', feature: { id: 'battlemaster-relentless' } }] },
+      // Ultimate Combat Superiority in the 2024 PHB (id kept for stability)
       { classLevel: 18, grants: [{ type: 'feature', feature: { id: 'battlemaster-superior-combat-superiority' } }] },
-    ],
+    ] satisfies readonly SubclassFeature[],
   },
   eldritchknight: {
     features: [
-      { classLevel: 3, grants: [{ type: 'feature', feature: { id: 'eldritchknight-spellcasting' } }] },
+      {
+        classLevel: 3,
+        grants: [
+          { type: 'spellcasting', ability: 'int', source: 'class' },
+          { type: 'feature', feature: { id: 'eldritchknight-spellcasting' } },
+          { type: 'feature', feature: { id: 'eldritchknight-war-bond' } },
+        ],
+      },
       { classLevel: 7, grants: [{ type: 'feature', feature: { id: 'eldritchknight-war-magic' } }] },
       { classLevel: 10, grants: [{ type: 'feature', feature: { id: 'eldritchknight-eldritch-strike' } }] },
       { classLevel: 15, grants: [{ type: 'feature', feature: { id: 'eldritchknight-arcane-charge' } }] },
@@ -718,8 +820,23 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           },
         ],
       },
-      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'warriorofmercy-flurry-of-healing-and-harm' } }] },
-      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'warriorofmercy-hand-of-ultimate-mercy' } }] },
+      {
+        classLevel: 11,
+        grants: [{ type: 'feature', feature: { id: 'warriorofmercy-flurry-of-healing-and-harm' } }],
+      },
+      {
+        classLevel: 17,
+        grants: [
+          // Hand of Ultimate Mercy: revive a creature dead <24h; once per Long Rest
+          { type: 'feature', feature: { id: 'warriorofmercy-hand-of-ultimate-mercy' } },
+          {
+            type: 'resource-pool',
+            poolId: 'hand-of-ultimate-mercy',
+            max: { mode: 'fixed', value: 1 },
+            regen: 'long-rest',
+          },
+        ],
+      },
     ] satisfies readonly SubclassFeature[],
   },
   warriorofshadow: {
@@ -771,8 +888,16 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           },
         ],
       },
-      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'warriorofelements-stride-of-the-elements' } }] },
-      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'warriorofelements-elemental-epitome' } }] },
+      {
+        // Fly/swim speed only while Elemental Attunement is active (conditional, so inert)
+        classLevel: 11,
+        grants: [{ type: 'feature', feature: { id: 'warriorofelements-stride-of-the-elements' } }],
+      },
+      {
+        // Damage resistance / extra reach while attuned (conditional, so inert)
+        classLevel: 17,
+        grants: [{ type: 'feature', feature: { id: 'warriorofelements-elemental-epitome' } }],
+      },
     ] satisfies readonly SubclassFeature[],
   },
   warrioropenhand: {
@@ -793,10 +918,19 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Bonus Action: regain HP equal to 3× Martial Arts die roll; usable PB times per long rest
           { type: 'feature', feature: { id: 'warrioropenhand-wholeness-of-body' } },
+          {
+            type: 'resource-pool',
+            poolId: 'wholeness-of-body',
+            max: { mode: 'proficiency-bonus', classId: 'monk' },
+            regen: 'long-rest',
+          },
         ],
       },
       { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'warrioropenhand-fleet-step' } }] },
-      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'warrioropenhand-quivering-palm' } }] },
+      {
+        classLevel: 17,
+        grants: [{ type: 'feature', feature: { id: 'warrioropenhand-quivering-palm', saveDC: { dcAbility: 'wis' } } }],
+      },
     ] satisfies readonly SubclassFeature[],
   },
   // Paladin

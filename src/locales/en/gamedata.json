@@ -239,6 +239,18 @@
       "name": "Fighting Style",
       "description": "You adopt a particular style of fighting as your specialty."
     },
+    "fighter-tactical-mind": {
+      "name": "Tactical Mind",
+      "description": "When an ability check fails, you can spend a use of Second Wind to roll a d10 and add it to the check; if it still fails, the use is not spent."
+    },
+    "fighter-tactical-shift": {
+      "name": "Tactical Shift",
+      "description": "Whenever you use Second Wind, you can move up to half your Speed without provoking opportunity attacks."
+    },
+    "fighter-tactical-master": {
+      "name": "Tactical Master",
+      "description": "When you attack with a weapon whose mastery you have, you can swap that property for Push, Sap, or Slow for the attack."
+    },
     "fighter-second-wind": {
       "name": "Second Wind",
       "description": "You have a limited well of stamina that you can draw on to protect yourself from harm."
@@ -259,9 +271,13 @@
       "name": "Improved Critical",
       "description": "Your weapon attacks score a critical hit on a roll of 19 or 20."
     },
+    "champion-heroic-warrior": {
+      "name": "Heroic Warrior",
+      "description": "During combat, you can give yourself Heroic Inspiration at the start of each of your turns if you do not already have it."
+    },
     "champion-remarkable-athlete": {
       "name": "Remarkable Athlete",
-      "description": "Add half your proficiency bonus (round up) to any STR, DEX, or CON checks that don't already use your proficiency bonus."
+      "description": "You have Advantage on Initiative rolls and Athletics checks, and after scoring a Critical Hit you can move up to half your Speed without provoking opportunity attacks."
     },
     "champion-additional-fighting-style": {
       "name": "Additional Fighting Style",
@@ -279,6 +295,10 @@
       "name": "Combat Superiority",
       "description": "Learn three maneuvers and gain four superiority dice (d8s) to fuel them."
     },
+    "battlemaster-student-of-war": {
+      "name": "Student of War",
+      "description": "You gain proficiency with one type of Artisan's Tools of your choice and one skill from a short list of martial skills."
+    },
     "battlemaster-know-your-enemy": {
       "name": "Know Your Enemy",
       "description": "As a Bonus Action, you can study a creature you can observe for at least 1 round. You learn how the creature compares to you in two characteristics of your choice: STR score, DEX score, CON score, AC, current HP, total class levels (if any), or Fighter levels (if any)."
@@ -292,12 +312,16 @@
       "description": "When you roll initiative and have no superiority dice remaining, you regain one."
     },
     "battlemaster-superior-combat-superiority": {
-      "name": "Superior Combat Superiority",
+      "name": "Ultimate Combat Superiority",
       "description": "Superiority dice become d12s."
     },
     "eldritchknight-spellcasting": {
       "name": "Spellcasting",
       "description": "Learn two cantrips and three 1st-level wizard spells. Intelligence is your spellcasting ability."
+    },
+    "eldritchknight-war-bond": {
+      "name": "War Bond",
+      "description": "You can bond with up to two weapons during a Short Rest, summon a bonded weapon to your hand as a Bonus Action, and cannot be disarmed of it."
     },
     "eldritchknight-war-magic": {
       "name": "War Magic",
@@ -1367,6 +1391,14 @@
       "name": "Primal Order: Magician",
       "description": "You know one extra Druid cantrip. In addition, your mystical connection to nature gives you a bonus to Intelligence (Arcana) checks equal to your Wisdom modifier."
     },
+    "druid-druidic": {
+      "name": "Druidic",
+      "description": "You know the secret druidic code language and can hide messages in it; you always have Speak with Animals prepared."
+    },
+    "druid-epic-boon": {
+      "name": "Epic Boon",
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify."
+    },
     "druid-primal-order-warden": {
       "name": "Primal Order: Warden",
       "description": "Trained for battle, you gain proficiency with Martial weapons and the ability to wear Medium armor."
@@ -1443,6 +1475,10 @@
       "name": "Circle Forms",
       "description": "You can use Wild Shape to transform into a Beast with a CR equal to one-third your Druid level (rounded down, minimum CR 1). Beasts with a Swim or Fly speed are available starting at level 3."
     },
+    "circlemoon-moonlight-step": {
+      "name": "Moonlight Step",
+      "description": "As a Bonus Action you teleport up to 30 feet and gain Advantage on your next attack before the end of the turn. You can do this a number of times equal to your proficiency bonus per Long Rest."
+    },
     "circlemoon-improved-wild-shape": {
       "name": "Improved Wild Shape",
       "description": "You can use Wild Shape as a Bonus Action. In addition, you regain 2 expended uses of Wild Shape whenever you finish a Short Rest."
@@ -1486,6 +1522,10 @@
     "monk-martial-arts": {
       "name": "Martial Arts",
       "description": "Your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons."
+    },
+    "monk-deflect-energy": {
+      "name": "Deflect Energy",
+      "description": "You can use Deflect Attacks against attacks that deal any damage type, not just bludgeoning, piercing, or slashing."
     },
     "monk-unarmored-defense": {
       "name": "Unarmored Defense",

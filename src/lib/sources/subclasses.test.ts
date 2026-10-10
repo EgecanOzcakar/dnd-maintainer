@@ -56,40 +56,30 @@ describe('getSubclassSource — Champion', () => {
     expect(source?.features).toHaveLength(5);
   });
 
-  it('champion level 3 feature grants champion-improved-critical', () => {
+  it('champion level 3 grants improved-critical and remarkable-athlete', () => {
     const source = getSubclassSource('champion');
     const level3Feature = source?.features.find((f) => f.classLevel === 3);
-    expect(level3Feature).toBeDefined();
-    expect(level3Feature?.grants).toHaveLength(1);
-    const grant = level3Feature?.grants[0];
-    expect(grant?.type).toBe('feature');
-    if (grant?.type === 'feature') {
-      expect(grant.feature.id).toBe('champion-improved-critical');
-    }
+    expect(level3Feature?.grants).toEqual([
+      { type: 'feature', feature: { id: 'champion-improved-critical' } },
+      { type: 'feature', feature: { id: 'champion-remarkable-athlete' } },
+    ]);
   });
 
-  it('champion level 7 feature grants remarkable athlete with ability-check-bonus', () => {
+  it('champion level 7 grants additional-fighting-style with a fighting-style-choice', () => {
     const source = getSubclassSource('champion');
     const level7Feature = source?.features.find((f) => f.classLevel === 7);
-    expect(level7Feature).toBeDefined();
     expect(level7Feature?.grants).toHaveLength(2);
-    expect(level7Feature?.grants[0]).toMatchObject({ type: 'feature', feature: { id: 'champion-remarkable-athlete' } });
-    expect(level7Feature?.grants[1]).toMatchObject({
-      type: 'ability-check-bonus',
-      abilities: ['str', 'dex', 'con'],
-      value: 'half-proficiency',
-      onlyWhenNotProficient: true,
-      featureId: 'champion-remarkable-athlete',
+    expect(level7Feature?.grants[0]).toMatchObject({
+      type: 'feature',
+      feature: { id: 'champion-additional-fighting-style' },
     });
+    expect(level7Feature?.grants[1].type).toBe('fighting-style-choice');
   });
 
-  it('champion level 10 grants a fighting-style-choice', () => {
+  it('champion level 10 grants heroic-warrior', () => {
     const source = getSubclassSource('champion');
     const level10Feature = source?.features.find((f) => f.classLevel === 10);
-    expect(level10Feature).toBeDefined();
-    expect(level10Feature?.grants).toHaveLength(1);
-    const grant = level10Feature?.grants[0];
-    expect(grant?.type).toBe('fighting-style-choice');
+    expect(level10Feature?.grants).toEqual([{ type: 'feature', feature: { id: 'champion-heroic-warrior' } }]);
   });
 
   it('champion feature classLevels are 3, 7, 10, 15, 18', () => {
@@ -928,23 +918,12 @@ describe('getSubclassSource — Circle of the Moon', () => {
     expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
-  it('circlemoon level 3 grants 2 features: circle-forms and improved-wild-shape', () => {
+  it('circlemoon level 3 grants circle-forms plus always-prepared circle spells', () => {
     const source = getSubclassSource('circlemoon');
     const level3 = source?.features.find((f) => f.classLevel === 3);
-    expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(2);
-    expect(level3?.grants).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'circlemoon-circle-forms' }),
-        }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'circlemoon-improved-wild-shape' }),
-        }),
-      ])
-    );
+    expect(level3?.grants[0]).toMatchObject({ type: 'feature', feature: { id: 'circlemoon-circle-forms' } });
+    const spells = level3?.grants.flatMap((g) => (g.type === 'spell' ? [g.spellId] : []));
+    expect(spells).toEqual(['cure-wounds', 'moonbeam', 'mass-cure-wounds']);
   });
 
   it('circlemoon level 6 grants improved-circle-forms feature', () => {
@@ -958,15 +937,16 @@ describe('getSubclassSource — Circle of the Moon', () => {
     });
   });
 
-  it('circlemoon level 10 grants elemental-wild-shape feature', () => {
+  it('circlemoon level 10 grants moonlight-step feature and its pool', () => {
     const source = getSubclassSource('circlemoon');
     const level10 = source?.features.find((f) => f.classLevel === 10);
     expect(level10).toBeDefined();
-    expect(level10?.grants).toHaveLength(1);
+    expect(level10?.grants).toHaveLength(2);
     expect(level10?.grants[0]).toMatchObject({
       type: 'feature',
-      feature: { id: 'circlemoon-elemental-wild-shape' },
+      feature: { id: 'circlemoon-moonlight-step' },
     });
+    expect(level10?.grants[1]).toMatchObject({ type: 'resource-pool', poolId: 'moonlight-step' });
   });
 });
 
@@ -981,15 +961,16 @@ describe('getSubclassSource — Circle of the Sea', () => {
     expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
-  it('circlesea level 3 grants 1 feature: wrath-of-the-sea', () => {
+  it('circlesea level 3 grants wrath-of-the-sea plus circle spells', () => {
     const source = getSubclassSource('circlesea');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(1);
     expect(level3?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'circlesea-wrath-of-the-sea' },
     });
+    const spells = level3?.grants.flatMap((g) => (g.type === 'spell' ? [g.spellId] : []));
+    expect(spells).toEqual(['fog-cloud', 'ray-of-frost', 'lightning-bolt', 'ice-storm', 'hold-monster']);
   });
 
   it('circlesea level 6 grants 2 items: walk-equivalent swim speed grant and aquatic-affinity feature', () => {
@@ -1033,21 +1014,15 @@ describe('getSubclassSource — Circle of Stars', () => {
     expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
-  it('circlestars level 3 grants 2 features: star-map and starry-form', () => {
+  it('circlestars level 3 grants star-map, starry-form, Guidance and Guiding Bolt', () => {
     const source = getSubclassSource('circlestars');
     const level3 = source?.features.find((f) => f.classLevel === 3);
-    expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(2);
+    const ids = level3?.grants.flatMap((g) => (g.type === 'feature' ? [g.feature.id] : []));
+    expect(ids).toEqual(['circlestars-star-map', 'circlestars-starry-form']);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'circlestars-star-map' }),
-        }),
-        expect.objectContaining({
-          type: 'feature',
-          feature: expect.objectContaining({ id: 'circlestars-starry-form' }),
-        }),
+        { type: 'spell', spellId: 'guidance', alwaysPrepared: false },
+        { type: 'spell', spellId: 'guiding-bolt', alwaysPrepared: true },
       ])
     );
   });
@@ -1353,10 +1328,15 @@ describe('getSubclassSource — Warrior of the Open Hand', () => {
     const source = getSubclassSource('warrioropenhand');
     const level6 = source?.features.find((f) => f.classLevel === 6);
     expect(level6).toBeDefined();
-    expect(level6?.grants).toHaveLength(1);
+    expect(level6?.grants).toHaveLength(2);
     expect(level6?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'warrioropenhand-wholeness-of-body' },
+    });
+    expect(level6?.grants[1]).toMatchObject({
+      type: 'resource-pool',
+      poolId: 'wholeness-of-body',
+      max: { mode: 'proficiency-bonus', classId: 'monk' },
     });
   });
 });

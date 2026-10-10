@@ -124,6 +124,9 @@ function ResultRow({ entry }: { entry: RuleEntry }) {
   );
 }
 
+/** Rows rendered per category before "Show all": the full catalog is several hundred rows. */
+const GROUP_PREVIEW = 50;
+
 export default function RulesPage() {
   const { t: tc } = useTranslation('common');
   const { t: tg } = useTranslation('gamedata');
@@ -132,6 +135,7 @@ export default function RulesPage() {
   const [input, setInput] = useState('');
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<SpellFilters>(NO_SPELL_FILTERS);
+  const [showAll, setShowAll] = useState<ReadonlySet<string>>(new Set());
 
   useEffect(() => {
     const id = setTimeout(() => setQuery(input), SEARCH_DEBOUNCE_MS);
@@ -242,10 +246,20 @@ export default function RulesPage() {
               </h2>
               <Card>
                 <ul>
-                  {g.entries.map((e) => (
+                  {(showAll.has(g.category) ? g.entries : g.entries.slice(0, GROUP_PREVIEW)).map((e) => (
                     <ResultRow key={`${e.category}-${e.id}`} entry={e} />
                   ))}
                 </ul>
+                {!showAll.has(g.category) && g.entries.length > GROUP_PREVIEW && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => setShowAll((prev) => new Set(prev).add(g.category))}
+                  >
+                    {tc('rules.showAll', { count: g.entries.length })}
+                  </Button>
+                )}
               </Card>
             </section>
           ))}

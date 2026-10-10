@@ -1425,7 +1425,8 @@
       "utilize": {
         "description": "Use a nonmagical object, such as operating a device or applying a tool, when it needs an action."
       }
-    }
+    },
+    "showAll": "Show all {{count}}"
   },
   "diceLog": {
     "title": "Campaign Rolls",

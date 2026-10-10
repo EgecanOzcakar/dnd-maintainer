@@ -66,7 +66,13 @@ export function ActionsPanel({ actions, attacksPerAction, resolved, onSelectRoll
   const roll = (contextLabel: string, r: ResolvedRoll | { dice: 'd20'; bonus: number }) => {
     if (!onSelectRollPreset || !r.dice.includes('d')) return;
     const parsed = parseDiceFormula(r.dice === 'd20' ? '1d20' : r.dice);
-    onSelectRollPreset({ die: parsed.die, count: parsed.count, modifier: r.bonus, contextLabel });
+    onSelectRollPreset({
+      die: parsed.die,
+      count: parsed.count,
+      modifier: r.bonus,
+      contextLabel,
+      kind: r.dice === 'd20' ? 'd20' : 'damage',
+    });
   };
 
   const fmt = (r: ResolvedRoll) => (r.dice ? `${r.dice}${r.bonus !== 0 ? formatSigned(r.bonus) : ''}` : `${r.bonus}`);

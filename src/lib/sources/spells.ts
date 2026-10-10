@@ -352,7 +352,7 @@ export const SPELL_CATALOG = [
     range: '60 feet',
     components: { verbal: true, somatic: true, material: false },
     duration: '1 hour',
-    nativeClasses: ['cleric', 'druid', 'ranger', 'sorcerer'],
+    nativeClasses: ['cleric', 'druid', 'paladin', 'ranger', 'sorcerer'],
   },
   {
     id: 'fireball',
@@ -580,7 +580,7 @@ export const SPELL_CATALOG = [
     range: 'Touch',
     components: { verbal: true, somatic: true, material: false },
     duration: '1 hour',
-    nativeClasses: ['paladin', 'ranger', 'wizard'],
+    nativeClasses: ['paladin', 'ranger', 'sorcerer', 'wizard'],
   },
   {
     id: 'shield-of-faith',

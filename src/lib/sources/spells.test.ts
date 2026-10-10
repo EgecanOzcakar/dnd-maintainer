@@ -192,3 +192,17 @@ describe('2024 PHB cantrips and level 1 lists', () => {
     expect(ids('ranger', 1)).toEqual(expect.arrayContaining(['hunters-mark', 'goodberry', 'zephyr-strike']));
   });
 });
+
+describe('level 2 and 3 class spell lists', () => {
+  const ids = (cls: Parameters<typeof getSpellsForList>[0], lvl: number) => getSpellsForList(cls, lvl).map((s) => s.id);
+
+  it('sorcerer level 2 includes the full 2024 additions', () => {
+    expect(ids('sorcerer', 2)).toEqual(
+      expect.arrayContaining(['shatter', 'mirror-image', 'arcane-vigor', 'levitate', 'magic-weapon'])
+    );
+  });
+
+  it('paladin level 3 includes Daylight and Aura of Vitality', () => {
+    expect(ids('paladin', 3)).toEqual(expect.arrayContaining(['daylight', 'aura-of-vitality', 'magic-circle']));
+  });
+});

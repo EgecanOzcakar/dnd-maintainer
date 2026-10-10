@@ -4307,6 +4307,194 @@
       "name": "Polymorph",
       "description": "This spell transforms a creature that you can see within range into a new form. An unwilling creature must make a Wisdom saving throw to avoid the effect. The spell has no effect on a shapechanger or a creature with 0 Hit Points. The transformation lasts for the duration, or until the target drops to 0 Hit Points or dies."
     },
+    "aura-of-purity": {
+      "name": "Aura of Purity",
+      "description": "A protective aura surrounds you and your allies nearby, granting resistance to Poison damage and advantage on saves against several conditions such as Blinded, Charmed, Deafened, Frightened, Paralyzed, and Stunned, while also ending a poisoned condition at the start of each of their turns."
+    },
+    "control-water": {
+      "name": "Control Water",
+      "description": "You bend a body of water in range to your will. You can flood an area, part the water to open a trench, redirect its flow, or whip it into a whirlpool that drags creatures around and damages them."
+    },
+    "divination": {
+      "name": "Divination",
+      "description": "You contact a god or a divine servant and ask one question about a goal, event, or activity planned within the next 7 days. The DM gives a truthful reply, which may be a short phrase, a cryptic rhyme, or an omen."
+    },
+    "conjure-minor-elementals": {
+      "name": "Conjure Minor Elementals",
+      "description": "You call forth spectral elemental spirits that fill the air around you. Creatures in the area take extra damage whenever they are hit by your attacks, and the spirits harry anyone who moves through them."
+    },
+    "conjure-woodland-beings": {
+      "name": "Conjure Woodland Beings",
+      "description": "Fey spirits swirl around you in a protective emanation. Enemies that enter or start their turn there are struck by wild fey magic, taking radiant damage unless they succeed on a Wisdom save."
+    },
+    "fabricate": {
+      "name": "Fabricate",
+      "description": "You convert raw materials into finished goods of the same material. Wood becomes a bridge, flax becomes rope, and stone becomes a statue, within limits on volume and complexity."
+    },
+    "find-greater-steed": {
+      "name": "Find Greater Steed",
+      "description": "You summon a mighty otherworldly mount, such as a griffon or pegasus, that serves as a loyal companion. It shares your spells that target only you and returns to its home when it drops to 0 Hit Points."
+    },
+    "fount-of-moonlight": {
+      "name": "Fount of Moonlight",
+      "description": "You glow with a cool lunar radiance, shedding bright light around you. Your melee strikes deal extra radiant damage, and attackers who hit you are dazzled and blinded unless they resist."
+    },
+    "giant-insect": {
+      "name": "Giant Insect",
+      "description": "You summon a gigantic spider, centipede, or wasp, a spirit that fights beside you. It attacks on your command using a bonus action and carries out a ranged or melee strike depending on its form."
+    },
+    "grasping-vine": {
+      "name": "Grasping Vine",
+      "description": "A creeping vine erupts from the ground and seizes a creature, dragging it toward the vine. You can redirect the vine each turn with a bonus action to snare another target."
+    },
+    "hallucinatory-terrain": {
+      "name": "Hallucinatory Terrain",
+      "description": "You make natural terrain in a large area look, sound, and smell like a different natural terrain. Physical interaction reveals the illusion, and a careful investigation can see through it."
+    },
+    "leomunds-secret-chest": {
+      "name": "Leomund's Secret Chest",
+      "description": "You hide a chest and its contents on the Ethereal Plane, leaving only a tiny replica behind. While you hold the replica you can summon the chest back or send it away again."
+    },
+    "locate-creature": {
+      "name": "Locate Creature",
+      "description": "You sense the direction to a specific creature or creature type you know within a long distance. Running water or a barrier of lead blocks the search."
+    },
+    "mordenkainens-faithful-hound": {
+      "name": "Mordenkainen's Faithful Hound",
+      "description": "You conjure a spectral guard dog that watches over an area. It barks to warn you of intruders and bites hostile creatures that come near, and only you can see it."
+    },
+    "mordenkainens-private-sanctum": {
+      "name": "Mordenkainen's Private Sanctum",
+      "description": "You seal a room or structure against prying and intrusion. You choose protections such as blocked sight, silenced sound, sensor blocking, and barriers against teleportation or planar travel."
+    },
+    "otilukes-resilient-sphere": {
+      "name": "Otiluke's Resilient Sphere",
+      "description": "A shimmering sphere of force encloses a creature or object, shielding it from harm and keeping it trapped. The sphere can be rolled along the ground, carrying its occupant with it."
+    },
+    "phantasmal-killer": {
+      "name": "Phantasmal Killer",
+      "description": "You pull a creature's deepest fear from its mind and manifest it as a terror only that creature sees. It is frightened and suffers psychic damage each turn until it breaks free of the illusion."
+    },
+    "sickening-radiance": {
+      "name": "Sickening Radiance",
+      "description": "Dim green light fills an area, dealing radiant damage to creatures within it and sapping their strength with levels of exhaustion. The light also stops creatures within it from being invisible."
+    },
+    "staggering-smite": {
+      "name": "Staggering Smite",
+      "description": "Your next weapon hit channels psychic force into the target, dealing extra psychic damage and leaving it reeling, with disadvantage on attacks and ability checks until the end of its next turn unless it succeeds on a Wisdom save."
+    },
+    "stone-shape": {
+      "name": "Stone Shape",
+      "description": "You reshape a piece of stone into any form that suits you, such as a weapon, a door, or an idol, with only simple details possible."
+    },
+    "summon-elemental": {
+      "name": "Summon Elemental",
+      "description": "You call forth an elemental spirit that appears as an air, earth, fire, or water elemental. It fights alongside you and obeys your commands, with its form and damage type matching the element chosen."
+    },
+    "summon-greater-demon": {
+      "name": "Summon Greater Demon",
+      "description": "You summon a fiendish demon that appears hostile to everyone unless you keep control of it. If it breaks free, it can turn on you, so maintain your focus and command it carefully."
+    },
+    "vitriolic-sphere": {
+      "name": "Vitriolic Sphere",
+      "description": "You hurl a glowing ball of acid that explodes in a large burst, dealing heavy acid damage on impact and leaving lingering acid damage at the end of the next turn."
+    },
+    "antilife-shell": {
+      "name": "Antilife Shell",
+      "description": "A shimmering barrier around you keeps out most living creatures. Creatures other than Constructs and Undead cannot willingly pass into it, though they can still use ranged attacks and spells against those inside."
+    },
+    "awaken": {
+      "name": "Awaken",
+      "description": "After a long ritual you grant a beast or plant sapience, giving it Intelligence and the ability to speak. The awakened creature is charmed by you for a while and may become a loyal friend."
+    },
+    "banishing-smite": {
+      "name": "Banishing Smite",
+      "description": "Your next weapon hit deals extra force damage and, if the target is left badly hurt, banishes it to another plane. Extraplanar creatures are removed for good."
+    },
+    "bigbys-hand": {
+      "name": "Bigby's Hand",
+      "description": "You conjure a giant spectral hand that obeys your commands. You can use it to punch, shove, grapple, or shield, making it a flexible tool for both offense and defense."
+    },
+    "circle-of-power": {
+      "name": "Circle of Power",
+      "description": "Divine energy radiates around you, granting you and your allies advantage on saves against spells and magical effects, and halving damage from effects that would normally deal half on a successful save."
+    },
+    "cloudkill": {
+      "name": "Cloudkill",
+      "description": "A sickly green fog fills a wide sphere, poisoning anyone who ends their turn in it or enters it. The cloud drifts away from you each round and sinks to the ground."
+    },
+    "conjure-elemental": {
+      "name": "Conjure Elemental",
+      "description": "You call forth a powerful elemental spirit that fights for you. If your concentration slips, the elemental may turn hostile and attack you."
+    },
+    "conjure-volley": {
+      "name": "Conjure Volley",
+      "description": "You fire or throw a piece of ammunition or a weapon into the air and it multiplies into a rain of projectiles that pummels creatures in a wide area."
+    },
+    "contact-other-plane": {
+      "name": "Contact Other Plane",
+      "description": "You mentally reach out to an otherworldly entity and ask it up to five questions. You gain truthful answers but risk psychic damage and a temporary mental breakdown if you fail a save."
+    },
+    "contagion": {
+      "name": "Contagion",
+      "description": "A touch infects a creature with a magical disease. Over several failed saves the target can become poisoned, blinded, slowed, or weakened by one of several named maladies."
+    },
+    "creation": {
+      "name": "Creation",
+      "description": "You pull wisps of shadow from the Shadowfell to craft a nonliving object of vegetable or mineral matter. The object lasts for a time based on its material before it fades away."
+    },
+    "dispel-evil-and-good": {
+      "name": "Dispel Evil and Good",
+      "description": "Holy energy surrounds you, protecting you from aberrations, celestials, elementals, fey, fiends, and undead. You can also use it to break enchantments or banish an extraplanar creature."
+    },
+    "dream": {
+      "name": "Dream",
+      "description": "You shape a dream for a sleeping creature, either delivering a message or sending a nightmare that deals psychic damage and robs it of rest."
+    },
+    "hallow": {
+      "name": "Hallow",
+      "description": "You consecrate a large area against a type of creature, keeping them out and bestowing an additional effect of your choice, such as warding against fear or granting a bonus to the area's inhabitants."
+    },
+    "holy-weapon": {
+      "name": "Holy Weapon",
+      "description": "You imbue a weapon with holy power so that its hits deal extra radiant damage and it sheds light. You can end the spell early to unleash a blast of radiance."
+    },
+    "jallarzis-storm-of-radiance": {
+      "name": "Jallarzi's Storm of Radiance",
+      "description": "A swirling storm of radiant and thunder energy fills an area, dealing damage to creatures inside and blinding or deafening them. You can move the storm each turn to follow your enemies."
+    },
+    "passwall": {
+      "name": "Passwall",
+      "description": "You open a passage through a wooden, plaster, or stone surface, creating a temporary tunnel that you and others can walk through."
+    },
+    "planar-binding": {
+      "name": "Planar Binding",
+      "description": "You bind a celestial, elemental, fey, or fiend to your service for a long time. If the target resists, it must be a creature you have already contained or otherwise confined."
+    },
+    "raise-dead": {
+      "name": "Raise Dead",
+      "description": "You return a recently dead creature to life with 1 Hit Point, but it suffers a lingering penalty to its d20 rolls that fades with rest. The spell cannot restore missing body parts."
+    },
+    "reincarnate": {
+      "name": "Reincarnate",
+      "description": "You touch a dead humanoid and its soul returns in a brand-new body of a random species, granting it a fresh form and the traits that come with it."
+    },
+    "swift-quiver": {
+      "name": "Swift Quiver",
+      "description": "You enchant a quiver to supply you with ammunition and let you make additional ranged attacks each turn as a bonus action."
+    },
+    "synaptic-static": {
+      "name": "Synaptic Static",
+      "description": "You detonate a burst of psychic energy that deals heavy psychic damage and leaves creatures confused, imposing a penalty to their attack rolls, ability checks, and concentration for a short time."
+    },
+    "teleportation-circle": {
+      "name": "Teleportation Circle",
+      "description": "You draw a magic circle that links to a permanent teleportation circle you know. Creatures who step in are instantly transported to the matching destination."
+    },
+    "wrath-of-nature": {
+      "name": "Wrath of Nature",
+      "description": "The plants, rocks, and trees in an area awaken to strike your enemies. Grasping brush, hurled stones, and lashing boughs attack creatures in the area at your command."
+    },
     "insect-plague": {
       "name": "Insect Plague",
       "description": "Swarming, biting locusts fill a 20-foot-radius Sphere centered on a point you choose within range. The Sphere spreads around corners. The Sphere remains for the duration, and its area is Lightly Obscured. The swarm's area is Difficult Terrain. Each creature in the Sphere when it appears and each creature that enters it during a turn or ends its turn there must make a Constitution saving throw, taking 4d10 Piercing damage on a failed save, or half as much on a successful save."

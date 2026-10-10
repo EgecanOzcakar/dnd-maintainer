@@ -8,6 +8,7 @@ import {
   Grid3x3,
   Library,
   Lock,
+  Scale,
   ScrollText,
   Settings,
   Sparkles,
@@ -42,7 +43,8 @@ interface NavItem {
     | 'nav.wiki'
     | 'nav.dmControl'
     | 'nav.battleMap'
-    | 'nav.magicItems';
+    | 'nav.magicItems'
+    | 'nav.rules';
   readonly path: string;
   readonly matchPaths?: readonly string[];
   readonly end?: boolean;
@@ -55,6 +57,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { icon: ScrollText, labelKey: 'nav.notes', path: '/notes' },
   { icon: Library, labelKey: 'nav.wiki', path: '/wiki' },
   { icon: Sparkles, labelKey: 'nav.magicItems', path: '/magic-items' },
+  { icon: Scale, labelKey: 'nav.rules', path: '/rules' },
   { icon: Dices, labelKey: 'nav.dmControl', path: '/dm' },
   { icon: Grid3x3, labelKey: 'nav.battleMap', path: '/map' },
 ];

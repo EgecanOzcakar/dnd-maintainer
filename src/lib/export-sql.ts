@@ -63,6 +63,9 @@ const TABLE_COLUMNS = {
     { name: 'heroic_inspiration', type: 'boolean' },
     { name: 'exhaustion_level', type: 'integer' },
     { name: 'conditions', type: 'text[]' },
+    { name: 'prepared_spells', type: 'text[]' },
+    { name: 'homebrew', type: 'jsonb' },
+    { name: 'active_effects', type: 'text[]' },
     { name: 'hit_dice_used', type: 'jsonb' },
     { name: 'spell_slots_used', type: 'jsonb' },
     { name: 'gender', type: 'text' },
@@ -221,7 +224,7 @@ export function buildInsertStatement(
 
 export function generateSeedSql(data: ExportData): string {
   const lines: string[] = [
-    '-- D&D Campaign Manager - Seed Data Export',
+    '-- Campaign Keeper - Seed Data Export',
     `-- Generated at: ${new Date().toISOString()}`,
     '-- WARNING: This file uses ON CONFLICT (id) DO NOTHING. It is designed for',
     '-- restoring into a clean database. Partial restores into an existing database',

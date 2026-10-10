@@ -2,7 +2,7 @@
   "none": "—",
   "magicItems": {
     "title": "Magic Items",
-    "subtitle": "Searchable reference for the D&D 2024 SRD magic items.",
+    "subtitle": "Searchable reference for the SRD 5.2.1 magic items.",
     "searchPlaceholder": "Search by name or effect…",
     "rarityAll": "All rarities",
     "attunementFilter": "Requires attunement",
@@ -152,11 +152,12 @@
     "selectCampaign": "Select Campaign",
     "noCampaigns": "No campaigns",
     "campaign": "Campaign",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "rules": "Rules"
   },
   "wiki": {
     "title": "Class Progressions & Skills Wiki",
-    "subtitle": "Explore D&D 5.5e (2024 PHB) class progression tables, subclass features, and level-by-level unlocked skills and proficiencies.",
+    "subtitle": "Explore 5E (2024 rules) class progression tables, subclass features, and level-by-level unlocked skills and proficiencies.",
     "searchPlaceholder": "Search features, skills, or level...",
     "tabs": {
       "progression": "Level Progression",
@@ -179,7 +180,7 @@
       "resourcePools": "Resource Limits",
       "skillUnlocks": "Skill & Expertise Unlocks",
       "skillMatrixTitle": "Skill Availability & Unlock Matrix",
-      "skillMatrixDescription": "See which D&D 5e classes can select each skill at Level 1, and which classes unlock skill choices or expertise during level-up.",
+      "skillMatrixDescription": "See which classes can select each skill at Level 1, and which classes unlock skill choices or expertise during level-up.",
       "level": "Level {{level}}",
       "cantrips": "Cantrips",
       "prepared": "Prepared Spells",
@@ -212,10 +213,10 @@
     }
   },
   "app": {
-    "title": "D&D Keeper",
+    "title": "Campaign Keeper",
     "subtitle": "Campaign Manager",
     "version": "Campaign Manager v1.0",
-    "for5e": "For D&D 5e",
+    "for5e": "For 5E (2024 rules)",
     "viewOnGitHub": "View on GitHub"
   },
   "settings": {
@@ -848,7 +849,48 @@
         "castingTime": "{{time}}",
         "concentration": "Concentration",
         "ritual": "Ritual",
-        "usesPerRest": "{{uses}} / {{regen}}"
+        "usesPerRest": "{{uses}} / {{regen}}",
+        "attacksPerAction_one": "1 attack per Attack action",
+        "attacksPerAction_other": "{{count}} attacks per Attack action",
+        "filters": {
+          "all": "All",
+          "attack": "Attack",
+          "action": "Action",
+          "bonus-action": "Bonus Action",
+          "reaction": "Reaction",
+          "other": "Other"
+        },
+        "activation": {
+          "action": "Action",
+          "bonus-action": "Bonus Action",
+          "reaction": "Reaction",
+          "free": "Free",
+          "special": "Special"
+        },
+        "uses_one": "{{count}} use",
+        "uses_other": "{{count}} uses",
+        "save": "{{ability}} save DC {{dc}}",
+        "heal": "Heal {{roll}}",
+        "weaponDamage": "(weapon type)",
+        "offHand": "off-hand",
+        "twoHanded": "{{dice}} two-handed",
+        "upcast": "+{{dice}} per slot level",
+        "basicActions": "Actions in Combat",
+        "basic": {
+          "dash": "Dash",
+          "disengage": "Disengage",
+          "dodge": "Dodge",
+          "help": "Help",
+          "hide": "Hide",
+          "influence": "Influence",
+          "magic": "Magic",
+          "ready": "Ready",
+          "search": "Search",
+          "study": "Study",
+          "utilize": "Utilize"
+        },
+        "grappleShove": "Grapple / Shove (Unarmed Strike option): STR or DEX save DC {{dc}}",
+        "opportunityAttack": "Reaction — Opportunity Attack: one melee attack when a creature you can see leaves your reach."
       }
     }
   },
@@ -946,7 +988,7 @@
     "campaignName": "Campaign Name",
     "placeholderName": "e.g., Lost Mines of Phandalin",
     "setting": "Setting",
-    "placeholderSetting": "e.g., Forgotten Realms, Greyhawk",
+    "placeholderSetting": "e.g., your homebrew world",
     "placeholderDescription": "Describe your campaign...",
     "passphrase": "Campaign Passphrase",
     "passphrasePlaceholder": "Set a secure passphrase for players and DM...",
@@ -1189,7 +1231,7 @@
     "qty": "Qty: {{count}}",
     "ac": "AC {{value}}",
     "addTitle": "Add Item to Inventory",
-    "addDescription": "Select an item from the D&D catalog or create a custom item.",
+    "addDescription": "Select an item from the catalog or create a custom item.",
     "fromCatalog": "From Catalog",
     "customItem": "Custom Item",
     "noMatch": "No matching items found.",
@@ -1257,5 +1299,233 @@
     "numberOfDice": "Number of Dice",
     "modifier": "Modifier",
     "recentRolls": "Recent DM Rolls"
+  },
+  "hitPoints": {
+    "title": "Hit Points",
+    "current": "Current",
+    "max": "Max",
+    "temp": "Temp",
+    "amount": "Amount",
+    "damage": "Damage",
+    "heal": "Heal",
+    "tempHp": "Temp HP",
+    "critical": "Critical hit",
+    "deathSaves": "Death Saves",
+    "successes": "Successes",
+    "failures": "Failures",
+    "success": "Success {{n}}",
+    "failure": "Failure {{n}}",
+    "rollDeathSave": "Roll death save",
+    "rolled": "Rolled {{roll}}",
+    "stable": "Stable",
+    "dead": "Dead — massive damage or three failed death saves."
+  },
+  "rules": {
+    "title": "Rules Reference",
+    "searchPlaceholder": "Search spells, conditions, actions, feats...",
+    "searchLabel": "Search the rules",
+    "resultCount_one": "{{count}} result",
+    "resultCount_other": "{{count}} results",
+    "emptyTitle": "Nothing found",
+    "emptyHint": "Try a different word or clear some filters.",
+    "clearFilters": "Clear filters",
+    "filters": {
+      "class": "Class",
+      "level": "Level",
+      "school": "School",
+      "anyClass": "Any class",
+      "anyLevel": "Any level",
+      "anySchool": "Any school",
+      "concentration": "Concentration",
+      "ritual": "Ritual",
+      "spellFilters": "Spell filters"
+    },
+    "levelOption": "Level {{level}}",
+    "cantrip": "Cantrip",
+    "categories": {
+      "spell": "Spells",
+      "condition": "Conditions",
+      "action": "Actions",
+      "feat": "Feats",
+      "mastery": "Weapon Masteries",
+      "property": "Weapon Properties"
+    },
+    "schools": {
+      "abjuration": "Abjuration",
+      "conjuration": "Conjuration",
+      "divination": "Divination",
+      "enchantment": "Enchantment",
+      "evocation": "Evocation",
+      "illusion": "Illusion",
+      "necromancy": "Necromancy",
+      "transmutation": "Transmutation"
+    },
+    "spell": {
+      "castingTime": "Casting time",
+      "range": "Range",
+      "components": "Components",
+      "duration": "Duration",
+      "classes": "Classes",
+      "verbal": "V",
+      "somatic": "S",
+      "material": "M",
+      "attackRoll": "Attack",
+      "melee": "Melee",
+      "ranged": "Ranged",
+      "save": "Save",
+      "saveValue": "{{ability}} save",
+      "damage": "Damage",
+      "upcast": "Per slot above base",
+      "cantripScaling": "Scales with character level",
+      "healing": "Healing",
+      "concentration": "Concentration",
+      "ritual": "Ritual",
+      "levelSchool": "Level {{level}} {{school}}",
+      "cantripSchool": "{{school}} cantrip"
+    },
+    "actions": {
+      "opportunityAttack": {
+        "name": "Opportunity Attack",
+        "description": "When a creature you can see leaves your reach without Disengaging or being moved, you can use your Reaction to make one melee attack against it."
+      },
+      "grappleShove": {
+        "name": "Grapple / Shove",
+        "description": "As part of an Attack, replace one attack with an unarmed strike that grapples or shoves a target no more than one size larger. The target resists with a Strength or Dexterity save against your strike's DC. Grappling leaves it Grappled; shoving pushes it 5 feet or knocks it Prone."
+      },
+      "dash": {
+        "description": "Gain extra movement for the turn equal to your Speed, after any modifiers."
+      },
+      "disengage": {
+        "description": "Your movement does not provoke Opportunity Attacks for the rest of the turn."
+      },
+      "dodge": {
+        "description": "Until your next turn, attacks against you have Disadvantage if you can see the attacker, and you have Advantage on Dexterity saves. It ends if you are Incapacitated or your Speed is 0."
+      },
+      "help": {
+        "description": "Aid an ally with a task so their next check has Advantage, or distract a foe so an ally's next attack against it has Advantage."
+      },
+      "hide": {
+        "description": "Make a Dexterity (Stealth) check while out of sight and not seen; on success you are Invisible until discovered, and the result is the DC to find you."
+      },
+      "influence": {
+        "description": "Try to sway a creature with a Charisma or Wisdom check, such as Deception, Intimidation, Performance, Persuasion or Animal Handling."
+      },
+      "magic": {
+        "description": "Cast a spell with a casting time of one action, use a magic item, or use a feature that calls for the Magic action."
+      },
+      "ready": {
+        "description": "Choose a trigger and a response. When the trigger occurs before your next turn, spend your Reaction to carry out the response. Readying a spell requires Concentration."
+      },
+      "search": {
+        "description": "Look for something hidden or notice a detail using a Wisdom check, such as Insight, Medicine, Perception or Survival."
+      },
+      "study": {
+        "description": "Recall or investigate lore with an Intelligence check, such as Arcana, History, Investigation, Nature or Religion."
+      },
+      "utilize": {
+        "description": "Use a nonmagical object, such as operating a device or applying a tool, when it needs an action."
+      }
+    },
+    "showAll": "Show all {{count}}"
+  },
+  "diceLog": {
+    "title": "Campaign Rolls",
+    "empty": "No shared rolls yet",
+    "advantage": "Advantage",
+    "disadvantage": "Disadvantage",
+    "critical": "Critical hit (double dice)",
+    "natural20": "Natural 20",
+    "natural1": "Natural 1",
+    "unknownRoller": "Unknown"
+  },
+  "spellPrep": {
+    "prepared": "Prepared {{count}} / {{max}}",
+    "button": "Prepare Spells",
+    "title": "Prepare Spells",
+    "description": "Choose the spells you have prepared. You can change this after a Long Rest.",
+    "capReached": "You have prepared the maximum number of spells. Unprepare one to choose another.",
+    "levelHeading": "Level {{level}}",
+    "alwaysPreparedNote": "Cantrips and always-prepared spells do not count against your limit.",
+    "empty": "No spells available to prepare.",
+    "done": "Done"
+  },
+  "homebrew": {
+    "addButton": "Add custom action",
+    "addTitle": "Add custom action",
+    "editTitle": "Edit custom action",
+    "edit": "Edit {{name}}",
+    "remove": "Delete {{name}}",
+    "name": "Name",
+    "description": "Description",
+    "kind": "Type",
+    "kinds": {
+      "attack": "Attack",
+      "spell": "Spell",
+      "feature": "Feature"
+    },
+    "activation": "Activation",
+    "spellLevel": "Spell level",
+    "attackBonus": "Attack bonus",
+    "saveDc": "Saving throw",
+    "none": "None",
+    "fromAbility": "From ability",
+    "flat": "Flat value",
+    "ability": "Ability",
+    "proficient": "Proficient",
+    "bonus": "Bonus",
+    "saveAbility": "Save ability",
+    "dc": "DC",
+    "dcAbility": "DC ability",
+    "damage": "Deals damage",
+    "heal": "Heals",
+    "dice": "Dice",
+    "damageType": "Damage type",
+    "flatBonus": "Flat bonus",
+    "addAbility": "Add ability modifier",
+    "usesMax": "Uses (optional)",
+    "usesRest": "Recharges on",
+    "rest": {
+      "short": "Short rest",
+      "long": "Long rest"
+    },
+    "usesPerRest": "{{count}} / {{rest}}",
+    "errors": {
+      "name": "Enter a name.",
+      "damageDice": "Damage dice must look like 2d6.",
+      "healDice": "Healing dice must look like 1d8, or be left empty.",
+      "attackFlat": "Enter an attack bonus.",
+      "saveDc": "Enter a DC of 1 or more.",
+      "invalid": "Some fields are invalid."
+    }
+  },
+  "activeEffects": {
+    "title": "Active Effects",
+    "hint": "Toggle effects that change your numbers. A Long Rest clears them.",
+    "names": {
+      "rage": "Rage",
+      "bless": "Bless",
+      "bane": "Bane",
+      "shield-of-faith": "Shield of Faith",
+      "shield": "Shield",
+      "haste": "Haste",
+      "hunters-mark": "Hunter's Mark",
+      "hex": "Hex",
+      "dodge": "Dodge",
+      "reckless-attack": "Reckless Attack",
+      "mage-armor": "Mage Armor",
+      "barkskin": "Barkskin",
+      "invisible": "Invisible"
+    },
+    "badge": {
+      "adv": "ADV",
+      "dis": "DIS"
+    },
+    "summary": {
+      "checks": "{{ability}} checks",
+      "saves": "{{ability}} saves",
+      "attacksAgainst": "Attacks against you",
+      "resistances": "Resistance: {{types}}",
+      "d20Penalty": "{{value}} to every d20 test"
+    }
   }
 }

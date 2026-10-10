@@ -22,7 +22,6 @@ describe('usePartyState hooks', () => {
   it('fetches parsed party state from campaigns.dm_notes', async () => {
     const sampleDmNotes = JSON.stringify({
       party_initiatives: { campaignId: 'c1', initiatives: { char1: 18 } },
-      party_hp: { campaignId: 'c1', hpMap: { char1: 25 } },
       character_rolls: {
         campaignId: 'c1',
         rollsMap: {
@@ -40,7 +39,7 @@ describe('usePartyState hooks', () => {
     expect(result.current.data).toEqual({
       campaignId: 'c1',
       initiatives: { char1: 18 },
-      hp: { char1: 25 },
+      hp: {},
       lastRolls: {
         char1: { formula: '1d20+3', total: 18, rolls: [15], modifier: 3, timestamp: '2026-08-06T12:00:00Z' },
       },
@@ -49,17 +48,19 @@ describe('usePartyState hooks', () => {
     });
   });
 
-  it('updates party HP via useUpdatePartyHP mutation', async () => {
-    mockQueryResult.data = { dm_notes: JSON.stringify({ party_hp: { hpMap: { char1: 20 } } }) };
-
+  it('writes HP to characters.current_hp, not dm_notes', async () => {
     const { result } = renderHook(() => useUpdatePartyHP(), { wrapper: createWrapper() });
 
-    await result.current.mutateAsync({ campaignId: 'c1', hpMap: { char1: 15, char2: 30 } });
+    await result.current.mutateAsync({ campaignId: 'c1', hpMap: { char1: 15, char2: 0 } });
 
+    expect(supabase.from).toHaveBeenCalledWith('characters');
     expect(supabase.update).toHaveBeenCalledWith({
-      dm_notes: expect.stringContaining('"char1":15'),
+      current_hp: 15,
+      death_saves: { successes: 0, failures: 0 },
       updated_at: expect.any(String),
     });
+    expect(supabase.update).toHaveBeenCalledWith({ current_hp: 0, updated_at: expect.any(String) });
+    expect(supabase.update).not.toHaveBeenCalledWith(expect.objectContaining({ dm_notes: expect.anything() }));
   });
 
   it('records character roll via useRecordCharacterRoll mutation', async () => {

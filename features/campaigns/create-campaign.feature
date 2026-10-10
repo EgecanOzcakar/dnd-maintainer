@@ -5,8 +5,8 @@ Feature: Create a new campaign
 
   Scenario: A DM creates a campaign by providing a name
     Given the Dungeon Master has no campaigns
-    When the Dungeon Master creates a campaign named "Curse of Strahd"
-    Then "Curse of Strahd" appears in their campaign list
+    When the Dungeon Master creates a campaign named "Curse of the Mist Lord"
+    Then "Curse of the Mist Lord" appears in their campaign list
 
   Scenario: A campaign name is required
     # Driven through the rendered CampaignList: the empty-name guard in

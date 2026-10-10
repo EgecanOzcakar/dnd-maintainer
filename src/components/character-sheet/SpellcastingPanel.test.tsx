@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SpellcastingPanel } from '@/components/character-sheet/SpellcastingPanel';
 import type { ResolvedSpellcasting } from '@/types/resolved';
 
@@ -280,6 +281,35 @@ describe('SpellcastingPanel', () => {
       expect(screen.getByText((content) => content.includes('1/4'))).toBeDefined();
       // Level 2: chosen=1, target=2 → "1/2"
       expect(screen.getByText((content) => content.includes('1/2'))).toBeDefined();
+    });
+  });
+
+  describe('spell preparation', () => {
+    const prepCaster = () =>
+      makeSpellcasting({
+        ability: 'int',
+        preparedCount: 2,
+        slots: [2],
+        knownSpells: [{ spellId: 'spell-a', spellLevel: 1 }],
+      });
+
+    it('shows Prepared X / N and no button when read-only', () => {
+      render(<SpellcastingPanel spellcasting={prepCaster()} classId="wizard" />);
+      expect(screen.getByText('prepared')).toBeDefined();
+      expect(screen.queryByText('button')).toBeNull();
+    });
+
+    it('opens the dialog and reports a changed selection', async () => {
+      const onChangePrepared = vi.fn();
+      render(<SpellcastingPanel spellcasting={prepCaster()} classId="wizard" onChangePrepared={onChangePrepared} />);
+      await userEvent.click(screen.getByText('button'));
+      await userEvent.click(screen.getByRole('checkbox'));
+      expect(onChangePrepared).toHaveBeenCalledWith([]);
+    });
+
+    it('offers no preparation to known-spell casters', () => {
+      render(<SpellcastingPanel spellcasting={{ ...prepCaster(), preparedCount: 0 }} onChangePrepared={vi.fn()} />);
+      expect(screen.queryByText('button')).toBeNull();
     });
   });
 });

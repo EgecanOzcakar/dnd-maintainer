@@ -10,9 +10,9 @@ Feature: Archive a campaign
 
   @future
   Scenario: An archived campaign can be restored
-    Given a campaign named "Forgotten Realms" exists but has been archived
-    When the Dungeon Master restores "Forgotten Realms"
-    Then "Forgotten Realms" appears in the active campaigns list
+    Given a campaign named "Shattered Realms" exists but has been archived
+    When the Dungeon Master restores "Shattered Realms"
+    Then "Shattered Realms" appears in the active campaigns list
 
   @future
   Scenario: Archived campaigns are browsable separately

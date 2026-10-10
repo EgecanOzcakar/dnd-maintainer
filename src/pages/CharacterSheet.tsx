@@ -2,7 +2,13 @@ import { getLogger } from '@/lib/logger';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AbilityScoresPanel } from '@/components/character-sheet/AbilityScoresPanel';
-import { AttacksPanel } from '@/components/character-sheet/AttacksPanel';
+import { homebrewToActions, parseHomebrew } from '@/lib/homebrew';
+import { ActionsPanel } from '@/components/character-sheet/ActionsPanel';
+import { ActiveEffectsPanel } from '@/components/character-sheet/ActiveEffectsPanel';
+import { resolveActions } from '@/lib/resolver/actions';
+import { applyEffects } from '@/lib/resolver/effects';
+import { canPrepareSpells, getEffectivePrepared } from '@/lib/spell-preparation';
+import type { ClassId } from '@/lib/dnd-helpers';
 import { BackstoryPanel } from '@/components/character-sheet/BackstoryPanel';
 import { CharacterSheetHeader } from '@/components/character-sheet/CharacterSheetHeader';
 import { PlayerSceneViewer } from '@/components/battle-map/PlayerSceneViewer';
@@ -10,6 +16,8 @@ import { CombatPanel } from '@/components/character-sheet/CombatPanel';
 import { ConditionsPanel } from '@/components/character-sheet/ConditionsPanel';
 import { EquipmentPanel } from '@/components/character-sheet/EquipmentPanel';
 import { FeaturesPanel } from '@/components/character-sheet/FeaturesPanel';
+import { HitPointsPanel } from '@/components/character-sheet/HitPointsPanel';
+import { longRestHpUpdate } from '@/lib/hit-points';
 import { HitDicePanel } from '@/components/character-sheet/HitDicePanel';
 import { PendingChoicesPanel } from '@/components/character-sheet/PendingChoicesPanel';
 import { PersonalityPanel } from '@/components/character-sheet/PersonalityPanel';
@@ -42,7 +50,7 @@ import { useBuilderAutosave } from '@/hooks/useBuilderAutosave';
 import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
 import { InventoryTab } from '@/components/character-sheet/InventoryTab';
 import { DiceRoller } from '@/components/character-sheet/DiceRoller';
-import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
+import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { Dices, X } from 'lucide-react';
 
 import { supabase } from '@/lib/supabase';
@@ -90,6 +98,42 @@ function CharacterSheetInner({
   const [exportingPdf, setExportingPdf] = useState(false);
   const [rollPreset, setRollPreset] = useState<RollPreset | null>(null);
   const [isDiceRollerOpen, setIsDiceRollerOpen] = useState(false);
+
+  const classLevels = useMemo(() => {
+    const levels: Partial<Record<ClassId, number>> = {};
+    for (const lvl of build?.levels ?? []) levels[lvl.classId] = Math.max(levels[lvl.classId] ?? 0, lvl.classLevel);
+    return levels;
+  }, [build]);
+
+  const resolvedActions = useMemo(() => {
+    if (!resolved || !build) return null;
+    const sc = resolved.spellcasting;
+    const prepared = sc && canPrepareSpells(sc) ? getEffectivePrepared(character.prepared_spells, sc) : undefined;
+    return resolveActions(resolved, classLevels, prepared);
+  }, [resolved, build, classLevels, character.prepared_spells]);
+  const homebrew = useMemo(() => parseHomebrew(character.homebrew), [character.homebrew]);
+
+  // Effects apply to homebrew actions too (e.g. Bless on a custom attack).
+  const applied = useMemo(
+    () =>
+      resolved
+        ? applyEffects(resolved, [...(resolvedActions?.actions ?? []), ...homebrewToActions(homebrew, resolved)], {
+            activeEffects: character.active_effects ?? [],
+            conditions: character.conditions ?? [],
+            exhaustionLevel: character.exhaustion_level ?? 0,
+            classLevels,
+          })
+        : null,
+    [
+      resolved,
+      resolvedActions,
+      homebrew,
+      classLevels,
+      character.active_effects,
+      character.conditions,
+      character.exhaustion_level,
+    ]
+  );
 
   const handleSelectRollPreset = useCallback((preset: RollPreset) => {
     setRollPreset(preset);
@@ -174,7 +218,7 @@ function CharacterSheetInner({
 
   const handleLongRest = () => {
     if (!resolved) return;
-    handleUpdate(buildRestUpdate('long', character, resolved));
+    handleUpdate({ ...buildRestUpdate('long', character, resolved), ...longRestHpUpdate(), active_effects: [] });
   };
 
   const handleArchive = () => {
@@ -252,8 +296,8 @@ function CharacterSheetInner({
   // Combat stats — prefer resolved pipeline values, fall back to pre-calculated DB columns.
   // When buildError is set and resolved is null, these are stale values from the database.
   const isStale = buildError !== null && resolved === null;
-  const armorClass = resolved?.armorClass.effective ?? character.armor_class;
-  const speedValue = resolved?.speed.walk?.value ?? character.speed;
+  const armorClass = applied?.armorClass ?? character.armor_class;
+  const speedValue = applied?.speed.walk?.value ?? character.speed;
   const maxHP = resolved?.hitPoints.max ?? character.hit_points_max;
 
   // Ability scores — use resolved if available, else undefined (skip section)
@@ -361,7 +405,7 @@ function CharacterSheetInner({
           />
         ) : (
           <>
-            {/* WotC-inspired layout: stats (left) / combat (center) / roleplay & gear (right) */}
+            {/* Three-column layout: stats (left) / combat (center) / roleplay & gear (right) */}
             <div className="sheet-grid mb-6">
               {/* Left Column: Abilities, Saving Throws, Skills */}
               <div className="sheet-area-left">
@@ -374,6 +418,7 @@ function CharacterSheetInner({
                   savingThrows={savingThrows}
                   buildError={buildError}
                   onSelectRollPreset={handleSelectRollPreset}
+                  effects={applied?.savingThrows}
                 />
                 {skills ? (
                   <SkillsPanel skills={skills} onSelectRollPreset={handleSelectRollPreset} />
@@ -396,7 +441,7 @@ function CharacterSheetInner({
                   abilities={abilities}
                   armorClass={armorClass}
                   speedValue={speedValue}
-                  speed={resolved?.speed}
+                  speed={applied?.speed}
                   maxHP={maxHP}
                   profBonus={profBonus}
                   passivePerception={resolved ? 10 + resolved.skills.perception.bonus : null}
@@ -405,6 +450,15 @@ function CharacterSheetInner({
                 />
 
                 <ConditionsPanel character={character} onUpdate={handleUpdate} />
+
+                {resolved && applied && (
+                  <ActiveEffectsPanel
+                    resolved={resolved}
+                    active={character.active_effects ?? []}
+                    applied={applied}
+                    onChange={(active_effects) => handleUpdate({ active_effects })}
+                  />
+                )}
 
                 {resolved && (
                   <>
@@ -416,15 +470,19 @@ function CharacterSheetInner({
                         {tc('characterSheet.actions.longRest')}
                       </Button>
                     </div>
+                    <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleUpdate} />
                     <HitDicePanel resolved={resolved} character={character} onUpdate={handleUpdate} />
                     <SpellSlotsPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
                   </>
                 )}
 
-                {resolved && (
-                  <AttacksPanel
-                    attacks={resolved.attacks}
-                    weaponMasteries={resolved.weaponMasteries}
+                {resolvedActions && resolved && (
+                  <ActionsPanel
+                    actions={applied?.actions ?? resolvedActions.actions}
+                    homebrew={homebrew}
+                    onChangeHomebrew={(next) => handleUpdate({ homebrew: next })}
+                    attacksPerAction={resolvedActions.attacksPerAction}
+                    resolved={resolved}
                     onSelectRollPreset={handleSelectRollPreset}
                   />
                 )}
@@ -441,6 +499,9 @@ function CharacterSheetInner({
                     spellcasting={resolved?.spellcasting}
                     resolved={resolved}
                     onSelectRollPreset={handleSelectRollPreset}
+                    classId={character.class}
+                    preparedSpells={character.prepared_spells}
+                    onChangePrepared={(prepared_spells) => handleUpdate({ prepared_spells })}
                   />
                 )}
                 {hasPersonality && (
@@ -525,6 +586,7 @@ function CharacterSheetInner({
               presetDie={rollPreset?.die}
               presetCount={rollPreset?.count}
               presetModifier={rollPreset?.modifier}
+              presetKind={rollPreset?.kind}
               contextLabel={rollPreset?.contextLabel}
             />
           </div>

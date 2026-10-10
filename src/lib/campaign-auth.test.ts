@@ -46,7 +46,7 @@ describe('campaign-auth', () => {
     it('returns false for null or normal campaigns', () => {
       expect(isDemoCampaign(null)).toBe(false);
       expect(isDemoCampaign(undefined)).toBe(false);
-      expect(isDemoCampaign({ name: 'Curse of Strahd', slug: 'curse-of-strahd' })).toBe(false);
+      expect(isDemoCampaign({ name: 'Curse of the Mist Lord', slug: 'curse-of-the-mist-lord' })).toBe(false);
     });
   });
 

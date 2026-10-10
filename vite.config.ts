@@ -16,9 +16,9 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['apple-touch-icon.png'],
       manifest: {
-        name: 'D&D Campaign Manager',
-        short_name: 'D&D Keeper',
-        description: 'Manage D&D 5.5e campaigns, characters, sessions, and encounters.',
+        name: 'Campaign Keeper',
+        short_name: 'Campaign Keeper',
+        description: 'Manage 5E (2024 rules) campaigns, characters, sessions, and encounters.',
         theme_color: '#0b0b0f',
         background_color: '#0b0b0f',
         display: 'standalone',

@@ -160,6 +160,7 @@ export function resolveAttacks(
 
   const hasArchery = fightingStyleIds.includes('archery');
   const hasDueling = fightingStyleIds.includes('dueling');
+  const hasTwoWeaponFighting = fightingStyleIds.includes('two-weapon-fighting');
 
   // Dueling requires exactly one weapon equipped total, and it must be one-handed melee
   const totalEquippedWeapons = equippedWeapons.length;
@@ -204,7 +205,7 @@ export function resolveAttacks(
     const attackBonus = attackBreakdown.reduce((sum, c) => sum + c.value, 0);
     const damageBonus = damageBreakdown.reduce((sum, c) => sum + c.value, 0);
 
-    attacks.push({
+    const attack: ResolvedAttack = {
       weaponId: weapon.id,
       attackBonus,
       attackBreakdown,
@@ -216,7 +217,29 @@ export function resolveAttacks(
       range: weapon.range,
       ...(weapon.normalRange !== undefined ? { normalRange: weapon.normalRange } : {}),
       ...(weapon.longRange !== undefined ? { longRange: weapon.longRange } : {}),
-    });
+      ...(weapon.versatileDice ? { versatileDice: weapon.versatileDice } : {}),
+    };
+    attacks.push(attack);
+
+    // 2024 Light property: after attacking with a Light weapon, a Bonus Action attack with a
+    // different Light weapon. Its damage gets no ability modifier unless the modifier is negative
+    // or the character has the Two-Weapon Fighting style.
+    const otherLightEquipped =
+      equippedItem.quantity >= 2 ||
+      equippedWeapons.some(
+        (other) =>
+          other !== equippedItem && other.itemDef.type === 'weapon' && other.itemDef.properties.includes('light')
+      );
+    if (weapon.properties.includes('light') && otherLightEquipped) {
+      const keepMod = hasTwoWeaponFighting || abilityMod < 0;
+      const offHandBreakdown = damageBreakdown.filter((c) => keepMod || c.type !== 'ability');
+      attacks.push({
+        ...attack,
+        damageBonus: offHandBreakdown.reduce((sum, c) => sum + c.value, 0),
+        damageBreakdown: offHandBreakdown,
+        offHand: true,
+      });
+    }
   }
 
   const hasUnarmedFighting = fightingStyleIds.includes('unarmed-fighting');

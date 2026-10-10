@@ -1,7 +1,9 @@
 import { BonusBreakdown } from '@/components/character-sheet/BonusBreakdown';
+import { RollModeBadge } from '@/components/character-sheet/ActiveEffectsPanel';
 import { Badge } from '@/components/ui/badge';
+import type { AdjustedSave } from '@/lib/resolver/effects';
 import type { ResolvedCharacter } from '@/types/resolved';
-import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
+import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { formatSigned } from '@/lib/format';
 import { Button } from '@/components/ui/button';
 import { Dices } from 'lucide-react';
@@ -11,10 +13,13 @@ export function SavingThrowsPanel({
   savingThrows,
   buildError,
   onSelectRollPreset,
+  effects,
 }: {
   savingThrows: ResolvedCharacter['savingThrows'] | undefined;
   buildError: string | null;
   onSelectRollPreset?: (preset: RollPreset) => void;
+  /** Active-effect adv/dis and extra dice per ability. */
+  effects?: Partial<Record<keyof ResolvedCharacter['savingThrows'], AdjustedSave>>;
 }) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
@@ -75,6 +80,8 @@ export function SavingThrowsPanel({
                     DIS
                   </Badge>
                 )}
+                <RollModeBadge mode={effects?.[ability]?.mode} />
+                {effects?.[ability]?.extra.join('')}
               </button>
 
               <div className="flex items-center gap-2">

@@ -1,5 +1,9 @@
 import type { ClassId } from '@/lib/dnd-helpers';
 import type { SpellDef } from '@/types/spells';
+import { SPELLS_CANTRIPS_L1 } from '@/lib/sources/spells-cantrips-l1';
+import { SPELLS_L2_L3 } from '@/lib/sources/spells-l2-l3';
+import { SPELLS_L4_L5 } from '@/lib/sources/spells-l4-l5';
+import { SPELLS_L6_L9 } from '@/lib/sources/spells-l6-l9';
 
 export const SPELL_CATALOG = [
   {
@@ -1967,6 +1971,10 @@ export const SPELL_CATALOG = [
     duration: '1 minute',
     nativeClasses: ['bard', 'sorcerer', 'wizard'],
   },
+  ...SPELLS_CANTRIPS_L1,
+  ...SPELLS_L2_L3,
+  ...SPELLS_L4_L5,
+  ...SPELLS_L6_L9,
 ] as const satisfies readonly SpellDef[];
 
 export type SpellId = (typeof SPELL_CATALOG)[number]['id'];

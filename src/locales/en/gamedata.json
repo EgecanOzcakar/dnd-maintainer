@@ -2034,6 +2034,162 @@
     "illusionist-illusory-reality": {
       "name": "Illusory Reality",
       "description": "When you cast an Illusion spell of level 1 or higher, you can choose one inanimate, nonmagical object that is part of the illusion and make that object real. You can do this on your turn as a Bonus Action while the spell persists. The object remains real for 1 minute; it can't deal damage or otherwise directly harm anyone."
+    },
+    "fighter-extra-attack-2": {
+      "name": "Two Extra Attacks",
+      "description": "You can attack three times, instead of once, whenever you take the Attack action on your turn."
+    },
+    "fighter-indomitable-2": {
+      "name": "Indomitable (two uses)",
+      "description": "You can use Indomitable twice between long rests."
+    },
+    "fighter-studied-attacks": {
+      "name": "Studied Attacks",
+      "description": "If you make an attack roll against a creature and miss, you have Advantage on your next attack roll against that creature before the end of your next turn."
+    },
+    "fighter-action-surge-2": {
+      "name": "Action Surge (two uses)",
+      "description": "You can use Action Surge twice before a rest, but only once on a given turn."
+    },
+    "fighter-indomitable-3": {
+      "name": "Indomitable (three uses)",
+      "description": "You can use Indomitable three times between long rests."
+    },
+    "fighter-extra-attack-3": {
+      "name": "Three Extra Attacks",
+      "description": "You can attack four times, instead of once, whenever you take the Attack action on your turn."
+    },
+    "rogue-reliable-talent": {
+      "name": "Reliable Talent",
+      "description": "Whenever you make an ability check that uses one of your skill or tool proficiencies, you can treat a d20 roll of 9 or lower as a 10."
+    },
+    "rogue-devious-strikes": {
+      "name": "Devious Strikes",
+      "description": "Your Cunning Strike gains new options: Daze, Knock Out and Obscure."
+    },
+    "rogue-slippery-mind": {
+      "name": "Slippery Mind",
+      "description": "You gain proficiency in Wisdom and Charisma saving throws."
+    },
+    "rogue-elusive": {
+      "name": "Elusive",
+      "description": "No attack roll can have Advantage against you unless you have the Incapacitated condition."
+    },
+    "rogue-stroke-of-luck": {
+      "name": "Stroke of Luck",
+      "description": "If you fail a D20 Test, you can turn the roll into a 20. Once you use this feature, you can't use it again until you finish a short or long rest."
+    },
+    "arcanetrickster-versatile-trickster": {
+      "name": "Versatile Trickster",
+      "description": "When you use the Trip option of Cunning Strike, you can also target a creature within 5 feet of your Mage Hand with that option."
+    },
+    "arcanetrickster-spell-thief": {
+      "name": "Spell Thief",
+      "description": "When a creature casts a spell that targets you or includes you in its area, you can use your Reaction to force a save; on a failure you negate the spell's effect on you and steal knowledge of it for 8 hours. Once per long rest."
+    },
+    "assassin-envenom-weapons": {
+      "name": "Envenom Weapons",
+      "description": "When you use the Poison option of Cunning Strike, the target also takes 2d6 Poison damage whenever it fails the save, and this damage ignores Poison resistance."
+    },
+    "assassin-death-strike": {
+      "name": "Death Strike",
+      "description": "When you hit a creature with Sneak Attack on the first round of combat, it must succeed on a Constitution save or the attack's damage is doubled."
+    },
+    "beastmaster-bestial-fury": {
+      "name": "Bestial Fury",
+      "description": "When you command your Primal Companion to take the Beast's Strike action, it can use it twice, and the first time each turn it hits your Hunter's Mark target it deals extra Force damage."
+    },
+    "beastmaster-share-spells": {
+      "name": "Share Spells",
+      "description": "When you cast a spell targeting yourself, you can also affect your Primal Companion if it is within 30 feet of you."
+    },
+    "circleland-natures-sanctuary": {
+      "name": "Nature's Sanctuary",
+      "description": "As a Magic action you can expend a Wild Shape use to create a 15-foot spectral grove for 1 minute; you and allies inside have Half Cover and resistance to your current land's damage type."
+    },
+    "circlemoon-lunar-form": {
+      "name": "Lunar Form",
+      "description": "While in Wild Shape, once per turn you can deal an extra 2d10 Radiant damage on a hit, and when you use Moonlight Step you can bring a willing creature with you."
+    },
+    "circlesea-oceanic-gift": {
+      "name": "Oceanic Gift",
+      "description": "You can manifest your Wrath of the Sea emanation around a willing creature within 60 feet instead of yourself, or around both of you by expending two Wild Shape uses."
+    },
+    "circlestars-full-of-stars": {
+      "name": "Full of Stars",
+      "description": "While in your Starry Form, you have resistance to Bludgeoning, Piercing and Slashing damage."
+    },
+    "feywanderer-fey-reinforcements": {
+      "name": "Fey Reinforcements",
+      "description": "You always have Summon Fey prepared and can cast it once per long rest without a slot or Concentration."
+    },
+    "feywanderer-misty-wanderer": {
+      "name": "Misty Wanderer",
+      "description": "You can cast Misty Step without a slot a number of times equal to your Wisdom modifier per long rest, and bring a willing creature within 5 feet along."
+    },
+    "gloomstalker-stalkers-flurry": {
+      "name": "Stalker's Flurry",
+      "description": "Your Dread Ambusher strikes gain new options: Sudden Strike (an extra attack against another creature within 5 feet) or Mass Fear (frighten creatures near the target)."
+    },
+    "gloomstalker-shadowy-dodge": {
+      "name": "Shadowy Dodge",
+      "description": "When a creature makes an attack roll against you, you can use your Reaction to impose Disadvantage on it, then teleport up to 30 feet to an unoccupied space you can see."
+    },
+    "hunter-superior-hunters-prey": {
+      "name": "Superior Hunter's Prey",
+      "description": "Once per turn, when you deal damage to your Hunter's Mark target, you can deal that spell's extra damage to a different creature within 30 feet of it."
+    },
+    "hunter-superior-hunters-defense": {
+      "name": "Superior Hunter's Defense",
+      "description": "When you take damage, you can use your Reaction to gain resistance to that damage and any other damage of the same type until the end of the current turn."
+    },
+    "soulknife-psychic-veil": {
+      "name": "Psychic Veil",
+      "description": "As a Magic action you become Invisible for 1 hour, ending early if you deal damage or force a save. Once per long rest, or by expending a Psionic Energy die."
+    },
+    "soulknife-rend-mind": {
+      "name": "Rend Mind",
+      "description": "When you deal Sneak Attack damage with your Psychic Blades, you can force the target to make a Wisdom save or be Stunned for 1 minute. Once per long rest, or by expending Psionic Energy dice."
+    },
+    "thief-use-magic-device": {
+      "name": "Use Magic Device",
+      "description": "You can attune to up to four magic items, use charges with a chance to not expend them, and use any Spell Scroll by making an Intelligence (Arcana) check."
+    },
+    "thief-thiefs-reflexes": {
+      "name": "Thief's Reflexes",
+      "description": "You can take two turns during the first round of any combat: your first at your normal Initiative and your second at your Initiative minus 10."
+    },
+    "warriorofelements-stride-of-the-elements": {
+      "name": "Stride of the Elements",
+      "description": "While your Elemental Attunement is active, you have a Fly Speed and a Swim Speed equal to your Speed."
+    },
+    "warriorofelements-elemental-epitome": {
+      "name": "Elemental Epitome",
+      "description": "While your Elemental Attunement is active you gain resistance to a chosen element, can deal extra elemental damage once per turn, and your Step of the Wind adds damage to creatures you pass."
+    },
+    "warriorofmercy-flurry-of-healing-and-harm": {
+      "name": "Flurry of Healing and Harm",
+      "description": "When you use Flurry of Blows, you can replace any of the Unarmed Strikes with Hand of Healing without spending Focus for the healing."
+    },
+    "warriorofmercy-hand-of-ultimate-mercy": {
+      "name": "Hand of Ultimate Mercy",
+      "description": "As a Magic action you can spend 5 Focus Points to return a creature that died within the last 24 hours to life with 4d10 plus your Wisdom modifier Hit Points. Once per long rest."
+    },
+    "warriorofshadow-improved-shadow-step": {
+      "name": "Improved Shadow Step",
+      "description": "When you use Shadow Step you can spend 1 Focus Point to remove the requirement that you start and end in Dim Light or Darkness, and make an Unarmed Strike right after you teleport."
+    },
+    "warriorofshadow-cloak-of-shadows": {
+      "name": "Cloak of Shadows",
+      "description": "As a Magic action you can spend 3 Focus Points to become Invisible and able to move through creatures and objects for 1 minute, and your Flurry of Blows costs no Focus."
+    },
+    "warrioropenhand-fleet-step": {
+      "name": "Fleet Step",
+      "description": "When you take a Bonus Action other than Step of the Wind, you can also use Step of the Wind immediately after it."
+    },
+    "warrioropenhand-quivering-palm": {
+      "name": "Quivering Palm",
+      "description": "When you hit with an Unarmed Strike you can spend 4 Focus Points to set lethal vibrations in the target; later you can end them to force a Constitution save that deals 10d12 Force damage, or half on a success."
     }
   },
   "subclasses": {

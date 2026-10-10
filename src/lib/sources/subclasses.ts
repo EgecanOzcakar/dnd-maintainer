@@ -557,6 +557,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         classLevel: 10,
         grants: [{ type: 'feature', feature: { id: 'circleland-natures-ward' } }],
       },
+      { classLevel: 14, grants: [{ type: 'feature', feature: { id: 'circleland-natures-sanctuary' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   circlemoon: {
@@ -585,6 +586,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'circlemoon-elemental-wild-shape' } },
         ],
       },
+      { classLevel: 14, grants: [{ type: 'feature', feature: { id: 'circlemoon-lunar-form' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   circlesea: {
@@ -615,6 +617,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'speed', mode: 'fly', value: 30, condition: 'not-enclosed' },
         ],
       },
+      { classLevel: 14, grants: [{ type: 'feature', feature: { id: 'circlesea-oceanic-gift' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   circlestars: {
@@ -645,6 +648,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'circlestars-twinkling-constellations' } },
         ],
       },
+      { classLevel: 14, grants: [{ type: 'feature', feature: { id: 'circlestars-full-of-stars' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   // Fighter
@@ -810,6 +814,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           },
         ],
       },
+      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'warriorofmercy-flurry-of-healing-and-harm' } }] },
+      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'warriorofmercy-hand-of-ultimate-mercy' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   warriorofshadow: {
@@ -834,6 +840,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'warriorofshadow-shadow-step' } },
         ],
       },
+      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'warriorofshadow-improved-shadow-step' } }] },
+      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'warriorofshadow-cloak-of-shadows' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   warriorofelements: {
@@ -859,6 +867,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           },
         ],
       },
+      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'warriorofelements-stride-of-the-elements' } }] },
+      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'warriorofelements-elemental-epitome' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   warrioropenhand: {
@@ -881,6 +891,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'warrioropenhand-wholeness-of-body' } },
         ],
       },
+      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'warrioropenhand-fleet-step' } }] },
+      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'warrioropenhand-quivering-palm' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   // Paladin
@@ -1184,6 +1196,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'beastmaster-exceptional-training' } },
         ],
       },
+      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'beastmaster-bestial-fury' } }] },
+      { classLevel: 15, grants: [{ type: 'feature', feature: { id: 'beastmaster-share-spells' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   feywanderer: {
@@ -1230,6 +1244,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spell', spellId: 'summon-fey', alwaysPrepared: true },
         ],
       },
+      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'feywanderer-fey-reinforcements' } }] },
       {
         classLevel: 13,
         grants: [
@@ -1237,6 +1252,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spell', spellId: 'dimension-door', alwaysPrepared: true },
         ],
       },
+      { classLevel: 15, grants: [{ type: 'feature', feature: { id: 'feywanderer-misty-wanderer' } }] },
       {
         classLevel: 17,
         grants: [
@@ -1287,6 +1303,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spell', spellId: 'fear', alwaysPrepared: true },
         ],
       },
+      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'gloomstalker-stalkers-flurry' } }] },
       {
         classLevel: 13,
         grants: [
@@ -1294,6 +1311,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spell', spellId: 'greater-invisibility', alwaysPrepared: true },
         ],
       },
+      { classLevel: 15, grants: [{ type: 'feature', feature: { id: 'gloomstalker-shadowy-dodge' } }] },
       {
         classLevel: 17,
         grants: [
@@ -1351,6 +1369,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           },
         ],
       },
+      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'hunter-superior-hunters-prey' } }] },
+      { classLevel: 15, grants: [{ type: 'feature', feature: { id: 'hunter-superior-hunters-defense' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   // Rogue
@@ -1373,6 +1393,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'thief-supreme-sneak' } },
         ],
       },
+      { classLevel: 13, grants: [{ type: 'feature', feature: { id: 'thief-use-magic-device' } }] },
+      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'thief-thiefs-reflexes' } }] },
     ],
   },
   assassin: {
@@ -1392,6 +1414,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'assassin-infiltration-expertise' } },
         ],
       },
+      { classLevel: 13, grants: [{ type: 'feature', feature: { id: 'assassin-envenom-weapons' } }] },
+      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'assassin-death-strike' } }] },
     ],
   },
   arcanetrickster: {
@@ -1404,6 +1428,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         ],
       },
       { classLevel: 9, grants: [{ type: 'feature', feature: { id: 'arcanetrickster-magical-ambush' } }] },
+      { classLevel: 13, grants: [{ type: 'feature', feature: { id: 'arcanetrickster-versatile-trickster' } }] },
+      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'arcanetrickster-spell-thief' } }] },
     ],
   },
   soulknife: {
@@ -1452,6 +1478,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'soulknife-soul-blades' } },
         ],
       },
+      { classLevel: 13, grants: [{ type: 'feature', feature: { id: 'soulknife-psychic-veil' } }] },
+      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'soulknife-rend-mind' } }] },
     ] satisfies readonly SubclassFeature[],
   },
   // Sorcerer

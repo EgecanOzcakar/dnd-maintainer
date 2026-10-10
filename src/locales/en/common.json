@@ -1298,5 +1298,15 @@
     "numberOfDice": "Number of Dice",
     "modifier": "Modifier",
     "recentRolls": "Recent DM Rolls"
+  },
+  "diceLog": {
+    "title": "Campaign Rolls",
+    "empty": "No shared rolls yet",
+    "advantage": "Advantage",
+    "disadvantage": "Disadvantage",
+    "critical": "Critical hit (double dice)",
+    "natural20": "Natural 20",
+    "natural1": "Natural 1",
+    "unknownRoller": "Unknown"
   }
 }

@@ -535,6 +535,7 @@ function CharacterSheetInner({
               presetDie={rollPreset?.die}
               presetCount={rollPreset?.count}
               presetModifier={rollPreset?.modifier}
+              presetKind={rollPreset?.kind}
               contextLabel={rollPreset?.contextLabel}
             />
           </div>

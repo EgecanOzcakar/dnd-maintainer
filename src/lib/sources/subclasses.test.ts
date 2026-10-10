@@ -2358,7 +2358,7 @@ describe('getSubclassSource — Aberrant Sorcery', () => {
     const source = getSubclassSource('aberrantsorcery');
     const level18 = source?.features.find((f) => f.classLevel === 18);
     expect(level18).toBeDefined();
-    expect(level18?.grants).toHaveLength(1);
+    expect(level18?.grants).toHaveLength(2);
     expect(level18?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'aberrantsorcery-warping-implosion' },
@@ -2381,9 +2381,10 @@ describe('getSubclassSource — Clockwork Sorcery', () => {
     const source = getSubclassSource('clockworksorcery');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(5);
+    expect(level3?.grants).toHaveLength(6);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
+        expect.objectContaining({ type: 'resource-pool', poolId: 'restore-balance' }),
         expect.objectContaining({
           type: 'feature',
           feature: expect.objectContaining({ id: 'clockworksorcery-restore-balance' }),
@@ -2458,7 +2459,7 @@ describe('getSubclassSource — Clockwork Sorcery', () => {
     const source = getSubclassSource('clockworksorcery');
     const level14 = source?.features.find((f) => f.classLevel === 14);
     expect(level14).toBeDefined();
-    expect(level14?.grants).toHaveLength(1);
+    expect(level14?.grants).toHaveLength(2);
     expect(level14?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'clockworksorcery-trance-of-order' },
@@ -2469,7 +2470,7 @@ describe('getSubclassSource — Clockwork Sorcery', () => {
     const source = getSubclassSource('clockworksorcery');
     const level18 = source?.features.find((f) => f.classLevel === 18);
     expect(level18).toBeDefined();
-    expect(level18?.grants).toHaveLength(1);
+    expect(level18?.grants).toHaveLength(2);
     expect(level18?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'clockworksorcery-clockwork-cavalcade' },
@@ -2571,7 +2572,7 @@ describe('getSubclassSource — Draconic Sorcery', () => {
     const source = getSubclassSource('draconicsorcery');
     const level14 = source?.features.find((f) => f.classLevel === 14);
     expect(level14).toBeDefined();
-    expect(level14?.grants).toHaveLength(1);
+    expect(level14?.grants).toHaveLength(3);
     expect(level14?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'draconicsorcery-dragon-wings' },
@@ -2601,11 +2602,12 @@ describe('getSubclassSource — Wild Magic Sorcery', () => {
     expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 14, 18]);
   });
 
-  it('wildmagicsorcery level 3 grants 2 features: wild-magic-surge and tides-of-chaos (no subclass spells, no subclass-spells stub)', () => {
+  it('wildmagicsorcery level 3 grants wild-magic-surge, tides-of-chaos and its pool (no subclass spells, no subclass-spells stub)', () => {
     const source = getSubclassSource('wildmagicsorcery');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(2);
+    expect(level3?.grants).toHaveLength(3);
+    expect(level3?.grants).toContainEqual(expect.objectContaining({ type: 'resource-pool', poolId: 'tides-of-chaos' }));
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -2789,14 +2791,13 @@ describe('getSubclassSource — Celestial Patron', () => {
     expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9, 10, 14]);
   });
 
-  it('celestialpatron level 3 has religion proficiency, healing-light, 2 cantrip grants (alwaysPrepared:false), 4 always-prepared spells; no bonus-cantrip or patron-spells stubs', () => {
+  it('celestialpatron level 3 has healing-light, 2 cantrip grants (alwaysPrepared:false), 4 always-prepared spells; no bonus-cantrip or patron-spells stubs', () => {
     const source = getSubclassSource('celestialpatron');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(9);
+    expect(level3?.grants).toHaveLength(8);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ type: 'proficiency', category: 'skill', id: 'religion' }),
         expect.objectContaining({
           type: 'feature',
           feature: expect.objectContaining({ id: 'celestialpatron-healing-light' }),
@@ -2899,7 +2900,7 @@ describe('getSubclassSource — Celestial Patron', () => {
     const source = getSubclassSource('celestialpatron');
     const level14 = source?.features.find((f) => f.classLevel === 14);
     expect(level14).toBeDefined();
-    expect(level14?.grants).toHaveLength(1);
+    expect(level14?.grants).toHaveLength(2);
     expect(level14?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'celestialpatron-searing-vengeance' },
@@ -3014,7 +3015,7 @@ describe('getSubclassSource — Fiend Patron', () => {
     const source = getSubclassSource('fiendpatron');
     const level14 = source?.features.find((f) => f.classLevel === 14);
     expect(level14).toBeDefined();
-    expect(level14?.grants).toHaveLength(1);
+    expect(level14?.grants).toHaveLength(2);
     expect(level14?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'fiendpatron-hurl-through-hell' },
@@ -3033,19 +3034,13 @@ describe('getSubclassSource — Great Old One Patron', () => {
     expect(source?.features.map((f) => f.classLevel)).toEqual([3, 5, 6, 7, 9, 10, 14]);
   });
 
-  it('greatoldonepatron level 3 has skill proficiency-choice, awakened-mind, and 4 always-prepared spells; no psychic-spells stub', () => {
+  it('greatoldonepatron level 3 has awakened-mind, and 4 always-prepared spells; no psychic-spells stub', () => {
     const source = getSubclassSource('greatoldonepatron');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(6);
+    expect(level3?.grants).toHaveLength(5);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({
-          type: 'proficiency-choice',
-          category: 'skill',
-          count: 1,
-          from: expect.arrayContaining(['arcana', 'history', 'intimidation', 'nature', 'religion', 'survival']),
-        }),
         expect.objectContaining({
           type: 'feature',
           feature: expect.objectContaining({ id: 'greatoldonepatron-awakened-mind' }),
@@ -3060,29 +3055,6 @@ describe('getSubclassSource — Great Old One Patron', () => {
       (g) => g.type === 'feature' && g.feature.id === 'greatoldonepatron-psychic-spells'
     );
     expect(stubGrant).toBeUndefined();
-  });
-
-  it('greatoldonepatron level 3 proficiency-choice from list contains exactly the 6 allowed skills', () => {
-    const source = getSubclassSource('greatoldonepatron');
-    const level3 = source?.features.find((f) => f.classLevel === 3);
-    const choiceGrant = level3?.grants.find((g) => g.type === 'proficiency-choice');
-    expect(choiceGrant).toBeDefined();
-    if (choiceGrant?.type === 'proficiency-choice' && choiceGrant.category === 'skill') {
-      expect(choiceGrant.from).toEqual(
-        expect.arrayContaining(['arcana', 'history', 'intimidation', 'nature', 'religion', 'survival'])
-      );
-      expect(choiceGrant.from).toHaveLength(6);
-    }
-  });
-
-  it('greatoldonepatron level 3 proficiency-choice key uses skill-choice category with subclass origin', () => {
-    const source = getSubclassSource('greatoldonepatron');
-    const level3 = source?.features.find((f) => f.classLevel === 3);
-    const profChoice = level3?.grants.find((g) => g.type === 'proficiency-choice');
-    expect(profChoice).toBeDefined();
-    expect((profChoice as { key: string }).key).toBe(
-      createChoiceKey('skill-choice', 'subclass', 'greatoldonepatron', 1)
-    );
   });
 
   it('greatoldonepatron level 5 grants clairvoyance and hunger-of-hadar (always prepared)', () => {
@@ -3417,11 +3389,12 @@ describe('getSubclassSource — Illusionist', () => {
     expect(source?.features.map((f) => f.classLevel)).toEqual([3, 6, 10, 14]);
   });
 
-  it('illusionist level 3 grants 2 features: illusion-savant and improved-illusions', () => {
+  it('illusionist level 3 grants illusion-savant, improved-illusions and minor-illusion', () => {
     const source = getSubclassSource('illusionist');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(2);
+    expect(level3?.grants).toHaveLength(3);
+    expect(level3?.grants).toContainEqual(expect.objectContaining({ type: 'spell', spellId: 'minor-illusion' }));
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

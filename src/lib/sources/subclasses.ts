@@ -1447,6 +1447,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Warping Implosion: Action - teleport up to 120 ft; each creature within 30 ft of origin must succeed on STR save or take 3d10 Force damage and be pulled 30 ft toward your destination
           { type: 'feature', feature: { id: 'aberrantsorcery-warping-implosion' } },
+          { type: 'resource-pool', poolId: 'warping-implosion', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1502,13 +1503,22 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         // Trance of Order: 2024 PHB places this at L14 (not L3)
         classLevel: 14,
-        grants: [{ type: 'feature', feature: { id: 'clockworksorcery-trance-of-order' } }],
+        grants: [
+          { type: 'feature', feature: { id: 'clockworksorcery-trance-of-order' } },
+          { type: 'resource-pool', poolId: 'trance-of-order', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+        ],
       },
       {
         classLevel: 18,
         grants: [
           // Clockwork Cavalcade: Action - summon a parade of clockwork creatures that restore HP, repair objects, and dispel spells within a 30-ft Cube
           { type: 'feature', feature: { id: 'clockworksorcery-clockwork-cavalcade' } },
+          {
+            type: 'resource-pool',
+            poolId: 'clockwork-cavalcade',
+            max: { mode: 'fixed', value: 1 },
+            regen: 'long-rest',
+          },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1623,6 +1633,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Dragon Wings: sprout dragon wings as a Bonus Action, gaining a Fly speed equal to your Speed
           { type: 'feature', feature: { id: 'draconicsorcery-dragon-wings' } },
+          { type: 'resource-pool', poolId: 'dragon-wings', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
           // Fly speed equal to your Speed while the wings are manifested (shown permanently; toggle not modelled)
           { type: 'speed', mode: 'fly', value: 'walk-equivalent' },
         ],
@@ -1803,6 +1814,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Searing Vengeance: Reaction when you/an ally within 60 ft drops to 0 HP — Radiant burst (2d8 + CHA) and Blind nearby foes; the creature rises with 1 HP; 1/long rest
           { type: 'feature', feature: { id: 'celestialpatron-searing-vengeance' } },
+          { type: 'resource-pool', poolId: 'searing-vengeance', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1868,6 +1880,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Hurl Through Hell: on a hit, teleport the target through the Lower Planes; it returns next turn taking 10d10 Psychic damage; 1/long rest
           { type: 'feature', feature: { id: 'fiendpatron-hurl-through-hell' } },
+          { type: 'resource-pool', poolId: 'hurl-through-hell', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],

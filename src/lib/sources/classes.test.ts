@@ -1019,8 +1019,8 @@ describe('Sorcerer class grant structures', () => {
     }
   });
 
-  it('level 20 has sorcerous-restoration feature', () => {
-    const featureIds = source?.levels[19].grants
+  it('level 5 has sorcerous-restoration feature', () => {
+    const featureIds = source?.levels[4].grants
       .filter((g) => g.type === 'feature')
       .map((g) => (g.type === 'feature' ? g.feature.id : ''));
     expect(featureIds).toContain('sorcerer-sorcerous-restoration');
@@ -1064,23 +1064,34 @@ describe('Warlock class grant structures', () => {
     }
   });
 
-  it('level 1 has eldritch-invocations and magical-cunning features', () => {
-    const featureIds = source?.levels[0].grants
+  it('level 1 has eldritch-invocations feature and a first invocation pick (choice 0)', () => {
+    const grants = source?.levels[0].grants ?? [];
+    const featureIds = grants
       .filter((g) => g.type === 'feature')
       .map((g) => (g.type === 'feature' ? g.feature.id : ''));
     expect(featureIds).toContain('warlock-eldritch-invocations');
-    expect(featureIds).toContain('warlock-magical-cunning');
+    const pick = grants.find((g) => g.type === 'feature-choice');
+    expect(pick?.type === 'feature-choice' && pick.key).toBe(createChoiceKey('feature-choice', 'class', 'warlock', 0));
   });
 
-  it('level 3 has subclass grant and pact-boon feature-choice', () => {
+  it('level 2 has magical-cunning feature and its long-rest pool', () => {
+    const grants = source?.levels[1].grants ?? [];
+    expect(grants.some((g) => g.type === 'feature' && g.feature.id === 'warlock-magical-cunning')).toBe(true);
+    expect(grants.some((g) => g.type === 'resource-pool' && g.poolId === 'magical-cunning')).toBe(true);
+  });
+
+  it('level 3 has subclass grant only (invocations come at L2/5/7/9/12/15/18)', () => {
     const grants = source?.levels[2].grants ?? [];
     expect(grants.find((g) => g.type === 'subclass')).toBeDefined();
-    const featureChoice = grants.find((g) => g.type === 'feature-choice');
-    expect(featureChoice?.type).toBe('feature-choice');
-    if (featureChoice?.type === 'feature-choice') {
-      const optionIds = featureChoice.options.map((o) => o.optionId);
-      expect(optionIds).toEqual(['blade', 'chain', 'tome']);
-    }
+    expect(grants.find((g) => g.type === 'feature-choice')).toBeUndefined();
+  });
+
+  it('invocation picks follow the 2024 count progression 1,3,5,6,7,8,9,10', () => {
+    const perLevel = source?.levels.map((l) => l.grants.filter((g) => g.type === 'feature-choice').length) ?? [];
+    const total = perLevel.map((_, i) => perLevel.slice(0, i + 1).reduce((a, b) => a + b, 0));
+    expect([total[0], total[1], total[4], total[6], total[8], total[11], total[14], total[17], total[19]]).toEqual([
+      1, 3, 5, 6, 7, 8, 9, 10, 10,
+    ]);
   });
 
   it('level 4 has ASI (index 0)', () => {

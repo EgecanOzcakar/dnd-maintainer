@@ -221,7 +221,7 @@ export function buildInsertStatement(
 
 export function generateSeedSql(data: ExportData): string {
   const lines: string[] = [
-    '-- D&D Campaign Manager - Seed Data Export',
+    '-- Campaign Keeper - Seed Data Export',
     `-- Generated at: ${new Date().toISOString()}`,
     '-- WARNING: This file uses ON CONFLICT (id) DO NOTHING. It is designed for',
     '-- restoring into a clean database. Partial restores into an existing database',

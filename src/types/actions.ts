@@ -2,7 +2,7 @@ import type { ClassId } from '@/lib/dnd-helpers';
 import type { AbilityKey } from '@/types/database';
 import type { DamageDice } from '@/types/items';
 
-/** How a thing is used in the 2024 action economy (D&D Beyond's Actions tab filters). */
+/** How a thing is used in the 2024 action economy (the Actions tab filters). */
 export type ActivationType = 'action' | 'bonus-action' | 'reaction' | 'free' | 'special';
 
 /**

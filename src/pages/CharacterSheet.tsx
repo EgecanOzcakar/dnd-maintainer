@@ -370,7 +370,7 @@ function CharacterSheetInner({
           />
         ) : (
           <>
-            {/* WotC-inspired layout: stats (left) / combat (center) / roleplay & gear (right) */}
+            {/* Three-column layout: stats (left) / combat (center) / roleplay & gear (right) */}
             <div className="sheet-grid mb-6">
               {/* Left Column: Abilities, Saving Throws, Skills */}
               <div className="sheet-area-left">

@@ -37,9 +37,9 @@ const mockDemoCampaign: Campaign = {
 
 const mockProtectedCampaign: Campaign = {
   id: 'bbbbbbbb-1111-4000-8000-000000000002',
-  slug: 'curse-of-strahd',
+  slug: 'curse-of-the-mist-lord',
   previous_slugs: [],
-  name: 'Curse of Strahd',
+  name: 'Curse of the Mist Lord',
   description: 'Gothic horror',
   setting: 'Barovia',
   status: 'active',
@@ -96,7 +96,7 @@ describe('CampaignAuthGate', () => {
 
     expect(screen.queryByTestId('campaign-content')).not.toBeInTheDocument();
     expect(screen.getByPlaceholderText('auth.passphrasePlaceholder')).toBeInTheDocument();
-    expect(screen.getByText('Curse of Strahd')).toBeInTheDocument();
+    expect(screen.getByText('Curse of the Mist Lord')).toBeInTheDocument();
   });
 
   it('displays error if wrong passphrase is submitted', async () => {

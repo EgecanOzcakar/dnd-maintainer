@@ -3,38 +3,38 @@
 When the Dungeon Master archives ""Lost Mines""
 Then ""Lost Mines"" does not appear in the active campaigns list","",""
 "features/campaigns/create-campaign.feature","Create a new campaign","","A DM creates a campaign by providing a name","Ready","","Given the Dungeon Master has no campaigns
-When the Dungeon Master creates a campaign named ""Curse of Strahd""
-Then ""Curse of Strahd"" appears in their campaign list","",""
+When the Dungeon Master creates a campaign named ""Curse of the Mist Lord""
+Then ""Curse of the Mist Lord"" appears in their campaign list","",""
 "features/campaigns/create-campaign.feature","Create a new campaign","","A campaign name is required","Ready","","When the Dungeon Master tries to create a campaign with no name
 Then the campaign is not created
 And the Dungeon Master sees that a name is required","",""
 "features/campaigns/create-campaign.feature","Create a new campaign","","A newly created campaign is ready to manage","Ready","","Given the Dungeon Master has no campaigns
 When the Dungeon Master creates a campaign named ""Tomb of Annihilation""
 Then ""Tomb of Annihilation"" is the active campaign","",""
-"features/campaigns/edit-campaign-details.feature","Edit campaign details","","A DM updates the campaign description","Ready","","Given a campaign named ""Curse of Strahd"" exists with no description
+"features/campaigns/edit-campaign-details.feature","Edit campaign details","","A DM updates the campaign description","Ready","","Given a campaign named ""Curse of the Mist Lord"" exists with no description
 When the Dungeon Master sets the description to ""Gothic horror in Barovia""
 Then the campaign description shows ""Gothic horror in Barovia""","",""
-"features/campaigns/edit-campaign-details.feature","Edit campaign details","","A DM changes the campaign setting","Ready","","Given a campaign named ""Sandbox"" exists in the ""Forgotten Realms"" setting
-When the Dungeon Master changes the setting to ""Eberron""
-Then the campaign is in the ""Eberron"" setting","",""
+"features/campaigns/edit-campaign-details.feature","Edit campaign details","","A DM changes the campaign setting","Ready","","Given a campaign named ""Sandbox"" exists in the ""Shattered Realms"" setting
+When the Dungeon Master changes the setting to ""Dragonmarch""
+Then the campaign is in the ""Dragonmarch"" setting","",""
 "features/campaigns/edit-campaign-details.feature","Edit campaign details","","A DM renames a campaign","Ready","","Given a campaign named ""Untitled"" exists
 When the Dungeon Master renames it to ""Storm King's Thunder""
 Then the campaign is named ""Storm King's Thunder""","",""
-"features/campaigns/per-campaign-theme.feature","Per-campaign color theme","","A DM sets a theme on a campaign","Ready","","Given a campaign named ""Curse of Strahd"" exists with no theme set
+"features/campaigns/per-campaign-theme.feature","Per-campaign color theme","","A DM sets a theme on a campaign","Ready","","Given a campaign named ""Curse of the Mist Lord"" exists with no theme set
 When the Dungeon Master sets the campaign theme to ""Arcane""
-Then ""Curse of Strahd"" uses the ""Arcane"" theme","",""
+Then ""Curse of the Mist Lord"" uses the ""Arcane"" theme","",""
 "features/campaigns/per-campaign-theme.feature","Per-campaign color theme","","A campaign without a theme falls back to the DM's global theme","Ready","","Given the Dungeon Master's global theme is ""Sylvan""
 And a campaign named ""Sandbox"" exists with no theme set
 When the Dungeon Master opens ""Sandbox""
 Then the interface uses the ""Sylvan"" theme","",""
 "features/campaigns/per-campaign-theme.feature","Per-campaign color theme","","A campaign theme overrides the global theme while that campaign is active","Ready","","Given the Dungeon Master's global theme is ""Default""
-And a campaign named ""Curse of Strahd"" exists with theme ""Arcane""
-When the Dungeon Master opens ""Curse of Strahd""
+And a campaign named ""Curse of the Mist Lord"" exists with theme ""Arcane""
+When the Dungeon Master opens ""Curse of the Mist Lord""
 Then the interface uses the ""Arcane"" theme","",""
 "features/campaigns/per-campaign-theme.feature","Per-campaign color theme","","A DM clears a campaign theme to fall back to their global theme","Ready","","Given the Dungeon Master's global theme is ""Default""
-And a campaign named ""Curse of Strahd"" exists with theme ""Arcane""
-When the Dungeon Master clears the theme on ""Curse of Strahd""
-Then ""Curse of Strahd"" uses the ""Default"" theme","",""
+And a campaign named ""Curse of the Mist Lord"" exists with theme ""Arcane""
+When the Dungeon Master clears the theme on ""Curse of the Mist Lord""
+Then ""Curse of the Mist Lord"" uses the ""Default"" theme","",""
 "features/campaigns/search-campaigns.feature","Search campaigns by name","","Typing a query narrows the list to matching campaigns","Ready","","Given a campaign named ""Dragon's Lair"" exists
 And a campaign named ""City of Shadows"" exists
 And a campaign named ""Dragon's Peak"" exists
@@ -56,10 +56,10 @@ When the Dungeon Master views their campaigns
 Then the list is empty
 And the Dungeon Master is prompted to create their first campaign","",""
 "features/campaigns/view-campaigns.feature","View existing campaigns","","Archived campaigns are hidden by default","Ready","","Given a campaign named ""Lost Mines"" exists
-And a campaign named ""Forgotten Realms"" exists but has been archived
+And a campaign named ""Shattered Realms"" exists but has been archived
 When the Dungeon Master views their campaigns
 Then ""Lost Mines"" appears in the list
-And ""Forgotten Realms"" does not appear in the list","",""
+And ""Shattered Realms"" does not appear in the list","",""
 "features/campaigns/view-campaigns.feature","View existing campaigns","","Campaigns are ordered by most recent activity","Ready","","Given a campaign named ""Older Game"" exists and was last played 2 weeks ago
 And a campaign named ""Current Game"" exists and was last played yesterday
 When the Dungeon Master views their campaigns
@@ -95,6 +95,10 @@ Then the character has a tool proficiency from the background","",""
 "features/characters/choose-background.feature","Choose a background during character creation","A background grants 2024-style ability increases","A background grants three points of ability score increases","Ready","","Given a new character with the soldier background
 Then the background grants 3 points of ability score increases","",""
 "features/characters/choose-background.feature","Choose a background during character creation","A background grants an origin feat","A background grants its origin feat","Ready","","Given a new character with the soldier background
+Then the character gains an origin feat","",""
+"features/characters/choose-background.feature","Choose a background during character creation","A background grants an origin feat","A background grants its origin feat","Ready","","Given a new character with the acolyte background
+Then the character gains an origin feat","",""
+"features/characters/choose-background.feature","Choose a background during character creation","A background grants an origin feat","A background grants its origin feat","Ready","","Given a new character with the sage background
 Then the character gains an origin feat","",""
 "features/characters/choose-class.feature","Choose a class during character creation","A class grants its core proficiencies at level 1","A class grants its saving throw proficiencies","Ready","","Given a new character with the fighter class at level 1
 Then the character is proficient in Strength saving throws
@@ -255,17 +259,17 @@ Then the interface uses the ""Sylvan"" theme","",""
 "features/settings/global-theme.feature","Switch the global color theme","","The chosen global theme persists for the next visit","Ready","","Given the Dungeon Master is on the theme settings page
 When the Dungeon Master selects the ""Arcane"" global theme
 Then the saved global theme is ""Arcane""","",""
-"features/settings/per-campaign-theme-override.feature","Override per-campaign theme from Settings","","Setting an override for a campaign from Settings","Ready","","Given a campaign named ""Curse of Strahd"" exists with no theme set
+"features/settings/per-campaign-theme-override.feature","Override per-campaign theme from Settings","","Setting an override for a campaign from Settings","Ready","","Given a campaign named ""Curse of the Mist Lord"" exists with no theme set
 And the Dungeon Master is on the theme settings page
-When the Dungeon Master sets the ""Arcane"" theme for ""Curse of Strahd"" in Settings
-Then ""Curse of Strahd"" uses the ""Arcane"" theme","",""
-"features/settings/per-campaign-theme-override.feature","Override per-campaign theme from Settings","","Resetting a campaign override back to inherit the global theme","Ready","","Given a campaign named ""Curse of Strahd"" exists with theme ""Sylvan""
+When the Dungeon Master sets the ""Arcane"" theme for ""Curse of the Mist Lord"" in Settings
+Then ""Curse of the Mist Lord"" uses the ""Arcane"" theme","",""
+"features/settings/per-campaign-theme-override.feature","Override per-campaign theme from Settings","","Resetting a campaign override back to inherit the global theme","Ready","","Given a campaign named ""Curse of the Mist Lord"" exists with theme ""Sylvan""
 And the Dungeon Master is on the theme settings page
-When the Dungeon Master resets ""Curse of Strahd"" to inherit in Settings
-Then ""Curse of Strahd"" uses the ""Default"" theme","",""
-"features/campaigns/archive-campaign.feature","Archive a campaign","","An archived campaign can be restored","Future (not built yet)","@future","Given a campaign named ""Forgotten Realms"" exists but has been archived
-When the Dungeon Master restores ""Forgotten Realms""
-Then ""Forgotten Realms"" appears in the active campaigns list","",""
+When the Dungeon Master resets ""Curse of the Mist Lord"" to inherit in Settings
+Then ""Curse of the Mist Lord"" uses the ""Default"" theme","",""
+"features/campaigns/archive-campaign.feature","Archive a campaign","","An archived campaign can be restored","Future (not built yet)","@future","Given a campaign named ""Shattered Realms"" exists but has been archived
+When the Dungeon Master restores ""Shattered Realms""
+Then ""Shattered Realms"" appears in the active campaigns list","",""
 "features/campaigns/archive-campaign.feature","Archive a campaign","","Archived campaigns are browsable separately","Future (not built yet)","@future","Given a campaign named ""Old Game"" exists but has been archived
 When the Dungeon Master views their archived campaigns
 Then ""Old Game"" appears in the archived list","",""
@@ -285,10 +289,6 @@ And the Dungeon Master sees that the name is already in use","",""
 "features/characters/archive-character.feature","Archive a character","","An archived character is hidden from the character list","Future (not built yet)","@future","Given a campaign with an archived character named ""Old Hero""
 When the Dungeon Master views the character list
 Then ""Old Hero"" does not appear in the character list","",""
-"features/characters/choose-background.feature","Choose a background during character creation","A background grants an origin feat","A background grants its origin feat","Future (not built yet)","@future","Given a new character with the acolyte background
-Then the character gains an origin feat","",""
-"features/characters/choose-background.feature","Choose a background during character creation","A background grants an origin feat","A background grants its origin feat","Future (not built yet)","@future","Given a new character with the sage background
-Then the character gains an origin feat","",""
 "features/characters/choose-equipment.feature","Choose starting equipment during character creation","Choosing an option populates the inventory","A character can take starting gold instead of an equipment package","Future (not built yet)","@future","Given a new character with the fighter class at level 1
 When the character chooses to start with gold instead of equipment
 Then the character's inventory reflects the gold option","",""
@@ -634,8 +634,8 @@ Then the change is not saved
 And ""alice@example.com"" sees that they are not authorized","",""
 "features/collaboration/manage-own-characters.feature","Players manage their own characters","","A player cannot create a character in a campaign they have not joined","Draft","@draft","Given the user is signed in as ""alice@example.com""
 And ""alice@example.com"" is a player in ""Sunless Citadel""
-Given ""alice@example.com"" is not a member of ""Waterdeep""
-When ""alice@example.com"" tries to create a character in ""Waterdeep""
+Given ""alice@example.com"" is not a member of ""Harborfall""
+When ""alice@example.com"" tries to create a character in ""Harborfall""
 Then no character is created
 And ""alice@example.com"" sees that they are not a member of the campaign","",""
 "features/collaboration/manage-own-characters.feature","Players manage their own characters","","The campaign owner can edit any character in their campaign","Draft","@draft","Given the user is signed in as ""alice@example.com""

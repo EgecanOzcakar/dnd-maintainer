@@ -2,7 +2,7 @@
   "none": "—",
   "magicItems": {
     "title": "Magic Items",
-    "subtitle": "Searchable reference for the D&D 2024 SRD magic items.",
+    "subtitle": "Searchable reference for the SRD 5.2.1 magic items.",
     "searchPlaceholder": "Search by name or effect…",
     "rarityAll": "All rarities",
     "attunementFilter": "Requires attunement",
@@ -156,7 +156,7 @@
   },
   "wiki": {
     "title": "Class Progressions & Skills Wiki",
-    "subtitle": "Explore D&D 5.5e (2024 PHB) class progression tables, subclass features, and level-by-level unlocked skills and proficiencies.",
+    "subtitle": "Explore 5E (2024 rules) class progression tables, subclass features, and level-by-level unlocked skills and proficiencies.",
     "searchPlaceholder": "Search features, skills, or level...",
     "tabs": {
       "progression": "Level Progression",
@@ -179,7 +179,7 @@
       "resourcePools": "Resource Limits",
       "skillUnlocks": "Skill & Expertise Unlocks",
       "skillMatrixTitle": "Skill Availability & Unlock Matrix",
-      "skillMatrixDescription": "See which D&D 5e classes can select each skill at Level 1, and which classes unlock skill choices or expertise during level-up.",
+      "skillMatrixDescription": "See which classes can select each skill at Level 1, and which classes unlock skill choices or expertise during level-up.",
       "level": "Level {{level}}",
       "cantrips": "Cantrips",
       "prepared": "Prepared Spells",
@@ -212,10 +212,10 @@
     }
   },
   "app": {
-    "title": "D&D Keeper",
+    "title": "Campaign Keeper",
     "subtitle": "Campaign Manager",
     "version": "Campaign Manager v1.0",
-    "for5e": "For D&D 5e",
+    "for5e": "For 5E (2024 rules)",
     "viewOnGitHub": "View on GitHub"
   },
   "settings": {
@@ -987,7 +987,7 @@
     "campaignName": "Campaign Name",
     "placeholderName": "e.g., Lost Mines of Phandalin",
     "setting": "Setting",
-    "placeholderSetting": "e.g., Forgotten Realms, Greyhawk",
+    "placeholderSetting": "e.g., your homebrew world",
     "placeholderDescription": "Describe your campaign...",
     "passphrase": "Campaign Passphrase",
     "passphrasePlaceholder": "Set a secure passphrase for players and DM...",
@@ -1230,7 +1230,7 @@
     "qty": "Qty: {{count}}",
     "ac": "AC {{value}}",
     "addTitle": "Add Item to Inventory",
-    "addDescription": "Select an item from the D&D catalog or create a custom item.",
+    "addDescription": "Select an item from the catalog or create a custom item.",
     "fromCatalog": "From Catalog",
     "customItem": "Custom Item",
     "noMatch": "No matching items found.",

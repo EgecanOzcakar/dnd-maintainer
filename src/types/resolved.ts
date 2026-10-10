@@ -92,6 +92,10 @@ export interface ResolvedAttack {
   readonly normalRange?: number;
   readonly longRange?: number;
   readonly disadvantageFromArmor?: boolean;
+  /** Two-handed damage for a Versatile weapon. */
+  readonly versatileDice?: DamageDice;
+  /** 2024 Light-weapon extra attack, made as a Bonus Action. */
+  readonly offHand?: boolean;
 }
 
 export interface ResolvedFeature {

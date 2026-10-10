@@ -1426,6 +1426,12 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Restore Balance: Reaction within 60 ft — cancel Advantage or Disadvantage on a roll (PB/long rest)
           { type: 'feature', feature: { id: 'clockworksorcery-restore-balance' } },
+          {
+            type: 'resource-pool',
+            poolId: 'restore-balance',
+            max: { mode: 'proficiency-bonus', classId: 'sorcerer' },
+            regen: 'long-rest',
+          },
           // Expanded spells (always prepared)
           { type: 'spell', spellId: 'aid', alwaysPrepared: true },
           { type: 'spell', spellId: 'alarm', alwaysPrepared: true },
@@ -1482,25 +1488,67 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Draconic Resilience: +1 HP per Sorcerer level (structural grant)
           { type: 'hp-bonus', perLevel: 1 },
-          // Draconic Resilience: AC 13 + DEX mod when not wearing armor (natural armor; structural grant)
+          // Draconic Resilience: unarmored AC. 2024 is 10 + DEX + CHA; AcCalculation cannot express that, so the
+          // 2014-style 13 + DEX natural armor approximation is kept.
           { type: 'armor-class', calculation: { mode: 'natural', baseAc: 13 } },
           // Dragon Ancestor: gain proficiency in Draconic language
           { type: 'proficiency', category: 'language', id: 'draconic' },
-          // Dragon Ancestor: 1-of-10 ancestry choice (Black/Blue/Brass/Bronze/Copper/Gold/Green/Red/Silver/White)
+          // Dragon Ancestor: 1-of-10 ancestry choice. Each option carries the Elemental Affinity (L6) resistance
+          // for its element; ponytail: applied from L3 because option grants cannot be level-gated. (Black/Blue/Brass/Bronze/Copper/Gold/Green/Red/Silver/White)
           {
             type: 'feature-choice',
             key: createChoiceKey('feature-choice', 'subclass', 'draconicsorcery', 0),
             options: [
-              { optionId: 'black', featureId: 'draconicsorcery-dragon-ancestor-black', grants: [] },
-              { optionId: 'blue', featureId: 'draconicsorcery-dragon-ancestor-blue', grants: [] },
-              { optionId: 'brass', featureId: 'draconicsorcery-dragon-ancestor-brass', grants: [] },
-              { optionId: 'bronze', featureId: 'draconicsorcery-dragon-ancestor-bronze', grants: [] },
-              { optionId: 'copper', featureId: 'draconicsorcery-dragon-ancestor-copper', grants: [] },
-              { optionId: 'gold', featureId: 'draconicsorcery-dragon-ancestor-gold', grants: [] },
-              { optionId: 'green', featureId: 'draconicsorcery-dragon-ancestor-green', grants: [] },
-              { optionId: 'red', featureId: 'draconicsorcery-dragon-ancestor-red', grants: [] },
-              { optionId: 'silver', featureId: 'draconicsorcery-dragon-ancestor-silver', grants: [] },
-              { optionId: 'white', featureId: 'draconicsorcery-dragon-ancestor-white', grants: [] },
+              {
+                optionId: 'black',
+                featureId: 'draconicsorcery-dragon-ancestor-black',
+                grants: [{ type: 'resistance', damageType: 'acid' }],
+              },
+              {
+                optionId: 'blue',
+                featureId: 'draconicsorcery-dragon-ancestor-blue',
+                grants: [{ type: 'resistance', damageType: 'lightning' }],
+              },
+              {
+                optionId: 'brass',
+                featureId: 'draconicsorcery-dragon-ancestor-brass',
+                grants: [{ type: 'resistance', damageType: 'fire' }],
+              },
+              {
+                optionId: 'bronze',
+                featureId: 'draconicsorcery-dragon-ancestor-bronze',
+                grants: [{ type: 'resistance', damageType: 'lightning' }],
+              },
+              {
+                optionId: 'copper',
+                featureId: 'draconicsorcery-dragon-ancestor-copper',
+                grants: [{ type: 'resistance', damageType: 'acid' }],
+              },
+              {
+                optionId: 'gold',
+                featureId: 'draconicsorcery-dragon-ancestor-gold',
+                grants: [{ type: 'resistance', damageType: 'fire' }],
+              },
+              {
+                optionId: 'green',
+                featureId: 'draconicsorcery-dragon-ancestor-green',
+                grants: [{ type: 'resistance', damageType: 'poison' }],
+              },
+              {
+                optionId: 'red',
+                featureId: 'draconicsorcery-dragon-ancestor-red',
+                grants: [{ type: 'resistance', damageType: 'fire' }],
+              },
+              {
+                optionId: 'silver',
+                featureId: 'draconicsorcery-dragon-ancestor-silver',
+                grants: [{ type: 'resistance', damageType: 'cold' }],
+              },
+              {
+                optionId: 'white',
+                featureId: 'draconicsorcery-dragon-ancestor-white',
+                grants: [{ type: 'resistance', damageType: 'cold' }],
+              },
             ],
           },
           // Expanded spells (always prepared)
@@ -1543,6 +1591,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Dragon Wings: sprout dragon wings as a Bonus Action, gaining a Fly speed equal to your Speed
           { type: 'feature', feature: { id: 'draconicsorcery-dragon-wings' } },
+          // Fly speed equal to your Speed while the wings are manifested (shown permanently; toggle not modelled)
+          { type: 'speed', mode: 'fly', value: 'walk-equivalent' },
         ],
       },
       {
@@ -1564,6 +1614,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           // Tides of Chaos: gain Advantage on one attack roll, ability check, or saving throw per long rest;
           // automatically replenishes when you experience a Wild Magic Surge
           { type: 'feature', feature: { id: 'wildmagicsorcery-tides-of-chaos' } },
+          { type: 'resource-pool', poolId: 'tides-of-chaos', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
           // 2024 Wild Magic has no subclass spell list
         ],
       },
@@ -1661,8 +1712,6 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Bonus Proficiency: Religion skill
-          { type: 'proficiency', category: 'skill', id: 'religion' },
           // Bonus Cantrips: Light and Sacred Flame (alwaysPrepared:false → routes to cantrips[] via level-0 resolver logic)
           { type: 'spell', spellId: 'light', alwaysPrepared: false },
           { type: 'spell', spellId: 'sacred-flame', alwaysPrepared: false },
@@ -1796,14 +1845,6 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Bonus Proficiency (choice): Arcana, History, Intimidation, Nature, Religion, or Survival
-          {
-            type: 'proficiency-choice',
-            category: 'skill',
-            key: createChoiceKey('skill-choice', 'subclass', 'greatoldonepatron', 1),
-            count: 1,
-            from: ['arcana', 'history', 'intimidation', 'nature', 'religion', 'survival'],
-          },
           // Awakened Mind: telepathic communication with creatures within 30 ft sharing a language
           { type: 'feature', feature: { id: 'greatoldonepatron-awakened-mind' } },
           // Great Old One patron spells (always prepared)
@@ -2003,6 +2044,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           // Improved Illusions: when you cast an Illusion spell of L1+, you can alter one feature of the
           // illusion as a Bonus Action
           { type: 'feature', feature: { id: 'illusionist-improved-illusions' } },
+          // Improved Illusions also grants the Minor Illusion cantrip
+          { type: 'spell', spellId: 'minor-illusion', alwaysPrepared: false },
         ],
       },
       {

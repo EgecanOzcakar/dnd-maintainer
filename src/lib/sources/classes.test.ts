@@ -419,6 +419,14 @@ describe('Barbarian class grant structures', () => {
     }
   });
 
+  it('level 16 has a fourth weapon-mastery-choice (5 masteries total)', () => {
+    const grant = source?.levels[15].grants.find((g) => g.type === 'weapon-mastery-choice');
+    expect(grant).toMatchObject({
+      count: 1,
+      key: createChoiceKey('weapon-mastery-choice', 'class', 'barbarian', 3),
+    });
+  });
+
   it('level 20 has primal-champion feature', () => {
     const grant = source?.levels[19].grants.find((g) => g.type === 'feature');
     expect(grant?.type).toBe('feature');
@@ -462,9 +470,21 @@ describe('Bard class grant structures', () => {
     expect(featureIds).toContain('bard-bardic-inspiration');
   });
 
-  it('level 3 has subclass and expertise-choice grants', () => {
-    const grants = source?.levels[2].grants ?? [];
-    expect(grants.find((g) => g.type === 'subclass')).toBeDefined();
+  it('level 3 has a subclass grant', () => {
+    expect(source?.levels[2].grants.find((g) => g.type === 'subclass')).toBeDefined();
+  });
+
+  it('level 2 has expertise-choice, jack-of-all-trades and no song-of-rest', () => {
+    const grants = source?.levels[1].grants ?? [];
+    const featureIds = grants
+      .filter((g) => g.type === 'feature')
+      .map((g) => (g.type === 'feature' ? g.feature.id : ''));
+    expect(featureIds).toContain('bard-jack-of-all-trades');
+    expect(featureIds).not.toContain('bard-song-of-rest');
+    expect(grants.find((g) => g.type === 'ability-check-bonus')).toMatchObject({
+      value: 'half-proficiency',
+      onlyWhenNotProficient: true,
+    });
     const expertiseGrant = grants.find((g) => g.type === 'expertise-choice');
     expect(expertiseGrant?.type).toBe('expertise-choice');
     if (expertiseGrant?.type === 'expertise-choice') {
@@ -482,12 +502,48 @@ describe('Bard class grant structures', () => {
     }
   });
 
-  it('level 10 has magical-secrets feature and second expertise-choice', () => {
-    const grants = source?.levels[9].grants ?? [];
-    const featureIds = grants
+  it.each([
+    [5, 'bard-font-of-inspiration'],
+    [7, 'bard-countercharm'],
+    [10, 'bard-magical-secrets'],
+    [18, 'bard-superior-inspiration'],
+    [19, 'bard-epic-boon'],
+    [20, 'bard-words-of-creation'],
+  ])('level %i has %s', (level, id) => {
+    const featureIds = source?.levels[level - 1].grants
       .filter((g) => g.type === 'feature')
       .map((g) => (g.type === 'feature' ? g.feature.id : ''));
-    expect(featureIds).toContain('bard-magical-secrets');
+    expect(featureIds).toContain(id);
+  });
+
+  it('prepared spell choices total matches the 2024 Bard table at every level', () => {
+    const table = [4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 16, 17, 17, 18, 18, 19, 20, 21, 22];
+    let total = 0;
+    source?.levels.forEach((lvl, i) => {
+      for (const g of lvl.grants) {
+        if (g.type === 'spell-choice' && g.spellLevel > 0) total += g.count;
+      }
+      expect(total).toBe(table[i]);
+    });
+  });
+
+  it('cantrip choices total 2 / 3 / 4 at levels 1 / 4 / 10', () => {
+    let total = 0;
+    const seen: number[] = [];
+    source?.levels.forEach((lvl) => {
+      for (const g of lvl.grants) {
+        if (g.type === 'spell-choice' && g.spellLevel === 0) total += g.count;
+      }
+      seen.push(total);
+    });
+    expect(seen[0]).toBe(2);
+    expect(seen[3]).toBe(3);
+    expect(seen[9]).toBe(4);
+    expect(seen[19]).toBe(4);
+  });
+
+  it('level 9 has the second expertise-choice', () => {
+    const grants = source?.levels[8].grants ?? [];
     const expertiseGrant = grants.find((g) => g.type === 'expertise-choice');
     expect(expertiseGrant?.type).toBe('expertise-choice');
     if (expertiseGrant?.type === 'expertise-choice') {
@@ -583,6 +639,58 @@ describe('Cleric class grant structures', () => {
       expect(grant.key).toBe(createChoiceKey('asi', 'class', 'cleric', 0));
       expect(grant.points).toBe(2);
     }
+  });
+
+  it('level 2 has Channel Divinity, Divine Spark, Turn Undead and a stepped 2/3/4 pool', () => {
+    const grants = source?.levels[1].grants ?? [];
+    const featureIds = grants
+      .filter((g) => g.type === 'feature')
+      .map((g) => (g.type === 'feature' ? g.feature.id : ''));
+    expect(featureIds).toEqual(['cleric-channel-divinity', 'cleric-divine-spark', 'cleric-turn-undead']);
+    const pool = grants.find((g) => g.type === 'resource-pool');
+    expect(pool).toMatchObject({
+      poolId: 'channel-divinity',
+      max: { mode: 'level-steps', classId: 'cleric' },
+      regen: { mode: 'compound', shortRestAmount: 1 },
+    });
+    if (pool?.type === 'resource-pool' && pool.max.mode === 'level-steps') {
+      expect(pool.max.steps).toEqual([
+        { minLevel: 2, value: 2 },
+        { minLevel: 6, value: 3 },
+        { minLevel: 18, value: 4 },
+      ]);
+    }
+  });
+
+  it.each([
+    [5, 'cleric-sear-undead'],
+    [6, 'cleric-channel-divinity-3'],
+    [10, 'cleric-divine-intervention'],
+    [18, 'cleric-channel-divinity-4'],
+  ])('level %i has %s', (level, id) => {
+    const featureIds = source?.levels[level - 1].grants
+      .filter((g) => g.type === 'feature')
+      .map((g) => (g.type === 'feature' ? g.feature.id : ''));
+    expect(featureIds).toContain(id);
+  });
+
+  it('level 14 has improved-blessed-strikes', () => {
+    expect(source?.levels[13].grants).toContainEqual({
+      type: 'feature',
+      feature: { id: 'cleric-improved-blessed-strikes' },
+    });
+  });
+
+  it('cleric cantrip choices total 3 / 4 / 5 at levels 1 / 4 / 10 (excluding Thaumaturge)', () => {
+    let total = 0;
+    const seen: number[] = [];
+    source?.levels.forEach((lvl) => {
+      for (const g of lvl.grants) {
+        if (g.type === 'spell-choice' && g.spellLevel === 0) total += g.count;
+      }
+      seen.push(total);
+    });
+    expect([seen[0], seen[3], seen[9], seen[19]]).toEqual([3, 4, 5, 5]);
   });
 
   it('level 20 has greater-divine-intervention feature', () => {

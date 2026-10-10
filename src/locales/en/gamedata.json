@@ -867,6 +867,30 @@
       "name": "Rage of the Wilds",
       "description": "When you activate your Rage, you choose a Beast Spirit (Bear, Eagle, Elk, Tiger, or Wolf) and gain its associated benefit for the duration of your Rage."
     },
+    "wildheart-animal-speaker": {
+      "name": "Animal Speaker",
+      "description": "You can cast Beast Sense and Speak with Animals as rituals, using Wisdom as your spellcasting ability."
+    },
+    "wildheart-aspect-owl": {
+      "name": "Aspect of the Wilds: Owl",
+      "description": "You have Darkvision out to 60 feet, or 60 feet more if you already have it."
+    },
+    "wildheart-aspect-panther": {
+      "name": "Aspect of the Wilds: Panther",
+      "description": "You gain a Climb Speed equal to your Speed."
+    },
+    "wildheart-aspect-salmon": {
+      "name": "Aspect of the Wilds: Salmon",
+      "description": "You gain a Swim Speed equal to your Speed."
+    },
+    "wildheart-nature-speaker": {
+      "name": "Nature Speaker",
+      "description": "You can cast Commune with Nature as a ritual, using Wisdom as your spellcasting ability."
+    },
+    "wildheart-power-of-the-wilds": {
+      "name": "Power of the Wilds",
+      "description": "While raging, pick a power: Falcon (flying speed while unarmored), Lion (nearby foes have Disadvantage against others), or Ram (knock Large or smaller foes Prone)."
+    },
     "wildheart-aspect-of-the-wilds": {
       "name": "Aspect of the Wilds",
       "description": "You gain an ongoing benefit based on the Beast Spirit you chose at level 3; this benefit can be changed on a Long Rest. Bear: resistance to one damage type. Eagle: you don't need to sleep and can't be forced to sleep. Elk: your Speed increases by 15 feet. Tiger: add d6 to one damage roll per turn. Wolf: knock a creature prone when you hit it with an opportunity attack."
@@ -874,6 +898,10 @@
     "worldtree-vitality-of-the-tree": {
       "name": "Vitality of the Tree",
       "description": "When you activate your Rage, you gain Temporary Hit Points equal to your Barbarian level plus your CON modifier. As a Bonus Action while raging, you can grant 1d6 Temporary Hit Points to one creature within 60 feet of you."
+    },
+    "worldtree-travel-along-the-tree": {
+      "name": "Travel along the Tree",
+      "description": "When you rage and as a Bonus Action, you can teleport up to 60 feet to an unoccupied space you can see; once per Rage you can also bring up to six willing creatures within 10 feet."
     },
     "worldtree-branches-of-the-tree": {
       "name": "Branches of the Tree",
@@ -886,6 +914,10 @@
     "zealot-divine-fury-radiant": {
       "name": "Divine Fury (Radiant)",
       "description": "While raging, the first creature you hit on each of your turns takes an extra 1d6 + half your Barbarian level (rounded down) radiant damage."
+    },
+    "zealot-rage-of-the-gods": {
+      "name": "Rage of the Gods",
+      "description": "Once per Long Rest, while raging you can assume a divine form: fly, resist several damage types, and revive a nearby ally."
     },
     "zealot-divine-fury-necrotic": {
       "name": "Divine Fury (Necrotic)",
@@ -903,29 +935,33 @@
       "name": "Zealous Presence",
       "description": "As a Bonus Action, you unleash a battle cry infused with divine energy. Up to 10 creatures of your choice within 60 feet of you gain Advantage on attack rolls and saving throws until the start of your next turn. Once you use this feature, you can't use it again until you finish a Long Rest."
     },
-    "collegedance-inspirational-dance": {
-      "name": "Inspirational Dance",
-      "description": "When you hit a creature with an Unarmed Strike, you can expend one use of your Bardic Inspiration and roll the Bardic Inspiration die. The Unarmed Strike deals extra damage equal to the number rolled, and you gain a bonus to your AC equal to the number rolled until the start of your next turn."
+    "collegedance-dazzling-footwork": {
+      "name": "Dazzling Footwork",
+      "description": "While unarmored and unshielded you gain Unarmored Defense (10 + Dex + Cha), Advantage on Performance checks that involve dancing, and Agile Strikes; you can also add a Bardic Inspiration die to unarmed strike damage."
     },
-    "collegedance-unarmored-defense": {
-      "name": "Unarmored Defense (College of Dance)",
-      "description": "While you aren't wearing armor or wielding a Shield, your AC equals 10 plus your Dexterity modifier plus your Bardic Inspiration die size modifier (determined by your Bard level)."
+    "collegedance-inspiring-movement": {
+      "name": "Inspiring Movement",
+      "description": "As a Reaction when an enemy ends its move within 5 feet, spend a Bardic Inspiration die to move half your Speed without provoking, and an ally within 30 feet can do the same."
     },
-    "collegedance-frolicking-steps": {
-      "name": "Frolicking Steps",
-      "description": "When you take the Dash action, you can move through the space of any hostile creature once during that action."
+    "collegedance-tandem-footwork": {
+      "name": "Tandem Footwork",
+      "description": "When you roll Initiative, you can spend a Bardic Inspiration die to add its roll plus your Charisma modifier to the initiative of yourself and allies within 30 feet."
     },
-    "collegedance-dance-of-victory": {
-      "name": "Dance of Victory",
-      "description": "When you use Bardic Inspiration to add damage to an attack, the target takes additional damage equal to your Bardic Inspiration die at the start of your next turn."
+    "collegedance-leading-evasion": {
+      "name": "Leading Evasion",
+      "description": "When you make a Dexterity save for half damage you take none on a success and half on a failure, and nearby allies who share your space gain the same benefit."
     },
     "collegeglamour-mantle-of-inspiration": {
       "name": "Mantle of Inspiration",
       "description": "As a Bonus Action, you expend one use of your Bardic Inspiration and choose a number of creatures within 60 feet equal to your CHA modifier (minimum 1). Each creature gains Temporary Hit Points equal to your Bardic Inspiration die roll, plus a free Reaction to move up to their speed without provoking Opportunity Attacks."
     },
-    "collegeglamour-enthralling-performance": {
-      "name": "Enthralling Performance",
-      "description": "If you perform for at least 1 minute, you can attempt to inspire wonder in your audience. Each humanoid within 60 feet that watched and listened must succeed on a WIS save (DC = 8 + your proficiency bonus + your CHA modifier) or be charmed for 1 hour. While charmed, the creature regards you as a wondrous performer; it is not hostile toward you. The effect ends if the creature takes damage. You can use this feature once per Short or Long Rest."
+    "collegeglamour-beguiling-magic": {
+      "name": "Beguiling Magic",
+      "description": "Charm Person and Mirror Image are always prepared; after casting an Enchantment or Illusion spell you can make a creature Frightened or Charmed (Wisdom save). Once per Long Rest or by spending Bardic Inspiration."
+    },
+    "collegeglamour-unbreakable-majesty": {
+      "name": "Unbreakable Majesty",
+      "description": "As a Bonus Action, assume a majestic presence for a minute; creatures that attack you must first succeed on a Charisma save or miss and lose the attack."
     },
     "collegeglamour-mantle-of-majesty": {
       "name": "Mantle of Majesty",
@@ -935,13 +971,25 @@
       "name": "Cutting Words",
       "description": "As a Reaction when a creature you can see within 60 feet makes an attack roll, ability check, or damage roll, you expend one use of your Bardic Inspiration and subtract the number rolled from the creature's roll."
     },
-    "collegelore-magical-secrets": {
-      "name": "Magical Secrets",
-      "description": "You have plundered magical knowledge from a wide spectrum of disciplines. Choose two spells from any class's spell list, including this one. The chosen spells count as Bard spells for you and are added to your Bard spell list."
+    "collegelore-magical-discoveries": {
+      "name": "Magical Discoveries",
+      "description": "You learn two spells of your choice from the Cleric, Druid, or Wizard lists; they count as Bard spells for you."
+    },
+    "collegelore-peerless-skill": {
+      "name": "Peerless Skill",
+      "description": "When you fail an ability check or attack roll, you can spend a Bardic Inspiration die and add it to the roll, possibly turning the failure into a success."
     },
     "collegevalor-combat-inspiration": {
       "name": "Combat Inspiration",
       "description": "A creature that has a Bardic Inspiration die from you can use it to add the result to a weapon attack's damage roll, or as a Reaction when it is hit by an attack to add the result to its AC against that attack."
+    },
+    "collegevalor-martial-training": {
+      "name": "Martial Training",
+      "description": "You gain training with Medium armor, Shields, and Martial weapons, and can use a musical instrument as a spellcasting focus."
+    },
+    "collegevalor-battle-magic": {
+      "name": "Battle Magic",
+      "description": "After casting a spell that uses your action, you can make one weapon attack as a Bonus Action."
     },
     "collegevalor-extra-attack": {
       "name": "Extra Attack",
@@ -1287,17 +1335,25 @@
       "name": "Divine Order: Protector",
       "description": "Trained for battle, you gain proficiency with Martial weapons and training with Heavy armor."
     },
+    "cleric-divine-spark": {
+      "name": "Divine Spark",
+      "description": "Use Channel Divinity to heal a creature within 30 feet or deal Radiant or Necrotic damage to it (save for half); the dice scale with your Cleric level."
+    },
+    "cleric-turn-undead": {
+      "name": "Turn Undead",
+      "description": "Use Channel Divinity to force undead within 30 feet to make a Wisdom save or be Frightened and Incapacitated for a minute."
+    },
     "cleric-divine-order-thaumaturge": {
       "name": "Divine Order: Thaumaturge",
       "description": "You know one extra Cleric cantrip of your choice, and your mystical connection grants you a bonus to Intelligence (Arcana) and Intelligence (Religion) checks equal to your Wisdom modifier (minimum +1)."
     },
     "cleric-channel-divinity": {
       "name": "Channel Divinity",
-      "description": "You gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects."
+      "description": "Channel divine energy for magical effects. You have 2 uses, regain one on a Short Rest and all on a Long Rest. Divine Spark and Turn Undead are always available; your domain adds more options."
     },
-    "cleric-smite-undead": {
-      "name": "Smite Undead",
-      "description": "You can cause your Turn Undead feature to smite the undead. When you use Turn Undead, you can expend a spell slot to deal Radiant damage to undead that fail their saving throws."
+    "cleric-sear-undead": {
+      "name": "Sear Undead",
+      "description": "When you use Turn Undead, you roll Wisdom-modifier d8s of Radiant damage (minimum 1) against each undead creature that fails the save."
     },
     "cleric-blessed-strikes-divine-strike": {
       "name": "Blessed Strikes: Divine Strike",
@@ -1312,12 +1368,20 @@
       "description": "You can call on your deity to intervene on your behalf. As an action, describe the assistance you seek, and roll percentile dice."
     },
     "cleric-channel-divinity-3": {
-      "name": "Channel Divinity (3/Rest)",
-      "description": "You can use Channel Divinity three times between rests."
+      "name": "Channel Divinity (3 Uses)",
+      "description": "From level 6 you have three Channel Divinity uses. You regain one on a Short Rest and all on a Long Rest."
     },
     "cleric-greater-divine-intervention": {
       "name": "Greater Divine Intervention",
       "description": "Your Divine Intervention now always succeeds. Once you use it, you can't use it again until 2d4 days have passed."
+    },
+    "cleric-channel-divinity-4": {
+      "name": "Channel Divinity (4 Uses)",
+      "description": "From level 18 you have four Channel Divinity uses. You regain one on a Short Rest and all on a Long Rest."
+    },
+    "cleric-improved-blessed-strikes": {
+      "name": "Improved Blessed Strikes",
+      "description": "Your Blessed Strikes option improves: Divine Strike damage becomes 2d8, or Potent Spellcasting lets cantrips grant temporary hit points equal to twice your Wisdom modifier."
     },
     "lifedomain-domain-spells": {
       "name": "Life Domain Spells",
@@ -1334,6 +1398,10 @@
     "lifedomain-blessed-healer": {
       "name": "Blessed Healer",
       "description": "The healing spells you cast on others heal you as well. When you cast a spell with a spell slot of 1st level or higher that restores Hit Points to a creature other than you, you regain Hit Points equal to 2 + the spell's level."
+    },
+    "lifedomain-supreme-healing": {
+      "name": "Supreme Healing",
+      "description": "When you restore hit points with a spell or Channel Divinity, you do not roll the dice; you use the maximum number instead."
     },
     "lightdomain-domain-spells": {
       "name": "Light Domain Spells",
@@ -1355,6 +1423,10 @@
       "name": "Improved Warding Flare",
       "description": "You can also use your Warding Flare when a creature that you can see within 30 feet of you attacks a target other than you."
     },
+    "lightdomain-corona-of-light": {
+      "name": "Corona of Light",
+      "description": "Use Channel Divinity to emit a 60-foot aura of sunlight for a minute; enemies in it have Disadvantage on saves against Fire and Radiant spells."
+    },
     "trickerydomain-domain-spells": {
       "name": "Trickery Domain Spells",
       "description": "Your domain connection lets you always have certain spells prepared. These spells don't count against the number of spells you can prepare each day: Charm Person, Disguise Self (L1); Mirror Image, Pass Without Trace (L3); Blink, Dispel Magic (L5); Dimension Door, Polymorph (L7); Dominate Person, Modify Memory (L9)."
@@ -1371,6 +1443,10 @@
       "name": "Trickster's Transposition",
       "description": "Whenever you create your illusory duplicate, you can swap places with it once on each of your turns as a Bonus Action."
     },
+    "trickerydomain-improved-duplicity": {
+      "name": "Improved Duplicity",
+      "description": "Invoke Duplicity can create up to four duplicates, which you can move as a Bonus Action and use to gain Advantage on attacks against creatures near them."
+    },
     "wardomain-domain-spells": {
       "name": "War Domain Spells",
       "description": "Your domain connection lets you always have certain spells prepared. These spells don't count against the number of spells you can prepare each day: Divine Favor, Shield of Faith (L1); Magic Weapon, Spiritual Weapon (L3); Crusader's Mantle, Spirit Guardians (L5); Fire Shield, Freedom of Movement (L7); Destructive Wave, Hold Monster (L9)."
@@ -1386,6 +1462,10 @@
     "wardomain-war-gods-blessing": {
       "name": "War God's Blessing",
       "description": "You can use your Reaction to expend one use of your Channel Divinity and give an attack roll made by a creature within 30 feet of you a +10 bonus. You make this choice after you see the roll but before the DM says whether it hits or misses."
+    },
+    "wardomain-avatar-of-battle": {
+      "name": "Avatar of Battle",
+      "description": "You have Resistance to Bludgeoning, Piercing, and Slashing damage."
     },
     "druid-primal-order-magician": {
       "name": "Primal Order: Magician",
@@ -2215,10 +2295,6 @@
       "name": "Illusory Reality",
       "description": "When you cast an Illusion spell of level 1 or higher, you can choose one inanimate, nonmagical object that is part of the illusion and make that object real. You can do this on your turn as a Bonus Action while the spell persists. The object remains real for 1 minute; it can't deal damage or otherwise directly harm anyone."
     },
-    "cleric-improved-blessed-strikes": {
-      "name": "Improved Blessed Strikes",
-      "description": "Your Blessed Strikes option grows stronger: Divine Strike deals 2d8 extra damage, or Potent Spellcasting also grants you or a creature within 60 feet Temporary Hit Points equal to twice your Wisdom modifier when you deal cantrip damage."
-    },
     "fighter-extra-attack-2": {
       "name": "Two Extra Attacks",
       "description": "You can attack three times, instead of once, whenever you take the Attack action on your turn."
@@ -2259,38 +2335,6 @@
       "name": "Full of Stars",
       "description": "While in your Starry Form, you have resistance to Bludgeoning, Piercing and Slashing damage."
     },
-    "collegedance-tandem-footwork": {
-      "name": "Tandem Footwork",
-      "description": "When you roll Initiative, you can expend a Bardic Inspiration die to give yourself and allies within 30 feet a bonus to Initiative equal to the roll."
-    },
-    "collegeglamour-unbreakable-majesty": {
-      "name": "Unbreakable Majesty",
-      "description": "As a Bonus Action you assume a majestic presence for 1 minute; the first time each turn a creature hits you, it must succeed on a Charisma save or the attack misses."
-    },
-    "collegelore-peerless-skill": {
-      "name": "Peerless Skill",
-      "description": "When you make an ability check or attack roll and fail, you can expend a Bardic Inspiration die and add the roll; if you still fail, the die is not expended."
-    },
-    "collegevalor-battle-magic": {
-      "name": "Battle Magic",
-      "description": "After you cast a spell with a casting time of an action, you can make one weapon attack as a Bonus Action."
-    },
-    "lifedomain-supreme-healing": {
-      "name": "Supreme Healing",
-      "description": "When you would roll dice to restore Hit Points with a spell or Channel Divinity, use the highest number possible for each die instead."
-    },
-    "lightdomain-corona-of-light": {
-      "name": "Corona of Light",
-      "description": "As a Magic action you emit sunlight for 1 minute; enemies in the bright light have Disadvantage on saves against your Radiant Flare and spells that deal Fire or Radiant damage."
-    },
-    "trickerydomain-improved-duplicity": {
-      "name": "Improved Duplicity",
-      "description": "Your Invoke Duplicity illusion improves: you and allies have Advantage on attacks against creatures near it, and when it ends an ally within 5 feet can regain Hit Points."
-    },
-    "wardomain-avatar-of-battle": {
-      "name": "Avatar of Battle",
-      "description": "You gain resistance to Bludgeoning, Piercing and Slashing damage."
-    },
     "warriorofelements-stride-of-the-elements": {
       "name": "Stride of the Elements",
       "description": "While your Elemental Attunement is active, you have a Fly Speed and a Swim Speed equal to your Speed."
@@ -2322,26 +2366,6 @@
     "warrioropenhand-quivering-palm": {
       "name": "Quivering Palm",
       "description": "When you hit with an Unarmed Strike you can spend 4 Focus Points to set lethal vibrations in the target; later you can end them to force a Constitution save that deals 10d12 Force damage, or half on a success."
-    },
-    "wildheart-animal-speaker": {
-      "name": "Animal Speaker",
-      "description": "You can cast Beast Sense and Speak with Animals as Rituals, using Wisdom as your spellcasting ability for them."
-    },
-    "wildheart-nature-speaker": {
-      "name": "Nature Speaker",
-      "description": "You can cast Commune with Nature as a Ritual, using Wisdom as your spellcasting ability for it."
-    },
-    "wildheart-power-of-the-wilds": {
-      "name": "Power of the Wilds",
-      "description": "Whenever you activate your Rage, you gain one of these options until it ends: Falcon (Fly Speed), Lion (enemies near you have Disadvantage against others), or Ram (knock Large or smaller creatures Prone on a hit)."
-    },
-    "worldtree-travel-along-the-tree": {
-      "name": "Travel Along the Tree",
-      "description": "When you activate your Rage, and as a Bonus Action while raging, you can teleport up to 60 feet; once per Rage you can extend this to 150 feet and bring up to six willing creatures along."
-    },
-    "zealot-rage-of-the-gods": {
-      "name": "Rage of the Gods",
-      "description": "When you activate your Rage you can assume a divine form for 1 minute: you gain a Fly Speed, resistance to Necrotic, Psychic and Radiant damage, and can spend a Rage use to save a creature from dropping to 0 Hit Points. Once per long rest."
     }
   },
   "subclasses": {

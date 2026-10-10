@@ -20,7 +20,7 @@ missing: 0 · stub: 0 · partial: 0 · complete: 12 · golden-verified: 0/12
 | id | status | detail | golden |
 | --- | --- | --- | --- |
 | barbarian | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
-| bard | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
+| bard | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
 | cleric | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |
 | druid | complete | 20 levels, subclass@3, ASI@4/8/12/16, Epic Boon@19 | — |
 | fighter | complete | 20 levels, subclass@3, ASI@4/8/12/16, ASI@19 | — |

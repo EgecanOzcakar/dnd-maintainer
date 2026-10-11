@@ -29,8 +29,8 @@ Feature: Players manage their own characters
     And "alice@example.com" sees that they are not authorized
 
   Scenario: A player cannot create a character in a campaign they have not joined
-    Given "alice@example.com" is not a member of "Waterdeep"
-    When "alice@example.com" tries to create a character in "Waterdeep"
+    Given "alice@example.com" is not a member of "Harborfall"
+    When "alice@example.com" tries to create a character in "Harborfall"
     Then no character is created
     And "alice@example.com" sees that they are not a member of the campaign
 

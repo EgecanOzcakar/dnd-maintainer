@@ -352,7 +352,7 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
       },
     ],
   },
-  // Goliath (2024 PHB) — 35 ft speed, Athletics proficiency, Giant Ancestry lineage choice
+  // Goliath (2024 PHB) — 35 ft speed, Giant Ancestry lineage choice
   {
     id: 'goliath',
     defaultSize: 'medium',
@@ -369,7 +369,6 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
       },
       { type: 'feature', feature: { id: 'goliath-large-form' } },
       { type: 'feature', feature: { id: 'goliath-powerful-build' } },
-      { type: 'proficiency', category: 'skill', id: 'athletics' },
       {
         type: 'lineage-choice',
         key: createChoiceKey('lineage-choice', 'species', 'goliath', 0),

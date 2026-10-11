@@ -16,6 +16,7 @@ import SettingsTheme from '@/pages/SettingsTheme';
 import DMControlPage from '@/pages/DMControlPage';
 import BattleMapPage from '@/pages/BattleMapPage';
 import MagicItemsPage from '@/pages/MagicItemsPage';
+import RulesPage from '@/pages/RulesPage';
 
 export default function App() {
   return (
@@ -35,8 +36,10 @@ export default function App() {
           <Route path="/campaign/:campaignSlug/dm" element={<DMControlPage />} />
           <Route path="/campaign/:campaignSlug/map" element={<BattleMapPage />} />
           <Route path="/campaign/:campaignSlug/magic-items" element={<MagicItemsPage />} />
+          <Route path="/campaign/:campaignSlug/rules" element={<RulesPage />} />
           <Route path="/wiki" element={<WikiPage />} />
           <Route path="/magic-items" element={<MagicItemsPage />} />
+          <Route path="/rules" element={<RulesPage />} />
           <Route path="/export" element={<ExportData />} />
           <Route path="/settings/theme" element={<SettingsTheme />} />
         </Route>

@@ -24,33 +24,44 @@ export function usePartyState(campaignId: string | undefined) {
     queryKey: ['party-state', campaignId],
     queryFn: async (): Promise<PartyFullState | null> => {
       if (!campaignId) return null;
-      const { data, error } = await supabase.from('campaigns').select('dm_notes').eq('id', campaignId).single();
+      // HP lives on characters.current_hp (single source of truth); fetched in the same poll tick.
+      const [notesRes, hpRes] = await Promise.all([
+        supabase.from('campaigns').select('dm_notes').eq('id', campaignId).single(),
+        supabase
+          .from('characters')
+          .select('id, current_hp')
+          .eq('campaign_id', campaignId)
+          .not('current_hp', 'is', null),
+      ]);
 
-      if (error) throw error;
+      if (notesRes.error) throw notesRes.error;
+      if (hpRes.error) throw hpRes.error;
 
-      const rawNotes = data?.dm_notes;
-      if (!rawNotes) return null;
-
-      try {
-        const parsed = typeof rawNotes === 'string' ? JSON.parse(rawNotes) : rawNotes;
-        if (!parsed || typeof parsed !== 'object') return null;
-
-        const partyInit = parsed.party_initiatives?.initiatives ?? {};
-        const partyHp = parsed.party_hp?.hpMap ?? parsed.party_hp ?? {};
-        const partyRolls = parsed.character_rolls?.rollsMap ?? parsed.character_rolls ?? {};
-        const displayImage = parsed.shared_image ?? null;
-
-        return {
-          campaignId,
-          initiatives: partyInit,
-          hp: partyHp,
-          lastRolls: partyRolls,
-          displayImage,
-          updatedAt: parsed.updatedAt ?? new Date().toISOString(),
-        };
-      } catch {
-        return null;
+      const hp: Record<string, number> = {};
+      if (Array.isArray(hpRes.data)) {
+        for (const row of hpRes.data) if (row.current_hp != null) hp[row.id] = row.current_hp;
       }
+
+      const rawNotes = notesRes.data?.dm_notes;
+      let parsed: Record<string, any> | null; // eslint-disable-line @typescript-eslint/no-explicit-any
+      try {
+        parsed = typeof rawNotes === 'string' ? JSON.parse(rawNotes) : rawNotes;
+      } catch {
+        parsed = null;
+      }
+      if (!parsed || typeof parsed !== 'object') {
+        if (Object.keys(hp).length === 0) return null;
+        parsed = {};
+      }
+
+      return {
+        campaignId,
+        initiatives: parsed.party_initiatives?.initiatives ?? {},
+        hp,
+        lastRolls: parsed.character_rolls?.rollsMap ?? parsed.character_rolls ?? {},
+        displayImage: parsed.shared_image ?? null,
+        updatedAt: parsed.updatedAt ?? new Date().toISOString(),
+      };
     },
     enabled: !!campaignId,
     refetchInterval: 2000,
@@ -58,61 +69,32 @@ export function usePartyState(campaignId: string | undefined) {
 }
 
 /**
- * Mutation to update current HP for one or more characters in a campaign
+ * Mutation to set current HP for one or more characters (writes characters.current_hp).
+ * Raising a character above 0 HP also resets its death saves.
  */
 export function useUpdatePartyHP() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ campaignId, hpMap }: { campaignId: string; hpMap: Record<string, number> }) => {
-      const { data: campaign, error: fetchErr } = await supabase
-        .from('campaigns')
-        .select('dm_notes')
-        .eq('id', campaignId)
-        .single();
-
-      if (fetchErr) throw fetchErr;
-
-      let existingMeta: Record<string, unknown> = {};
-      if (campaign?.dm_notes) {
-        try {
-          existingMeta = typeof campaign.dm_notes === 'string' ? JSON.parse(campaign.dm_notes) : campaign.dm_notes;
-        } catch {
-          existingMeta = { raw_notes: campaign.dm_notes };
-        }
-      }
-
-      const existingPartyHp = (existingMeta.party_hp as Record<string, unknown>)?.hpMap ?? existingMeta.party_hp ?? {};
-
-      const updatedPartyHp = {
-        ...(typeof existingPartyHp === 'object' && existingPartyHp !== null ? existingPartyHp : {}),
-        ...hpMap,
-      };
-
-      const updatedMeta = {
-        ...existingMeta,
-        party_hp: {
-          campaignId,
-          hpMap: updatedPartyHp,
-          updatedAt: new Date().toISOString(),
-        },
-      };
-
-      const { error } = await supabase
-        .from('campaigns')
-        .update({
-          dm_notes: JSON.stringify(updatedMeta),
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', campaignId);
-
-      if (error) throw error;
-      return updatedMeta;
+    mutationFn: async ({ hpMap }: { campaignId: string; hpMap: Record<string, number> }) => {
+      const results = await Promise.all(
+        Object.entries(hpMap).map(([id, hp]) =>
+          supabase
+            .from('characters')
+            .update({
+              current_hp: hp,
+              ...(hp > 0 ? { death_saves: { successes: 0, failures: 0 } } : {}),
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', id)
+        )
+      );
+      const failed = results.find((r) => r.error);
+      if (failed?.error) throw failed.error;
     },
     onSuccess: (_, { campaignId }) => {
       queryClient.invalidateQueries({ queryKey: ['party-state', campaignId] });
-      queryClient.invalidateQueries({ queryKey: ['party-initiatives', campaignId] });
-      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+      queryClient.invalidateQueries({ queryKey: ['character'] });
     },
   });
 }

@@ -9,13 +9,13 @@ Feature: Override per-campaign theme from Settings
   # the effective theme is `theme ?? default`.
 
   Scenario: Setting an override for a campaign from Settings
-    Given a campaign named "Curse of Strahd" exists with no theme set
+    Given a campaign named "Curse of the Mist Lord" exists with no theme set
     And the Dungeon Master is on the theme settings page
-    When the Dungeon Master sets the "Arcane" theme for "Curse of Strahd" in Settings
-    Then "Curse of Strahd" uses the "Arcane" theme
+    When the Dungeon Master sets the "Arcane" theme for "Curse of the Mist Lord" in Settings
+    Then "Curse of the Mist Lord" uses the "Arcane" theme
 
   Scenario: Resetting a campaign override back to inherit the global theme
-    Given a campaign named "Curse of Strahd" exists with theme "Sylvan"
+    Given a campaign named "Curse of the Mist Lord" exists with theme "Sylvan"
     And the Dungeon Master is on the theme settings page
-    When the Dungeon Master resets "Curse of Strahd" to inherit in Settings
-    Then "Curse of Strahd" uses the "Default" theme
+    When the Dungeon Master resets "Curse of the Mist Lord" to inherit in Settings
+    Then "Curse of the Mist Lord" uses the "Default" theme

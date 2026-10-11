@@ -1,6 +1,6 @@
-# D&D Campaign Manager
+# Campaign Keeper
 
-A free, open-source campaign management tool for D&D 5.5e (2024 Player's Handbook). Run it locally as a private, self-hosted app to organize your campaigns, characters, sessions, and DM notes.
+A free, open-source campaign management tool for fifth-edition (2024 rules) tabletop games. Run it locally as a private, self-hosted app to organize your campaigns, characters, sessions, and DM notes.
 
 ## Features
 
@@ -152,6 +152,12 @@ psql -h 127.0.0.1 -p 54322 -U postgres -d postgres -f seed.sql
 This project is not yet licensed. If you'd like to use or contribute, please open an issue.
 
 ### Third-party content
+
+Campaign Keeper is unofficial and is not affiliated with, endorsed, sponsored, or approved by
+Wizards of the Coast. It is a free, non-commercial fan project. Dungeons & Dragons, D&D and
+D&D Beyond are trademarks of Wizards of the Coast LLC; they are used here only to describe
+compatibility. Rules text in the app is written in our own words; content beyond the SRD 5.2.1
+(see below) is referenced by name for players' convenience and remains the property of its owner.
 
 The magic-item reference catalog (`src/lib/sources/magic-items.ts`) is derived from the
 D&D System Reference Document 5.2.1 via [`5e-bits/5e-database`](https://github.com/5e-bits/5e-database):

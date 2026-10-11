@@ -25,7 +25,7 @@ export const PRESET_SCENE_IMAGES: { name: string; url: string; category: string 
     category: 'Map',
   },
   {
-    name: 'Yawning Portal Tavern',
+    name: 'Crowded Tavern',
     url: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1200&q=80',
     category: 'Location',
   },

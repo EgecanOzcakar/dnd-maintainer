@@ -181,7 +181,7 @@ body,
     @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
   }
 
-  /* WotC-inspired character sheet grid: stats (left) / combat (center, wider) / roleplay & gear (right).
+  /* Character sheet grid: stats (left) / combat (center, wider) / roleplay & gear (right).
      Collapses to a single column on mobile, matching the flow of the official 5e sheet. */
   .sheet-grid {
     @apply grid gap-6;

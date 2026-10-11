@@ -4,14 +4,14 @@ Feature: Edit campaign details
   So that they reflect how the game has evolved.
 
   Scenario: A DM updates the campaign description
-    Given a campaign named "Curse of Strahd" exists with no description
+    Given a campaign named "Curse of the Mist Lord" exists with no description
     When the Dungeon Master sets the description to "Gothic horror in Barovia"
     Then the campaign description shows "Gothic horror in Barovia"
 
   Scenario: A DM changes the campaign setting
-    Given a campaign named "Sandbox" exists in the "Forgotten Realms" setting
-    When the Dungeon Master changes the setting to "Eberron"
-    Then the campaign is in the "Eberron" setting
+    Given a campaign named "Sandbox" exists in the "Shattered Realms" setting
+    When the Dungeon Master changes the setting to "Dragonmarch"
+    Then the campaign is in the "Dragonmarch" setting
 
   Scenario: A DM renames a campaign
     Given a campaign named "Untitled" exists

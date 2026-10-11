@@ -1,7 +1,7 @@
 import { DND_SKILLS } from '@/lib/dnd-helpers';
 import type { SkillId } from '@/lib/dnd-helpers';
 import type { ResolvedSkill } from '@/types/resolved';
-import type { RollPreset } from '@/components/character-sheet/AttacksPanel';
+import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { formatSigned } from '@/lib/format';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

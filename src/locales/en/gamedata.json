@@ -4096,7 +4096,7 @@
       "description": "A creature you touch has the Invisible condition until the spell ends. The spell ends early if the target attacks or casts a spell."
     },
     "melfs-acid-arrow": {
-      "name": "Melf's Acid Arrow",
+      "name": "Acid Arrow",
       "description": "You launch a shimmering green arrow at a target. On a hit it deals acid damage immediately and more at the end of the target's next turn; on a miss it still splashes for half damage."
     },
     "animal-messenger": {
@@ -4216,7 +4216,7 @@
       "description": "Three illusory duplicates of you appear and shift around, causing attacks aimed at you to sometimes strike a duplicate instead and destroy it."
     },
     "nystuls-magic-aura": {
-      "name": "Nystul's Magic Aura",
+      "name": "Arcanist's Magic Aura",
       "description": "You disguise a creature or object against divination and detection magic, making it seem nonmagical or giving it a false aura of your choosing."
     },
     "prayer-of-healing": {
@@ -4296,7 +4296,7 @@
       "description": "You inscribe a hidden glyph on a surface or within an object that releases an explosion of energy or a stored spell when its trigger is met."
     },
     "leomunds-tiny-hut": {
-      "name": "Leomund's Tiny Hut",
+      "name": "Tiny Hut",
       "description": "A dome of force surrounds you, sheltering up to nine creatures from weather and blocking creatures and spells from entering."
     },
     "lightning-arrow": {
@@ -4552,7 +4552,7 @@
       "description": "You make natural terrain in a large area look, sound, and smell like a different natural terrain. Physical interaction reveals the illusion, and a careful investigation can see through it."
     },
     "leomunds-secret-chest": {
-      "name": "Leomund's Secret Chest",
+      "name": "Secret Chest",
       "description": "You hide a chest and its contents on the Ethereal Plane, leaving only a tiny replica behind. While you hold the replica you can summon the chest back or send it away again."
     },
     "locate-creature": {
@@ -4560,15 +4560,15 @@
       "description": "You sense the direction to a specific creature or creature type you know within a long distance. Running water or a barrier of lead blocks the search."
     },
     "mordenkainens-faithful-hound": {
-      "name": "Mordenkainen's Faithful Hound",
+      "name": "Faithful Hound",
       "description": "You conjure a spectral guard dog that watches over an area. It barks to warn you of intruders and bites hostile creatures that come near, and only you can see it."
     },
     "mordenkainens-private-sanctum": {
-      "name": "Mordenkainen's Private Sanctum",
+      "name": "Private Sanctum",
       "description": "You seal a room or structure against prying and intrusion. You choose protections such as blocked sight, silenced sound, sensor blocking, and barriers against teleportation or planar travel."
     },
     "otilukes-resilient-sphere": {
-      "name": "Otiluke's Resilient Sphere",
+      "name": "Resilient Sphere",
       "description": "A shimmering sphere of force encloses a creature or object, shielding it from harm and keeping it trapped. The sphere can be rolled along the ground, carrying its occupant with it."
     },
     "phantasmal-killer": {
@@ -4612,7 +4612,7 @@
       "description": "Your next weapon hit deals extra force damage and, if the target is left badly hurt, banishes it to another plane. Extraplanar creatures are removed for good."
     },
     "bigbys-hand": {
-      "name": "Bigby's Hand",
+      "name": "Arcane Hand",
       "description": "You conjure a giant spectral hand that obeys your commands. You can use it to punch, shove, grapple, or shield, making it a flexible tool for both offense and defense."
     },
     "circle-of-power": {
@@ -4660,7 +4660,7 @@
       "description": "You imbue a weapon with holy power so that its hits deal extra radiant damage and it sheds light. You can end the spell early to unleash a blast of radiance."
     },
     "jallarzis-storm-of-radiance": {
-      "name": "Jallarzi's Storm of Radiance",
+      "name": "Storm of Radiance",
       "description": "A swirling storm of radiant and thunder energy fills an area, dealing damage to creatures inside and blinding or deafening them. You can move the storm each turn to follow your enemies."
     },
     "passwall": {
@@ -4752,8 +4752,8 @@
       "description": "Name or describe a person, place, or object. The spell brings to your mind a brief summary of the significant lore about the thing you named. The lore might consist of current tales, forgotten stories, or even secret lore that has never been widely known. If the thing you named isn't of legendary importance, you gain no information."
     },
     "yolandes-regal-presence": {
-      "name": "Yolande's Regal Presence",
-      "description": "You surround yourself with an unearthly presence, channeling the bearing of the Faerie Queen Yolande. For the duration, whenever any creature tries to move into a space within 10 feet of you for the first time on a turn, it must succeed on a Wisdom saving throw or its speed drops to 0 until the start of your next turn, and the creature falls Prone."
+      "name": "Regal Presence",
+      "description": "You surround yourself with an unearthly presence, taking on the bearing of fey royalty. For the duration, whenever any creature tries to move into a space within 10 feet of you for the first time on a turn, it must succeed on a Wisdom saving throw or its speed drops to 0 until the start of your next turn, and the creature falls Prone."
     },
     "ensnaring-strike": {
       "name": "Ensnaring Strike",
@@ -4876,7 +4876,7 @@
       "description": "A thin green ray blasts a target with huge Force damage and reduces a creature killed by it to ash."
     },
     "drawmijs-instant-summons": {
-      "name": "Drawmij's Instant Summons",
+      "name": "Instant Summons",
       "description": "You mark an item and can later call it into your hand from anywhere on the same plane."
     },
     "eyebite": {
@@ -4924,11 +4924,11 @@
       "description": "You reshape earth, sand, or clay in an area, raising, lowering, or moving terrain over time."
     },
     "otilukes-freezing-sphere": {
-      "name": "Otiluke's Freezing Sphere",
+      "name": "Freezing Sphere",
       "description": "A frigid globe explodes at a point, dealing heavy Cold damage and freezing water on the surface."
     },
     "ottos-irresistible-dance": {
-      "name": "Otto's Irresistible Dance",
+      "name": "Irresistible Dance",
       "description": "A creature is compelled to dance, suffering disadvantage on attacks and saves and giving others advantage against it."
     },
     "planar-ally": {
@@ -4948,7 +4948,7 @@
       "description": "A line of brilliant radiance burns and blinds creatures, and you can repeat it on later turns."
     },
     "tashas-bubbling-cauldron": {
-      "name": "Tasha's Bubbling Cauldron",
+      "name": "Bubbling Cauldron",
       "description": "You conjure a cauldron that brews potions anyone can ladle out for magical effects."
     },
     "transport-via-plants": {
@@ -5016,11 +5016,11 @@
       "description": "You transform the look, sound, and feel of terrain in a large area, which creatures can touch and enter."
     },
     "mordenkainens-magnificent-mansion": {
-      "name": "Mordenkainen's Magnificent Mansion",
+      "name": "Magnificent Mansion",
       "description": "You open a door to an extradimensional mansion with food, rooms, and invisible servants."
     },
     "mordenkainens-sword": {
-      "name": "Mordenkainen's Sword",
+      "name": "Arcane Sword",
       "description": "You conjure a spectral sword that attacks creatures you choose with force damage each turn."
     },
     "plane-shift": {
@@ -5080,7 +5080,7 @@
       "description": "Seven stars orbit you, and you can launch them one at a time as ranged attacks."
     },
     "abi-dalzims-horrid-wilting": {
-      "name": "Abi-Dalzim's Horrid Wilting",
+      "name": "Horrid Wilting",
       "description": "You drain the moisture from creatures in a cube, dealing heavy Necrotic damage, especially to plants and water creatures."
     },
     "animal-shapes": {
@@ -5244,7 +5244,7 @@
       "description": "The mightiest of spells lets you duplicate another spell or attempt a greater effect at a price."
     },
     "evards-black-tentacles": {
-      "name": "Evard's Black Tentacles",
+      "name": "Black Tentacles",
       "description": "Squirming tentacles fill a 20-foot square within range. Creatures in the area must succeed on a Dexterity save or take 3d6 Bludgeoning damage and have the Restrained condition while in the area."
     },
     "summon-aberration": {
@@ -5252,7 +5252,7 @@
       "description": "You call forth an aberrant spirit. Choose Beholderkin, Slaad, or Star Spawn. The creature obeys your commands and acts on your initiative for the duration."
     },
     "rarys-telepathic-bond": {
-      "name": "Rary's Telepathic Bond",
+      "name": "Telepathic Bond",
       "description": "You forge a telepathic link among up to eight willing creatures you can see within range. While linked, they can communicate telepathically with each other regardless of language."
     },
     "telekinesis": {
@@ -5312,7 +5312,7 @@
       "description": "You suggest a course of activity (limited to a sentence or two) and magically influence a creature you can see within range that can hear and understand you. The target must succeed on a Wisdom saving throw or pursue the course of action for the duration."
     },
     "hideous-laughter": {
-      "name": "Tasha's Hideous Laughter",
+      "name": "Hideous Laughter",
       "description": "A creature of your choice that you can see within range perceives everything as hilariously funny and falls into fits of laughter. The target must succeed on a Wisdom saving throw or fall Prone, becoming Incapacitated and unable to stand up for the duration."
     },
     "blink": {

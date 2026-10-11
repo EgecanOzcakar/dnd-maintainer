@@ -207,6 +207,9 @@ export type Database = {
           character_type: string
           class: string | null
           conditions: string[]
+          prepared_spells: string[]
+          homebrew: Json
+          active_effects: string[]
           created_at: string
           exhaustion_level: number
           eye_color: string | null
@@ -215,8 +218,11 @@ export type Database = {
           hair_color: string | null
           height: string | null
           heroic_inspiration: boolean
+          current_hp: number | null
+          death_saves: Json
           hit_dice_used: Json
           hit_points_max: number | null
+          temp_hp: number
           id: string
           ideals: string | null
           is_active: boolean
@@ -252,6 +258,9 @@ export type Database = {
           character_type: string
           class?: string | null
           conditions?: string[]
+          prepared_spells?: string[]
+          homebrew?: Json
+          active_effects?: string[]
           created_at?: string
           exhaustion_level?: number
           eye_color?: string | null
@@ -260,8 +269,11 @@ export type Database = {
           hair_color?: string | null
           height?: string | null
           heroic_inspiration?: boolean
+          current_hp?: number | null
+          death_saves?: Json
           hit_dice_used?: Json
           hit_points_max?: number | null
+          temp_hp?: number
           id?: string
           ideals?: string | null
           is_active?: boolean
@@ -297,6 +309,9 @@ export type Database = {
           character_type?: string
           class?: string | null
           conditions?: string[]
+          prepared_spells?: string[]
+          homebrew?: Json
+          active_effects?: string[]
           created_at?: string
           exhaustion_level?: number
           eye_color?: string | null
@@ -305,8 +320,11 @@ export type Database = {
           hair_color?: string | null
           height?: string | null
           heroic_inspiration?: boolean
+          current_hp?: number | null
+          death_saves?: Json
           hit_dice_used?: Json
           hit_points_max?: number | null
+          temp_hp?: number
           id?: string
           ideals?: string | null
           is_active?: boolean
@@ -437,6 +455,54 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roll_log: {
+        Row: {
+          campaign_id: string
+          character_id: string | null
+          created_at: string | null
+          detail: Json | null
+          formula: string | null
+          id: string
+          label: string | null
+          result: number | null
+        }
+        Insert: {
+          campaign_id: string
+          character_id?: string | null
+          created_at?: string | null
+          detail?: Json | null
+          formula?: string | null
+          id?: string
+          label?: string | null
+          result?: number | null
+        }
+        Update: {
+          campaign_id?: string
+          character_id?: string | null
+          created_at?: string | null
+          detail?: Json | null
+          formula?: string | null
+          id?: string
+          label?: string | null
+          result?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roll_log_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roll_log_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
             referencedColumns: ["id"]
           },
         ]

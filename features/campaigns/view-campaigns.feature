@@ -20,10 +20,10 @@ Feature: View existing campaigns
 
   Scenario: Archived campaigns are hidden by default
     Given a campaign named "Lost Mines" exists
-    And a campaign named "Forgotten Realms" exists but has been archived
+    And a campaign named "Shattered Realms" exists but has been archived
     When the Dungeon Master views their campaigns
     Then "Lost Mines" appears in the list
-    And "Forgotten Realms" does not appear in the list
+    And "Shattered Realms" does not appear in the list
 
   Scenario: Campaigns are ordered by most recent activity
     Given a campaign named "Older Game" exists and was last played 2 weeks ago

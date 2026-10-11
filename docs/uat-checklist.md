@@ -3,11 +3,11 @@
 > Generated from the Gherkin specs under `features/` by `npm run uat:checklist`.
 > Do not edit by hand — re-run the script to refresh.
 
-**156 scenarios** — 80 ready · 10 future (not built yet) · 66 draft
+**156 scenarios** — 82 ready · 8 future (not built yet) · 66 draft
 
 Status legend: **Ready** = expected to work today, validate it · **Future** = spec-ahead, expect it to fail/skip · **Draft** = no steps yet.
 
-## Ready (80)
+## Ready (82)
 
 ### `features/campaigns/archive-campaign.feature`
 
@@ -24,8 +24,8 @@ Status legend: **Ready** = expected to work today, validate it · **Future** = s
 
 - [ ] **A DM creates a campaign by providing a name**
   - Given the Dungeon Master has no campaigns
-  - When the Dungeon Master creates a campaign named "Curse of Strahd"
-  - Then "Curse of Strahd" appears in their campaign list
+  - When the Dungeon Master creates a campaign named "Curse of the Mist Lord"
+  - Then "Curse of the Mist Lord" appears in their campaign list
 - [ ] **A campaign name is required**
   - When the Dungeon Master tries to create a campaign with no name
   - Then the campaign is not created
@@ -40,13 +40,13 @@ Status legend: **Ready** = expected to work today, validate it · **Future** = s
 #### Edit campaign details
 
 - [ ] **A DM updates the campaign description**
-  - Given a campaign named "Curse of Strahd" exists with no description
+  - Given a campaign named "Curse of the Mist Lord" exists with no description
   - When the Dungeon Master sets the description to "Gothic horror in Barovia"
   - Then the campaign description shows "Gothic horror in Barovia"
 - [ ] **A DM changes the campaign setting**
-  - Given a campaign named "Sandbox" exists in the "Forgotten Realms" setting
-  - When the Dungeon Master changes the setting to "Eberron"
-  - Then the campaign is in the "Eberron" setting
+  - Given a campaign named "Sandbox" exists in the "Shattered Realms" setting
+  - When the Dungeon Master changes the setting to "Dragonmarch"
+  - Then the campaign is in the "Dragonmarch" setting
 - [ ] **A DM renames a campaign**
   - Given a campaign named "Untitled" exists
   - When the Dungeon Master renames it to "Storm King's Thunder"
@@ -57,9 +57,9 @@ Status legend: **Ready** = expected to work today, validate it · **Future** = s
 #### Per-campaign color theme
 
 - [ ] **A DM sets a theme on a campaign**
-  - Given a campaign named "Curse of Strahd" exists with no theme set
+  - Given a campaign named "Curse of the Mist Lord" exists with no theme set
   - When the Dungeon Master sets the campaign theme to "Arcane"
-  - Then "Curse of Strahd" uses the "Arcane" theme
+  - Then "Curse of the Mist Lord" uses the "Arcane" theme
 - [ ] **A campaign without a theme falls back to the DM's global theme**
   - Given the Dungeon Master's global theme is "Sylvan"
   - And a campaign named "Sandbox" exists with no theme set
@@ -67,14 +67,14 @@ Status legend: **Ready** = expected to work today, validate it · **Future** = s
   - Then the interface uses the "Sylvan" theme
 - [ ] **A campaign theme overrides the global theme while that campaign is active**
   - Given the Dungeon Master's global theme is "Default"
-  - And a campaign named "Curse of Strahd" exists with theme "Arcane"
-  - When the Dungeon Master opens "Curse of Strahd"
+  - And a campaign named "Curse of the Mist Lord" exists with theme "Arcane"
+  - When the Dungeon Master opens "Curse of the Mist Lord"
   - Then the interface uses the "Arcane" theme
 - [ ] **A DM clears a campaign theme to fall back to their global theme**
   - Given the Dungeon Master's global theme is "Default"
-  - And a campaign named "Curse of Strahd" exists with theme "Arcane"
-  - When the Dungeon Master clears the theme on "Curse of Strahd"
-  - Then "Curse of Strahd" uses the "Default" theme
+  - And a campaign named "Curse of the Mist Lord" exists with theme "Arcane"
+  - When the Dungeon Master clears the theme on "Curse of the Mist Lord"
+  - Then "Curse of the Mist Lord" uses the "Default" theme
 
 ### `features/campaigns/search-campaigns.feature`
 
@@ -111,10 +111,10 @@ Status legend: **Ready** = expected to work today, validate it · **Future** = s
   - And the Dungeon Master is prompted to create their first campaign
 - [ ] **Archived campaigns are hidden by default**
   - Given a campaign named "Lost Mines" exists
-  - And a campaign named "Forgotten Realms" exists but has been archived
+  - And a campaign named "Shattered Realms" exists but has been archived
   - When the Dungeon Master views their campaigns
   - Then "Lost Mines" appears in the list
-  - And "Forgotten Realms" does not appear in the list
+  - And "Shattered Realms" does not appear in the list
 - [ ] **Campaigns are ordered by most recent activity**
   - Given a campaign named "Older Game" exists and was last played 2 weeks ago
   - And a campaign named "Current Game" exists and was last played yesterday
@@ -198,6 +198,12 @@ Status legend: **Ready** = expected to work today, validate it · **Future** = s
 
 - [ ] **A background grants its origin feat**
   - Given a new character with the soldier background
+  - Then the character gains an origin feat
+- [ ] **A background grants its origin feat**
+  - Given a new character with the acolyte background
+  - Then the character gains an origin feat
+- [ ] **A background grants its origin feat**
+  - Given a new character with the sage background
   - Then the character gains an origin feat
 
 ### `features/characters/choose-class.feature`
@@ -516,26 +522,26 @@ Status legend: **Ready** = expected to work today, validate it · **Future** = s
 #### Override per-campaign theme from Settings
 
 - [ ] **Setting an override for a campaign from Settings**
-  - Given a campaign named "Curse of Strahd" exists with no theme set
+  - Given a campaign named "Curse of the Mist Lord" exists with no theme set
   - And the Dungeon Master is on the theme settings page
-  - When the Dungeon Master sets the "Arcane" theme for "Curse of Strahd" in Settings
-  - Then "Curse of Strahd" uses the "Arcane" theme
+  - When the Dungeon Master sets the "Arcane" theme for "Curse of the Mist Lord" in Settings
+  - Then "Curse of the Mist Lord" uses the "Arcane" theme
 - [ ] **Resetting a campaign override back to inherit the global theme**
-  - Given a campaign named "Curse of Strahd" exists with theme "Sylvan"
+  - Given a campaign named "Curse of the Mist Lord" exists with theme "Sylvan"
   - And the Dungeon Master is on the theme settings page
-  - When the Dungeon Master resets "Curse of Strahd" to inherit in Settings
-  - Then "Curse of Strahd" uses the "Default" theme
+  - When the Dungeon Master resets "Curse of the Mist Lord" to inherit in Settings
+  - Then "Curse of the Mist Lord" uses the "Default" theme
 
-## Future (10)
+## Future (8)
 
 ### `features/campaigns/archive-campaign.feature`
 
 #### Archive a campaign
 
 - [ ] **An archived campaign can be restored**
-  - Given a campaign named "Forgotten Realms" exists but has been archived
-  - When the Dungeon Master restores "Forgotten Realms"
-  - Then "Forgotten Realms" appears in the active campaigns list
+  - Given a campaign named "Shattered Realms" exists but has been archived
+  - When the Dungeon Master restores "Shattered Realms"
+  - Then "Shattered Realms" appears in the active campaigns list
 - [ ] **Archived campaigns are browsable separately**
   - Given a campaign named "Old Game" exists but has been archived
   - When the Dungeon Master views their archived campaigns
@@ -575,19 +581,6 @@ Status legend: **Ready** = expected to work today, validate it · **Future** = s
   - Given a campaign with an archived character named "Old Hero"
   - When the Dungeon Master views the character list
   - Then "Old Hero" does not appear in the character list
-
-### `features/characters/choose-background.feature`
-
-#### Choose a background during character creation
-
-##### Rule: A background grants an origin feat
-
-- [ ] **A background grants its origin feat**
-  - Given a new character with the acolyte background
-  - Then the character gains an origin feat
-- [ ] **A background grants its origin feat**
-  - Given a new character with the sage background
-  - Then the character gains an origin feat
 
 ### `features/characters/choose-equipment.feature`
 
@@ -1071,8 +1064,8 @@ Status legend: **Ready** = expected to work today, validate it · **Future** = s
 - [ ] **A player cannot create a character in a campaign they have not joined**
   - Given the user is signed in as "alice@example.com"
   - And "alice@example.com" is a player in "Sunless Citadel"
-  - Given "alice@example.com" is not a member of "Waterdeep"
-  - When "alice@example.com" tries to create a character in "Waterdeep"
+  - Given "alice@example.com" is not a member of "Harborfall"
+  - When "alice@example.com" tries to create a character in "Harborfall"
   - Then no character is created
   - And "alice@example.com" sees that they are not a member of the campaign
 - [ ] **The campaign owner can edit any character in their campaign**

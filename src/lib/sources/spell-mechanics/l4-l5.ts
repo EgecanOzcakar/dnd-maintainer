@@ -25,9 +25,13 @@ export const SPELL_MECHANICS_L4_L5: Readonly<Record<string, SpellMechanics>> = {
     damage: { dice: '10d4', type: 'acid', perSlot: '2d4' },
   },
   'evards-black-tentacles': {
-    save: 'dex',
-    damage: { dice: '3d6', type: 'bludgeoning', perSlot: '1d6' },
+    save: 'str',
+    damage: { dice: '3d6', type: 'bludgeoning' },
   },
+  // Whirlpool option: 2d8 bludgeoning on a failed Strength save.
+  'control-water': { save: 'str', damage: { dice: '2d8', type: 'bludgeoning' } },
+  'conjure-woodland-beings': { save: 'wis', damage: { dice: '5d8', type: 'force', perSlot: '1d8' } },
+  'mordenkainens-faithful-hound': { save: 'dex', damage: { dice: '4d8', type: 'force' } },
   'grasping-vine': { save: 'str' },
   'otilukes-resilient-sphere': { save: 'dex' },
   banishment: { save: 'cha' },
@@ -42,7 +46,7 @@ export const SPELL_MECHANICS_L4_L5: Readonly<Record<string, SpellMechanics>> = {
   'bigbys-hand': {
     // Clenched Fist option; other options (Forceful Hand, Grasping Hand) use checks.
     attack: 'melee',
-    damage: { dice: '4d8', type: 'force', perSlot: '2d8' },
+    damage: { dice: '5d8', type: 'force', perSlot: '2d8' },
   },
   cloudkill: { save: 'con', damage: { dice: '5d8', type: 'poison', perSlot: '1d8' } },
   'cone-of-cold': { save: 'con', damage: { dice: '8d8', type: 'cold', perSlot: '1d8' } },
@@ -50,10 +54,14 @@ export const SPELL_MECHANICS_L4_L5: Readonly<Record<string, SpellMechanics>> = {
   'conjure-volley': { save: 'dex', damage: { dice: '8d8', type: 'piercing' } },
   'contact-other-plane': { save: 'int', damage: { dice: '6d6', type: 'psychic' } },
   contagion: {
-    // Melee spell attack; the hit deals 11d8 necrotic, the disease then uses CON saves.
-    attack: 'melee',
+    // CON save or 11d8 necrotic and Poisoned; later saves use CON as well.
+    save: 'con',
     damage: { dice: '11d8', type: 'necrotic' },
   },
+  // Damage type matches the spirit's element (air lightning, earth thunder, fire, water cold); fire shown.
+  'conjure-elemental': { save: 'dex', damage: { dice: '8d8', type: 'fire', perSlot: '1d8' } },
+  // Only the Nightmare option deals damage, on waking after a failed save.
+  dream: { save: 'wis', damage: { dice: '3d6', type: 'psychic' } },
   'flame-strike': {
     save: 'dex',
     // Real spell: 5d6 fire AND 5d6 radiant; models one half. Upcast adds 1d6 of each.

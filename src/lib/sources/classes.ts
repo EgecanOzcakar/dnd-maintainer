@@ -315,11 +315,6 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             from: null,
             category: 'general',
           },
-          {
-            type: 'weapon-mastery-choice',
-            key: createChoiceKey('weapon-mastery-choice', 'class', 'barbarian', 3),
-            count: 1,
-          },
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-improved-brutal-strike-2' } }] },
@@ -1029,7 +1024,18 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       EMPTY_LEVEL,
-      EMPTY_LEVEL,
+      {
+        // L10: 4th cantrip
+        grants: [
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'class', 'druid', 3),
+            count: 1,
+            spellList: 'druid',
+            spellLevel: 0,
+          },
+        ],
+      },
       EMPTY_LEVEL,
       {
         grants: [

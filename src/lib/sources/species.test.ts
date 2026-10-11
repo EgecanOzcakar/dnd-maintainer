@@ -510,9 +510,9 @@ describe('Goliath species source (2024 PHB)', () => {
     });
   });
 
-  it('grants Athletics skill proficiency', () => {
+  it('grants no skill proficiency (SRD 5.2.1 Goliath has none)', () => {
     const skillProf = source?.grants.find((g) => g.type === 'proficiency' && g.category === 'skill');
-    expect(skillProf).toEqual({ type: 'proficiency', category: 'skill', id: 'athletics' });
+    expect(skillProf).toBeUndefined();
   });
 
   it('grants large-form and powerful-build features', () => {

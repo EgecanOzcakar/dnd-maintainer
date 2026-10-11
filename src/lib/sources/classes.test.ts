@@ -419,12 +419,9 @@ describe('Barbarian class grant structures', () => {
     }
   });
 
-  it('level 16 has a fourth weapon-mastery-choice (5 masteries total)', () => {
+  it('level 16 has no weapon-mastery-choice (SRD: mastery count stays 4 after level 10)', () => {
     const grant = source?.levels[15].grants.find((g) => g.type === 'weapon-mastery-choice');
-    expect(grant).toMatchObject({
-      count: 1,
-      key: createChoiceKey('weapon-mastery-choice', 'class', 'barbarian', 3),
-    });
+    expect(grant).toBeUndefined();
   });
 
   it('level 20 has primal-champion feature', () => {

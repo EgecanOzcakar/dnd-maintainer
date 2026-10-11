@@ -8,6 +8,8 @@ import type { SpellMechanics } from '@/types/actions';
  */
 export const SPELL_MECHANICS_L6_L9: Readonly<Record<string, SpellMechanics>> = {
   // Level 6
+  // Melee spell attack on summoning and each later turn: 3d12 psychic plus spellcasting modifier.
+  'conjure-fey': { attack: 'melee', damage: { dice: '3d12', type: 'psychic', perSlot: '1d12', addMod: true } },
   'blade-barrier': { save: 'dex', damage: { dice: '6d10', type: 'force' } },
   'bones-of-the-earth': { save: 'dex', damage: { dice: '6d6', type: 'bludgeoning' } },
   // Higher slots add one target, not dice.
@@ -27,12 +29,18 @@ export const SPELL_MECHANICS_L6_L9: Readonly<Record<string, SpellMechanics>> = {
 
   // Level 7
   'crown-of-stars': { attack: 'ranged', damage: { dice: '4d12', type: 'radiant' } },
-  'delayed-blast-fireball': { save: 'con', damage: { dice: '12d6', type: 'fire', perSlot: '1d6' } },
+  'delayed-blast-fireball': { save: 'dex', damage: { dice: '12d6', type: 'fire', perSlot: '1d6' } },
   // Breath: 6d8 force, 60-ft cone.
   'draconic-transformation': { save: 'dex', damage: { dice: '6d8', type: 'force' } },
   'finger-of-death': { save: 'con', damage: { dice: '7d8', type: 'necrotic', flat: 30 } },
   'fire-storm': { save: 'dex', damage: { dice: '7d10', type: 'fire' } },
-  'mordenkainens-sword': { attack: 'melee', damage: { dice: '4d12', type: 'force' } },
+  'mordenkainens-sword': { attack: 'melee', damage: { dice: '4d12', type: 'force', addMod: true } },
+  // Searing Light: 6d12 radiant (DEX save); Healing Light: 4d12 plus spellcasting modifier.
+  'conjure-celestial': {
+    save: 'dex',
+    damage: { dice: '6d12', type: 'radiant', perSlot: '1d12' },
+    heal: { dice: '4d12', perSlot: '1d12', addMod: true },
+  },
   // Each ray differs (12d6 of the ray's type, or a non-damage effect); fire (ray 1) shown.
   'prismatic-spray': { save: 'dex', damage: { dice: '12d6', type: 'fire' } },
   // 4d8 + 15 HP, then 1 HP at the start of each turn.
@@ -47,8 +55,8 @@ export const SPELL_MECHANICS_L6_L9: Readonly<Record<string, SpellMechanics>> = {
   'abi-dalzims-horrid-wilting': { save: 'con', damage: { dice: '12d8', type: 'necrotic' } },
   befuddlement: { save: 'int', damage: { dice: '10d12', type: 'psychic' } },
   'dark-star': { save: 'con', damage: { dice: '8d10', type: 'force' } },
-  // Fissure/aftershock damage is approximated as a DEX save for bludgeoning.
-  earthquake: { save: 'dex', damage: { dice: '6d6', type: 'bludgeoning' } },
+  // Collapsing structure: 12d6 bludgeoning on a failed DEX save (fissure falls are not modelled).
+  earthquake: { save: 'dex', damage: { dice: '12d6', type: 'bludgeoning' } },
   // Breath: 7d6 of the damage type chosen on cast; fire shown.
   'illusory-dragon': { save: 'dex', damage: { dice: '7d6', type: 'fire' } },
   'incendiary-cloud': { save: 'dex', damage: { dice: '10d8', type: 'fire' } },

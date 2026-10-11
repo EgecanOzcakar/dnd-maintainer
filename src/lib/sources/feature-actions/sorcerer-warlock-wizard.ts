@@ -34,7 +34,8 @@ export const SORCERER_WARLOCK_WIZARD_ACTIONS: Readonly<Record<string, FeatureAct
 
   // Draconic
   'draconicsorcery-dragon-wings': { activation: 'bonus-action', poolId: 'dragon-wings' },
-  'draconicsorcery-dragon-companion': { activation: 'bonus-action' },
+  // Summon Dragon has a casting time of Action.
+  'draconicsorcery-dragon-companion': { activation: 'action' },
 
   // Wild Magic
   // Advantage on one d20 Test; no action cost.
@@ -75,9 +76,11 @@ export const SORCERER_WARLOCK_WIZARD_ACTIONS: Readonly<Record<string, FeatureAct
   // Fiend
   // Add a d10 to an ability check or saving throw.
   'fiendpatron-dark-ones-own-luck': { activation: 'free', poolId: 'dark-ones-own-luck' },
-  // Rides an attack hit (no save): the target takes the psychic damage unless it is a Fiend.
+  // Rides an attack hit: CHA save against your spell save DC, on a failure the target takes the psychic
+  // damage (unless it is a Fiend).
   'fiendpatron-hurl-through-hell': {
     activation: 'special',
+    save: { ability: 'cha', dcAbility: 'spellcasting' },
     damage: { dice: '8d10', type: 'psychic' },
     poolId: 'hurl-through-hell',
   },

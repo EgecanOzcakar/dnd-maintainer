@@ -5,7 +5,7 @@ export const SPELL_MECHANICS_L0_L1: Readonly<Record<string, SpellMechanics>> = {
   // ---- Cantrips ----
   'acid-splash': { save: 'dex', damage: { dice: '1d6', type: 'acid', cantripScaling: true } },
   'chill-touch': {
-    attack: 'ranged',
+    attack: 'melee',
     damage: { dice: '1d10', type: 'necrotic', cantripScaling: true },
   },
   // Extra beams are modeled as dice-count scaling.
@@ -15,7 +15,7 @@ export const SPELL_MECHANICS_L0_L1: Readonly<Record<string, SpellMechanics>> = {
   },
   'fire-bolt': { attack: 'ranged', damage: { dice: '1d10', type: 'fire', cantripScaling: true } },
   'mind-sliver': { save: 'int', damage: { dice: '1d6', type: 'psychic', cantripScaling: true } },
-  'poison-spray': { save: 'con', damage: { dice: '1d12', type: 'poison', cantripScaling: true } },
+  'poison-spray': { attack: 'ranged', damage: { dice: '1d12', type: 'poison', cantripScaling: true } },
   'produce-flame': {
     attack: 'ranged',
     damage: { dice: '1d8', type: 'fire', cantripScaling: true },
@@ -75,9 +75,9 @@ export const SPELL_MECHANICS_L0_L1: Readonly<Record<string, SpellMechanics>> = {
   'hunters-mark': { damage: { dice: '1d6', type: 'force' } },
   // The 2d6 cold burst (DEX save) always applies; the 1d10 piercing hit roll is not modeled.
   'ice-knife': { save: 'dex', damage: { dice: '2d6', type: 'cold', perSlot: '1d6' } },
-  'inflict-wounds': { save: 'con', damage: { dice: '2d10', type: 'necrotic', perSlot: '2d10' } },
-  // Three darts that always hit; one more dart per slot level above 1st.
-  'magic-missile': { damage: { dice: '3d4', type: 'force', perSlot: '1d4' } },
+  'inflict-wounds': { save: 'con', damage: { dice: '2d10', type: 'necrotic', perSlot: '1d10' } },
+  // Three darts that always hit (1d4 + 1 each); one more dart per slot level above 1st.
+  'magic-missile': { damage: { dice: '3d4', type: 'force', flat: 3, perSlot: '1d4' } },
   'ray-of-sickness': { attack: 'ranged', damage: { dice: '2d8', type: 'poison', perSlot: '1d8' } },
   sanctuary: { save: 'wis' },
   'searing-smite': { save: 'con', damage: { dice: '1d6', type: 'fire', perSlot: '1d6' } },

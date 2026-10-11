@@ -138,12 +138,12 @@ export const BARBARIAN_BARD_CLERIC_ACTIONS: Readonly<Record<string, FeatureActio
   'collegevalor-battle-magic': { activation: 'bonus-action' },
 
   // ─── Cleric ──────────────────────────────────────────────────────────────────
-  // Magic action. Heal: d8s + WIS mod. Or Necrotic/Radiant damage (CON save, half on success, no modifier).
+  // Magic action. Roll d8s + WIS mod: heal that total, or Necrotic/Radiant damage (CON save, half on success).
   // Damage type is a choice; radiant is shown.
   'cleric-divine-spark': {
     activation: 'action',
     save: { ability: 'con', dcAbility: 'spellcasting' },
-    damage: { dice: DIVINE_SPARK_DICE, type: 'radiant' },
+    damage: { dice: DIVINE_SPARK_DICE, type: 'radiant', addMod: 'spellcasting' },
     heal: { dice: DIVINE_SPARK_DICE, addMod: 'spellcasting' },
     poolId: 'channel-divinity',
   },

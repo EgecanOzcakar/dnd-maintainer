@@ -1774,7 +1774,7 @@ describe('Weapon mastery resolver', () => {
     // Primal Knowledge feature present; Rage pool scales to 3 at L3.
     expect(result.features.map((f) => f.feature.id)).toContain('barbarian-primal-knowledge');
     const ragePool = result.resourcePools.find((p) => p.poolId === 'rage');
-    expect(ragePool).toMatchObject({ max: 3, regen: 'long-rest' });
+    expect(ragePool).toMatchObject({ max: 3, regen: { mode: 'compound', shortRestAmount: 1 } });
   });
 
   it('L19 Barbarian gains an Epic Boon feature and only four ASIs (no spurious 5th)', () => {

@@ -173,9 +173,10 @@ export type SpeedMode = 'walk' | 'fly' | 'swim' | 'climb' | 'burrow';
  * Environment condition that gates a speed (descriptive, not runtime-evaluated).
  * The label is carried through to the resolved speed so the UI can show e.g.
  * "Fly 30 ft (while not in an enclosed space)" without modeling enclosed-space detection.
- * - `'not-enclosed'`: Circle of the Sea L10 Stormborn fly speed.
+ * - `'not-enclosed'`: legacy 2014 wording, kept for stored data.
+ * - `'wrath-of-the-sea'`: Circle of the Sea L10 Stormborn fly speed (only while Wrath of the Sea is active).
  */
-export type SpeedCondition = 'not-enclosed';
+export type SpeedCondition = 'not-enclosed' | 'wrath-of-the-sea';
 
 export interface SpeedGrant {
   readonly type: 'speed';

@@ -60,9 +60,11 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
+          // Animal Speaker: Beast Sense and Speak with Animals, as Rituals only.
+          { type: 'spell', spellId: 'beast-sense', alwaysPrepared: true },
           { type: 'spell', spellId: 'speak-with-animals', alwaysPrepared: true },
           { type: 'feature', feature: { id: 'wildheart-animal-speaker' } },
-          // Beast Spirit (Bear/Eagle/Elk/Tiger/Wolf) is a free-form choice; no pending-choice
+          // Rage of the Wilds (Bear, Eagle or Wolf) is a free-form choice; no pending-choice
           // mechanism exists for arbitrary string options — modeled as inert feature grant for now
           { type: 'feature', feature: { id: 'wildheart-rage-of-the-wilds' } },
         ],
@@ -210,8 +212,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         classLevel: 3,
         grants: [
           { type: 'feature', feature: { id: 'collegeglamour-beguiling-magic' } },
-          // Mirror Image is also always prepared but is not yet in SPELL_CATALOG.
           { type: 'spell', spellId: 'charm-person', alwaysPrepared: true },
+          { type: 'spell', spellId: 'mirror-image', alwaysPrepared: true },
           { type: 'feature', feature: { id: 'collegeglamour-mantle-of-inspiration' } },
         ],
       },
@@ -329,8 +331,6 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Light domain bonus cantrip — routed to cantrips via level-0 (alwaysPrepared:false so resolver checks def.level)
-          { type: 'spell', spellId: 'light', alwaysPrepared: false },
           { type: 'feature', feature: { id: 'lightdomain-warding-flare' } },
           { type: 'feature', feature: { id: 'lightdomain-radiance-of-the-dawn' } },
           { type: 'spell', spellId: 'burning-hands', alwaysPrepared: true },
@@ -419,15 +419,13 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          { type: 'proficiency', category: 'armor', id: 'heavy' },
-          { type: 'proficiency', category: 'weapon', id: 'martial' },
-          // War Priest: a number of Bonus Action attacks equal to your Proficiency Bonus, regained on a Long Rest.
+          // War Priest: Bonus Action attacks, Wisdom modifier (minimum 1) uses, regained on a Short or Long Rest.
           { type: 'feature', feature: { id: 'wardomain-war-priest' } },
           {
             type: 'resource-pool',
             poolId: 'war-priest',
-            max: { mode: 'proficiency-bonus', classId: 'cleric' },
-            regen: 'long-rest',
+            max: { mode: 'ability-mod', ability: 'wis' },
+            regen: 'short-rest',
           },
           { type: 'feature', feature: { id: 'wardomain-guided-strike' } },
           { type: 'spell', spellId: 'guiding-bolt', alwaysPrepared: true },
@@ -601,12 +599,13 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 10,
         grants: [
-          // Moonlight Step: teleport 30 ft as a Bonus Action with Advantage on next attack; PB uses per Long Rest
+          // Moonlight Step: teleport 30 ft as a Bonus Action with Advantage on next attack; Wisdom modifier
+          // (minimum 1) uses per Long Rest (a level 2+ slot also restores one use, not modeled).
           { type: 'feature', feature: { id: 'circlemoon-moonlight-step' } },
           {
             type: 'resource-pool',
             poolId: 'moonlight-step',
-            max: { mode: 'proficiency-bonus', classId: 'druid' },
+            max: { mode: 'ability-mod', ability: 'wis' },
             regen: 'long-rest',
           },
         ],
@@ -631,7 +630,6 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spell', spellId: 'fog-cloud', alwaysPrepared: true },
           { type: 'spell', spellId: 'gust-of-wind', alwaysPrepared: true },
           { type: 'spell', spellId: 'ray-of-frost', alwaysPrepared: true },
-          { type: 'spell', spellId: 'shatter', alwaysPrepared: true },
           { type: 'spell', spellId: 'thunderwave', alwaysPrepared: true },
           { type: 'spell', spellId: 'lightning-bolt', alwaysPrepared: true, minClassLevel: 5 },
           { type: 'spell', spellId: 'water-breathing', alwaysPrepared: true, minClassLevel: 5 },
@@ -653,11 +651,12 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 10,
         grants: [
-          // Stormborn: Fly speed 30 ft while not in an enclosed space (2024 PHB). Modeled as a
-          // condition-tagged speed grant (descriptive, not runtime-evaluated) plus the feature
-          // grant for the full description — mirrors the L6 Aquatic Affinity speed+feature pairing.
+          // Stormborn (2024): while Wrath of the Sea is active you gain a Fly Speed equal to your Speed and
+          // Resistance to Cold, Lightning and Thunder damage. Modeled as a condition-tagged speed grant
+          // (descriptive, not runtime-evaluated); the resistances are conditional on the aura, so they
+          // are described in the feature text rather than granted permanently.
           { type: 'feature', feature: { id: 'circlesea-stormborn' } },
-          { type: 'speed', mode: 'fly', value: 30, condition: 'not-enclosed' },
+          { type: 'speed', mode: 'fly', value: 'walk-equivalent', condition: 'wrath-of-the-sea' },
         ],
       },
       {

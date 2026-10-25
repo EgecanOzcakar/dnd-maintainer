@@ -603,7 +603,8 @@
       "proficiencyBonus": "Proficiency Bonus",
       "speed": "Speed",
       "speedConditions": {
-        "not-enclosed": "while not in an enclosed space"
+        "not-enclosed": "while not in an enclosed space",
+        "wrath-of-the-sea": "while Wrath of the Sea is active"
       },
       "speedModes": {
         "fly": "Fly",

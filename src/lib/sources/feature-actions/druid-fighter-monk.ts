@@ -119,7 +119,7 @@ export const DRUID_FIGHTER_MONK_ACTIONS: Readonly<Record<string, FeatureActionMe
     },
     poolId: 'superiority-dice',
   },
-  'battlemaster-know-your-enemy': { activation: 'bonus-action' },
+  'battlemaster-know-your-enemy': { activation: 'bonus-action', poolId: 'know-your-enemy' },
 
   // Eldritch Knight
   'eldritchknight-war-bond': { activation: 'bonus-action' },
@@ -140,9 +140,9 @@ export const DRUID_FIGHTER_MONK_ACTIONS: Readonly<Record<string, FeatureActionMe
     save: { ability: 'str', dcAbility: 'int' },
     poolId: 'psi-powered-leap-use',
   },
-  'psiwarrior-bulwark-of-force': { activation: 'bonus-action', poolId: 'psionic-energy' },
+  'psiwarrior-bulwark-of-force': { activation: 'bonus-action', poolId: 'bulwark-of-force' },
   // Cast Telekinesis without a slot.
-  'psiwarrior-telekinetic-master': { activation: 'action' },
+  'psiwarrior-telekinetic-master': { activation: 'action', poolId: 'telekinetic-master' },
 
   // ---- Monk ----
   // Bonus Action Unarmed Strike after the Attack action.
@@ -206,9 +206,12 @@ export const DRUID_FIGHTER_MONK_ACTIONS: Readonly<Record<string, FeatureActionMe
     damage: { dice: MARTIAL_ARTS_DIE, type: 'necrotic', addMod: 'wis' },
     poolId: 'focus-points',
   },
-  'warriorofmercy-physicians-touch': {
+  // Hand of Healing can end a condition; the Poisoned rider on Hand of Harm is part of that feature, not its own roll.
+  'warriorofmercy-physicians-touch': { activation: 'special' },
+  // Hand of Healing / Hand of Harm in place of a Flurry of Blows strike, WIS-modifier uses per Long Rest.
+  'warriorofmercy-flurry-of-healing-and-harm': {
     activation: 'special',
-    save: { ability: 'con', dcAbility: 'wis' },
+    poolId: 'flurry-of-healing-and-harm',
   },
   'warriorofmercy-hand-of-ultimate-mercy': {
     activation: 'action',

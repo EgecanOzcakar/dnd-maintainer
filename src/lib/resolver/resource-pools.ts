@@ -66,7 +66,7 @@ export function resolveResourcePools(
     if (grant.dieSizeSteps) {
       if (grant.max.mode === 'fixed' || grant.max.mode === 'ability-mod') {
         logger.warn(
-          `resource-pool "${grant.poolId}" declares dieSizeSteps with a fixed max — there is no class level to key the die size on, so dieSize is dropped`
+          `resource-pool "${grant.poolId}" declares dieSizeSteps with a fixed or ability-mod max — there is no class level to key the die size on, so dieSize is dropped`
         );
       } else {
         const dieLevel = getClassLevel(bundles, grant.max.classId);

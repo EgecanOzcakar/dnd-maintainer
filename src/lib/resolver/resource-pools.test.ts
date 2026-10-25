@@ -318,6 +318,37 @@ describe('resolveResourcePools', () => {
     });
   });
 
+  describe('ability-mod max', () => {
+    const wisPool: GrantBundle[] = [
+      {
+        source: { origin: 'class', id: 'ranger', level: 10 },
+        grants: [
+          {
+            type: 'resource-pool',
+            poolId: 'tireless',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
+        ],
+      },
+    ];
+    const abilitiesWith = (wisMod: number) =>
+      ({ wis: { modifier: wisMod } }) as unknown as Parameters<typeof resolveResourcePools>[1];
+
+    it.each([
+      [-1, 1],
+      [0, 1],
+      [1, 1],
+      [4, 4],
+    ])('resolves a WIS modifier of %i to %i uses (minimum 1)', (mod, expected) => {
+      expect(resolveResourcePools(wisPool, abilitiesWith(mod))[0]).toMatchObject({ poolId: 'tireless', max: expected });
+    });
+
+    it('falls back to the minimum when abilities are not supplied', () => {
+      expect(resolveResourcePools(wisPool)[0].max).toBe(1);
+    });
+  });
+
   it('tags pool with its source bundle', () => {
     const bundles = classBundles('monk', 4, [
       {

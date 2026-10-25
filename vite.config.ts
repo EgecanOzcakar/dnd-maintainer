@@ -60,23 +60,23 @@ export default defineConfig({
     allowedHosts: ['localhost', '.ngrok-free.dev', '.ngrok-free.app', '.trycloudflare.com'],
     proxy: {
       '/rest': {
-        target: 'https://aekpodxyvkjcsjgzwlca.supabase.co',
+        target: 'https://cujmanttlgkdremlxbsr.supabase.co',
         changeOrigin: true,
       },
       '/auth': {
-        target: 'https://aekpodxyvkjcsjgzwlca.supabase.co',
+        target: 'https://cujmanttlgkdremlxbsr.supabase.co',
         changeOrigin: true,
       },
       '/storage': {
-        target: 'https://aekpodxyvkjcsjgzwlca.supabase.co',
+        target: 'https://cujmanttlgkdremlxbsr.supabase.co',
         changeOrigin: true,
       },
       '/functions': {
-        target: 'https://aekpodxyvkjcsjgzwlca.supabase.co',
+        target: 'https://cujmanttlgkdremlxbsr.supabase.co',
         changeOrigin: true,
       },
       '/realtime': {
-        target: 'https://aekpodxyvkjcsjgzwlca.supabase.co',
+        target: 'https://cujmanttlgkdremlxbsr.supabase.co',
         ws: true,
         changeOrigin: true,
       },

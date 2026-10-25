@@ -36,6 +36,7 @@ let contextBuildChoices: Record<string, unknown>;
 
 const mockMakeChoice = vi.fn();
 const mockClearChoice = vi.fn();
+const mockUpdateCreation = vi.fn();
 
 vi.mock('@/hooks/useCharacterContext', () => ({
   useCharacterContext: () => ({
@@ -45,7 +46,7 @@ vi.mock('@/hooks/useCharacterContext', () => ({
     bundles: contextBundles,
     resolved: contextResolved,
     updateCharacter: vi.fn(),
-    updateCreation: vi.fn(),
+    updateCreation: mockUpdateCreation,
     levelUp: vi.fn(),
     levelDown: vi.fn(),
     undoLevelDown: vi.fn(),
@@ -131,6 +132,31 @@ describe('AbilitiesStep', () => {
     expect(screen.getByText('standardArray')).toBeTruthy();
     expect(screen.getByText('pointBuy')).toBeTruthy();
     expect(screen.getByText('rolling')).toBeTruthy();
+  });
+
+  it('resets scores to the new method baseline when the method changes', () => {
+    render(<AbilitiesStep />);
+
+    fireEvent.click(screen.getByText('pointBuy'));
+
+    expect(mockUpdateCreation).toHaveBeenCalledWith({
+      ability_method: 'point-buy',
+      base_abilities: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 },
+    });
+  });
+
+  it('tells the player how many scores are still unassigned', () => {
+    render(<AbilitiesStep />);
+
+    expect(screen.getByRole('status').textContent).toBe('unassigned:6');
+  });
+
+  it('shows the rolled pool kept by the parent', () => {
+    contextRows = [{ ...buildCreationRow(), ability_method: 'rolling' } as CreationRow];
+    render(<AbilitiesStep initialRolledValues={[15, 14, 13, 12, 10, 8]} />);
+
+    expect(screen.getByText('15')).toBeTruthy();
+    expect(screen.getByText('8')).toBeTruthy();
   });
 
   it('shows background bonus badge on int when resolved.abilities.int has a background bonus', () => {

@@ -3,7 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { SpellDrawer } from '@/components/character-sheet/SpellDrawer';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   ABILITY_KEYS,
@@ -26,7 +28,8 @@ import type { BundleSlot, ItemDef, SlotFilter } from '@/types/items';
 import type { PendingChoice } from '@/types/resolved';
 import { getGrantIcon } from '@/lib/class-icons';
 import type { TFunction } from 'i18next';
-import type { LucideIcon } from 'lucide-react';
+import { InfoIcon, type LucideIcon } from 'lucide-react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const logger = getLogger('choice-picker');
@@ -368,74 +371,15 @@ export function ChoicePicker({
   }
 
   if (choice.type === 'feat-choice') {
-    const { from, category } = choice;
-    const currentFeatId = currentDecision?.type === 'feat-choice' ? currentDecision.featId : undefined;
-    // Base feat source list: use allowedFeats when provided, else full FEAT_SOURCES.
-    const featSource = allowedFeats ?? FEAT_SOURCES;
-    // Compute the pool: explicit `from` list takes priority; otherwise filter by category.
-    // Union with currentFeatId for no-data-loss (keep current selection visible even if its
-    // book is now disabled).
-    const basePool: readonly FeatId[] = from ?? featSource.filter((f) => f.category === category).map((f) => f.id);
-    const pool: readonly FeatId[] =
-      currentFeatId && !basePool.includes(currentFeatId) ? [...basePool, currentFeatId] : basePool;
-
     return (
-      <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">{tc('characterBuilder.pendingChoices.featChoice')}</p>
-        <div className="space-y-1">
-          {pool.map((featId) => {
-            const radioId = `choice-feat-${choice.choiceKey}-${featId}`;
-            const nameKey = `feats.${featId}.name` as `feats.${string}.name`;
-            const descKey = `feats.${featId}.description` as `feats.${string}.description`;
-            const label = t(nameKey, { defaultValue: featId });
-            const description = t(descKey, { defaultValue: '' });
-            const isDisabledBook = featId === currentFeatId && !basePool.includes(featId);
-            // Already granted elsewhere and non-repeatable → show but block re-selection
-            // (never blocks the current pick, so a valid selection stays changeable).
-            const isAlreadyGranted = (unavailableFeats?.has(featId) ?? false) && featId !== currentFeatId;
-            return (
-              <div
-                key={featId}
-                className="flex items-start gap-3 px-2 py-1.5 rounded-md transition-colors hover:bg-muted/50"
-              >
-                <input
-                  type="radio"
-                  id={radioId}
-                  name={`choice-feat-${choice.choiceKey}`}
-                  checked={currentFeatId === featId}
-                  disabled={isAlreadyGranted}
-                  onChange={() => onDecide(choice.choiceKey, { type: 'feat-choice', featId })}
-                  className="mt-1 size-4 text-primary disabled:opacity-50"
-                />
-                <Label
-                  htmlFor={radioId}
-                  className={`flex-1 ${isAlreadyGranted ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
-                >
-                  <span className="font-medium">{label}</span>
-                  {isDisabledBook && (
-                    <Badge variant="destructive" className="text-xs ml-2">
-                      {tc('characterBuilder.hints.disabledSourceBook')}
-                    </Badge>
-                  )}
-                  {isAlreadyGranted && (
-                    <Badge variant="secondary" className="text-xs ml-2">
-                      {tc('characterBuilder.hints.alreadyGranted')}
-                    </Badge>
-                  )}
-                  {description ? (
-                    <span className="block text-xs text-muted-foreground mt-0.5">{description}</span>
-                  ) : null}
-                </Label>
-              </div>
-            );
-          })}
-        </div>
-        {currentFeatId !== undefined && (
-          <Button variant="ghost" size="sm" onClick={() => onClear(choice.choiceKey)}>
-            {tc('characterBuilder.equipment.clearSelection')}
-          </Button>
-        )}
-      </div>
+      <FeatChoiceBranch
+        choice={choice}
+        currentDecision={currentDecision}
+        onDecide={onDecide}
+        onClear={onClear}
+        allowedFeats={allowedFeats}
+        unavailableFeats={unavailableFeats}
+      />
     );
   }
 
@@ -624,67 +568,8 @@ export function ChoicePicker({
   }
 
   if (choice.type === 'spell-choice') {
-    const pool = getSpellsForList(choice.spellList, choice.spellLevel);
-    const current = currentDecision?.type === 'spell-choice' ? currentDecision.spellIds : [];
-    const atMax = current.length >= choice.count;
-
-    const choiceLabel =
-      choice.spellLevel === 0
-        ? tc('characterBuilder.pendingChoices.spellChoice', { count: choice.count })
-        : tc('characterBuilder.pendingChoices.spellChoiceLeveled', { count: choice.count, level: choice.spellLevel });
-
-    if (pool.length === 0) {
-      return (
-        <p className="text-sm text-muted-foreground italic">{tc('characterBuilder.pendingChoices.spellChoiceEmpty')}</p>
-      );
-    }
-
     return (
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <p className="text-sm text-muted-foreground">{choiceLabel}</p>
-          <Badge variant="outline" className="text-xs">
-            {current.length} / {choice.count}
-          </Badge>
-        </div>
-        <div className="space-y-1">
-          {pool.map((spell) => {
-            const isSelected = (current as readonly string[]).includes(spell.id);
-            const isDisabled = atMax && !isSelected;
-            const nameKey = `spells.${spell.id}.name` as `spells.${string}.name`;
-            return (
-              <div
-                key={spell.id}
-                className="flex items-center gap-3 px-2 py-1.5 rounded-md transition-colors hover:bg-muted/50"
-              >
-                <Checkbox
-                  id={`choice-spell-${choice.choiceKey}-${spell.id}`}
-                  checked={isSelected}
-                  disabled={isDisabled}
-                  onCheckedChange={(checked) => {
-                    const next = checked
-                      ? ([...current, spell.id] as readonly SpellId[])
-                      : (current.filter((id) => id !== spell.id) as readonly SpellId[]);
-                    if (next.length === 0) {
-                      onClear(choice.choiceKey);
-                    } else {
-                      onDecide(choice.choiceKey, { type: 'spell-choice', spellIds: next });
-                    }
-                  }}
-                />
-                <Label htmlFor={`choice-spell-${choice.choiceKey}-${spell.id}`} className="flex-1 cursor-pointer">
-                  {t(nameKey, { defaultValue: spell.id })}
-                </Label>
-              </div>
-            );
-          })}
-        </div>
-        {current.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={() => onClear(choice.choiceKey)}>
-            {tc('characterBuilder.equipment.clearSelection')}
-          </Button>
-        )}
-      </div>
+      <SpellChoiceBranch choice={choice} currentDecision={currentDecision} onDecide={onDecide} onClear={onClear} />
     );
   }
 
@@ -693,6 +578,227 @@ export function ChoicePicker({
     <p className="text-sm text-muted-foreground italic">
       {tc('characterBuilder.pendingChoices.unsupported', { type: choice.type })}
     </p>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Branch components that need their own state (search box, details drawer)
+// ---------------------------------------------------------------------------
+
+/** Lists longer than this get a search box. */
+const SEARCH_THRESHOLD = 8;
+
+type BranchProps<T extends PendingChoice['type']> = Pick<
+  ChoicePickerProps,
+  'currentDecision' | 'onDecide' | 'onClear'
+> & {
+  readonly choice: Extract<PendingChoice, { type: T }>;
+};
+
+function SearchBox({ value, onChange }: { readonly value: string; readonly onChange: (v: string) => void }) {
+  const { t: tc } = useTranslation('common');
+  return (
+    <Input
+      type="search"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={tc('characterBuilder.search.placeholder')}
+      aria-label={tc('characterBuilder.search.label')}
+    />
+  );
+}
+
+function SpellChoiceBranch({ choice, currentDecision, onDecide, onClear }: BranchProps<'spell-choice'>) {
+  const { t } = useTranslation('gamedata');
+  const { t: tc } = useTranslation('common');
+  const [query, setQuery] = useState('');
+  const [detailSpellId, setDetailSpellId] = useState<string | null>(null);
+
+  const pool = getSpellsForList(choice.spellList, choice.spellLevel);
+  const current = currentDecision?.type === 'spell-choice' ? currentDecision.spellIds : [];
+  const atMax = current.length >= choice.count;
+  const nameOf = (id: string) => t(`spells.${id}.name` as `spells.${string}.name`, { defaultValue: id });
+  const q = query.trim().toLowerCase();
+  const visible = q ? pool.filter((spell) => nameOf(spell.id).toLowerCase().includes(q)) : pool;
+
+  const choiceLabel =
+    choice.spellLevel === 0
+      ? tc('characterBuilder.pendingChoices.spellChoice', { count: choice.count })
+      : tc('characterBuilder.pendingChoices.spellChoiceLeveled', { count: choice.count, level: choice.spellLevel });
+
+  if (pool.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground italic">{tc('characterBuilder.pendingChoices.spellChoiceEmpty')}</p>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <p className="text-sm text-muted-foreground">{choiceLabel}</p>
+        <Badge variant="outline" className="text-xs">
+          {current.length} / {choice.count}
+        </Badge>
+      </div>
+      {pool.length > SEARCH_THRESHOLD && <SearchBox value={query} onChange={setQuery} />}
+      <div className="space-y-1">
+        {visible.map((spell) => {
+          const isSelected = (current as readonly string[]).includes(spell.id);
+          const isDisabled = atMax && !isSelected;
+          const checkId = `choice-spell-${choice.choiceKey}-${spell.id}`;
+          return (
+            <div
+              key={spell.id}
+              className="flex items-center gap-3 px-2 py-1.5 rounded-md transition-colors hover:bg-muted/50"
+            >
+              <Checkbox
+                id={checkId}
+                checked={isSelected}
+                disabled={isDisabled}
+                onCheckedChange={(checked) => {
+                  const next = checked
+                    ? ([...current, spell.id] as readonly SpellId[])
+                    : (current.filter((id) => id !== spell.id) as readonly SpellId[]);
+                  if (next.length === 0) {
+                    onClear(choice.choiceKey);
+                  } else {
+                    onDecide(choice.choiceKey, { type: 'spell-choice', spellIds: next });
+                  }
+                }}
+              />
+              <Label htmlFor={checkId} className="flex flex-1 flex-wrap items-center gap-x-2 gap-y-1 cursor-pointer">
+                {nameOf(spell.id)}
+                <Badge variant="secondary" className="text-xs font-normal">
+                  {tc(`rules.schools.${spell.school}`)}
+                </Badge>
+                {spell.concentration && (
+                  <Badge variant="outline" className="text-xs font-normal">
+                    {tc('rules.spell.concentration')}
+                  </Badge>
+                )}
+                {spell.ritual && (
+                  <Badge variant="outline" className="text-xs font-normal">
+                    {tc('rules.spell.ritual')}
+                  </Badge>
+                )}
+              </Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => setDetailSpellId(spell.id)}
+                aria-label={tc('characterBuilder.search.spellDetails', { name: nameOf(spell.id) })}
+              >
+                <InfoIcon />
+              </Button>
+            </div>
+          );
+        })}
+        {visible.length === 0 && (
+          <p className="px-2 text-sm text-muted-foreground italic">{tc('characterBuilder.search.noMatches')}</p>
+        )}
+      </div>
+      {current.length > 0 && (
+        <Button variant="ghost" size="sm" onClick={() => onClear(choice.choiceKey)}>
+          {tc('characterBuilder.equipment.clearSelection')}
+        </Button>
+      )}
+      {detailSpellId && (
+        <SpellDrawer
+          spellId={detailSpellId}
+          open
+          onOpenChange={(open) => {
+            if (!open) setDetailSpellId(null);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function FeatChoiceBranch({
+  choice,
+  currentDecision,
+  onDecide,
+  onClear,
+  allowedFeats,
+  unavailableFeats,
+}: BranchProps<'feat-choice'> & Pick<ChoicePickerProps, 'allowedFeats' | 'unavailableFeats'>) {
+  const { t } = useTranslation('gamedata');
+  const { t: tc } = useTranslation('common');
+  const [query, setQuery] = useState('');
+  const { from, category } = choice;
+  const currentFeatId = currentDecision?.type === 'feat-choice' ? currentDecision.featId : undefined;
+  // Base feat source list: use allowedFeats when provided, else full FEAT_SOURCES.
+  const featSource = allowedFeats ?? FEAT_SOURCES;
+  // Compute the pool: explicit `from` list takes priority; otherwise filter by category.
+  // Union with currentFeatId for no-data-loss (keep current selection visible even if its
+  // book is now disabled).
+  const basePool: readonly FeatId[] = from ?? featSource.filter((f) => f.category === category).map((f) => f.id);
+  const pool: readonly FeatId[] =
+    currentFeatId && !basePool.includes(currentFeatId) ? [...basePool, currentFeatId] : basePool;
+  const nameOf = (featId: FeatId) => t(`feats.${featId}.name` as `feats.${string}.name`, { defaultValue: featId });
+  const q = query.trim().toLowerCase();
+  const visible = q ? pool.filter((featId) => nameOf(featId).toLowerCase().includes(q)) : pool;
+
+  return (
+    <div className="space-y-2">
+      <p className="text-sm text-muted-foreground">{tc('characterBuilder.pendingChoices.featChoice')}</p>
+      {pool.length > SEARCH_THRESHOLD && <SearchBox value={query} onChange={setQuery} />}
+      <div className="space-y-1">
+        {visible.map((featId) => {
+          const radioId = `choice-feat-${choice.choiceKey}-${featId}`;
+          const descKey = `feats.${featId}.description` as `feats.${string}.description`;
+          const label = nameOf(featId);
+          const description = t(descKey, { defaultValue: '' });
+          const isDisabledBook = featId === currentFeatId && !basePool.includes(featId);
+          // Already granted elsewhere and non-repeatable → show but block re-selection
+          // (never blocks the current pick, so a valid selection stays changeable).
+          const isAlreadyGranted = (unavailableFeats?.has(featId) ?? false) && featId !== currentFeatId;
+          return (
+            <div
+              key={featId}
+              className="flex items-start gap-3 px-2 py-1.5 rounded-md transition-colors hover:bg-muted/50"
+            >
+              <input
+                type="radio"
+                id={radioId}
+                name={`choice-feat-${choice.choiceKey}`}
+                checked={currentFeatId === featId}
+                disabled={isAlreadyGranted}
+                onChange={() => onDecide(choice.choiceKey, { type: 'feat-choice', featId })}
+                className="mt-1 size-4 text-primary disabled:opacity-50"
+              />
+              <Label
+                htmlFor={radioId}
+                className={`flex-1 ${isAlreadyGranted ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+              >
+                <span className="font-medium">{label}</span>
+                {isDisabledBook && (
+                  <Badge variant="destructive" className="text-xs ml-2">
+                    {tc('characterBuilder.hints.disabledSourceBook')}
+                  </Badge>
+                )}
+                {isAlreadyGranted && (
+                  <Badge variant="secondary" className="text-xs ml-2">
+                    {tc('characterBuilder.hints.alreadyGranted')}
+                  </Badge>
+                )}
+                {description ? <span className="block text-xs text-muted-foreground mt-0.5">{description}</span> : null}
+              </Label>
+            </div>
+          );
+        })}
+        {visible.length === 0 && (
+          <p className="px-2 text-sm text-muted-foreground italic">{tc('characterBuilder.search.noMatches')}</p>
+        )}
+      </div>
+      {currentFeatId !== undefined && (
+        <Button variant="ghost" size="sm" onClick={() => onClear(choice.choiceKey)}>
+          {tc('characterBuilder.equipment.clearSelection')}
+        </Button>
+      )}
+    </div>
   );
 }
 
@@ -884,7 +990,10 @@ function SlotPicker({ slot, value, onPick }: SlotPickerProps) {
         }}
         items={selectItems}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger
+          className="w-full"
+          aria-label={tc('characterBuilder.equipment.slotChoosePrompt', { label: slotLabel })}
+        >
           <SelectValue placeholder={tc('characterBuilder.equipment.slotPlaceholder')} />
         </SelectTrigger>
         <SelectContent>

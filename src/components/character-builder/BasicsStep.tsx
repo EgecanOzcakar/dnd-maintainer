@@ -155,8 +155,20 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
     context.updateCharacter({ species: value });
   };
 
+  const [pendingClassChange, setPendingClassChange] = useState<ClassId | null>(null);
+
   const handleClassChange = (value: ClassId) => {
     cancelPendingAdvance();
+    // replaceLevel wipes the level-1 row's choices (skills, spells, equipment...), so confirm first.
+    const hasClassChoices = Object.keys(levelRows[0]?.choices ?? {}).length > 0;
+    if (levelRows.length > 0 && levelRows[0].class_id !== value && hasClassChoices) {
+      setPendingClassChange(value);
+      return;
+    }
+    applyClassChange(value);
+  };
+
+  const applyClassChange = (value: ClassId) => {
     if (levelRows.length === 0) {
       // First time selecting a class — add level 1 row
       context.levelUp(value, null);
@@ -334,6 +346,14 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
     if (classId) commitQuickNpc(classId);
   };
 
+  const missingFields = [
+    [name, 'characterName'],
+    [race, 'species'],
+    [characterClass, 'class'],
+    [background, 'background'],
+    [alignment, 'alignment'],
+  ].flatMap(([value, field]) => (value ? [] : [tc(`characterBuilder.fields.${field as 'characterName'}`)]));
+
   return (
     <div className="space-y-6">
       {/* Quick Random NPC buttons */}
@@ -473,7 +493,7 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>
+            <Label htmlFor="species-select">
               {tc('characterBuilder.fields.species')}
               <span className="text-destructive">*</span>
             </Label>
@@ -496,7 +516,7 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
               onValueChange={(value) => value && handleSpeciesChange(value as SpeciesId)}
               items={filteredSpecies.map((s) => ({ value: s.id, label: t(`species.${s.id}`) }))}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="species-select" className="w-full">
                 <SelectValue placeholder={tc('characterBuilder.placeholders.chooseSpecies')} />
               </SelectTrigger>
               <SelectContent>
@@ -513,7 +533,7 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
           </div>
 
           <div className="space-y-2">
-            <Label>
+            <Label htmlFor="class-select">
               {tc('characterBuilder.fields.class')}
               <span className="text-destructive">*</span>
             </Label>
@@ -529,7 +549,7 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
               onValueChange={(value) => value && handleClassChange(value as ClassId)}
               items={filteredClasses.map((c) => ({ value: c.id, label: t(`classes.${c.id}`) }))}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="class-select" className="w-full">
                 <SelectValue placeholder={tc('characterBuilder.placeholders.chooseClass')} />
               </SelectTrigger>
               <SelectContent>
@@ -546,7 +566,10 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
           </div>
 
           <div className="space-y-2">
-            <Label>{tc('characterBuilder.fields.background')}</Label>
+            <Label htmlFor="background-select">
+              {tc('characterBuilder.fields.background')}
+              <span className="text-destructive">*</span>
+            </Label>
             {background && !allowedBackgroundIds.has(background as BackgroundId) && (
               <div className="space-y-1">
                 <Badge variant="destructive" className="text-xs">
@@ -559,7 +582,7 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
               onValueChange={(value) => value && context.updateCharacter({ background: value })}
               items={filteredBackgrounds.map((b) => ({ value: b.id, label: t(`backgrounds.${b.id}`) }))}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger id="background-select" className="w-full">
                 <SelectValue placeholder={tc('characterBuilder.placeholders.chooseBackground')} />
               </SelectTrigger>
               <SelectContent>
@@ -577,10 +600,14 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
         </div>
 
         <div className="space-y-2">
-          <Label>
+          <Label id="alignment-label">
             {tc('characterBuilder.fields.alignment')} <span className="text-destructive">*</span>
           </Label>
-          <div className="grid grid-cols-3 gap-0 rounded-md overflow-hidden border border-border">
+          <div
+            role="radiogroup"
+            aria-labelledby="alignment-label"
+            className="grid grid-cols-3 gap-0 rounded-md overflow-hidden border border-border"
+          >
             {/* eslint-disable-next-line react-hooks/refs -- false positive: this render-phase map only reaches refs via the onClick handler (cancelPendingAdvance) below; the ref write lives in the useLayoutEffect above. */}
             {(['good', 'neutral', 'evil'] as const).map((moral) =>
               (['lawful', 'neutral', 'chaotic'] as const).map((ethic) => {
@@ -599,13 +626,16 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
                   <button
                     key={alignmentId}
                     type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    aria-label={t(`alignments.${alignmentId}`)}
                     title={t(`alignments.${alignmentId}`)}
                     onClick={() => {
                       cancelPendingAdvance();
                       context.updateCharacter({ alignment: alignmentId });
                     }}
                     className={`flex flex-col items-center justify-center border-r border-b border-border px-1 py-1 text-sm transition-colors cursor-pointer last-of-type:border-r-0 nth-[3n]:border-r-0 ${
-                      isSelected ? 'bg-primary/10 font-medium' : 'hover:bg-muted/50'
+                      isSelected ? 'bg-primary/10 font-semibold ring-2 ring-inset ring-primary' : 'hover:bg-muted/50'
                     }`}
                   >
                     <span className="leading-tight">{topLabel}</span>
@@ -617,6 +647,48 @@ export function BasicsStep({ onRequestAdvance }: BasicsStepProps) {
           </div>
         </div>
       </div>
+
+      {missingFields.length > 0 && (
+        <p role="status" className="text-sm text-muted-foreground">
+          {tc('characterBuilder.fillIn', { fields: missingFields.join(', ') })}
+        </p>
+      )}
+
+      {pendingClassChange && (
+        <Dialog
+          open
+          onOpenChange={(open) => {
+            if (!open) setPendingClassChange(null);
+          }}
+        >
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{tc('characterBuilder.classChange.title')}</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              {tc('characterBuilder.classChange.confirm', {
+                from: t(`classes.${characterClass as ClassId}`),
+                to: t(`classes.${pendingClassChange}`),
+              })}
+            </p>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setPendingClassChange(null)}>
+                {tc('buttons.cancel')}
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  const next = pendingClassChange;
+                  setPendingClassChange(null);
+                  applyClassChange(next);
+                }}
+              >
+                {tc('characterBuilder.classChange.action', { class: t(`classes.${pendingClassChange}`) })}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {pendingOverwriteClassId && (
         <Dialog

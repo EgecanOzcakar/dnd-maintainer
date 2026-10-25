@@ -43,17 +43,12 @@ export function SavingThrowsPanel({
   const presetFor = (ability: keyof typeof savingThrows): RollPreset => {
     const save = savingThrows[ability];
     const mods = saveRollMods(save, effects?.[ability]);
-    // Whatever active effects (exhaustion) changed on top of the printed bonus.
-    const delta = mods.modifier - save.bonus;
     return {
       die: 20,
       count: 1,
       contextLabel: `Save: ${t(`abilities.${ability}`)} (${formatSigned(mods.modifier)})`,
       ...mods,
-      breakdown: rollParts([
-        ...save.breakdown,
-        ...(delta ? [{ type: 'exhaustion', label: 'exhaustion', value: delta }] : []),
-      ]),
+      breakdown: rollParts([...save.breakdown, ...(effects?.[ability]?.parts ?? [])]),
     };
   };
 

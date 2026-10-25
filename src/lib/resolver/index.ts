@@ -506,6 +506,7 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     pendingChoices,
     weaponMasteries,
     resourcePools: resolveResourcePools(bundles),
+    rollModifiers: collectGrantsByType(bundles, 'roll-modifier').map(({ grant, source }) => ({ ...grant, source })),
   };
 }
 

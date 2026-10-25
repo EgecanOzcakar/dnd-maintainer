@@ -28,7 +28,11 @@ describe('checkRollMods', () => {
   it('untrained armor cancels advantage; exhaustion penalty comes from effects', () => {
     const r = make(['champion-remarkable-athlete'], { armorDis: true });
     expect(checkRollMods(r, { ability: 'str', skillId: 'athletics' }).mode).toBeNull();
-    const applied = { checks: { str: 'dis' }, checkPenalty: 4 } as never;
+    const applied = {
+      checks: { str: 'dis' },
+      checkPenalty: 4,
+      checkFor: () => ({ bonus: 0, extra: [], adv: false, dis: false, parts: [] }),
+    } as never;
     expect(checkRollMods(make([]), { ability: 'str' }, applied)).toMatchObject({ mode: 'dis', bonus: -4 });
   });
 
@@ -39,5 +43,26 @@ describe('checkRollMods', () => {
       { type: 'ability-check-bonus', label: 'bard-jack-of-all-trades', value: 1 },
     ]);
     expect(checkRollMods(r, { ability: 'str', skillId: 'athletics' }).bonus).toBe(0);
+  });
+});
+
+describe('checkRollMods with item modifiers', () => {
+  it('includes bonus, extra dice and advantage from checkFor', () => {
+    const applied = {
+      checks: { str: null },
+      checkPenalty: 0,
+      checkFor: () => ({
+        bonus: 2,
+        extra: ['+1d4'],
+        adv: true,
+        dis: false,
+        parts: [{ type: 'modifier', label: 'Ring', value: 2 }],
+      }),
+    } as never;
+    expect(checkRollMods(make([]), { ability: 'str' }, applied)).toMatchObject({
+      bonus: 2,
+      mode: 'adv',
+      extra: ['+1d4'],
+    });
   });
 });

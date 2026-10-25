@@ -67,12 +67,23 @@ export function resolveAbilities(
     }
   }
 
+  // Ability-set grants (Belt of Giant Strength, Headband of Intellect): the best one wins, only if it is higher.
+  const setScores: Partial<Record<AbilityKey, { readonly score: number; readonly source: SourceTag }>> = {};
+  for (const { grant, source } of collectGrantsByType(bundles, 'ability-set')) {
+    const best = setScores[grant.ability];
+    if (!best || grant.score > best.score) setScores[grant.ability] = { score: grant.score, source };
+  }
+
   const result = {} as Record<AbilityKey, ResolvedAbility>;
   for (const key of keys) {
     const base = baseAbilities[key];
-    const bonuses = bonusList[key];
+    const bonuses = [...bonusList[key]];
     const rawTotal = base + bonuses.reduce((sum, b) => sum + b.value, 0);
-    const total = Math.min(rawTotal, 20);
+    const capped = Math.min(rawTotal, 20);
+    const set = setScores[key];
+    // The item raises the score past the normal cap of 20; show the difference as its own bonus.
+    if (set && set.score > capped) bonuses.push({ value: set.score - capped, source: set.source });
+    const total = set && set.score > capped ? set.score : capped;
     result[key] = {
       base,
       bonuses,

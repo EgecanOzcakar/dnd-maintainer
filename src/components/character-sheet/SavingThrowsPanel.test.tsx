@@ -69,7 +69,16 @@ describe('SavingThrowsPanel', () => {
         savingThrows={sampleSavingThrows as never}
         buildError={null}
         onSelectRollPreset={mockSelectPreset}
-        effects={{ str: { bonus: 1, mode: 'adv', extra: ['+1d4'] } } as never}
+        effects={
+          {
+            str: {
+              bonus: 1,
+              mode: 'adv',
+              extra: ['+1d4'],
+              parts: [{ type: 'exhaustion', label: 'exhaustion', value: -2 }],
+            },
+          } as never
+        }
       />
     );
     fireEvent.click(screen.getAllByRole('button', { name: /^roll$/i })[0]);

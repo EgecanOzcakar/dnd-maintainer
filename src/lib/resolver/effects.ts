@@ -1,9 +1,9 @@
-import type { ClassId } from '@/lib/dnd-helpers';
+import type { ClassId, SkillId } from '@/lib/dnd-helpers';
 import { ABILITY_KEYS } from '@/lib/dnd-helpers';
-import type { ResolvedAction } from '@/lib/resolver/actions';
+import type { BreakdownPart, ResolvedAction } from '@/lib/resolver/actions';
 import { ACTIVE_EFFECTS, type ActiveEffectDef } from '@/lib/sources/active-effects';
 import type { AbilityKey } from '@/types/database';
-import type { ResolvedCharacter } from '@/types/resolved';
+import type { ResolvedCharacter, ResolvedRollModifier } from '@/types/resolved';
 
 /** Net roll state once advantage and disadvantage sources cancel. */
 export type RollMode = 'adv' | 'dis' | null;
@@ -21,6 +21,17 @@ export interface AdjustedSave {
   readonly bonus: number;
   readonly mode: RollMode;
   readonly extra: readonly string[];
+  /** What changed the printed bonus: exhaustion and roll modifiers from items and custom modifiers. */
+  readonly parts: readonly BreakdownPart[];
+}
+
+/** Item and custom roll modifiers that apply to one ability check or skill check. */
+export interface CheckAdjust {
+  readonly bonus: number;
+  readonly extra: readonly string[];
+  readonly adv: boolean;
+  readonly dis: boolean;
+  readonly parts: readonly BreakdownPart[];
 }
 
 export interface AppliedEffects {
@@ -31,6 +42,8 @@ export interface AppliedEffects {
   /** Ability check state per ability (exhaustion penalty is in `checkPenalty`). */
   readonly checks: Readonly<Record<AbilityKey, RollMode>>;
   readonly checkPenalty: number;
+  /** Roll modifiers from items / custom modifiers for a check (omit `skill` for a raw ability check). */
+  readonly checkFor: (ability: AbilityKey, skill?: SkillId) => CheckAdjust;
   /** Attacks against the character have disadvantage (Dodge). */
   readonly attacksAgainst: RollMode;
   /** Resistances granted by effects (on top of `resolved.resistances`). */
@@ -118,6 +131,25 @@ export function applyEffects(
   const attackAdvStr = mods.some((m) => m.attackAdvantage === 'str-melee');
   const attackAdvSpell = mods.some((m) => m.attackAdvantage === 'spell');
   const spellDc = sum((m) => m.spellDcBonus);
+
+  // Roll modifiers granted by equipped items and approved custom modifiers.
+  const rollMods = resolved.rollModifiers ?? [];
+  const fits = (m: ResolvedRollModifier, ability?: AbilityKey, skill?: SkillId) =>
+    (!m.abilities || (ability !== undefined && m.abilities.includes(ability))) &&
+    (!m.skills || (skill !== undefined && m.skills.includes(skill)));
+  const adjustFor = (list: readonly ResolvedRollModifier[]): CheckAdjust => ({
+    bonus: list.reduce((n, m) => n + (m.bonus ?? 0), 0),
+    extra: list.flatMap((m) => (m.dice ? [m.dice] : [])),
+    adv: list.some((m) => m.mode === 'adv'),
+    dis: list.some((m) => m.mode === 'dis'),
+    parts: list.flatMap((m): BreakdownPart[] =>
+      m.bonus ? [{ type: 'modifier', label: m.label ?? '', value: m.bonus }] : []
+    ),
+  });
+  const forTarget = (target: ResolvedRollModifier['target'], ability?: AbilityKey, skill?: SkillId) =>
+    adjustFor(rollMods.filter((m) => m.target === target && fits(m, ability, skill)));
+  // Spell-DC modifiers raise every spell save DC.
+  const dcMod = forTarget('spell-dc').bonus;
   const barbarianLevel = classLevels.barbarian ?? 0;
   const d20Dice = mods.flatMap((m) => (m.d20Die ? [m.d20Die] : []));
   const rage = mods.some((m) => m.rageDamage) ? rageDamage(barbarianLevel) : 0;
@@ -133,10 +165,16 @@ export function applyEffects(
   );
 
   const adjusted = actions.map((a): AdjustedAction => {
-    if (a.save && spellDc && a.kind === 'spell') a = { ...a, save: { ...a.save, dc: a.save.dc + spellDc } };
+    if (a.save && (spellDc || dcMod) && a.kind === 'spell')
+      a = { ...a, save: { ...a.save, dc: a.save.dc + spellDc + dcMod } };
     if (a.toHit === undefined && !a.damage) return a;
+    // Item / custom modifiers: attack rolls (all attacks, or spell attacks only) and weapon damage.
+    const atk = adjustFor(
+      rollMods.filter((m) => m.target === 'attack' || (m.target === 'spell-attack' && a.kind === 'spell'))
+    );
+    const dmg = a.kind === 'weapon' ? forTarget('damage') : adjustFor([]);
     const isStrMelee = strMeleeKeys.has(a.key);
-    const adv = attackAdvAll || (attackAdvStr && isStrMelee) || (attackAdvSpell && a.kind === 'spell');
+    const adv = attackAdvAll || (attackAdvStr && isStrMelee) || (attackAdvSpell && a.kind === 'spell') || atk.adv;
     const rollsAttack = a.toHit !== undefined;
     const damageExtra = mods.flatMap((m) =>
       m.damageDie && rollsAttack && a.damage && (m.damageDie.filter === 'attack' || a.kind === 'weapon')
@@ -147,22 +185,27 @@ export function applyEffects(
       ...a,
       ...(rollsAttack
         ? {
-            toHit: (a.toHit ?? 0) - d20Penalty,
+            toHit: (a.toHit ?? 0) - d20Penalty + atk.bonus,
             toHitParts: [
               ...(a.toHitParts ?? []),
               ...(d20Penalty ? [{ type: 'exhaustion', label: 'exhaustion', value: -d20Penalty }] : []),
+              ...atk.parts,
             ],
-            mode: combineMode(adv, attackDis),
-            toHitExtra: d20Dice,
+            mode: combineMode(adv, attackDis || atk.dis),
+            toHitExtra: [...d20Dice, ...atk.extra],
           }
         : {}),
-      ...(a.damage && rage && isStrMelee
+      ...(a.damage && ((rage && isStrMelee) || dmg.bonus)
         ? {
-            damage: { ...a.damage, bonus: a.damage.bonus + rage },
-            damageParts: [...(a.damageParts ?? []), { type: 'effect', label: 'rage', value: rage }],
+            damage: { ...a.damage, bonus: a.damage.bonus + (rage && isStrMelee ? rage : 0) + dmg.bonus },
+            damageParts: [
+              ...(a.damageParts ?? []),
+              ...(rage && isStrMelee ? [{ type: 'effect', label: 'rage', value: rage }] : []),
+              ...dmg.parts,
+            ],
           }
         : {}),
-      ...(damageExtra.length ? { damageExtra } : {}),
+      ...(damageExtra.length || dmg.extra.length ? { damageExtra: [...damageExtra, ...dmg.extra] } : {}),
     };
   });
 
@@ -173,10 +216,12 @@ export function applyEffects(
   for (const ab of ABILITY_KEYS) {
     const saveAdv = mods.some((m) => m.saveAdvantage?.includes(ab));
     const saveDis = ab === 'dex' && conditions.includes('restrained');
+    const save = forTarget('save', ab);
     savingThrows[ab] = {
-      bonus: resolved.savingThrows[ab].bonus - d20Penalty,
-      mode: combineMode(saveAdv, saveDis),
-      extra: d20Dice,
+      bonus: resolved.savingThrows[ab].bonus - d20Penalty + save.bonus,
+      mode: combineMode(saveAdv || save.adv, saveDis || save.dis),
+      extra: [...d20Dice, ...save.extra],
+      parts: [...(d20Penalty ? [{ type: 'exhaustion', label: 'exhaustion', value: -d20Penalty }] : []), ...save.parts],
     };
     checks[ab] = combineMode(
       mods.some((m) => m.checkAdvantage?.includes(ab)),
@@ -191,6 +236,7 @@ export function applyEffects(
     savingThrows,
     checks,
     checkPenalty: d20Penalty,
+    checkFor: (ability, skill) => forTarget('check', ability, skill),
     attacksAgainst: mods.some((m) => m.attacksAgainstDisadvantage) ? 'dis' : null,
     resistances: [...new Set(mods.flatMap((m) => m.resistances ?? []))],
   };

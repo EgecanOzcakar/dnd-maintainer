@@ -69,6 +69,7 @@ const TABLE_COLUMNS = {
     { name: 'hit_dice_used', type: 'jsonb' },
     { name: 'resource_pools_used', type: 'jsonb' },
     { name: 'currency', type: 'jsonb' },
+    { name: 'custom_modifiers', type: 'jsonb' },
     { name: 'spell_slots_used', type: 'jsonb' },
     { name: 'gender', type: 'text' },
     { name: 'size', type: 'text' },

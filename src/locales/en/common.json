@@ -1625,5 +1625,34 @@
       "resistances": "Resistance: {{types}}",
       "d20Penalty": "{{value}} to every d20 test"
     }
+  },
+  "customModifiers": {
+    "title": "Item & custom modifiers",
+    "hint": "Bonuses from magic items or table rulings. Paste an item description and approve what the parser finds, or add one by hand.",
+    "empty": "No modifiers yet.",
+    "toggle": "Apply {{name}}",
+    "remove": "Remove {{name}}",
+    "source": "Item name",
+    "sourcePlaceholder": "Item name (pick a magic item to load its text)",
+    "text": "Item description",
+    "textPlaceholder": "Paste a description, e.g. \"You gain a +1 bonus to saving throws.\"",
+    "detect": "Find modifiers",
+    "noneFound": "No modifiers detected. Add one by hand below.",
+    "addApproved": "Add approved",
+    "target": "Roll kind",
+    "value": "Bonus or dice",
+    "mode": "Advantage",
+    "noMode": "No advantage",
+    "adv": "Advantage",
+    "dis": "Disadvantage",
+    "add": "Add",
+    "targets": {
+      "save": "Saving throws",
+      "check": "Ability checks",
+      "attack": "Attack rolls",
+      "damage": "Damage rolls",
+      "spell-attack": "Spell attacks",
+      "spell-dc": "Spell save DC"
+    }
   }
 }

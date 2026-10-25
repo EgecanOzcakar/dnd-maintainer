@@ -52,6 +52,7 @@ import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
 import { ArcaneRecoveryPanel } from '@/components/character-sheet/ArcaneRecoveryPanel';
 import { ChosenOptionsPanel } from '@/components/character-sheet/ChosenOptionsPanel';
 import { CurrencyPanel } from '@/components/character-sheet/CurrencyPanel';
+import { CustomModifiersPanel } from '@/components/character-sheet/CustomModifiersPanel';
 import { ManeuversPanel } from '@/components/character-sheet/ManeuversPanel';
 import { MetamagicPanel } from '@/components/character-sheet/MetamagicPanel';
 import { ACTIVE_EFFECTS } from '@/lib/sources/active-effects';
@@ -570,6 +571,10 @@ function CharacterSheetInner({
         {activeTab === 'inventory' ? (
           <>
             <CurrencyPanel currency={character.currency} onChange={(currency) => handleUpdate({ currency })} />
+            <CustomModifiersPanel
+              modifiers={character.custom_modifiers}
+              onChange={(custom_modifiers) => handleUpdate({ custom_modifiers })}
+            />
             <InventoryTab
               characterId={character.id}
               campaignId={character.campaign_id}

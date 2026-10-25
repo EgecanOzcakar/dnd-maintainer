@@ -9,6 +9,7 @@ import type {
 } from '@/lib/dnd-helpers';
 import type { ThemeId } from '@/lib/theme';
 import type { ConditionId } from '@/lib/sources/conditions';
+import type { Grant } from '@/types/grants';
 import type { WeaponMasteryId } from '@/types/items';
 import type { SourceBookId } from '@/lib/source-books';
 
@@ -97,6 +98,7 @@ export interface Character {
   /** Uses spent per resource pool id (see `resolved.resourcePools`). */
   resource_pools_used?: Record<string, number>;
   currency?: Currency;
+  custom_modifiers?: readonly CustomModifier[];
   /** null = at max HP */
   current_hp?: number | null;
   temp_hp?: number;
@@ -106,6 +108,16 @@ export interface Character {
 
 export type CurrencyKey = 'cp' | 'sp' | 'ep' | 'gp' | 'pp';
 export type Currency = Record<CurrencyKey, number>;
+
+/** A player-approved (or hand-written) modifier from an item, applied as an extra grant bundle. */
+export interface CustomModifier {
+  readonly id: string;
+  readonly label: string;
+  /** Where it came from, e.g. the magic item's name. */
+  readonly source?: string;
+  readonly enabled: boolean;
+  readonly grants: readonly Grant[];
+}
 
 // Combat participant
 export interface Combatant {

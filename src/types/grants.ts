@@ -63,6 +63,32 @@ export interface AbilityBonusGrant {
   readonly bonus: number;
 }
 
+/** Magic items that fix an ability score (Belt of Giant Strength): the score becomes `score` if it is lower. */
+export interface AbilitySetGrant {
+  readonly type: 'ability-set';
+  readonly ability: AbilityKey;
+  readonly score: number;
+}
+
+export const ROLL_TARGETS = ['save', 'check', 'attack', 'damage', 'spell-attack', 'spell-dc'] as const;
+export type RollTarget = (typeof ROLL_TARGETS)[number];
+
+/**
+ * A bonus, extra die, or advantage/disadvantage on a kind of roll. `abilities`/`skills` narrow it
+ * (omitted = all). `label` names the source in roll breakdowns (e.g. the item's name).
+ */
+export interface RollModifierGrant {
+  readonly type: 'roll-modifier';
+  readonly target: RollTarget;
+  readonly abilities?: readonly AbilityKey[];
+  readonly skills?: readonly SkillId[];
+  readonly bonus?: number;
+  /** Signed extra die, e.g. `+1d4` or `-1d4`. */
+  readonly dice?: string;
+  readonly mode?: 'adv' | 'dis';
+  readonly label?: string;
+}
+
 export interface AbilityChoiceGrant {
   readonly type: 'ability-choice';
   readonly key: ChoiceKey;
@@ -376,6 +402,8 @@ export interface SpellChoiceGrant {
 
 export type Grant =
   | AbilityBonusGrant
+  | AbilitySetGrant
+  | RollModifierGrant
   | AbilityChoiceGrant
   | ProficiencyGrant
   | ProficiencyChoiceGrant

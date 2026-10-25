@@ -13,6 +13,7 @@ import type {
   FeatureDef,
   DamageTypeId,
   HitDie,
+  RollModifierGrant,
   SpeedMode,
   SpeedCondition,
   ResourcePoolRegen,
@@ -97,6 +98,9 @@ export interface ResolvedAttack {
   /** 2024 Light-weapon extra attack, made as a Bonus Action. */
   readonly offHand?: boolean;
 }
+
+/** A roll modifier granted by an equipped item or an approved custom modifier. */
+export type ResolvedRollModifier = RollModifierGrant & { readonly source: SourceTag };
 
 export interface ResolvedFeature {
   readonly feature: FeatureDef;
@@ -319,6 +323,8 @@ export interface ResolvedCharacter {
   readonly equipment: readonly ResolvedEquipmentItem[];
   readonly attacks: readonly ResolvedAttack[];
   readonly toolExpertise: readonly ToolProficiencyId[];
+  /** Roll modifiers from equipped items and custom modifiers (see `RollModifierGrant`). */
+  readonly rollModifiers?: readonly ResolvedRollModifier[];
   readonly bardicInspiration: {
     readonly dieSize: 6 | 8 | 10 | 12;
     readonly uses: number;

@@ -266,3 +266,37 @@ describe('availableEffects', () => {
     expect(ids(makeResolved({ features: ['sorcerer-innate-sorcery'] }))).toContain('innate-sorcery');
   });
 });
+
+describe('roll modifiers from items and custom modifiers', () => {
+  const withMods = (rollModifiers: unknown[]) => ({ ...makeResolved(), rollModifiers }) as unknown as ResolvedCharacter;
+  const src = { origin: 'item', id: 'x' };
+
+  it('adds save bonuses, dice and advantage per ability', () => {
+    const r = withMods([
+      { type: 'roll-modifier', target: 'save', bonus: 1, label: 'Cloak', source: src },
+      { type: 'roll-modifier', target: 'save', abilities: ['str'], dice: '+1d4', mode: 'adv', source: src },
+    ]);
+    const fx = applyEffects(r, [], ctx());
+    expect(fx.savingThrows.dex).toMatchObject({ bonus: 3, mode: null, extra: [] });
+    expect(fx.savingThrows.str).toMatchObject({ bonus: 6, mode: 'adv', extra: ['+1d4'] });
+    expect(fx.savingThrows.dex.parts).toEqual([{ type: 'modifier', label: 'Cloak', value: 1 }]);
+  });
+
+  it('adds check bonuses scoped by ability and skill', () => {
+    const r = withMods([{ type: 'roll-modifier', target: 'check', skills: ['stealth'], bonus: 2, source: src }]);
+    const fx = applyEffects(r, [], ctx());
+    expect(fx.checkFor('dex', 'stealth').bonus).toBe(2);
+    expect(fx.checkFor('dex', 'acrobatics').bonus).toBe(0);
+    expect(fx.checkFor('dex').bonus).toBe(0);
+  });
+
+  it('adds attack and weapon damage bonuses', () => {
+    const r = withMods([
+      { type: 'roll-modifier', target: 'attack', bonus: 1, source: src },
+      { type: 'roll-modifier', target: 'damage', bonus: 1, source: src },
+    ]);
+    const [axe] = applyEffects(r, [weapon('greataxe')], ctx()).actions;
+    expect(axe.toHit).toBe(7);
+    expect(axe.damage?.bonus).toBe(4);
+  });
+});

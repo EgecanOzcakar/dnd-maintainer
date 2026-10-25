@@ -78,6 +78,13 @@ describe('rollPreset', () => {
     expect(out.formula).toBe('4d6+3+2d6');
   });
 
+  it('an explicit non-damage kind on a d8 (Superiority Die) never doubles or gains advantage', () => {
+    const out = rollPreset({ die: 8, count: 1, modifier: 0, kind: 'd20' }, { shift: true }, () => 0.99);
+    expect(out.crit).toBe(false);
+    expect(out.mode).toBe('normal');
+    expect(out.rolls).toHaveLength(1);
+  });
+
   it('floors every d20 at min (Reliable Talent)', () => {
     const out = rollPreset({ die: 20, count: 1, modifier: 4, min: 10 }, {}, () => 0);
     expect(out.total).toBe(10 + 4);

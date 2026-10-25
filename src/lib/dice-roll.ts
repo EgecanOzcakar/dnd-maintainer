@@ -83,7 +83,8 @@ export function rollPreset(
   keys: RollKeys = {},
   rng: () => number = Math.random
 ): PresetRollOutput {
-  const isDamage = preset.kind === 'damage' || preset.die !== 20;
+  // An explicit kind wins; otherwise any die but a d20 counts as damage dice.
+  const isDamage = preset.kind ? preset.kind === 'damage' : preset.die !== 20;
   const fromPreset: D20Mode = preset.mode === 'adv' ? 'advantage' : preset.mode === 'dis' ? 'disadvantage' : 'normal';
   const keyMode = Boolean(keys.shift) === Boolean(keys.alt) ? null : keys.shift ? 'advantage' : 'disadvantage';
   const mode: D20Mode = isDamage || preset.die !== 20 ? 'normal' : (keyMode ?? fromPreset);

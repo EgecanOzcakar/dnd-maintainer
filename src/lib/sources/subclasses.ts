@@ -1,7 +1,9 @@
 import type { ClassId } from '@/lib/dnd-helpers';
 import type { SubclassFeature, SubclassSource } from '@/types/sources';
+import type { Grant } from '@/types/grants';
 import { createChoiceKey } from '@/types/choices';
 import { FIGHTING_STYLE_IDS } from '@/lib/dnd-helpers';
+import { MANEUVER_OPTIONS } from '@/lib/sources/maneuvers';
 import { ARTISAN_TOOL_IDS } from '@/lib/sources/tool-groups';
 
 export const SUBCLASS_IDS_BY_CLASS = {
@@ -21,6 +23,14 @@ export const SUBCLASS_IDS_BY_CLASS = {
 
 export type SubclassId = (typeof SUBCLASS_IDS_BY_CLASS)[ClassId][number];
 export const SUBCLASS_IDS: readonly SubclassId[] = Object.values(SUBCLASS_IDS_BY_CLASS).flat() as SubclassId[];
+
+/** Battle Master: learn 3 maneuvers at Fighter level 3, then 2 more at 7, 10 and 15 (9 total). */
+const maneuverPicks = (from: number, count: number): Grant[] =>
+  Array.from({ length: count }, (_, i) => ({
+    type: 'feature-choice' as const,
+    key: createChoiceKey('feature-choice', 'subclass', 'battlemaster', from + i),
+    options: MANEUVER_OPTIONS,
+  }));
 
 export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
   // Barbarian
@@ -759,6 +769,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
               { minLevel: 18, dieSize: 12 },
             ],
           },
+          ...maneuverPicks(0, 3),
           { type: 'feature', feature: { id: 'battlemaster-student-of-war' } },
           {
             type: 'proficiency-choice',
@@ -785,9 +796,21 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           },
         ],
       },
-      { classLevel: 7, grants: [{ type: 'feature', feature: { id: 'battlemaster-know-your-enemy' } }] },
-      { classLevel: 10, grants: [{ type: 'feature', feature: { id: 'battlemaster-improved-combat-superiority' } }] },
-      { classLevel: 15, grants: [{ type: 'feature', feature: { id: 'battlemaster-relentless' } }] },
+      {
+        classLevel: 7,
+        grants: [{ type: 'feature', feature: { id: 'battlemaster-know-your-enemy' } }, ...maneuverPicks(3, 2)],
+      },
+      {
+        classLevel: 10,
+        grants: [
+          { type: 'feature', feature: { id: 'battlemaster-improved-combat-superiority' } },
+          ...maneuverPicks(5, 2),
+        ],
+      },
+      {
+        classLevel: 15,
+        grants: [{ type: 'feature', feature: { id: 'battlemaster-relentless' } }, ...maneuverPicks(7, 2)],
+      },
       // Ultimate Combat Superiority in the 2024 PHB (id kept for stability)
       { classLevel: 18, grants: [{ type: 'feature', feature: { id: 'battlemaster-superior-combat-superiority' } }] },
     ] satisfies readonly SubclassFeature[],

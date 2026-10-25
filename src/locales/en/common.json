@@ -1475,6 +1475,18 @@
     "attack": "Your spell attack {{bonus}}",
     "open": "Details for {{spell}}"
   },
+  "maneuvers": {
+    "title": "Maneuvers",
+    "dice": "Superiority Dice (d{{die}})",
+    "diceName": "Superiority Dice",
+    "saveDC": "Maneuver save DC {{dc}} (8 + proficiency + {{mod}} Strength or Dexterity)",
+    "dc": "DC {{dc}}",
+    "saveBadge": "{{ability}} save DC {{dc}}",
+    "use": "Use",
+    "help": "Spend a Superiority Die and roll it as part of an attack or check. You can use only one maneuver per attack. Rules are summarised from the 2024 Player's Handbook.",
+    "none": "No maneuvers chosen yet. Pick them under Pending Choices.",
+    "relentlessHint": "next use rolls a free d8 (once per turn)"
+  },
   "metamagic": {
     "title": "Metamagic",
     "sorceryPoints": "Sorcery Points",

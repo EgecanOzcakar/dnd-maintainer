@@ -52,6 +52,7 @@ import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
 import { ArcaneRecoveryPanel } from '@/components/character-sheet/ArcaneRecoveryPanel';
 import { ChosenOptionsPanel } from '@/components/character-sheet/ChosenOptionsPanel';
 import { CurrencyPanel } from '@/components/character-sheet/CurrencyPanel';
+import { ManeuversPanel } from '@/components/character-sheet/ManeuversPanel';
 import { MetamagicPanel } from '@/components/character-sheet/MetamagicPanel';
 import { ACTIVE_EFFECTS } from '@/lib/sources/active-effects';
 import { InventoryTab } from '@/components/character-sheet/InventoryTab';
@@ -349,6 +350,7 @@ function CharacterSheetInner({
     const out = roll({
       die: die as DieSize,
       count: 1,
+      kind: 'd20',
       modifier: con,
       contextLabel: `${tc('rollBreakdown.hitDie')} d${die}`,
       breakdown: rollParts([{ type: 'ability', label: 'con', value: con }]),
@@ -663,6 +665,13 @@ function CharacterSheetInner({
                     />
                     <SpellSlotsPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
                     <MetamagicPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
+                    <ManeuversPanel
+                      resolved={resolved}
+                      character={character}
+                      fighterLevel={classLevels.fighter ?? 0}
+                      onUpdate={handleUpdate}
+                      onSelectRollPreset={handleSelectRollPreset}
+                    />
                     {(classLevels.wizard ?? 0) > 0 &&
                       resolved.features.some((f) => f.feature.id === 'wizard-arcane-recovery') && (
                         <ArcaneRecoveryPanel

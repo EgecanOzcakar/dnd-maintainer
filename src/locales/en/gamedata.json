@@ -3748,6 +3748,99 @@
     "cosmic-omen-use": {
       "name": "Cosmic Omen",
       "description": "After each Long Rest, roll a d6: even (Weal) lets you add a d6, odd (Woe) lets you subtract a d6, from a roll made by a creature within 30 feet. One Reaction use; regain on a Long Rest."
+    },
+    "action-surge": {
+      "name": "Action Surge"
+    },
+    "arcane-recovery": {
+      "name": "Arcane Recovery"
+    },
+    "channel-divinity": {
+      "name": "Channel Divinity"
+    },
+    "clockwork-cavalcade": {
+      "name": "Clockwork Cavalcade"
+    },
+    "contact-patron": {
+      "name": "Contact Patron"
+    },
+    "dragon-wings": {
+      "name": "Dragon Wings"
+    },
+    "eldritch-master": {
+      "name": "Eldritch Master"
+    },
+    "favored-enemy": {
+      "name": "Favored Enemy"
+    },
+    "hand-of-ultimate-mercy": {
+      "name": "Hand of Ultimate Mercy"
+    },
+    "hurl-through-hell": {
+      "name": "Hurl Through Hell"
+    },
+    "indomitable": {
+      "name": "Indomitable"
+    },
+    "innate-sorcery": {
+      "name": "Innate Sorcery"
+    },
+    "lay-on-hands": {
+      "name": "Lay on Hands"
+    },
+    "magical-cunning": {
+      "name": "Magical Cunning"
+    },
+    "moonlight-step": {
+      "name": "Moonlight Step"
+    },
+    "rage-of-the-gods": {
+      "name": "Rage of the Gods"
+    },
+    "restore-balance": {
+      "name": "Restore Balance"
+    },
+    "searing-vengeance": {
+      "name": "Searing Vengeance"
+    },
+    "second-wind": {
+      "name": "Second Wind"
+    },
+    "signature-spells": {
+      "name": "Signature Spells"
+    },
+    "sorcerous-restoration": {
+      "name": "Sorcerous Restoration"
+    },
+    "star-map-guiding-bolt": {
+      "name": "Star Map: Guiding Bolt"
+    },
+    "superiority-dice": {
+      "name": "Superiority Dice"
+    },
+    "tides-of-chaos": {
+      "name": "Tides of Chaos"
+    },
+    "trance-of-order": {
+      "name": "Trance of Order"
+    },
+    "uncanny-metabolism": {
+      "name": "Uncanny Metabolism"
+    },
+    "warping-implosion": {
+      "name": "Warping Implosion"
+    },
+    "warrior-of-the-gods": {
+      "name": "Warrior of the Gods"
+    },
+    "wholeness-of-body": {
+      "name": "Wholeness of Body"
+    },
+    "wild-shape": {
+      "name": "Wild Shape"
+    },
+    "zealous-presence": {
+      "name": "Zealous Presence"
     }
   },
   "spells": {

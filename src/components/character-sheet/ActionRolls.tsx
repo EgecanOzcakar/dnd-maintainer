@@ -27,12 +27,15 @@ export function ActionRolls({
   name,
   onSelectRollPreset,
   castLevel,
+  onUse,
 }: {
   readonly action: AdjustedAction;
   readonly name: string;
   readonly onSelectRollPreset?: (preset: RollPreset) => void;
   /** Slot level a leveled spell is cast at; dice grow per level above the spell's own. */
   readonly castLevel?: number;
+  /** Rolling this action's damage or healing spends a use of its resource pool. */
+  readonly onUse?: () => void;
 }) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
@@ -103,7 +106,10 @@ export function ActionRolls({
           className="h-6 px-1.5 font-mono text-emerald-600"
           disabled={!damage.roll.dice.includes('d')}
           title={`${tip(damagePreset)} — ${tc('diceLog.critHint')}`}
-          onClick={() => damagePreset && onSelectRollPreset?.(damagePreset)}
+          onClick={() => {
+            if (damagePreset) onSelectRollPreset?.(damagePreset);
+            onUse?.();
+          }}
         >
           {fmt(damage.roll, damageExtra)}{' '}
           {a.damage.type === 'weapon'
@@ -118,7 +124,10 @@ export function ActionRolls({
           className="h-6 px-1.5 font-mono text-sky-600"
           disabled={!heal.roll.dice.includes('d')}
           title={tip(healPreset)}
-          onClick={() => healPreset && onSelectRollPreset?.(healPreset)}
+          onClick={() => {
+            if (healPreset) onSelectRollPreset?.(healPreset);
+            onUse?.();
+          }}
         >
           {tc('characterSheet.combatView.actions.heal', { roll: fmt(heal.roll, heal.extra) })}
         </Button>

@@ -32,7 +32,7 @@ import { ConfirmActionDialog, type ConfirmAction } from '@/components/character-
 import { EditHeaderDialog } from '@/components/character-sheet/edit-dialogs/EditHeaderDialog';
 import { EditPersonalityDialog } from '@/components/character-sheet/edit-dialogs/EditPersonalityDialog';
 import { EditTextDialog } from '@/components/character-sheet/edit-dialogs/EditTextDialog';
-import { buildRestUpdate } from '@/lib/rest';
+import { buildRestUpdate, getSpellSlotMax } from '@/lib/rest';
 import { exportCharacterPdf, PdfTemplateError } from '@/lib/pdf-export';
 import { collectFeatSources } from '@/lib/pdf-field-map';
 import { useCharacter, useCharacterMutations } from '@/hooks/useCharacters';
@@ -49,15 +49,28 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useBuilderAutosave } from '@/hooks/useBuilderAutosave';
 import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
+import { ArcaneRecoveryPanel } from '@/components/character-sheet/ArcaneRecoveryPanel';
+import { ChosenOptionsPanel } from '@/components/character-sheet/ChosenOptionsPanel';
+import { CurrencyPanel } from '@/components/character-sheet/CurrencyPanel';
+import { MetamagicPanel } from '@/components/character-sheet/MetamagicPanel';
+import { ACTIVE_EFFECTS } from '@/lib/sources/active-effects';
 import { InventoryTab } from '@/components/character-sheet/InventoryTab';
 import { DiceRoller, type DieSize } from '@/components/character-sheet/DiceRoller';
 import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { checkRollMods, saveRollMods } from '@/lib/roll-mods';
-import { applyCast, concentrationDC, endConcentration, getConcentration, spendSlot } from '@/lib/spell-casting';
+import {
+  CONCENTRATION_BREAKERS,
+  applyCast,
+  castOptions,
+  concentrationDC,
+  endConcentration,
+  getConcentration,
+  spendSlot,
+} from '@/lib/spell-casting';
 import { getSpellDef } from '@/lib/sources/spells';
 import { useRoller } from '@/hooks/useRoller';
 import type { RollKeys } from '@/lib/dice-roll';
-import { Dices, X } from 'lucide-react';
+import { Dices, Star, X } from 'lucide-react';
 
 import { supabase } from '@/lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
@@ -243,6 +256,18 @@ function CharacterSheetInner({
     if (replaced) toast(tc('spellCasting.replacedConcentration', { spell: spellLabel(replaced) }));
   };
 
+  // Gaining an incapacitating condition ends concentration.
+  const handleConditionsUpdate = (updates: Partial<Character>) => {
+    const gained = (updates.conditions ?? []).some(
+      (c) => CONCENTRATION_BREAKERS.has(c) && !(character.conditions ?? []).includes(c)
+    );
+    if (gained && concentratingOn) {
+      toast(tc('spellCasting.replacedConcentration', { spell: spellLabel(concentratingOn) }));
+      return handleUpdate({ ...updates, active_effects: endConcentration(character.active_effects) });
+    }
+    handleUpdate(updates);
+  };
+
   // Damage while concentrating prompts a CON save; dropping to 0 HP ends concentration outright.
   const handleHpUpdate = (updates: Partial<Character>) => {
     if (concentratingOn && maxHP != null && 'current_hp' in updates) {
@@ -280,6 +305,43 @@ function CharacterSheetInner({
     handleUpdate(updates);
   };
 
+  // Limited-use feature pools (rage, channel divinity, ...): uses spent, reset by rests.
+  const poolMax = Object.fromEntries((resolved?.resourcePools ?? []).map((p) => [p.poolId, p.max]));
+  const handleSetPoolUsed = (poolId: string, used: number) =>
+    handleUpdate({
+      resource_pools_used: {
+        ...character.resource_pools_used,
+        [poolId]: Math.max(0, Math.min(poolMax[poolId] ?? used, used)),
+      },
+    });
+
+  // Switching on an effect that costs a feature use (Rage) spends it; with none left it stays off.
+  const handleEffectsChange = (next: string[]) => {
+    const current = character.active_effects ?? [];
+    const costly = ACTIVE_EFFECTS.find((e) => e.poolId && next.includes(e.id) && !current.includes(e.id));
+    if (costly?.poolId && poolMax[costly.poolId] !== undefined) {
+      const used = character.resource_pools_used?.[costly.poolId] ?? 0;
+      if (used >= poolMax[costly.poolId]) return void toast.error(tc('noFeatureUses'));
+      handleUpdate({
+        active_effects: next,
+        resource_pools_used: { ...character.resource_pools_used, [costly.poolId]: used + 1 },
+      });
+      return;
+    }
+    handleUpdate({ active_effects: next });
+  };
+
+  const handleSpendSlot = (slotKey: string) =>
+    handleUpdate({ spell_slots_used: spendSlot(character.spell_slots_used ?? {}, slotKey) });
+  const levelOneSlots = resolved
+    ? castOptions(
+        getSpellSlotMax(resolved),
+        character.spell_slots_used ?? {},
+        resolved.spellcasting?.pactMagic?.slotLevel ?? null,
+        1
+      )
+    : [];
+
   // Spending a hit die rolls it plus CON and heals that much (min 0).
   const handleHitDieRoll = (die: number) => {
     if (!resolved || maxHP == null) return;
@@ -314,7 +376,13 @@ function CharacterSheetInner({
 
   const handleLongRest = () => {
     if (!resolved) return;
-    handleUpdate({ ...buildRestUpdate('long', character, resolved), ...longRestHpUpdate(), active_effects: [] });
+    handleUpdate({
+      ...buildRestUpdate('long', character, resolved),
+      ...longRestHpUpdate(),
+      active_effects: [],
+      // Human Resourceful: Heroic Inspiration after every Long Rest.
+      ...(resolved.features.some((f) => f.feature.id === 'human-resourceful') ? { heroic_inspiration: true } : {}),
+    });
   };
 
   const handleArchive = () => {
@@ -498,12 +566,15 @@ function CharacterSheetInner({
         </div>
 
         {activeTab === 'inventory' ? (
-          <InventoryTab
-            characterId={character.id}
-            campaignId={character.campaign_id}
-            itemsData={itemsData}
-            armorProficiencies={resolved?.armorProficiencies}
-          />
+          <>
+            <CurrencyPanel currency={character.currency} onChange={(currency) => handleUpdate({ currency })} />
+            <InventoryTab
+              characterId={character.id}
+              campaignId={character.campaign_id}
+              itemsData={itemsData}
+              armorProficiencies={resolved?.armorProficiencies}
+            />
+          </>
         ) : (
           <>
             <p className="text-xs text-muted-foreground mb-2">{tc('diceLog.hint')}</p>
@@ -552,14 +623,14 @@ function CharacterSheetInner({
                   buildError={buildError}
                 />
 
-                <ConditionsPanel character={character} onUpdate={handleUpdate} />
+                <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
 
                 {resolved && applied && (
                   <ActiveEffectsPanel
                     resolved={resolved}
                     active={character.active_effects ?? []}
                     applied={applied}
-                    onChange={(active_effects) => handleUpdate({ active_effects })}
+                    onChange={handleEffectsChange}
                   />
                 )}
 
@@ -572,6 +643,16 @@ function CharacterSheetInner({
                       <Button variant="outline" size="sm" className="flex-1" onClick={handleLongRest}>
                         {tc('characterSheet.actions.longRest')}
                       </Button>
+                      <Button
+                        variant={character.heroic_inspiration ? 'default' : 'outline'}
+                        size="sm"
+                        aria-pressed={character.heroic_inspiration}
+                        title={tc('inspiration.hint')}
+                        onClick={() => handleUpdate({ heroic_inspiration: !character.heroic_inspiration })}
+                      >
+                        <Star className="size-3.5" />
+                        {tc('inspiration.label')}
+                      </Button>
                     </div>
                     <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleHpUpdate} />
                     <HitDicePanel
@@ -581,6 +662,23 @@ function CharacterSheetInner({
                       onRoll={handleHitDieRoll}
                     />
                     <SpellSlotsPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
+                    <MetamagicPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
+                    {(classLevels.wizard ?? 0) > 0 &&
+                      resolved.features.some((f) => f.feature.id === 'wizard-arcane-recovery') && (
+                        <ArcaneRecoveryPanel
+                          wizardLevel={classLevels.wizard ?? 0}
+                          character={character}
+                          onUpdate={handleUpdate}
+                        />
+                      )}
+                    <ChosenOptionsPanel
+                      title={tc('invocations.title')}
+                      help={tc('invocations.help')}
+                      features={resolved.features.filter(
+                        (f) =>
+                          f.feature.id.startsWith('warlock-invocation-') || f.feature.id.startsWith('warlock-pact-of-')
+                      )}
+                    />
                   </>
                 )}
 
@@ -592,10 +690,20 @@ function CharacterSheetInner({
                     attacksPerAction={resolvedActions.attacksPerAction}
                     resolved={resolved}
                     onSelectRollPreset={handleSelectRollPreset}
+                    poolsUsed={character.resource_pools_used}
+                    onSetPoolUsed={handleSetPoolUsed}
+                    slotOptions={levelOneSlots}
+                    onSpendSlot={handleSpendSlot}
                   />
                 )}
                 {resolved && <ProficienciesPanel resolved={resolved} />}
-                {resolved && <ResourcePoolsPanel resolved={resolved} />}
+                {resolved && (
+                  <ResourcePoolsPanel
+                    resolved={resolved}
+                    used={character.resource_pools_used}
+                    onSetUsed={handleSetPoolUsed}
+                  />
+                )}
                 {resolved?.features && resolved.features.length > 0 && <FeaturesPanel features={resolved.features} />}
               </div>
 

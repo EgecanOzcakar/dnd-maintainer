@@ -79,6 +79,23 @@ describe('CombatPanel', () => {
       expect(screen.getByText('12')).toBeDefined();
     });
 
+    it('also shows passive Investigation and Insight when the skills exist', () => {
+      const skill = (bonus: number) => ({
+        ability: 'int',
+        proficient: false,
+        expertise: false,
+        bonus,
+        breakdown: [],
+        sources: [],
+      });
+      const resolved = buildMinimalResolved({
+        skills: { perception: skill(0), investigation: skill(3), insight: skill(-1) } as never,
+      });
+      render(<CombatPanel {...BASE_PROPS} resolved={resolved} passivePerception={10} />);
+      expect(screen.getByText('13')).toBeDefined(); // 10 + 3
+      expect(screen.getByText('9')).toBeDefined(); // 10 - 1
+    });
+
     it('renders passive perception of 10 when bonus is 0', () => {
       const resolved = buildMinimalResolved({
         skills: {

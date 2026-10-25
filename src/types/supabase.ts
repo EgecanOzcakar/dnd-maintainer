@@ -221,6 +221,8 @@ export type Database = {
           current_hp: number | null
           death_saves: Json
           hit_dice_used: Json
+          resource_pools_used: Json
+          currency: Json
           hit_points_max: number | null
           temp_hp: number
           id: string
@@ -272,6 +274,8 @@ export type Database = {
           current_hp?: number | null
           death_saves?: Json
           hit_dice_used?: Json
+          resource_pools_used?: Json
+          currency?: Json
           hit_points_max?: number | null
           temp_hp?: number
           id?: string
@@ -323,6 +327,8 @@ export type Database = {
           current_hp?: number | null
           death_saves?: Json
           hit_dice_used?: Json
+          resource_pools_used?: Json
+          currency?: Json
           hit_points_max?: number | null
           temp_hp?: number
           id?: string

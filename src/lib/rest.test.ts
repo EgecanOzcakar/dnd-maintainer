@@ -7,7 +7,10 @@ import {
   recoverSpellSlot,
   applyShortRest,
   applyLongRest,
+  applyPoolRest,
   buildRestUpdate,
+  poolRemaining,
+  spendPool,
   type HitDiceUsed,
   type SpellSlotsUsed,
   type RestUsed,
@@ -491,5 +494,62 @@ describe('buildRestUpdate', () => {
     const result = buildRestUpdate('long', character, resolved);
     expect(result.hit_dice_used).toEqual({});
     expect(result.spell_slots_used).toEqual({});
+  });
+});
+
+describe('resource pools', () => {
+  const pool = (poolId: string, regen: ResolvedCharacter['resourcePools'][number]['regen']) => ({
+    poolId,
+    max: 4,
+    regen,
+    source: { origin: 'class', id: 'fighter' } as never,
+  });
+  const resolved = makeResolved({
+    resourcePools: [
+      pool('second-wind', 'short-rest'),
+      pool('rage', 'long-rest'),
+      pool('psionic', { mode: 'compound', shortRestAmount: 1 }),
+    ],
+  });
+  const used = { 'second-wind': 1, rage: 2, psionic: 3 };
+
+  it('spends and restores within 0..max', () => {
+    expect(spendPool({}, 'rage', 3)).toEqual({ rage: 1 });
+    expect(spendPool({ rage: 3 }, 'rage', 3)).toEqual({ rage: 3 });
+    expect(spendPool({ rage: 1 }, 'rage', 3, -5)).toEqual({ rage: 0 });
+    expect(poolRemaining({ rage: 1 }, 'rage', 3)).toBe(2);
+    expect(poolRemaining({ rage: 9 }, 'rage', 3)).toBe(0);
+  });
+
+  it('short rest refills short-rest pools and partly refills compound pools', () => {
+    expect(applyPoolRest(used, resolved, 'short')).toEqual({ rage: 2, psionic: 2 });
+  });
+
+  it('Sorcerous Restoration refills half your level in Sorcery Points once per long rest', () => {
+    const sorc = makeResolved({
+      resourcePools: [
+        { poolId: 'sorcery-points', max: 8, regen: 'long-rest', source: { origin: 'class', id: 'sorcerer' } as never },
+        {
+          poolId: 'sorcerous-restoration',
+          max: 1,
+          regen: 'long-rest',
+          source: { origin: 'class', id: 'sorcerer' } as never,
+        },
+      ],
+    });
+    const first = applyPoolRest({ 'sorcery-points': 7 }, sorc, 'short');
+    expect(first).toEqual({ 'sorcery-points': 3, 'sorcerous-restoration': 1 });
+    expect(applyPoolRest(first, sorc, 'short')).toEqual(first);
+    // nothing spent: the daily use is kept
+    expect(applyPoolRest({}, sorc, 'short')).toEqual({});
+  });
+
+  it('long rest refills everything', () => {
+    expect(applyPoolRest(used, resolved, 'long')).toEqual({});
+  });
+
+  it('buildRestUpdate includes the pools column', () => {
+    const r = buildRestUpdate('long', { hit_dice_used: {}, spell_slots_used: {}, resource_pools_used: used }, resolved);
+    expect(r.resource_pools_used).toEqual({});
   });
 });

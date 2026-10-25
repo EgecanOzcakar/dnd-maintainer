@@ -49,6 +49,8 @@ export interface ResolvedAction {
   readonly upcast?: string;
   readonly spellLevel?: SpellLevel;
   readonly poolId?: string;
+  /** Rolling it spends a spell slot of up to this level (Divine Smite). */
+  readonly spendsSlot?: { readonly maxSlotLevel: number };
   readonly offHand?: boolean;
   /** Two-handed damage dice for a Versatile weapon. */
   readonly versatileDice?: DamageDice;
@@ -158,6 +160,10 @@ export function resolveActions(
       if (!def || !mech) continue;
       const ability = spellcasting.spellAbilityOverrides[spellId] ?? spellcasting.ability;
       const mod = ability ? abilities[ability].modifier : 0;
+      // Agonizing Blast: the spellcasting modifier is added to every Eldritch Blast beam (one per damage die).
+      const agonizing =
+        spellId === 'eldritch-blast' &&
+        resolved.features.some((f) => f.feature.id === 'warlock-invocation-agonizing-blast');
       const damageDice = mech.damage
         ? mech.damage.cantripScaling
           ? cantripDice(mech.damage.dice, characterLevel)
@@ -179,10 +185,13 @@ export function resolveActions(
               ],
             }
           : {}),
-        ...(mech.damage && (mech.damage.addMod || mech.damage.flat)
+        ...(mech.damage && (mech.damage.addMod || mech.damage.flat || agonizing)
           ? {
               damageParts: [
                 ...(mech.damage.addMod && ability ? [{ type: 'ability', label: ability, value: mod }] : []),
+                ...(agonizing && ability && damageDice
+                  ? [{ type: 'ability', label: ability, value: mod * Number(damageDice.split('d')[0]) }]
+                  : []),
                 ...(mech.damage.flat ? [{ type: 'flat', label: 'flat', value: mech.damage.flat }] : []),
               ],
             }
@@ -192,7 +201,10 @@ export function resolveActions(
           ? {
               damage: {
                 dice: damageDice,
-                bonus: (mech.damage.addMod ? mod : 0) + (mech.damage.flat ?? 0),
+                bonus:
+                  (mech.damage.addMod ? mod : 0) +
+                  (mech.damage.flat ?? 0) +
+                  (agonizing ? mod * Number(damageDice.split('d')[0]) : 0),
                 type: mech.damage.type,
               },
             }
@@ -258,6 +270,13 @@ export function resolveActions(
       ...(meta.damage && damageRoll ? { damage: { ...damageRoll, type: meta.damage.type } } : {}),
       ...(healRoll ? { heal: healRoll } : {}),
       ...(meta.poolId ? { poolId: meta.poolId } : {}),
+      ...(meta.spendsSlot
+        ? {
+            spellLevel: 1 as SpellLevel,
+            upcast: meta.spendsSlot.perSlot,
+            spendsSlot: { maxSlotLevel: meta.spendsSlot.maxSlotLevel },
+          }
+        : {}),
     });
   }
 

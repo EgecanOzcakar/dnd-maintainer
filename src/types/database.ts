@@ -94,12 +94,18 @@ export interface Character {
   /** Toggled active-effect ids (see `src/lib/sources/active-effects.ts`). */
   active_effects?: string[];
   hit_dice_used: Record<string, number> | null;
+  /** Uses spent per resource pool id (see `resolved.resourcePools`). */
+  resource_pools_used?: Record<string, number>;
+  currency?: Currency;
   /** null = at max HP */
   current_hp?: number | null;
   temp_hp?: number;
   death_saves?: { successes: number; failures: number };
   spell_slots_used: Record<string, number> | null;
 }
+
+export type CurrencyKey = 'cp' | 'sp' | 'ep' | 'gp' | 'pp';
+export type Currency = Record<CurrencyKey, number>;
 
 // Combat participant
 export interface Combatant {

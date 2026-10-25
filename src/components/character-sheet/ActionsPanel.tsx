@@ -8,6 +8,9 @@ import { HomebrewDialog } from '@/components/character-sheet/HomebrewDialog';
 import type { HomebrewAction } from '@/lib/homebrew';
 import { getItemNameKey } from '@/lib/sources/items';
 import { isSpellId } from '@/lib/sources/spells';
+import { SlotAction } from '@/components/character-sheet/SlotAction';
+import type { SlotOption } from '@/lib/spell-casting';
+import { PoolPips } from '@/components/character-sheet/PoolPips';
 import { ActionRolls } from '@/components/character-sheet/ActionRolls';
 import type { ResolvedAction } from '@/lib/resolver/actions';
 import type { AdjustedAction } from '@/lib/resolver/effects';
@@ -47,6 +50,12 @@ interface ActionsPanelProps {
   /** Custom entries behind the homebrew rows; with `onChangeHomebrew`, enables add/edit/delete. */
   readonly homebrew?: readonly HomebrewAction[];
   readonly onChangeHomebrew?: (next: HomebrewAction[]) => void;
+  /** Uses spent per resource pool; with `onSetPoolUsed`, pool actions get use pips and a Use button. */
+  readonly poolsUsed?: Readonly<Record<string, number>>;
+  readonly onSetPoolUsed?: (poolId: string, used: number) => void;
+  /** Spell slots a slot-spending action (Divine Smite) can use, and how to spend one. */
+  readonly slotOptions?: readonly SlotOption[];
+  readonly onSpendSlot?: (slotKey: string) => void;
 }
 
 export function ActionsPanel({
@@ -56,6 +65,10 @@ export function ActionsPanel({
   onSelectRollPreset,
   homebrew = [],
   onChangeHomebrew,
+  poolsUsed = {},
+  onSetPoolUsed,
+  slotOptions = [],
+  onSpendSlot,
 }: ActionsPanelProps) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
@@ -113,6 +126,11 @@ export function ActionsPanel({
         {visible.map((a) => {
           const name = nameOf(a);
           const uses = a.poolId ? poolMax.get(a.poolId) : undefined;
+          const spent = a.poolId ? (poolsUsed[a.poolId] ?? 0) : 0;
+          const track = a.poolId && uses !== undefined && onSetPoolUsed ? a.poolId : null;
+          const spend = track ? () => onSetPoolUsed?.(track, Math.min(uses ?? 0, spent + 1)) : undefined;
+          // Actions that roll spend a use when rolled; the rest get a Use button.
+          const rolls = Boolean(a.damage?.dice.includes('d') || a.heal?.dice.includes('d'));
           return (
             <li key={a.key} className="py-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="font-medium text-foreground mr-auto">
@@ -124,19 +142,48 @@ export function ActionsPanel({
               <Badge variant="outline" className="text-[10px] py-0">
                 {tc(`characterSheet.combatView.actions.activation.${a.activation}`)}
               </Badge>
-              {a.spellLevel !== undefined && (
+              {a.spellLevel !== undefined && !a.spendsSlot && (
                 <Badge variant="secondary" className="text-[10px] py-0">
                   {a.spellLevel === 0
                     ? tc('characterSheet.combatView.actions.cantrip')
                     : tc('characterSheet.combatView.actions.spellLevel', { level: a.spellLevel })}
                 </Badge>
               )}
-              {uses !== undefined && (
-                <span className="text-muted-foreground">
-                  {tc('characterSheet.combatView.actions.uses', { count: uses })}
-                </span>
+              {uses !== undefined &&
+                (track ? (
+                  <PoolPips name={name} max={uses} used={spent} onSetUsed={(n) => onSetPoolUsed?.(track, n)} />
+                ) : (
+                  <span className="text-muted-foreground">
+                    {tc('characterSheet.combatView.actions.uses', { count: uses })}
+                  </span>
+                ))}
+              {track && !rolls && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 px-2 text-[11px]"
+                  disabled={spent >= (uses ?? 0)}
+                  onClick={spend}
+                >
+                  {tc('characterSheet.combatView.actions.use')}
+                </Button>
               )}
-              <ActionRolls action={a} name={name} onSelectRollPreset={onSelectRollPreset} />
+              {a.spendsSlot && onSpendSlot ? (
+                <SlotAction
+                  action={a}
+                  name={name}
+                  options={slotOptions}
+                  onSpendSlot={onSpendSlot}
+                  onSelectRollPreset={onSelectRollPreset}
+                />
+              ) : (
+                <ActionRolls
+                  action={a}
+                  name={name}
+                  onSelectRollPreset={onSelectRollPreset}
+                  onUse={rolls ? spend : undefined}
+                />
+              )}
               {a.usesPerRest && (
                 <span className="text-muted-foreground">
                   {tc('homebrew.usesPerRest', {

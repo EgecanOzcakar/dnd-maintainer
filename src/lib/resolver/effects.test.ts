@@ -220,11 +220,49 @@ describe('applyEffects', () => {
   });
 });
 
+describe('innate sorcery', () => {
+  const sorcerer = makeResolved({ features: ['sorcerer-innate-sorcery'] });
+  const spellAttack: ResolvedAction = {
+    key: 'spell:fire-bolt',
+    kind: 'spell',
+    refId: 'fire-bolt',
+    activation: 'action',
+    isAttack: true,
+    toHit: 6,
+    damage: { dice: '1d10', bonus: 0, type: 'fire' },
+  };
+  const saveSpell: ResolvedAction = {
+    key: 'spell:fireball',
+    kind: 'spell',
+    refId: 'fireball',
+    activation: 'action',
+    isAttack: false,
+    save: { ability: 'dex', dc: 14 },
+  };
+
+  it('gives spell attacks advantage and raises spell save DCs by 1, not weapon attacks', () => {
+    const r = applyEffects(
+      sorcerer,
+      [spellAttack, saveSpell, weapon('longbow')],
+      ctx({ activeEffects: ['innate-sorcery'] })
+    );
+    expect(r.actions[0].mode).toBe('adv');
+    expect(r.actions[1].save?.dc).toBe(15);
+    expect(r.actions[2].mode).toBeNull();
+  });
+
+  it('does nothing while off', () => {
+    const r = applyEffects(sorcerer, [saveSpell], ctx());
+    expect(r.actions[0].save?.dc).toBe(14);
+  });
+});
+
 describe('availableEffects', () => {
   it('offers always-on effects plus those backed by features and spells', () => {
     const ids = (r: ResolvedCharacter) => availableEffects(r).map((e) => e.id);
     expect(ids(makeResolved())).toEqual(['dodge', 'invisible']);
     expect(ids(RAGER)).toEqual(['rage', 'dodge', 'reckless-attack', 'invisible']);
     expect(ids(makeResolved({ spells: ['bless'] }))).toContain('bless');
+    expect(ids(makeResolved({ features: ['sorcerer-innate-sorcery'] }))).toContain('innate-sorcery');
   });
 });

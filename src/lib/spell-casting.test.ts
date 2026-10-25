@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
+  CONCENTRATION_BREAKERS,
   applyCast,
   castOptions,
   concentrationDC,
@@ -48,5 +49,12 @@ describe('castOptions / spendSlot', () => {
   it('spends one use', () => {
     expect(spendSlot({ '1': 1 }, '1')).toEqual({ '1': 2 });
     expect(spendSlot({}, 'pact')).toEqual({ pact: 1 });
+  });
+});
+
+describe('CONCENTRATION_BREAKERS', () => {
+  it('lists the conditions that include Incapacitated', () => {
+    expect(['stunned', 'unconscious', 'paralyzed'].every((c) => CONCENTRATION_BREAKERS.has(c))).toBe(true);
+    expect(CONCENTRATION_BREAKERS.has('prone')).toBe(false);
   });
 });

@@ -4,7 +4,7 @@ import type { AbilityKey } from '@/types/database';
 export type EffectRequirement = { readonly feature: string } | { readonly spell: string } | 'always';
 
 /** Which attack actions an effect touches. */
-export type AttackFilter = 'all' | 'str-melee';
+export type AttackFilter = 'all' | 'str-melee' | 'spell';
 
 export interface EffectMods {
   readonly acBonus?: number;
@@ -17,6 +17,8 @@ export interface EffectMods {
   readonly rageDamage?: boolean;
   readonly resistances?: readonly string[];
   readonly attackAdvantage?: AttackFilter;
+  /** Added to the save DC of spells (Innate Sorcery). */
+  readonly spellDcBonus?: number;
   /** Attack rolls made against the character have disadvantage. */
   readonly attacksAgainstDisadvantage?: boolean;
   readonly saveAdvantage?: readonly AbilityKey[];
@@ -29,6 +31,8 @@ export interface EffectMods {
 
 export interface ActiveEffectDef {
   readonly id: string;
+  /** Resource pool that one use is spent from when the effect is switched on (Rage). */
+  readonly poolId?: string;
   readonly requires: EffectRequirement;
   readonly mods: EffectMods;
 }
@@ -36,6 +40,7 @@ export interface ActiveEffectDef {
 export const ACTIVE_EFFECTS: readonly ActiveEffectDef[] = [
   {
     id: 'rage',
+    poolId: 'rage',
     requires: { feature: 'barbarian-rage' },
     mods: {
       rageDamage: true,
@@ -59,6 +64,12 @@ export const ACTIVE_EFFECTS: readonly ActiveEffectDef[] = [
     mods: { damageDie: { dice: '+1d6', filter: 'weapon' } },
   },
   { id: 'hex', requires: { spell: 'hex' }, mods: { damageDie: { dice: '+1d6', filter: 'attack' } } },
+  {
+    id: 'innate-sorcery',
+    poolId: 'innate-sorcery',
+    requires: { feature: 'sorcerer-innate-sorcery' },
+    mods: { spellDcBonus: 1, attackAdvantage: 'spell' },
+  },
   { id: 'dodge', requires: 'always', mods: { attacksAgainstDisadvantage: true, saveAdvantage: ['dex'] } },
   { id: 'reckless-attack', requires: { feature: 'barbarian-reckless-attack' }, mods: { attackAdvantage: 'str-melee' } },
   { id: 'mage-armor', requires: { spell: 'mage-armor' }, mods: { unarmoredBase13: true } },

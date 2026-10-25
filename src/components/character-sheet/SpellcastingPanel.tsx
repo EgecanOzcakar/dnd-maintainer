@@ -3,12 +3,15 @@ import { getSpellDisplayMeta } from '@/lib/spell-display';
 import type { ResolvedCharacter } from '@/types/resolved';
 import type { AbilityKey } from '@/lib/dnd-helpers';
 import type { RollPreset } from '@/components/character-sheet/roll-preset';
+import { SlotSelect } from '@/components/character-sheet/SlotSelect';
+import { SpellDrawer } from '@/components/character-sheet/SpellDrawer';
 import { ActionRolls } from '@/components/character-sheet/ActionRolls';
 import type { AdjustedAction } from '@/lib/resolver/effects';
 import { getSpellSlotMax } from '@/lib/rest';
 import { castOptions, type SlotOption } from '@/lib/spell-casting';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { SpellPreparationDialog } from '@/components/character-sheet/SpellPreparationDialog';
 import { canPrepareSpells, getEffectivePrepared, getPreparationPool } from '@/lib/spell-preparation';
 import { ChevronDown, ChevronRight, AlertTriangle, Sparkles } from 'lucide-react';
@@ -130,9 +133,13 @@ function SpellItemRow({
   concentrating,
   onSelectRollPreset,
   onCast,
+  saveDC,
+  attackBonus,
 }: {
   id: string;
   level?: number;
+  saveDC?: number | null;
+  attackBonus?: number | null;
   school?: string;
   /** When set, this spell uses a different ability than the dominant spellcasting stat. */
   abilityOverride?: AbilityKey;
@@ -147,12 +154,11 @@ function SpellItemRow({
 }) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
-  const [expanded, setExpanded] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [castKey, setCastKey] = useState<string | null>(null);
 
   const def = isSpellId(id) ? getSpellDef(id) : null;
   const spellName = isSpellId(id) ? t(`spells.${id}.name`) : id;
-  const description = isSpellId(id) ? t(`spells.${id}.description`, { defaultValue: '' }) : '';
   const baseLevel = def?.level ?? level ?? 0;
   const chosen = slotOptions.find((o) => o.key === castKey) ?? slotOptions[0];
 
@@ -165,19 +171,10 @@ function SpellItemRow({
       <div className="w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 hover:bg-muted/40 transition-colors">
         <button
           type="button"
-          onClick={() => setExpanded((p) => !p)}
+          onClick={() => setDrawerOpen(true)}
+          title={tc('spellDrawer.open', { spell: spellName })}
           className="flex items-center gap-1.5 flex-1 min-w-0 text-left"
         >
-          {description ? (
-            expanded ? (
-              <ChevronDown className="size-3 text-muted-foreground shrink-0" />
-            ) : (
-              <ChevronRight className="size-3 text-muted-foreground shrink-0" />
-            )
-          ) : (
-            <span className="size-3 shrink-0 text-muted-foreground">&bull;</span>
-          )}
-
           <span className="text-sm font-semibold text-foreground truncate">{spellName}</span>
 
           {displaySchool && (
@@ -219,22 +216,12 @@ function SpellItemRow({
           )}
           {onCast && (baseLevel > 0 || def?.concentration) && (
             <span className="ml-auto flex items-center gap-1">
-              {slotOptions.length > 1 && (
-                <select
-                  aria-label={tc('spellCasting.slotLevel', { spell: spellName })}
-                  value={chosen?.key}
-                  onChange={(e) => setCastKey(e.target.value)}
-                  className="h-6 rounded border bg-background px-1 text-[11px]"
-                >
-                  {slotOptions.map((o) => (
-                    <option key={o.key} value={o.key}>
-                      {tc(o.key === 'pact' ? 'spellCasting.pactOption' : 'spellCasting.levelOption', {
-                        level: o.level,
-                      })}
-                    </option>
-                  ))}
-                </select>
-              )}
+              <SlotSelect
+                options={slotOptions}
+                value={chosen?.key}
+                onChange={setCastKey}
+                label={tc('spellCasting.slotLevel', { spell: spellName })}
+              />
               <Button
                 type="button"
                 size="sm"
@@ -251,32 +238,13 @@ function SpellItemRow({
         </div>
       )}
 
-      {expanded && description && (
-        <div className="px-3 py-2 text-xs border-t border-border/50 bg-muted/20 space-y-1.5">
-          <p className="text-muted-foreground leading-relaxed">{highlightText(description)}</p>
-          {def && (
-            <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground/80 font-mono pt-1 border-t border-border/30">
-              <span>
-                <strong className="text-foreground/80 font-sans">{tc('spellcastingPanel.range')}</strong> {def.range}
-              </span>
-              <span>
-                <strong className="text-foreground/80 font-sans">{tc('spellcastingPanel.duration')}</strong>{' '}
-                {def.duration}
-              </span>
-              {def.concentration && (
-                <span className="text-amber-600 dark:text-amber-400 font-sans font-semibold">
-                  {tc('spellcastingPanel.concentration')}
-                </span>
-              )}
-              {def.ritual && (
-                <span className="text-purple-600 dark:text-purple-400 font-sans font-semibold">
-                  {tc('spellcastingPanel.ritual')}
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+      <SpellDrawer
+        spellId={id}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        saveDC={saveDC}
+        attackBonus={attackBonus}
+      />
     </div>
   );
 }
@@ -387,6 +355,7 @@ export function SpellcastingPanel({
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
   const [prepDialogOpen, setPrepDialogOpen] = useState(false);
+  const [query, setQuery] = useState('');
   const prepSc = spellcasting && canPrepareSpells(spellcasting) ? spellcasting : null;
   const prepared = prepSc ? getEffectivePrepared(preparedSpells, prepSc) : [];
 
@@ -402,6 +371,8 @@ export function SpellcastingPanel({
       getSpellDef(id)?.level ?? 0
     ),
     concentrating: concentratingOn === id,
+    saveDC: spellcasting?.spellSaveDC,
+    attackBonus: spellcasting?.spellAttackBonus,
     onSelectRollPreset,
     onCast,
   });
@@ -416,6 +387,11 @@ export function SpellcastingPanel({
       group.push(spellId);
       return { ...acc, [spellLevel]: group };
     }, {}) ?? {};
+  const needle = query.trim().toLowerCase();
+  const matches = (id: string) =>
+    !needle || (isSpellId(id) ? t(`spells.${id}.name`) : id).toLowerCase().includes(needle);
+  const spellTotal =
+    listedSpells.length + (spellcasting?.cantrips.length ?? 0) + (spellcasting?.alwaysPreparedSpells.length ?? 0);
   const sortedLevels = Object.keys(spellsByLevel)
     .map(Number)
     .sort((a, b) => a - b);
@@ -667,6 +643,16 @@ export function SpellcastingPanel({
           </div>
         )}
 
+        {spellTotal > 7 && (
+          <Input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={tc('spellCasting.search')}
+            aria-label={tc('spellCasting.search')}
+          />
+        )}
+
         {spellcasting && spellcasting.knownSpells.length > 0 && (
           <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
             {tc('characterSheet.sections.knownSpells')}
@@ -677,7 +663,7 @@ export function SpellcastingPanel({
           <div>
             <div className="text-xs font-bold text-muted-foreground mb-2">{cantripsHeader}</div>
             <div className="space-y-1">
-              {spellcasting.cantrips.map((id) => (
+              {spellcasting.cantrips.filter(matches).map((id) => (
                 <SpellItemRow key={id} {...rowProps(id)} />
               ))}
             </div>
@@ -690,7 +676,7 @@ export function SpellcastingPanel({
               {tc('characterSheet.sections.alwaysPrepared')}
             </div>
             <div className="space-y-1">
-              {spellcasting.alwaysPreparedSpells.map((id) => (
+              {spellcasting.alwaysPreparedSpells.filter(matches).map((id) => (
                 <SpellItemRow key={id} {...rowProps(id)} />
               ))}
             </div>
@@ -699,7 +685,7 @@ export function SpellcastingPanel({
 
         {spellcasting &&
           sortedLevels.map((lvl) => {
-            const ids = spellsByLevel[lvl];
+            const ids = spellsByLevel[lvl]?.filter(matches);
             if (!ids || ids.length === 0) return null;
 
             const targetCount = spellcasting.spellsKnown.find((sk) => sk.spellLevel === lvl)?.count;
@@ -707,7 +693,7 @@ export function SpellcastingPanel({
               lvl === 0
                 ? tc('characterSheet.fields.spellLevelUnknown')
                 : targetCount !== undefined
-                  ? `${tc('characterSheet.fields.spellLevelLabel', { level: lvl })} (${tc('characterSheet.fields.chosenOfTarget', { chosen: ids.length, target: targetCount })})`
+                  ? `${tc('characterSheet.fields.spellLevelLabel', { level: lvl })} (${tc('characterSheet.fields.chosenOfTarget', { chosen: spellsByLevel[lvl]?.length ?? 0, target: targetCount })})`
                   : tc('characterSheet.fields.spellLevelLabel', { level: lvl });
 
             return (

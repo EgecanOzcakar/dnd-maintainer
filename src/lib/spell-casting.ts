@@ -61,3 +61,12 @@ export function castOptions(
 export function spendSlot(used: SpellSlotsUsed, key: string): SpellSlotsUsed {
   return { ...used, [key]: (used[key] ?? 0) + 1 };
 }
+
+/** 2024: concentration ends while you have the Incapacitated condition (or any condition that includes it). */
+export const CONCENTRATION_BREAKERS: ReadonlySet<string> = new Set([
+  'incapacitated',
+  'paralyzed',
+  'petrified',
+  'stunned',
+  'unconscious',
+]);

@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import type { Note, NoteSummary } from '@/types/database';
 import type { TablesInsert, TablesUpdate } from '@/types/supabase';
 import { NOTE_SUMMARY_COLS, NOTE_DETAIL_COLS } from '@/lib/query-columns';
+import { SHARED_LIST_QUERY } from '@/lib/query-options';
 
 export function useNotes(campaignId: string) {
   return useQuery({
@@ -18,6 +19,7 @@ export function useNotes(campaignId: string) {
       return (data || []) as unknown as NoteSummary[];
     },
     enabled: !!campaignId,
+    ...SHARED_LIST_QUERY,
   });
 }
 

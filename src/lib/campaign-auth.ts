@@ -5,25 +5,23 @@ const logger = getLogger('campaign-auth');
 
 export const CAMPAIGN_AUTH_STORAGE_KEY = 'dnd_unlocked_campaigns';
 
+/** Thrown when a new campaign could not be protected with its passphrase (and was therefore not kept). */
+export class PassphraseSetupError extends Error {
+  constructor() {
+    super('Could not set the campaign passphrase');
+    this.name = 'PassphraseSetupError';
+  }
+}
+
 export const DEMO_CAMPAIGN_ID = 'aaaaaaaa-0000-4000-8000-000000000001';
 
 /**
  * Checks if a campaign is the open demo campaign that requires no passphrase.
+ * Only the database's `is_demo` flag counts: a name, slug or id guess would let anyone open a
+ * protected campaign by naming it "Demo Campaign".
  */
-export function isDemoCampaign(
-  campaign?: {
-    is_demo?: boolean;
-    id?: string;
-    name?: string;
-    slug?: string;
-  } | null
-): boolean {
-  if (!campaign) return false;
-  if (campaign.is_demo === true) return true;
-  if (campaign.id === DEMO_CAMPAIGN_ID) return true;
-  if (campaign.name?.trim().toLowerCase() === 'demo campaign') return true;
-  if (campaign.slug === 'demo-campaign' || campaign.slug?.startsWith('demo-campaign-')) return true;
-  return false;
+export function isDemoCampaign(campaign?: { is_demo?: boolean } | null): boolean {
+  return campaign?.is_demo === true;
 }
 
 /**

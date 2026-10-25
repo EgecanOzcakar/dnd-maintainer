@@ -1,7 +1,8 @@
 import { makeQuickBuild, type ClassSource } from '@/types/sources';
 import type { FeatureChoiceGrant, Grant, SpellChoiceGrant } from '@/types/grants';
 import { createChoiceKey } from '@/types/choices';
-import { FIGHTING_STYLE_IDS } from '@/lib/dnd-helpers';
+import { FIGHTING_STYLE_IDS, type ClassId } from '@/lib/dnd-helpers';
+import { ARTISAN_TOOL_IDS, MUSICAL_INSTRUMENT_IDS } from '@/lib/sources/tool-groups';
 
 const EMPTY_LEVEL = { grants: [] } as const;
 
@@ -72,7 +73,7 @@ const SORCERER_METAMAGIC_OPTIONS: FeatureChoiceGrant['options'] = [
   },
 ];
 
-type FullCasterId = 'sorcerer' | 'warlock' | 'wizard';
+type FullCasterId = 'rogue' | 'sorcerer' | 'warlock' | 'wizard';
 
 /** A spell-choice grant: `count` picks of exactly `spellLevel` from the class list (0 = cantrips). */
 const spellPick = (classId: FullCasterId, n: number, count: number, spellLevel: SpellChoiceGrant['spellLevel']) =>
@@ -96,7 +97,18 @@ const asiOrFeat = (classId: FullCasterId, n: number): readonly Grant[] => [
 ];
 
 /** Level 19 Epic Boon: display feature plus an Epic Boon feat pick (reuses the old level-19 feat-choice key). */
-const epicBoon = (classId: FullCasterId, n: number): readonly Grant[] => [
+const epicBoon = (classId: ClassId, n: number): readonly Grant[] => [
+  { type: 'feature', feature: { id: `${classId}-epic-boon` } },
+  {
+    type: 'feat-choice',
+    key: createChoiceKey('feat-choice', 'class', classId, n),
+    from: null,
+    category: 'epicBoon',
+  },
+];
+
+/** Level 19 Epic Boon for the martial classes: display feature plus an Epic Boon feat pick (replaces the ASI/feat at that level). */
+const martialEpicBoon = (classId: 'fighter' | 'monk' | 'paladin' | 'ranger', n: number): readonly Grant[] => [
   { type: 'feature', feature: { id: `${classId}-epic-boon` } },
   {
     type: 'feat-choice',
@@ -124,8 +136,12 @@ const WARLOCK_INVOCATIONS = [
     'devouring-blade',
     'eldritch-mind',
     'eldritch-smite',
+    'eldritch-spear',
     'fiendish-vigor',
     'gaze-of-two-minds',
+    'gift-of-the-depths',
+    'gift-of-the-protectors',
+    'investment-of-the-chain-master',
     'lessons-of-the-first-ones',
     'lifedrinker',
     'mask-of-many-faces',
@@ -204,10 +220,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
                 { minLevel: 17, value: 6 },
               ],
             },
-            regen: 'long-rest',
+            regen: { mode: 'compound', shortRestAmount: 1 },
           },
           { type: 'feature', feature: { id: 'barbarian-unarmored-defense' } },
           { type: 'feature', feature: { id: 'barbarian-weapon-mastery' } },
+          // Armored fallback: the barbarian uses worn armor's AC; Unarmored Defense only applies without armor.
+          { type: 'armor-class', calculation: { mode: 'armored' } },
           { type: 'armor-class', calculation: { mode: 'unarmored', formula: 'barbarian' } },
           {
             type: 'weapon-mastery-choice',
@@ -261,6 +279,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           { type: 'feature', feature: { id: 'barbarian-extra-attack' } },
           { type: 'feature', feature: { id: 'barbarian-fast-movement' } },
+          { type: 'speed', mode: 'walk', value: 10, additive: true, condition: 'no-heavy-armor' },
         ],
       },
       EMPTY_LEVEL,
@@ -319,7 +338,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-improved-brutal-strike-2' } }] },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-indomitable-might' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'barbarian-epic-boon' } }] },
+      { grants: [...epicBoon('barbarian', 4)] },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-primal-champion' } }] },
     ],
   },
@@ -340,10 +359,6 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'hit-die', die: 8 },
           { type: 'proficiency', category: 'armor', id: 'light' },
           { type: 'proficiency', category: 'weapon', id: 'simple' },
-          { type: 'proficiency', category: 'weapon', id: 'handcrossbow' },
-          { type: 'proficiency', category: 'weapon', id: 'longsword' },
-          { type: 'proficiency', category: 'weapon', id: 'rapier' },
-          { type: 'proficiency', category: 'weapon', id: 'shortsword' },
           { type: 'proficiency', category: 'saving-throw', id: 'dex' },
           { type: 'proficiency', category: 'saving-throw', id: 'cha' },
           {
@@ -630,16 +645,9 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       {
-        // L19: ASI / Epic Boon, +1 prepared spell
+        // L19: Epic Boon, +1 prepared spell
         grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'bard', 4), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'bard', 4),
-            from: null,
-            category: 'general',
-          },
-          { type: 'feature', feature: { id: 'bard-epic-boon' } },
+          ...epicBoon('bard', 4),
           {
             type: 'spell-choice',
             key: createChoiceKey('spell-choice', 'class', 'bard', 19),
@@ -653,6 +661,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         // L20: Words of Creation, +1 prepared spell
         grants: [
           { type: 'feature', feature: { id: 'bard-words-of-creation' } },
+          { type: 'spell', spellId: 'power-word-heal', alwaysPrepared: true },
+          { type: 'spell', spellId: 'power-word-kill', alwaysPrepared: true },
           {
             type: 'spell-choice',
             key: createChoiceKey('spell-choice', 'class', 'bard', 20),
@@ -852,17 +862,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'cleric-channel-divinity-4' } }] },
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 4), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'cleric', 4),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
+      { grants: [...epicBoon('cleric', 4)] },
       { grants: [{ type: 'feature', feature: { id: 'cleric-greater-divine-intervention' } }] },
     ],
   },
@@ -881,18 +881,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           { type: 'hit-die', die: 8 },
           { type: 'proficiency', category: 'armor', id: 'light' },
-          { type: 'proficiency', category: 'armor', id: 'medium-nonmetal' },
-          { type: 'proficiency', category: 'armor', id: 'shields-nonmetal' },
-          { type: 'proficiency', category: 'weapon', id: 'club' },
-          { type: 'proficiency', category: 'weapon', id: 'dagger' },
-          { type: 'proficiency', category: 'weapon', id: 'dart' },
-          { type: 'proficiency', category: 'weapon', id: 'javelin' },
-          { type: 'proficiency', category: 'weapon', id: 'mace' },
-          { type: 'proficiency', category: 'weapon', id: 'quarterstaff' },
-          { type: 'proficiency', category: 'weapon', id: 'scimitar' },
-          { type: 'proficiency', category: 'weapon', id: 'sickle' },
-          { type: 'proficiency', category: 'weapon', id: 'sling' },
-          { type: 'proficiency', category: 'weapon', id: 'spear' },
+          { type: 'proficiency', category: 'armor', id: 'shields' },
+          { type: 'proficiency', category: 'weapon', id: 'simple' },
           { type: 'proficiency', category: 'tool', id: 'herbalismkit' },
           { type: 'proficiency', category: 'saving-throw', id: 'int' },
           { type: 'proficiency', category: 'saving-throw', id: 'wis' },
@@ -943,12 +933,14 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'armor-class', calculation: { mode: 'armored' } },
           { type: 'feature', feature: { id: 'druid-druidic' } },
+          // Druidic: Speak with Animals is always prepared.
+          { type: 'spell', spellId: 'speak-with-animals', alwaysPrepared: true },
         ],
       },
       {
         grants: [
           { type: 'feature', feature: { id: 'druid-wild-shape' } },
-          // Wild Shape uses: 2 (L2), 3 (L6), 4 (L17). A Short Rest regains one use; modeled as long-rest only.
+          // Wild Shape uses: 2 (L2), 3 (L6), 4 (L17). A Short Rest regains one use, a Long Rest all of them.
           {
             type: 'resource-pool',
             poolId: 'wild-shape',
@@ -961,7 +953,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
                 { minLevel: 17, value: 4 },
               ],
             },
-            regen: 'long-rest',
+            regen: { mode: 'compound', shortRestAmount: 1 },
           },
           { type: 'feature', feature: { id: 'druid-wild-companion' } },
         ],
@@ -1064,7 +1056,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'druid-beast-spells' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'druid-epic-boon' } }] },
+      { grants: [...epicBoon('druid', 4)] },
       { grants: [{ type: 'feature', feature: { id: 'druid-archdruid' } }] },
     ],
   },
@@ -1103,6 +1095,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
               'insight',
               'intimidation',
               'perception',
+              'persuasion',
               'survival',
             ],
           },
@@ -1119,7 +1112,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             count: 3,
           },
           { type: 'feature', feature: { id: 'fighter-second-wind' } },
-          // Second Wind uses: 2 (L1), 3 (L4), 4 (L10). Short Rest regains one use, Long Rest all; modeled as short-rest.
+          // Second Wind uses: 2 (L1), 3 (L4), 4 (L10). Short Rest regains one use, Long Rest all.
           {
             type: 'resource-pool',
             poolId: 'second-wind',
@@ -1132,31 +1125,14 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
                 { minLevel: 10, value: 4 },
               ],
             },
-            regen: 'short-rest',
+            regen: { mode: 'compound', shortRestAmount: 1 },
           },
+          // 2024 starting equipment: Option A or B (Option C, 155 GP, is the buy-with-gold mode).
           {
             type: 'bundle-choice',
             key: createChoiceKey('bundle-choice', 'class', 'fighter', 0),
             category: 'loadout',
-            bundleIds: ['fighter-chainmail', 'fighter-archer-kit'],
-          },
-          {
-            type: 'bundle-choice',
-            key: createChoiceKey('bundle-choice', 'class', 'fighter', 1),
-            category: 'melee-weapon',
-            bundleIds: ['martial-weapon-and-shield', 'two-martial-weapons'],
-          },
-          {
-            type: 'bundle-choice',
-            key: createChoiceKey('bundle-choice', 'class', 'fighter', 2),
-            category: 'ranged-weapon',
-            bundleIds: ['light-crossbow-kit', 'two-handaxes'],
-          },
-          {
-            type: 'bundle-choice',
-            key: createChoiceKey('bundle-choice', 'class', 'fighter', 3),
-            category: 'pack',
-            bundleIds: ['dungeoneers-pack', 'explorers-pack'],
+            bundleIds: ['fighter-loadout-a', 'fighter-loadout-b'],
           },
         ],
       },
@@ -1309,17 +1285,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       EMPTY_LEVEL,
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 6), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'fighter', 6),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
+      { grants: martialEpicBoon('fighter', 6) },
       { grants: [{ type: 'feature', feature: { id: 'fighter-extra-attack-3' } }] },
     ],
   },
@@ -1338,7 +1304,15 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           { type: 'hit-die', die: 8 },
           { type: 'proficiency', category: 'weapon', id: 'simple' },
-          { type: 'proficiency', category: 'weapon', id: 'shortsword' },
+          // Martial weapons that have the Light property.
+          { type: 'proficiency', category: 'weapon', id: 'martial-light' },
+          {
+            type: 'proficiency-choice',
+            category: 'tool',
+            key: createChoiceKey('tool-choice', 'class', 'monk', 1),
+            count: 1,
+            from: [...ARTISAN_TOOL_IDS, ...MUSICAL_INSTRUMENT_IDS],
+          },
           { type: 'proficiency', category: 'saving-throw', id: 'str' },
           { type: 'proficiency', category: 'saving-throw', id: 'dex' },
           {
@@ -1350,6 +1324,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'feature', feature: { id: 'monk-martial-arts' } },
           { type: 'feature', feature: { id: 'monk-unarmored-defense' } },
+          { type: 'armor-class', calculation: { mode: 'armored' } },
           { type: 'armor-class', calculation: { mode: 'unarmored', formula: 'monk' } },
         ],
       },
@@ -1366,6 +1341,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'feature', feature: { id: 'monk-patient-defense' } },
           { type: 'feature', feature: { id: 'monk-step-of-the-wind' } },
           { type: 'feature', feature: { id: 'monk-unarmored-movement' } },
+          { type: 'speed', mode: 'walk', value: 10, additive: true, condition: 'unarmored' },
           { type: 'feature', feature: { id: 'monk-uncanny-metabolism' } },
           { type: 'resource-pool', poolId: 'uncanny-metabolism', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
@@ -1394,7 +1370,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'feature', feature: { id: 'monk-stunning-strike' } },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'monk-empowered-strikes' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'monk-empowered-strikes' } },
+          { type: 'speed', mode: 'walk', value: 5, additive: true, condition: 'unarmored' },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'monk-evasion' } }] },
       {
         grants: [
@@ -1412,6 +1393,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           { type: 'feature', feature: { id: 'monk-heightened-focus' } },
           { type: 'feature', feature: { id: 'monk-self-restoration' } },
+          { type: 'speed', mode: 'walk', value: 5, additive: true, condition: 'unarmored' },
         ],
       },
       EMPTY_LEVEL,
@@ -1430,6 +1412,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'feature', feature: { id: 'monk-disciplined-survivor' } },
+          { type: 'speed', mode: 'walk', value: 5, additive: true, condition: 'unarmored' },
           // Proficiency in all saving throws (STR and DEX already granted at L1)
           { type: 'proficiency', category: 'saving-throw', id: 'con' },
           { type: 'proficiency', category: 'saving-throw', id: 'int' },
@@ -1450,8 +1433,13 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       EMPTY_LEVEL,
-      { grants: [{ type: 'feature', feature: { id: 'monk-superior-defense' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'monk-epic-boon' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'monk-superior-defense' } },
+          { type: 'speed', mode: 'walk', value: 5, additive: true, condition: 'unarmored' },
+        ],
+      },
+      { grants: martialEpicBoon('monk', 4) },
       { grants: [{ type: 'feature', feature: { id: 'monk-body-and-mind' } }] },
     ],
   },
@@ -1497,7 +1485,6 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             },
             regen: 'long-rest',
           },
-          { type: 'feature', feature: { id: 'paladin-divine-sense' } },
           { type: 'armor-class', calculation: { mode: 'armored' } },
           {
             type: 'weapon-mastery-choice',
@@ -1517,6 +1504,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           // Paladin's Smite (id kept as divine-smite): always-prepared Divine Smite spell is not in the catalog yet.
           { type: 'feature', feature: { id: 'paladin-divine-smite' } },
+          // Paladin's Smite: one free Divine Smite cast (no slot) per Long Rest.
+          { type: 'resource-pool', poolId: 'paladins-smite', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
           {
             type: 'fighting-style-choice',
             key: createChoiceKey('fighting-style-choice', 'class', 'paladin', 0),
@@ -1529,6 +1518,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           { type: 'subclass', classId: 'paladin', key: createChoiceKey('subclass', 'class', 'paladin', 0) },
           { type: 'feature', feature: { id: 'paladin-channel-divinity' } },
+          // Divine Sense is a Channel Divinity option (Bonus Action) from level 3.
+          { type: 'feature', feature: { id: 'paladin-divine-sense' } },
           // Channel Divinity (2024 PHB): 2 uses at L3, 3 at L11; 1 regained on a Short Rest, all on a Long Rest.
           {
             type: 'resource-pool',
@@ -1561,6 +1552,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'feature', feature: { id: 'paladin-extra-attack' } },
           // Faithful Steed: always-prepared Find Steed is not in the catalog yet.
           { type: 'feature', feature: { id: 'paladin-faithful-steed' } },
+          // Faithful Steed: one free Find Steed cast per Long Rest.
+          { type: 'resource-pool', poolId: 'faithful-steed', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'paladin-aura-of-protection' } }] },
@@ -1606,7 +1599,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'paladin-aura-expansion' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'paladin-epic-boon' } }] },
+      { grants: martialEpicBoon('paladin', 4) },
       // L20: the Oath capstone comes from the subclass.
       EMPTY_LEVEL,
     ],
@@ -1759,7 +1752,18 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'ranger-tireless' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'ranger-tireless' } },
+          // Tireless: Wisdom-modifier uses (minimum 1) per Long Rest.
+          {
+            type: 'resource-pool',
+            poolId: 'tireless',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       {
         grants: [
@@ -1773,7 +1777,18 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'ranger-relentless-hunter' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'ranger-natures-veil' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'ranger-natures-veil' } },
+          // Nature's Veil: Wisdom-modifier uses (minimum 1) per Long Rest.
+          {
+            type: 'resource-pool',
+            poolId: 'natures-veil',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       {
         grants: [
@@ -1788,7 +1803,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       { grants: [{ type: 'feature', feature: { id: 'ranger-precise-hunter' } }] },
       { grants: [{ type: 'feature', feature: { id: 'ranger-feral-senses' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'ranger-epic-boon' } }] },
+      { grants: martialEpicBoon('ranger', 4) },
       { grants: [{ type: 'feature', feature: { id: 'ranger-foe-slayer' } }] },
     ],
   },
@@ -1808,10 +1823,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'hit-die', die: 8 },
           { type: 'proficiency', category: 'armor', id: 'light' },
           { type: 'proficiency', category: 'weapon', id: 'simple' },
-          { type: 'proficiency', category: 'weapon', id: 'handcrossbow' },
-          { type: 'proficiency', category: 'weapon', id: 'longsword' },
-          { type: 'proficiency', category: 'weapon', id: 'rapier' },
-          { type: 'proficiency', category: 'weapon', id: 'shortsword' },
+          // Martial weapons that have the Finesse or Light property.
+          { type: 'proficiency', category: 'weapon', id: 'martial-finesse-light' },
           { type: 'proficiency', category: 'tool', id: 'thievestools' },
           { type: 'proficiency', category: 'saving-throw', id: 'dex' },
           { type: 'proficiency', category: 'saving-throw', id: 'int' },
@@ -1832,6 +1845,14 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'feature', feature: { id: 'rogue-sneak-attack' } },
           { type: 'feature', feature: { id: 'rogue-thieves-cant' } },
+          // Thieves' Cant: you know it plus one other language of your choice.
+          {
+            type: 'proficiency-choice',
+            category: 'language',
+            key: createChoiceKey('language-choice', 'class', 'rogue', 0),
+            count: 1,
+            from: null,
+          },
           {
             type: 'weapon-mastery-choice',
             key: createChoiceKey('weapon-mastery-choice', 'class', 'rogue', 0),
@@ -1842,24 +1863,6 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             key: createChoiceKey('bundle-choice', 'class', 'rogue', 0),
             category: 'loadout',
             bundleIds: ['rogue-loadout'],
-          },
-          {
-            type: 'bundle-choice',
-            key: createChoiceKey('bundle-choice', 'class', 'rogue', 1),
-            category: 'melee-weapon',
-            bundleIds: ['rogue-rapier', 'rogue-shortsword-melee'],
-          },
-          {
-            type: 'bundle-choice',
-            key: createChoiceKey('bundle-choice', 'class', 'rogue', 2),
-            category: 'ranged-weapon',
-            bundleIds: ['rogue-shortbow-kit', 'rogue-shortsword-ranged'],
-          },
-          {
-            type: 'bundle-choice',
-            key: createChoiceKey('bundle-choice', 'class', 'rogue', 3),
-            category: 'pack',
-            bundleIds: ['burglars-pack', 'dungeoneers-pack', 'explorers-pack'],
           },
         ],
       },
@@ -1961,8 +1964,13 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'rogue-elusive' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'rogue-epic-boon' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'rogue-stroke-of-luck' } }] },
+      { grants: epicBoon('rogue', 5) },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'rogue-stroke-of-luck' } },
+          { type: 'resource-pool', poolId: 'stroke-of-luck', max: { mode: 'fixed', value: 1 }, regen: 'short-rest' },
+        ],
+      },
     ],
   },
 
@@ -1981,11 +1989,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'hit-die', die: 6 },
-          { type: 'proficiency', category: 'weapon', id: 'dagger' },
-          { type: 'proficiency', category: 'weapon', id: 'dart' },
-          { type: 'proficiency', category: 'weapon', id: 'sling' },
-          { type: 'proficiency', category: 'weapon', id: 'quarterstaff' },
-          { type: 'proficiency', category: 'weapon', id: 'lightcrossbow' },
+          { type: 'proficiency', category: 'weapon', id: 'simple' },
           { type: 'proficiency', category: 'saving-throw', id: 'con' },
           { type: 'proficiency', category: 'saving-throw', id: 'cha' },
           {
@@ -2160,7 +2164,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       { grants: [invocationPick(9)] },
       { grants: [...epicBoon('warlock', 4), spellPick('warlock', 20, 1, 5)] },
-      { grants: [{ type: 'feature', feature: { id: 'warlock-eldritch-master' } }, longRestPool('eldritch-master')] },
+      { grants: [{ type: 'feature', feature: { id: 'warlock-eldritch-master' } }] },
     ],
   },
 
@@ -2180,11 +2184,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'hit-die', die: 6 },
-          { type: 'proficiency', category: 'weapon', id: 'dagger' },
-          { type: 'proficiency', category: 'weapon', id: 'dart' },
-          { type: 'proficiency', category: 'weapon', id: 'sling' },
-          { type: 'proficiency', category: 'weapon', id: 'quarterstaff' },
-          { type: 'proficiency', category: 'weapon', id: 'lightcrossbow' },
+          { type: 'proficiency', category: 'weapon', id: 'simple' },
           { type: 'proficiency', category: 'saving-throw', id: 'int' },
           { type: 'proficiency', category: 'saving-throw', id: 'wis' },
           {
@@ -2192,7 +2192,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             category: 'skill',
             key: createChoiceKey('skill-choice', 'class', 'wizard', 0),
             count: 2,
-            from: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'religion'],
+            from: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'nature', 'religion'],
           },
           { type: 'spellcasting', ability: 'int', source: 'class' },
           { type: 'feature', feature: { id: 'wizard-ritual-adept' } },

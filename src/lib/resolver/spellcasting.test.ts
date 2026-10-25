@@ -226,12 +226,26 @@ describe('resolveSpellcasting', () => {
     });
   });
 
+  describe('third caster (Eldritch Knight) from a subclass source', () => {
+    it('level 7 → slots [4, 2], 5 prepared', () => {
+      const bundles: GrantBundle[] = [
+        {
+          source: { origin: 'subclass', id: 'eldritchknight', classId: 'fighter', level: 3 },
+          grants: [{ type: 'spellcasting', ability: 'int', source: 'class' }],
+        },
+      ];
+      const result = resolveSpellcasting(bundles, makeAbilities({ int: 14 }), 3, 7);
+      expect(result!.slots).toEqual([4, 2]);
+      expect(result!.preparedCount).toBe(5);
+    });
+  });
+
   describe('half caster (paladin) spell slots', () => {
     const abilities = makeAbilities({ cha: 12 });
 
-    it('level 1: empty slots (not yet a caster)', () => {
+    it('level 1: [2] (2024 paladins cast from level 1)', () => {
       const result = resolveSpellcasting(makePaladinBundles(1), abilities, 2, 1);
-      expect(result!.slots).toEqual([]);
+      expect(result!.slots).toEqual([2]);
     });
 
     it('level 5: [4, 2]', () => {
@@ -269,75 +283,21 @@ describe('resolveSpellcasting', () => {
   });
 
   describe('preparedCount', () => {
-    it('cleric L5 wis+3 → 8', () => {
-      const abilities = makeAbilities({ wis: 16 });
-      const result = resolveSpellcasting(makeClericBundles(5), abilities, 3, 5);
-      expect(result!.preparedCount).toBe(8);
-    });
-
-    it('paladin L4 cha+1 → 5', () => {
-      const abilities = makeAbilities({ cha: 12 });
-      const result = resolveSpellcasting(makePaladinBundles(4), abilities, 2, 4);
-      expect(result!.preparedCount).toBe(5);
-    });
-
-    it('ranger L8 wis+2 → 10', () => {
-      const abilities = makeAbilities({ wis: 14 });
-      const result = resolveSpellcasting(makeRangerBundles({ level: 8 }), abilities, 3, 8);
-      expect(result!.preparedCount).toBe(10);
-    });
-
-    it('bard L5 → preparedCount 0 (known-spell caster)', () => {
-      const abilities = makeAbilities({ cha: 16 });
-      const result = resolveSpellcasting(makeBardBundles(5), abilities, 3, 5);
-      expect(result!.preparedCount).toBe(0);
-    });
-
-    it('warlock L5 → preparedCount 0 (known-spell caster)', () => {
-      const abilities = makeAbilities({ cha: 16 });
-      const result = resolveSpellcasting(makeWarlockBundles(5), abilities, 3, 5);
-      expect(result!.preparedCount).toBe(0);
-    });
-
-    it('floors preparedCount at 1 when level + mod would be 0 or negative (cleric L1 wis-2)', () => {
-      const abilities = makeAbilities({ wis: 6 });
-      const result = resolveSpellcasting(makeClericBundles(1), abilities, 2, 1);
-      expect(result!.preparedCount).toBe(1);
-    });
-
-    it('druid L1 wis+2 → 3', () => {
-      // max(1, 1 + 2) = 3
-      const abilities = makeAbilities({ wis: 14 });
-      const result = resolveSpellcasting(makeDruidBundles(1), abilities, 2, 1);
-      expect(result!.preparedCount).toBe(3);
-    });
-
-    it('druid L20 wis+4 → 24', () => {
-      // max(1, 20 + 4) = 24
-      const abilities = makeAbilities({ wis: 18 });
-      const result = resolveSpellcasting(makeDruidBundles(20), abilities, 6, 20);
-      expect(result!.preparedCount).toBe(24);
-    });
-
-    it('wizard L1 int 8 (mod -1) → 1 (floor)', () => {
-      // max(1, 1 + (-1)) = max(1, 0) = 1
-      const abilities = makeAbilities({ int: 8 });
-      const result = resolveSpellcasting(makeWizardBundles(1), abilities, 2, 1);
-      expect(result!.preparedCount).toBe(1);
-    });
-
-    it('paladin L2 cha+1 → 3', () => {
-      // max(1, 2 + 1) = 3
-      const abilities = makeAbilities({ cha: 12 });
-      const result = resolveSpellcasting(makePaladinBundles(2), abilities, 2, 2);
-      expect(result!.preparedCount).toBe(3);
-    });
-
-    it('ranger L2 wis 6 (mod -2) → 1 (floor — raw 0 clamped)', () => {
-      // max(1, 2 + (-2)) = max(1, 0) = 1 — floor branch actually triggers
-      const abilities = makeAbilities({ wis: 6 });
-      const result = resolveSpellcasting(makeRangerBundles({ level: 2 }), abilities, 2, 2);
-      expect(result!.preparedCount).toBe(1);
+    // 2024: read from the class table's Prepared Spells column, not level + ability modifier.
+    it.each<[string, number, () => GrantBundle[], number]>([
+      ['cleric L5', 5, () => makeClericBundles(5), 9],
+      ['paladin L4', 4, () => makePaladinBundles(4), 5],
+      ['ranger L8', 8, () => makeRangerBundles({ level: 8 }), 7],
+      ['bard L5', 5, () => makeBardBundles(5), 9],
+      ['warlock L5', 5, () => makeWarlockBundles(5), 6],
+      ['druid L1', 1, () => makeDruidBundles(1), 4],
+      ['druid L20', 20, () => makeDruidBundles(20), 22],
+      ['wizard L1', 1, () => makeWizardBundles(1), 4],
+      ['paladin L2', 2, () => makePaladinBundles(2), 3],
+      ['ranger L2', 2, () => makeRangerBundles({ level: 2 }), 3],
+    ])('%s → %i prepared regardless of the ability modifier', (_name, level, bundles, expected) => {
+      const result = resolveSpellcasting(bundles(), makeAbilities({ wis: 6, cha: 6, int: 6 }), 2, level);
+      expect(result!.preparedCount).toBe(expected);
     });
   });
 
@@ -393,21 +353,19 @@ describe('resolveSpellcasting', () => {
       expect(result!.pactMagic).toBeNull();
     });
 
-    it('level 5 wis+2 → preparedCount 7 (level + wisMod)', () => {
-      // max(1, 5 + 2) = 7
+    it('level 5 → preparedCount 9 (class table)', () => {
       const result = resolveSpellcasting(makeDruidBundles(5), abilities, 3, 5);
-      expect(result!.preparedCount).toBe(7);
+      expect(result!.preparedCount).toBe(9);
     });
   });
 
   describe('full caster (wizard) spell slots', () => {
-    it('level 1 int+4 → slots [2], preparedCount 5', () => {
-      // max(1, 1 + 4) = 5
+    it('level 1 → slots [2], preparedCount 4', () => {
       const abilities = makeAbilities({ int: 18 });
       const result = resolveSpellcasting(makeWizardBundles(1), abilities, 2, 1);
       expect(result!.slots).toEqual([2]);
       expect(result!.pactMagic).toBeNull();
-      expect(result!.preparedCount).toBe(5);
+      expect(result!.preparedCount).toBe(4);
     });
   });
 
@@ -419,7 +377,6 @@ describe('resolveSpellcasting', () => {
     });
 
     it('level 2: slots [2], positive preparedCount', () => {
-      // max(1, 2 + 2) = 4
       const abilities = makeAbilities({ wis: 14 });
       const result = resolveSpellcasting(makeRangerBundles({ level: 2 }), abilities, 2, 2);
       expect(result!.slots).toEqual([2]);
@@ -447,7 +404,7 @@ describe('resolveSpellcasting', () => {
       expect(result).not.toBeNull();
       expect(result!.ability).toBe('wis');
       expect(result!.slots).toEqual([2]); // cleric L1 full-caster slots
-      expect(result!.preparedCount).toBe(4); // max(1, 1 + 3)
+      expect(result!.preparedCount).toBe(4); // cleric L1 table
     });
   });
 

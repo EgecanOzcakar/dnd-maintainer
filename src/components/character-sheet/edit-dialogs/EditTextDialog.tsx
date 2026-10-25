@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 import { ModalFooter } from './ModalFooter';
+import { useDirtyClose } from './useDirtyClose';
 
 export function EditTextDialog({
   title,
@@ -19,12 +20,13 @@ export function EditTextDialog({
   saving: boolean;
 }) {
   const [text, setText] = useState(value);
+  const { requestClose, prompt } = useDirtyClose(text !== value, onClose);
 
   return (
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open) onClose();
+        if (!open) requestClose();
       }}
     >
       <DialogContent className="sm:max-w-2xl">
@@ -32,7 +34,7 @@ export function EditTextDialog({
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={10} autoFocus />
-        <ModalFooter onSave={() => onSave({ [field]: text })} onCancel={onClose} saving={saving} />
+        {prompt ?? <ModalFooter onSave={() => onSave({ [field]: text })} onCancel={requestClose} saving={saving} />}
       </DialogContent>
     </Dialog>
   );

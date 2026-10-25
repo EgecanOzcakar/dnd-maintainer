@@ -47,7 +47,7 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
 
   // Oath of Devotion: Sacred Weapon is used as part of the Attack action.
   'oathofdevotion-sacred-weapon': { activation: 'special', poolId: 'channel-divinity' },
-  'oathofdevotion-holy-nimbus': { activation: 'bonus-action' },
+  'oathofdevotion-holy-nimbus': { activation: 'bonus-action', poolId: 'holy-nimbus' },
   'oathofglory-peerless-athlete': { activation: 'bonus-action', poolId: 'channel-divinity' },
   // Inspiring Smite: after Divine Smite, distribute Temp HP equal to 2d8 + paladin level.
   'oathofglory-inspiring-smite': {
@@ -55,21 +55,22 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
     heal: { dice: '2d8', addLevel: true },
     poolId: 'channel-divinity',
   },
-  'oathofglory-glorious-defense': { activation: 'reaction' },
-  'oathofglory-living-legend': { activation: 'bonus-action' },
+  'oathofglory-glorious-defense': { activation: 'reaction', poolId: 'glorious-defense' },
+  'oathofglory-living-legend': { activation: 'bonus-action', poolId: 'living-legend' },
   // Nature's Wrath: target chooses Strength or Dexterity save (Strength modeled).
   'oathofancients-natures-wrath': {
     activation: 'action',
     save: { ability: 'str', dcAbility: 'cha' },
     poolId: 'channel-divinity',
   },
-  'oathofancients-undying-sentinel': { activation: 'special' },
-  'oathofancients-elder-champion': { activation: 'bonus-action' },
+  'oathofancients-undying-sentinel': { activation: 'special', poolId: 'undying-sentinel' },
+  'oathofancients-elder-champion': { activation: 'bonus-action', poolId: 'elder-champion' },
   'oathofvengeance-vow-of-enmity': { activation: 'special', poolId: 'channel-divinity' },
   'oathofvengeance-soul-of-vengeance': { activation: 'reaction' },
   'oathofvengeance-avenging-angel': {
     activation: 'bonus-action',
     save: { ability: 'wis', dcAbility: 'cha' },
+    poolId: 'avenging-angel',
   },
 
   // ---- Ranger ----
@@ -86,8 +87,8 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
     poolId: 'favored-enemy',
   },
   // Tireless: Magic action, Temp HP 1d8 + Wisdom modifier.
-  'ranger-tireless': { activation: 'action', heal: { dice: '1d8', addMod: 'wis' } },
-  'ranger-natures-veil': { activation: 'bonus-action' },
+  'ranger-tireless': { activation: 'action', heal: { dice: '1d8', addMod: 'wis' }, poolId: 'tireless' },
+  'ranger-natures-veil': { activation: 'bonus-action', poolId: 'natures-veil' },
   'hunter-hunters-prey-colossus-slayer': { activation: 'special', damage: { dice: '1d8', type: 'weapon' } },
   // Superior Hunter's Prey: the Hunter's Mark rider also hits a second creature within 30 ft.
   'hunter-superior-hunters-prey': {
@@ -119,11 +120,13 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
       type: 'psychic',
     },
   },
+  // Fey Reinforcements: cast Summon Fey without a slot once per Long Rest.
+  'feywanderer-fey-reinforcements': { activation: 'action', poolId: 'fey-reinforcements' },
   'feywanderer-beguiling-twist': {
     activation: 'reaction',
     save: { ability: 'wis', dcAbility: 'spellcasting' },
   },
-  'feywanderer-misty-wanderer': { activation: 'bonus-action' },
+  'feywanderer-misty-wanderer': { activation: 'bonus-action', poolId: 'misty-wanderer' },
   // Dreadful Strike (part of Dread Ambusher): Wis-mod uses per Long Rest, 2d6 Psychic, 2d8 from L11.
   'gloomstalker-dread-ambusher': {
     activation: 'special',
@@ -134,6 +137,7 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
       ],
       type: 'psychic',
     },
+    poolId: 'dreadful-strike',
   },
   'gloomstalker-shadowy-dodge': { activation: 'reaction' },
 
@@ -143,7 +147,7 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
   'rogue-uncanny-dodge': { activation: 'reaction' },
   // Cunning Strike: trade Sneak Attack dice for an effect; Poison/Trip/Withdraw saves use 8 + PB + Dex.
   'rogue-cunning-strike': { activation: 'special', save: { ability: 'con', dcAbility: 'dex' } },
-  'rogue-stroke-of-luck': { activation: 'special' },
+  'rogue-stroke-of-luck': { activation: 'free', poolId: 'stroke-of-luck' },
   'thief-fast-hands': { activation: 'bonus-action' },
   // Assassinate: on round 1, a hit deals extra damage equal to rogue level (weapon's type).
   'assassin-assassinate': { activation: 'special', damage: { type: 'weapon', addLevel: true } },
@@ -156,7 +160,7 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
   'assassin-death-strike': { activation: 'special', save: { ability: 'con', dcAbility: 'dex' } },
   'arcanetrickster-mage-hand-legerdemain': { activation: 'bonus-action' },
   'arcanetrickster-versatile-trickster': { activation: 'bonus-action' },
-  'arcanetrickster-spell-thief': { activation: 'reaction' },
+  'arcanetrickster-spell-thief': { activation: 'reaction', poolId: 'spell-thief' },
   // Psychic Blades: 1d6 Psychic + Dex (Attack action); the Bonus Action second blade is 1d4.
   'soulknife-psychic-blades': {
     activation: 'action',
@@ -165,7 +169,7 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
   },
   // Soul Blades: Psychic Teleportation (Bonus Action) / Homing Strikes both spend a Psionic Energy die.
   'soulknife-soul-blades': { activation: 'bonus-action', poolId: 'psionic-energy' },
-  'soulknife-psychic-veil': { activation: 'action' },
+  'soulknife-psychic-veil': { activation: 'action', poolId: 'psychic-veil' },
   // Rend Mind: on a Psychic Blade hit, Wis save or Stunned.
-  'soulknife-rend-mind': { activation: 'special', save: { ability: 'wis', dcAbility: 'dex' } },
+  'soulknife-rend-mind': { activation: 'special', save: { ability: 'wis', dcAbility: 'dex' }, poolId: 'rend-mind' },
 };

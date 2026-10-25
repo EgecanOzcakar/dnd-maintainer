@@ -18,7 +18,12 @@ import { resolveSavingThrows, resolveSkills, resolveProficiencies } from '@/lib/
 import { resolveFeatures } from '@/lib/resolver/features';
 import { resolveHp, resolveSpeed, resolveAc, resolveBardicInspiration } from '@/lib/resolver/combat';
 import { resolveSpellcasting } from '@/lib/resolver/spellcasting';
-import { resolveEquipment, resolveAttacks, resolveEquippedArmorAc } from '@/lib/resolver/equipment';
+import {
+  resolveEquipment,
+  resolveAttacks,
+  resolveEquippedArmorAc,
+  isProficientWithWeapon,
+} from '@/lib/resolver/equipment';
 import { resolveResourcePools } from '@/lib/resolver/resource-pools';
 import { getOrParseItemDef, WEAPON_CATALOG } from '@/lib/sources/items';
 import { getFeatSource } from '@/lib/sources';
@@ -70,7 +75,6 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
   const proficiencies = resolveProficiencies(bundles, choices);
   const features = resolveFeatures(bundles, abilities, proficiencyBonus);
   const hitPoints = resolveHp(bundles, hpRolls, conModifier, level);
-  const speed = resolveSpeed(bundles);
   const spellcasting = resolveSpellcasting(bundles, abilities, proficiencyBonus, level);
 
   // Equipment resolution — finalized characters read from DB inventory directly
@@ -79,12 +83,34 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
       ? resolveEquipmentFromPersisted(input.persistedItems)
       : resolveEquipment(bundles, choices, equippedItemIds);
   const equippedArmorAc = resolveEquippedArmorAc(equipmentResult.items, dexModifier, proficiencies.armor);
+  const wornBodyArmor = equipmentResult.items.find(
+    (i) => i.equipped && i.itemDef.type === 'armor' && i.itemDef.category !== 'shield'
+  )?.itemDef;
+  const speed = resolveSpeed(bundles, {
+    bodyArmor: equippedArmorAc?.totalBase != null,
+    heavyArmor: wornBodyArmor?.type === 'armor' && wornBodyArmor.category === 'heavy',
+    shield: (equippedArmorAc?.shieldBonus ?? 0) > 0,
+    strengthPenalty:
+      wornBodyArmor?.type === 'armor' && abilities.str.total < wornBodyArmor.strengthRequirement ? 10 : 0,
+  });
   const bardLevel = getClassLevel(bundles, 'bard' satisfies ClassId);
   const chaModifier = abilities.cha.modifier;
   const bardicInspiration = resolveBardicInspiration(bundles, bardLevel, chaModifier);
   const bardicDieSize = bardicInspiration?.dieSize ?? null;
   const wisModifier = abilities.wis.modifier;
-  const armorClass = resolveAc(bundles, dexModifier, equippedArmorAc, bardicDieSize, conModifier, wisModifier);
+  const shieldEquipped = equipmentResult.items.some(
+    (i) => i.equipped && i.itemDef.type === 'armor' && i.itemDef.category === 'shield'
+  );
+  const armorClass = resolveAc(
+    bundles,
+    dexModifier,
+    equippedArmorAc,
+    bardicDieSize,
+    conModifier,
+    wisModifier,
+    chaModifier,
+    shieldEquipped
+  );
 
   // Extract chosen fighting style IDs for attack resolver, validating against each grant's from list.
   // Stale persisted decisions containing removed style IDs are filtered out and re-prompted.
@@ -272,14 +298,18 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
   }
 
   // Aggregate weapon mastery choices — eligible weapons are those the character is proficient with that have a mastery
-  const weaponProfSet = new Set(proficiencies.weapon.map((p) => p.value));
-  const eligibleMasteryWeapons = WEAPON_CATALOG.filter(
-    (w) => w.mastery !== undefined && (weaponProfSet.has(w.category) || weaponProfSet.has(w.weaponProficiencyId))
-  ).map((w) => w.id);
+  const masteryWeapons = WEAPON_CATALOG.filter(
+    (w) => w.mastery !== undefined && isProficientWithWeapon(w, proficiencies.weapon)
+  );
+  const eligibleMasteryWeapons = masteryWeapons.map((w) => w.id);
+  // 2024 Barbarian: Weapon Mastery is limited to Melee weapons.
+  const meleeMasteryWeapons = masteryWeapons.filter((w) => w.range === 'melee').map((w) => w.id);
 
   // Emit pending choices for underfilled grants; build resolved weaponMasteries.
   // Iterate grants in stable order (collectGrantsByType preserves bundle/level order from collectBundles).
   // Track claimed weaponIds across grants to detect cross-grant duplicates; also dedupe within each decision.
+  const eligibleFor = (source: SourceTag) =>
+    source.origin === 'class' && source.id === 'barbarian' ? meleeMasteryWeapons : eligibleMasteryWeapons;
   const weaponMasteryGrants = collectGrantsByType(bundles, 'weapon-mastery-choice');
   const weaponMasteriesMap = new Map<string, WeaponMasteryId>();
   const claimed = new Set<string>();
@@ -293,7 +323,7 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     for (const id of rawIds) {
       if (seenInDecision.has(id)) continue;
       seenInDecision.add(id);
-      if (!eligibleMasteryWeapons.includes(id)) continue;
+      if (!eligibleFor(source).includes(id)) continue;
       if (claimed.has(id)) continue;
       validWeaponIds.push(id);
     }
@@ -307,7 +337,7 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
         choiceKey: grant.key,
         source,
         count: grant.count,
-        from: eligibleMasteryWeapons,
+        from: eligibleFor(source),
         alreadyChosen: alreadyChosenByOthers,
       });
     }
@@ -466,7 +496,8 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
       ) as typeof savingThrows)
     : savingThrows;
 
-  const finalSkills = hasArmorPenalty
+  const stealthArmor = wornBodyArmor?.type === 'armor' && wornBodyArmor.stealthDisadvantage;
+  const penalizedSkills = hasArmorPenalty
     ? (Object.fromEntries(
         Object.entries(skills).map(([skillId, val]) => [
           skillId,
@@ -474,6 +505,9 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
         ])
       ) as typeof skills)
     : skills;
+  const finalSkills = stealthArmor
+    ? { ...penalizedSkills, stealth: { ...penalizedSkills.stealth, disadvantageFromArmor: true } }
+    : penalizedSkills;
 
   const finalAttacks = hasArmorPenalty ? attacks.map((atk) => ({ ...atk, disadvantageFromArmor: true })) : attacks;
 
@@ -505,7 +539,8 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     bardicInspiration,
     pendingChoices,
     weaponMasteries,
-    resourcePools: resolveResourcePools(bundles),
+    resourcePools: resolveResourcePools(bundles, abilities),
+    rollModifiers: collectGrantsByType(bundles, 'roll-modifier').map(({ grant, source }) => ({ ...grant, source })),
   };
 }
 

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dices, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,12 @@ export interface DiceRollResult {
 
 const DIE_SIZES: DieSize[] = [4, 6, 8, 10, 12, 20, 100];
 const MAX_HISTORY = 10;
+const MAX_MODIFIER = 20;
+
+/** Typed values bypass the input's min/max, so clamp them (and treat gibberish as 0). */
+function clampModifier(raw: string): number {
+  return Math.max(-MAX_MODIFIER, Math.min(MAX_MODIFIER, parseInt(raw, 10) || 0));
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -85,6 +91,7 @@ export function DiceRoller({
   onRoll,
 }: DiceRollerProps) {
   const { t: tc } = useTranslation('common');
+  const inputId = useId();
   const recordRoll = useRecordCharacterRoll();
   const addRoll = useAddRoll();
   const { data: sharedLog = [] } = useRollLog(compact ? undefined : campaignId);
@@ -179,11 +186,16 @@ export function DiceRoller({
       {contextLabel && <div className="text-xs font-semibold text-primary truncate">{contextLabel}</div>}
 
       {/* Die selector */}
-      <div className="flex flex-wrap gap-1.5">
+      <div
+        className="flex flex-wrap gap-1.5"
+        role="group"
+        aria-label={tc('characterSheet.combatView.diceRoller.dieGroup')}
+      >
         {DIE_SIZES.map((d) => (
           <button
             key={d}
             type="button"
+            aria-pressed={selectedDie === d}
             onClick={() => setSelectedDie(d)}
             className={`
               px-2.5 py-1 rounded-md text-xs font-bold border transition-all duration-150
@@ -200,10 +212,14 @@ export function DiceRoller({
       {/* Count + Modifier inputs */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold block mb-1">
+          <label
+            htmlFor={`${inputId}-count`}
+            className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold block mb-1"
+          >
             {tc('characterSheet.combatView.diceRoller.numDice')}
           </label>
           <input
+            id={`${inputId}-count`}
             type="number"
             min={1}
             max={20}
@@ -213,15 +229,19 @@ export function DiceRoller({
           />
         </div>
         <div>
-          <label className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold block mb-1">
+          <label
+            htmlFor={`${inputId}-modifier`}
+            className="text-[10px] text-muted-foreground uppercase tracking-wide font-semibold block mb-1"
+          >
             {tc('characterSheet.combatView.diceRoller.modifier')}
           </label>
           <input
+            id={`${inputId}-modifier`}
             type="number"
-            min={-20}
-            max={20}
+            min={-MAX_MODIFIER}
+            max={MAX_MODIFIER}
             value={modifier}
-            onChange={(e) => setModifier(parseInt(e.target.value, 10) || 0)}
+            onChange={(e) => setModifier(clampModifier(e.target.value))}
             className="w-full bg-muted/50 border border-border rounded-md px-2 py-1.5 text-sm font-mono text-foreground text-center focus:outline-none focus:ring-1 focus:ring-ring"
           />
         </div>
@@ -272,6 +292,8 @@ export function DiceRoller({
         {lastResult && (
           <div
             key={lastResult.id}
+            role="status"
+            aria-live="polite"
             className="flex flex-col items-center min-w-[56px] animate-in fade-in zoom-in-90 duration-200"
           >
             <div className="text-[10px] text-muted-foreground uppercase tracking-wide">

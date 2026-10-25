@@ -44,8 +44,8 @@ describe('Fighter class levels 1–20 grant structures', () => {
     });
   });
 
-  it('grants ASI + feat-choice pairs at levels 4, 6, 8, 12, 14, 16, 19 with sequential indices', () => {
-    [4, 6, 8, 12, 14, 16, 19].forEach((level, i) => {
+  it('grants ASI + feat-choice pairs at levels 4, 6, 8, 12, 14, 16 with sequential indices', () => {
+    [4, 6, 8, 12, 14, 16].forEach((level, i) => {
       const grants = source?.levels[level - 1]?.grants ?? [];
       const asi = grants.find((g) => g.type === 'asi');
       expect(asi && asi.type === 'asi' && asi.key).toBe(createChoiceKey('asi', 'class', 'fighter', i));
@@ -54,6 +54,15 @@ describe('Fighter class levels 1–20 grant structures', () => {
         createChoiceKey('feat-choice', 'class', 'fighter', i)
       );
     });
+  });
+
+  it('grants an Epic Boon (no ASI) at level 19, reusing the sixth feat-choice key', () => {
+    const grants = source?.levels[18]?.grants ?? [];
+    expect(grants.some((g) => g.type === 'asi')).toBe(false);
+    const feat = grants.find((g) => g.type === 'feat-choice');
+    expect(feat && feat.type === 'feat-choice' && feat.key).toBe(createChoiceKey('feat-choice', 'class', 'fighter', 6));
+    expect(feat && feat.type === 'feat-choice' && feat.category).toBe('epicBoon');
+    expect(grants).toContainEqual({ type: 'feature', feature: { id: 'fighter-epic-boon' } });
   });
 
   it('grants weapon mastery choices at levels 4, 10, 16 (indices 1, 2, 3)', () => {
@@ -249,9 +258,9 @@ describe('Rogue class grant structures', () => {
     }
   });
 
-  it('level 1 has 4 bundle-choice grants', () => {
+  it('level 1 has a single starting-equipment bundle-choice (2024 Option A; B is buy-with-gold)', () => {
     const bundleChoices = source?.levels[0].grants.filter((g) => g.type === 'bundle-choice');
-    expect(bundleChoices).toHaveLength(4);
+    expect(bundleChoices).toHaveLength(1);
   });
 
   it('level 1 bundle-choice 0 is loadout with rogue-loadout', () => {
@@ -264,38 +273,21 @@ describe('Rogue class grant structures', () => {
       expect(grant.bundleIds).toEqual(['rogue-loadout']);
     }
   });
+});
 
-  it('level 1 bundle-choice 1 is melee-weapon with rapier and shortsword options', () => {
-    const grant = source?.levels[0].grants.find(
-      (g) => g.type === 'bundle-choice' && g.key === createChoiceKey('bundle-choice', 'class', 'rogue', 1)
-    );
-    expect(grant?.type).toBe('bundle-choice');
-    if (grant?.type === 'bundle-choice') {
-      expect(grant.category).toBe('melee-weapon');
-      expect(grant.bundleIds).toEqual(['rogue-rapier', 'rogue-shortsword-melee']);
-    }
-  });
+describe('Fighter starting equipment (2024 PHB)', () => {
+  const source = getClassSource('fighter' as ClassId);
 
-  it('level 1 bundle-choice 2 is ranged-weapon with shortbow-kit and shortsword options', () => {
-    const grant = source?.levels[0].grants.find(
-      (g) => g.type === 'bundle-choice' && g.key === createChoiceKey('bundle-choice', 'class', 'rogue', 2)
-    );
-    expect(grant?.type).toBe('bundle-choice');
-    if (grant?.type === 'bundle-choice') {
-      expect(grant.category).toBe('ranged-weapon');
-      expect(grant.bundleIds).toEqual(['rogue-shortbow-kit', 'rogue-shortsword-ranged']);
-    }
-  });
-
-  it('level 1 bundle-choice 3 is pack with burglar, dungeoneer, and explorer options', () => {
-    const grant = source?.levels[0].grants.find(
-      (g) => g.type === 'bundle-choice' && g.key === createChoiceKey('bundle-choice', 'class', 'rogue', 3)
-    );
-    expect(grant?.type).toBe('bundle-choice');
-    if (grant?.type === 'bundle-choice') {
-      expect(grant.category).toBe('pack');
-      expect(grant.bundleIds).toEqual(['burglars-pack', 'dungeoneers-pack', 'explorers-pack']);
-    }
+  it('level 1 offers Option A or B as a single loadout choice', () => {
+    const grants = source?.levels[0].grants.filter((g) => g.type === 'bundle-choice');
+    expect(grants).toEqual([
+      {
+        type: 'bundle-choice',
+        key: createChoiceKey('bundle-choice', 'class', 'fighter', 0),
+        category: 'loadout',
+        bundleIds: ['fighter-loadout-a', 'fighter-loadout-b'],
+      },
+    ]);
   });
 });
 
@@ -358,14 +350,10 @@ describe('Barbarian class grant structures', () => {
   });
 
   it('level 1 has barbarian unarmored AC formula', () => {
-    const acGrant = source?.levels[0].grants.find((g) => g.type === 'armor-class');
-    expect(acGrant?.type).toBe('armor-class');
-    if (acGrant?.type === 'armor-class') {
-      expect(acGrant.calculation.mode).toBe('unarmored');
-      if (acGrant.calculation.mode === 'unarmored') {
-        expect(acGrant.calculation.formula).toBe('barbarian');
-      }
-    }
+    // An 'armored' fallback sits beside it so worn armor still sets the base.
+    const calcs = source?.levels[0].grants.flatMap((g) => (g.type === 'armor-class' ? [g.calculation] : []));
+    expect(calcs).toContainEqual({ mode: 'unarmored', formula: 'barbarian' });
+    expect(calcs).toContainEqual({ mode: 'armored' });
   });
 
   it('level 1 has rage and unarmored-defense features', () => {
@@ -722,12 +710,11 @@ describe('Druid class grant structures', () => {
     }
   });
 
-  it('level 1 has nonmetal armor proficiencies', () => {
+  it('level 1 has light armor and shield proficiencies (2024)', () => {
     const armorIds = source?.levels[0].grants
       .filter((g) => g.type === 'proficiency' && g.category === 'armor')
       .map((g) => (g.type === 'proficiency' ? g.id : ''));
-    expect(armorIds).toContain('medium-nonmetal');
-    expect(armorIds).toContain('shields-nonmetal');
+    expect(armorIds).toEqual(['light', 'shields']);
   });
 
   it('level 2 has wild-shape and wild-companion features', () => {
@@ -954,12 +941,14 @@ describe('Paladin class grant structures', () => {
     }
   });
 
-  it('level 1 has lay-on-hands and divine-sense features', () => {
-    const featureIds = source?.levels[0].grants
-      .filter((g) => g.type === 'feature')
-      .map((g) => (g.type === 'feature' ? g.feature.id : ''));
-    expect(featureIds).toContain('paladin-lay-on-hands');
-    expect(featureIds).toContain('paladin-divine-sense');
+  it('level 1 has lay-on-hands; Divine Sense is a Channel Divinity option from level 3', () => {
+    const idsAt = (i: number) =>
+      source?.levels[i].grants
+        .filter((g) => g.type === 'feature')
+        .map((g) => (g.type === 'feature' ? g.feature.id : ''));
+    expect(idsAt(0)).toContain('paladin-lay-on-hands');
+    expect(idsAt(0)).not.toContain('paladin-divine-sense');
+    expect(idsAt(2)).toContain('paladin-divine-sense');
   });
 
   it('level 1 has a weapon-mastery-choice grant with count 2', () => {
@@ -1015,7 +1004,9 @@ describe('Paladin class grant structures', () => {
     const pools = source?.levels.flatMap((l) => l.grants.filter((g) => g.type === 'resource-pool')) ?? [];
     expect(pools.map((p) => (p.type === 'resource-pool' ? p.poolId : ''))).toEqual([
       'lay-on-hands',
+      'paladins-smite',
       'channel-divinity',
+      'faithful-steed',
     ]);
     const loh = pools[0];
     if (loh.type === 'resource-pool' && loh.max.mode === 'level-steps') {
@@ -1374,5 +1365,59 @@ describe('FeatureChoiceGrant i18n coverage', () => {
       if (!entry?.description || entry.description.length === 0) missing.push(`${featureId}.description`);
     }
     expect(missing).toEqual([]);
+  });
+});
+
+describe('Rogue/Warlock 2024 corrections', () => {
+  const rogue = getClassSource('rogue' as ClassId);
+  const warlock = getClassSource('warlock' as ClassId);
+
+  it("rogue L1 grants Thieves' Cant plus one language of choice", () => {
+    expect(rogue?.levels[0].grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'proficiency-choice', category: 'language', count: 1, from: null }),
+      ])
+    );
+  });
+
+  it('rogue L19 carries an Epic Boon feat pick with a key distinct from the ASI feat picks', () => {
+    const grants = rogue?.levels[18].grants ?? [];
+    expect(grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'feat-choice', category: 'epicBoon' }),
+        { type: 'feature', feature: { id: 'rogue-epic-boon' } },
+      ])
+    );
+    const keys = (rogue?.levels ?? []).flatMap((l) =>
+      l.grants.flatMap((g) => (g.type === 'feat-choice' ? [g.key] : []))
+    );
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it('rogue L20 Stroke of Luck is a single-use pool refreshed on a Short Rest', () => {
+    expect(rogue?.levels[19].grants).toContainEqual({
+      type: 'resource-pool',
+      poolId: 'stroke-of-luck',
+      max: { mode: 'fixed', value: 1 },
+      regen: 'short-rest',
+    });
+  });
+
+  it('warlock Eldritch Master modifies Magical Cunning and has no pool of its own', () => {
+    expect(warlock?.levels[19].grants.some((g) => g.type === 'resource-pool')).toBe(false);
+  });
+
+  it('warlock invocation list has all 28 options from the 2024 PHB', () => {
+    const pick = warlock?.levels[0].grants.find((g): g is FeatureChoiceGrant => g.type === 'feature-choice');
+    expect(pick?.options).toHaveLength(28);
+    const ids = pick?.options.map((o) => o.optionId) ?? [];
+    expect(ids).toEqual(
+      expect.arrayContaining([
+        'eldritch-spear',
+        'gift-of-the-depths',
+        'gift-of-the-protectors',
+        'investment-of-the-chain-master',
+      ])
+    );
   });
 });

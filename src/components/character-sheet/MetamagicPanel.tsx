@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { createSlot, slotToPoints, spendSorceryPoints } from '@/lib/metamagic';
 import { getSpellSlotMax, poolRemaining } from '@/lib/rest';
-import { METAMAGIC_COSTS, SLOT_CREATION_COST, SORCERY_POINTS } from '@/lib/sources/metamagic';
+import { METAMAGIC_COSTS, SLOT_CREATION_COST, SLOT_CREATION_MIN_LEVEL, SORCERY_POINTS } from '@/lib/sources/metamagic';
 import type { Character } from '@/types/database';
 import type { ResolvedCharacter } from '@/types/resolved';
 
@@ -93,18 +93,20 @@ export function MetamagicPanel({ resolved, character, onUpdate }: MetamagicPanel
         </div>
         <p className="text-xs text-muted-foreground">{tc('metamagic.createHelp')}</p>
         <div className="flex flex-wrap gap-1">
-          {Object.entries(SLOT_CREATION_COST).map(([level, cost]) => (
-            <Button
-              key={level}
-              size="sm"
-              variant="outline"
-              className="h-6 px-2 text-[11px]"
-              disabled={left < cost}
-              onClick={() => create(Number(level))}
-            >
-              {tc('metamagic.createButton', { level, cost })}
-            </Button>
-          ))}
+          {Object.entries(SLOT_CREATION_COST)
+            .filter(([level]) => spMax >= SLOT_CREATION_MIN_LEVEL[Number(level)])
+            .map(([level, cost]) => (
+              <Button
+                key={level}
+                size="sm"
+                variant="outline"
+                className="h-6 px-2 text-[11px]"
+                disabled={left < cost}
+                onClick={() => create(Number(level))}
+              >
+                {tc('metamagic.createButton', { level, cost })}
+              </Button>
+            ))}
         </div>
       </div>
 

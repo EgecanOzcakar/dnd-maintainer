@@ -3,9 +3,18 @@ import { useTranslation } from 'react-i18next';
 import { Save, Loader2, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useBattleMap, useUpdateBattleMap } from '@/hooks/useBattleMap';
-import { cellKey, createEmptyMap, isCellOccupied } from '@/lib/battle-map';
+import { cellKey, createEmptyMap, findFreeCell, isCellOccupied } from '@/lib/battle-map';
+import { useDebouncedSave } from '@/hooks/useDebouncedSave';
 import type { BattleMap, MapToken } from '@/types/battle-map';
 import { BattleMapGrid, type EntityRef, type MapTool } from './BattleMapGrid';
 import { MapToolbar, type ObjectDraft } from './MapToolbar';
@@ -29,8 +38,16 @@ export function BattleMapEditor({ campaignId }: BattleMapEditorProps) {
   const [terrainKind, setTerrainKind] = useState<'wall' | 'difficult' | 'water'>('wall');
   const [zoom, setZoom] = useState(1);
 
+  // Destructive actions (clear / import) wait for confirmation; the last one can be undone.
+  const [pendingAction, setPendingAction] = useState<{ type: 'clear' } | { type: 'import'; map: BattleMap } | null>(
+    null
+  );
+
   const seeded = useRef(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const save = useDebouncedSave<{ map: BattleMap }>(
+    ({ map: next }) => updateMap.mutate({ campaignId, map: next }),
+    AUTOSAVE_MS
+  );
 
   // Seed the working copy once from the persisted map (or a fresh empty one).
   useEffect(() => {
@@ -39,15 +56,7 @@ export function BattleMapEditor({ campaignId }: BattleMapEditorProps) {
     setMap(data.map ?? createEmptyMap(t('battleMap.defaultName')));
   }, [data, t]);
 
-  const persist = useCallback(
-    (next: BattleMap) => {
-      if (timer.current) clearTimeout(timer.current);
-      timer.current = setTimeout(() => {
-        updateMap.mutate({ campaignId, map: next });
-      }, AUTOSAVE_MS);
-    },
-    [campaignId, updateMap]
-  );
+  const persist = save.schedule;
 
   const mutate = useCallback(
     (fn: (prev: BattleMap) => BattleMap) => {
@@ -56,14 +65,12 @@ export function BattleMapEditor({ campaignId }: BattleMapEditorProps) {
         const result = fn(prev);
         if (result === prev) return prev;
         const next = { ...result, updatedAt: new Date().toISOString() };
-        persist(next);
+        persist({ map: next });
         return next;
       });
     },
     [persist]
   );
-
-  useEffect(() => () => void (timer.current && clearTimeout(timer.current)), []);
 
   if (!map) {
     return (
@@ -127,31 +134,43 @@ export function BattleMapEditor({ campaignId }: BattleMapEditorProps) {
   };
 
   const handleAddToken = (token: Omit<MapToken, 'id' | 'x' | 'y'>) => {
-    // Drop new tokens on the first free cell near the top-left.
-    let placed = false;
-    for (let y = 0; y < map.gridHeight && !placed; y++) {
-      for (let x = 0; x < map.gridWidth && !placed; x++) {
-        if (!isCellOccupied(map, x, y)) {
-          mutate((prev) => ({ ...prev, tokens: [...prev.tokens, { ...token, id: crypto.randomUUID(), x, y }] }));
-          placed = true;
-        }
-      }
-    }
+    // Pick the cell from the latest state (not this render's) so several adds in a row don't stack.
+    mutate((prev) => {
+      const cell = findFreeCell(prev);
+      return cell ? { ...prev, tokens: [...prev.tokens, { ...token, id: crypto.randomUUID(), ...cell }] } : prev;
+    });
   };
 
-  const handleImport = (imported: BattleMap) => {
-    const next = { ...imported, updatedAt: new Date().toISOString() };
+  /** Replace the whole map, offering a one-step undo back to the current one. */
+  const replaceMap = (next: BattleMap, message: string) => {
+    const previous = map;
     setMap(next);
-    persist(next);
+    persist({ map: next });
+    toast.info(message, {
+      action: {
+        label: t('battleMap.undo'),
+        onClick: () => {
+          setMap(previous);
+          persist({ map: previous });
+        },
+      },
+    });
   };
 
-  const handleClear = () => {
-    mutate((prev) => ({ ...prev, objects: [], tokens: [], terrain: {} }));
-    toast.info(t('battleMap.cleared'));
+  const handleConfirmPending = () => {
+    if (pendingAction?.type === 'clear') {
+      replaceMap(
+        { ...map, objects: [], tokens: [], terrain: {}, updatedAt: new Date().toISOString() },
+        t('battleMap.cleared')
+      );
+    } else if (pendingAction?.type === 'import') {
+      replaceMap({ ...pendingAction.map, updatedAt: new Date().toISOString() }, t('battleMap.file.importSuccess'));
+    }
+    setPendingAction(null);
   };
 
   const handleSaveNow = () => {
-    if (timer.current) clearTimeout(timer.current);
+    save.cancel();
     updateMap.mutate({ campaignId, map });
     toast.success(t('battleMap.saved'));
   };
@@ -179,10 +198,10 @@ export function BattleMapEditor({ campaignId }: BattleMapEditorProps) {
           onTerrainKindChange={setTerrainKind}
           zoom={zoom}
           onZoomChange={setZoom}
-          onClear={handleClear}
+          onClear={() => setPendingAction({ type: 'clear' })}
         />
         <TokenPalette campaignId={campaignId} tokens={map.tokens} onAddToken={handleAddToken} />
-        <MapFileControls map={map} onImport={handleImport} />
+        <MapFileControls map={map} onImport={(imported) => setPendingAction({ type: 'import', map: imported })} />
       </div>
 
       <div className="space-y-2">
@@ -198,6 +217,27 @@ export function BattleMapEditor({ campaignId }: BattleMapEditorProps) {
           onEntityClick={handleEntityClick}
         />
       </div>
+
+      <Dialog open={pendingAction !== null} onOpenChange={(open) => !open && setPendingAction(null)}>
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>
+              {pendingAction?.type === 'import' ? t('battleMap.confirmImportTitle') : t('battleMap.confirmClearTitle')}
+            </DialogTitle>
+            <DialogDescription>
+              {pendingAction?.type === 'import' ? t('battleMap.confirmImport') : t('battleMap.confirmClear')}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPendingAction(null)}>
+              {t('buttons.cancel')}
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmPending}>
+              {pendingAction?.type === 'import' ? t('battleMap.file.import') : t('battleMap.clearMap')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

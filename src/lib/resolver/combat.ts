@@ -33,14 +33,32 @@ export function resolveHp(
   // Apply flat per-level HP bonuses (e.g. Tough feat grants +2 per level)
   const hpBonusGrants = collectGrantsByType(bundles, 'hp-bonus');
   for (const { grant } of hpBonusGrants) {
-    max += grant.perLevel * level;
+    max += grant.perLevel * level + (grant.flat ?? 0);
   }
 
   return { max };
 }
 
-export function resolveSpeed(bundles: readonly GrantBundle[]): Readonly<Partial<Record<SpeedMode, ResolvedSpeed>>> {
-  const speedGrants = collectGrantsByType(bundles, 'speed');
+export interface WornGear {
+  readonly bodyArmor: boolean;
+  readonly heavyArmor: boolean;
+  readonly shield: boolean;
+  /** Feet lost because Strength is below the worn armor's requirement (2024: Speed -10 ft). */
+  readonly strengthPenalty: number;
+}
+
+export function resolveSpeed(
+  bundles: readonly GrantBundle[],
+  gear: WornGear = { bodyArmor: false, heavyArmor: false, shield: false, strengthPenalty: 0 }
+): Readonly<Partial<Record<SpeedMode, ResolvedSpeed>>> {
+  const allSpeedGrants = collectGrantsByType(bundles, 'speed');
+  const speedGrants = allSpeedGrants.filter(({ grant }) => !grant.additive);
+  const additive = allSpeedGrants.filter(
+    ({ grant }) =>
+      grant.additive &&
+      (grant.condition !== 'unarmored' || (!gear.bodyArmor && !gear.shield)) &&
+      (grant.condition !== 'no-heavy-armor' || !gear.heavyArmor)
+  );
 
   // First pass: resolve all fixed-value grants, taking the highest per mode.
   // 'walk-equivalent' grants are deferred to a second pass once the walk
@@ -89,23 +107,40 @@ export function resolveSpeed(bundles: readonly GrantBundle[]): Readonly<Partial<
     }
   }
 
+  // Additive bonuses apply to the walk speed, and to every speed that follows it ('walk-equivalent').
+  const bonus = additive.reduce((sum, { grant }) => sum + (grant.value as number), 0);
+  const bonusSources = additive.map(({ source }) => source);
+
   const result: Partial<Record<SpeedMode, ResolvedSpeed>> = {};
   for (const [mode, { value, sources, condition }] of bestPerMode) {
-    result[mode] = condition ? { value, sources, condition } : { value, sources };
+    const walkLike = mode === 'walk' || walkEquivalent.has(mode);
+    const total = Math.max(0, value + (walkLike ? bonus - gear.strengthPenalty : -gear.strengthPenalty));
+    const allSources = walkLike ? [...sources, ...bonusSources] : sources;
+    result[mode] = condition ? { value: total, sources: allSources, condition } : { value: total, sources: allSources };
   }
   return result;
 }
+
+/**
+ * Unarmored Defense formulas only apply while no body armor is worn; Monk and Dance Bard also lose theirs
+ * while wielding a Shield (Barbarian and Draconic Sorcerer may keep one).
+ */
+const UNARMORED_BLOCKED_BY_SHIELD: ReadonlySet<string> = new Set(['monk', 'dance']);
 
 export function resolveAc(
   bundles: readonly GrantBundle[],
   dexModifier: number,
   equippedArmor?: { readonly totalBase: number | null; readonly shieldBonus: number } | null,
-  bardicDieSize?: 6 | 8 | 10 | 12 | null,
+  _bardicDieSize?: 6 | 8 | 10 | 12 | null,
   conModifier: number = 0,
-  wisModifier: number = 0
+  wisModifier: number = 0,
+  chaModifier: number = 0,
+  /** A Shield is held, even one the character is not proficient with (so it adds no AC). */
+  shieldEquipped: boolean = (equippedArmor?.shieldBonus ?? 0) > 0
 ): ResolvedArmorClass {
   const acGrants = collectGrantsByType(bundles, 'armor-class');
   const acBonusGrants = collectGrantsByType(bundles, 'ac-bonus');
+  const bodyArmorWorn = equippedArmor?.totalBase != null;
 
   const calculations: {
     readonly mode: 'armored' | 'unarmored' | 'natural';
@@ -126,10 +161,13 @@ export function resolveAc(
         calculations.push({ mode: 'natural', baseValue: calc.baseAc, source });
         break;
       case 'unarmored': {
+        if (bodyArmorWorn || (shieldEquipped && UNARMORED_BLOCKED_BY_SHIELD.has(calc.formula))) break;
         let baseValue = 10 + dexModifier;
         switch (calc.formula) {
           case 'dance':
-            if (bardicDieSize != null) baseValue += bardicDieSize;
+          case 'draconic':
+            // College of Dance (Dazzling Footwork) and Draconic Resilience: 10 + DEX + CHA
+            baseValue += chaModifier;
             break;
           case 'barbarian':
             // Barbarian Unarmored Defense: 10 + DEX + CON
@@ -154,10 +192,9 @@ export function resolveAc(
     }
   }
 
-  const bonuses: { readonly value: number; readonly source: SourceTag }[] = acBonusGrants.map(({ grant, source }) => ({
-    value: grant.bonus,
-    source,
-  }));
+  const bonuses: { readonly value: number; readonly source: SourceTag }[] = acBonusGrants
+    .filter(({ grant }) => !grant.requiresArmor || bodyArmorWorn)
+    .map(({ grant, source }) => ({ value: grant.bonus, source }));
 
   // Add shield bonus whenever a shield is equipped, regardless of body armor
   if (equippedArmor != null && equippedArmor.shieldBonus > 0) {

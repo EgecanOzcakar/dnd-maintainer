@@ -8,7 +8,7 @@ import { ActiveEffectsPanel } from '@/components/character-sheet/ActiveEffectsPa
 import { resolveActions } from '@/lib/resolver/actions';
 import { applyEffects } from '@/lib/resolver/effects';
 import { canPrepareSpells, getEffectivePrepared } from '@/lib/spell-preparation';
-import type { ClassId } from '@/lib/dnd-helpers';
+import type { ClassId, ExhaustionLevel } from '@/lib/dnd-helpers';
 import { BackstoryPanel } from '@/components/character-sheet/BackstoryPanel';
 import { CharacterSheetHeader } from '@/components/character-sheet/CharacterSheetHeader';
 import { PlayerSceneViewer } from '@/components/battle-map/PlayerSceneViewer';
@@ -52,6 +52,7 @@ import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
 import { ArcaneRecoveryPanel } from '@/components/character-sheet/ArcaneRecoveryPanel';
 import { ChosenOptionsPanel } from '@/components/character-sheet/ChosenOptionsPanel';
 import { CurrencyPanel } from '@/components/character-sheet/CurrencyPanel';
+import { CustomModifiersPanel } from '@/components/character-sheet/CustomModifiersPanel';
 import { ManeuversPanel } from '@/components/character-sheet/ManeuversPanel';
 import { MetamagicPanel } from '@/components/character-sheet/MetamagicPanel';
 import { ACTIVE_EFFECTS } from '@/lib/sources/active-effects';
@@ -382,6 +383,8 @@ function CharacterSheetInner({
       ...buildRestUpdate('long', character, resolved),
       ...longRestHpUpdate(),
       active_effects: [],
+      // 2024: a Long Rest removes one level of Exhaustion.
+      exhaustion_level: Math.max(0, (character.exhaustion_level ?? 0) - 1) as ExhaustionLevel,
       // Human Resourceful: Heroic Inspiration after every Long Rest.
       ...(resolved.features.some((f) => f.feature.id === 'human-resourceful') ? { heroic_inspiration: true } : {}),
     });
@@ -570,6 +573,10 @@ function CharacterSheetInner({
         {activeTab === 'inventory' ? (
           <>
             <CurrencyPanel currency={character.currency} onChange={(currency) => handleUpdate({ currency })} />
+            <CustomModifiersPanel
+              modifiers={character.custom_modifiers}
+              onChange={(custom_modifiers) => handleUpdate({ custom_modifiers })}
+            />
             <InventoryTab
               characterId={character.id}
               campaignId={character.campaign_id}

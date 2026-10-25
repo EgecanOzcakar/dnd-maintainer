@@ -49,6 +49,28 @@ describe('resolveResourcePools', () => {
     expect(pools[0].regen).toBe('long-rest');
   });
 
+  it.each([
+    [3, 3],
+    [0, 1],
+    [-1, 1],
+  ])('ability-modifier max with a %i modifier resolves to %i (minimum 1)', (modifier, expected) => {
+    const bundles: GrantBundle[] = [
+      {
+        source: { origin: 'subclass', id: 'wardomain', classId: 'cleric', level: 3 },
+        grants: [
+          {
+            type: 'resource-pool',
+            poolId: 'war-priest',
+            max: { mode: 'ability-mod', ability: 'wis' },
+            regen: 'short-rest',
+          },
+        ],
+      },
+    ];
+    const mods = { wis: { modifier } } as Parameters<typeof resolveResourcePools>[1];
+    expect(resolveResourcePools(bundles, mods)[0].max).toBe(expected);
+  });
+
   it('counts only bundles for the named class when computing class-level max', () => {
     const monkBundles = classBundles('monk', 3, [
       {
@@ -315,6 +337,37 @@ describe('resolveResourcePools', () => {
       const pools = resolveResourcePools(paladinAtLevel(level));
       expect(pools).toHaveLength(1);
       expect(pools[0]).toMatchObject({ poolId: 'channel-divinity', max: expectedMax, regen: 'short-rest' });
+    });
+  });
+
+  describe('ability-mod max', () => {
+    const wisPool: GrantBundle[] = [
+      {
+        source: { origin: 'class', id: 'ranger', level: 10 },
+        grants: [
+          {
+            type: 'resource-pool',
+            poolId: 'tireless',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
+        ],
+      },
+    ];
+    const abilitiesWith = (wisMod: number) =>
+      ({ wis: { modifier: wisMod } }) as unknown as Parameters<typeof resolveResourcePools>[1];
+
+    it.each([
+      [-1, 1],
+      [0, 1],
+      [1, 1],
+      [4, 4],
+    ])('resolves a WIS modifier of %i to %i uses (minimum 1)', (mod, expected) => {
+      expect(resolveResourcePools(wisPool, abilitiesWith(mod))[0]).toMatchObject({ poolId: 'tireless', max: expected });
+    });
+
+    it('falls back to the minimum when abilities are not supplied', () => {
+      expect(resolveResourcePools(wisPool)[0].max).toBe(1);
     });
   });
 

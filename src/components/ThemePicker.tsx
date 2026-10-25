@@ -18,12 +18,13 @@ export function ThemePicker(props: ThemePickerProps): React.JSX.Element {
   return (
     <div className="space-y-2">
       {label && <p className="text-sm font-medium">{label}</p>}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2" role="group" aria-label={label ?? t('settings.themeSettings')}>
         {props.allowNone && (
           <button
             type="button"
             onClick={() => props.onChange(null)}
             disabled={disabled}
+            aria-pressed={value === null}
             className={cn(
               'flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors',
               'disabled:opacity-50 disabled:cursor-not-allowed',
@@ -40,6 +41,7 @@ export function ThemePicker(props: ThemePickerProps): React.JSX.Element {
             type="button"
             onClick={() => onChange(theme.id)}
             disabled={disabled}
+            aria-pressed={value === theme.id}
             className={cn(
               'flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors',
               'disabled:opacity-50 disabled:cursor-not-allowed',

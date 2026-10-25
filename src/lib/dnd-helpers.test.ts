@@ -106,8 +106,8 @@ describe('getSpellSlots', () => {
     expect(getSpellSlots('wizard', 20)).toEqual([4, 3, 3, 3, 3, 2, 2, 1, 1]);
   });
 
-  it('returns empty array for paladin (half caster) at level 1', () => {
-    expect(getSpellSlots('paladin', 1)).toEqual([]);
+  it('paladin (half caster) has spell slots from level 1 in 2024', () => {
+    expect(getSpellSlots('paladin', 1)).toEqual([2]);
   });
 
   it('returns correct slots for paladin at level 5', () => {
@@ -135,11 +135,11 @@ describe('getSpellSlots', () => {
   });
 
   it('returns correct slots for eldritchknight at level 5', () => {
-    expect(getSpellSlots('eldritchknight', 5)).toEqual([4, 2]);
+    expect(getSpellSlots('eldritchknight', 5)).toEqual([3]);
   });
 
   it('returns correct slots for eldritchknight at level 7', () => {
-    expect(getSpellSlots('eldritchknight', 7)).toEqual([4, 3]);
+    expect(getSpellSlots('eldritchknight', 7)).toEqual([4, 2]);
   });
 
   it('returns empty array for eldritchknight before level 3 (not yet a caster)', () => {
@@ -151,7 +151,7 @@ describe('getSpellSlots', () => {
   });
 
   it('returns correct slots for arcanetrickster at level 7', () => {
-    expect(getSpellSlots('arcanetrickster', 7)).toEqual([4, 3]);
+    expect(getSpellSlots('arcanetrickster', 7)).toEqual([4, 2]);
   });
 });
 
@@ -187,29 +187,26 @@ describe('getPactMagicSlots', () => {
 // getPreparedSpellCount
 // ---------------------------------------------------------------------------
 describe('getPreparedSpellCount', () => {
-  it.each<[string, number, number, number]>([
-    ['cleric', 5, 3, 8],
-    ['cleric', 1, -2, 1],
-    ['cleric', 1, 0, 1],
-    ['druid', 3, 2, 5],
-    ['wizard', 5, 3, 8],
-    ['paladin', 4, 1, 5],
-    ['ranger', 8, 2, 10],
-  ])('%s level %i abilityMod %i → preparedCount %i', (classId, classLevel, abilityMod, expected) => {
-    expect(getPreparedSpellCount(classId, classLevel, abilityMod)).toBe(expected);
-  });
-
-  it('floors prepared count at 1 when level + mod is 0 or negative', () => {
-    expect(getPreparedSpellCount('cleric', 1, -2)).toBe(1);
-    expect(getPreparedSpellCount('cleric', 2, -3)).toBe(1);
-  });
-
-  it.each(['bard', 'sorcerer', 'warlock'])('%s returns 0 (known-spell caster)', (classId) => {
-    expect(getPreparedSpellCount(classId, 5, 3)).toBe(0);
+  // 2024: a fixed class-table column, independent of the ability modifier.
+  it.each<[string, number, number]>([
+    ['cleric', 1, 4],
+    ['cleric', 5, 9],
+    ['druid', 3, 6],
+    ['wizard', 5, 9],
+    ['wizard', 20, 25],
+    ['paladin', 4, 5],
+    ['ranger', 8, 7],
+    ['bard', 5, 9],
+    ['sorcerer', 5, 9],
+    ['warlock', 5, 6],
+    ['eldritchknight', 3, 3],
+    ['eldritchknight', 2, 0],
+  ])('%s level %i → prepared %i', (classId, classLevel, expected) => {
+    expect(getPreparedSpellCount(classId, classLevel)).toBe(expected);
   });
 
   it('fighter returns 0 (non-caster)', () => {
-    expect(getPreparedSpellCount('fighter', 5, 2)).toBe(0);
+    expect(getPreparedSpellCount('fighter', 5)).toBe(0);
   });
 });
 
@@ -628,8 +625,8 @@ describe('computeProficiencies', () => {
 
   it('weapons come from class only, not race', () => {
     const result = computeProficiencies('rogue', 'elf', base, true, true);
-    const longswordCount = result.weapons.filter((w) => w === 'longsword').length;
-    expect(longswordCount).toBe(1);
+    const finesseCount = result.weapons.filter((w) => w === 'martial-finesse-light').length;
+    expect(finesseCount).toBe(1);
   });
 
   it('resets toolChoices when class changes', () => {

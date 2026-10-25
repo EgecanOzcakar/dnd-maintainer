@@ -17,7 +17,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, useLocation, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -48,6 +48,18 @@ interface NavItem {
   readonly path: string;
   readonly matchPaths?: readonly string[];
   readonly end?: boolean;
+  /** Reference pages that also exist outside a campaign, so they stay available when none is selected. */
+  readonly global?: boolean;
+}
+
+const LAST_CAMPAIGN_KEY = 'dnd_last_campaign';
+
+function readLastCampaignSlug(): string | null {
+  try {
+    return window.localStorage.getItem(LAST_CAMPAIGN_KEY);
+  } catch {
+    return null;
+  }
 }
 
 const NAV_ITEMS: readonly NavItem[] = [
@@ -55,9 +67,9 @@ const NAV_ITEMS: readonly NavItem[] = [
   { icon: Users, labelKey: 'nav.characters', path: '/characters', matchPaths: ['/character'] },
   { icon: BookOpen, labelKey: 'nav.sessions', path: '/sessions' },
   { icon: ScrollText, labelKey: 'nav.notes', path: '/notes' },
-  { icon: Library, labelKey: 'nav.wiki', path: '/wiki' },
-  { icon: Sparkles, labelKey: 'nav.magicItems', path: '/magic-items' },
-  { icon: Scale, labelKey: 'nav.rules', path: '/rules' },
+  { icon: Library, labelKey: 'nav.wiki', path: '/wiki', global: true },
+  { icon: Sparkles, labelKey: 'nav.magicItems', path: '/magic-items', global: true },
+  { icon: Scale, labelKey: 'nav.rules', path: '/rules', global: true },
   { icon: Dices, labelKey: 'nav.dmControl', path: '/dm' },
   { icon: Grid3x3, labelKey: 'nav.battleMap', path: '/map' },
 ];
@@ -82,6 +94,17 @@ export function Sidebar({
 
   const isCurrentDemo = isDemoCampaign(currentCampaign);
 
+  // Remember the last campaign so the nav still works on pages outside one (export, settings, home).
+  useEffect(() => {
+    if (!currentCampaign) return;
+    try {
+      window.localStorage.setItem(LAST_CAMPAIGN_KEY, currentCampaign.slug);
+    } catch {
+      // best-effort convenience only
+    }
+  }, [currentCampaign]);
+  const navCampaign = currentCampaign ?? campaigns.find((c) => c.slug === readLastCampaignSlug());
+
   const handleLock = () => {
     if (!currentCampaign) return;
     lockCampaign(currentCampaign.id, currentCampaign.slug);
@@ -96,7 +119,13 @@ export function Sidebar({
       {/* Mobile close button — only visible when sidebar is open (opens via Layout header) */}
       {!isCollapsed && (
         <div className="md:hidden fixed top-3 left-52 z-50">
-          <Button variant="ghost" size="sm" onClick={() => onToggleCollapse(true)} className="p-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onToggleCollapse(true)}
+            className="p-2"
+            aria-label={t('buttons.close')}
+          >
             <X className="size-6" />
           </Button>
         </div>
@@ -226,8 +255,8 @@ export function Sidebar({
         <nav className="flex-1 px-2 py-4">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
-            const disabled = !currentCampaign;
-            const fullPath = currentCampaign ? `/campaign/${currentCampaign.slug}${item.path}` : '#';
+            const disabled = !navCampaign && !item.global;
+            const fullPath = navCampaign ? `/campaign/${navCampaign.slug}${item.path}` : item.global ? item.path : '#';
 
             if (disabled) {
               return (
@@ -242,7 +271,7 @@ export function Sidebar({
               );
             }
 
-            const campaignPrefix = `/campaign/${currentCampaign.slug}`;
+            const campaignPrefix = navCampaign ? `/campaign/${navCampaign.slug}` : '';
             const pathMatches = (suffix: string): boolean => {
               const full = `${campaignPrefix}${suffix}`;
               if (item.end) return location.pathname === full;
@@ -269,6 +298,7 @@ export function Sidebar({
                     }
                   `}
                 title={t(item.labelKey)}
+                aria-label={t(item.labelKey)}
               >
                 <Icon className="size-5 shrink-0" />
                 {!isCollapsed && <span className="font-medium text-sm">{t(item.labelKey)}</span>}

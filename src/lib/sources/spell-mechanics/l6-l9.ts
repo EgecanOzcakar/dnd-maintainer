@@ -3,8 +3,8 @@ import type { SpellMechanics } from '@/types/actions';
 /**
  * Attack/save/damage data for level 6-9 spells (see SpellMechanics).
  * Flat HP/damage that has no dice form is noted in comments rather than modelled.
- * Omitted on purpose (flat amounts, no roll): Heal (70 HP, +10/slot), Mass Heal (700 HP),
- * Power Word Heal (all HP), Power Word Fortify (temp HP), Prismatic Wall (12d6 per layer, varies by layer).
+ * Omitted on purpose (flat amounts, no roll): Mass Heal (700 HP), Power Word Heal (all HP),
+ * Power Word Fortify (temp HP), Prismatic Wall (12d6 per layer, varies by layer). Heal (a flat 70 HP) is modelled below.
  */
 export const SPELL_MECHANICS_L6_L9: Readonly<Record<string, SpellMechanics>> = {
   // Level 6

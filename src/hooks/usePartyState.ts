@@ -1,5 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import {
+  invalidatePartySnapshot,
+  partySnapshotKey,
+  usePartySnapshot,
+  type PartySnapshot,
+} from '@/hooks/usePartySnapshot';
 
 export interface CharacterRollEntry {
   formula: string;
@@ -19,53 +26,24 @@ export interface PartyFullState {
   displayImage?: { url: string; title?: string; caption?: string } | null;
 }
 
+function selectPartyState(campaignId: string) {
+  return ({ meta, hp }: PartySnapshot): PartyFullState | null => {
+    if (!meta && Object.keys(hp).length === 0) return null;
+    const parsed = meta ?? {};
+    return {
+      campaignId,
+      initiatives: parsed.party_initiatives?.initiatives ?? {},
+      hp,
+      lastRolls: parsed.character_rolls?.rollsMap ?? parsed.character_rolls ?? {},
+      displayImage: parsed.shared_image ?? null,
+      updatedAt: parsed.updatedAt ?? new Date().toISOString(),
+    };
+  };
+}
+
 export function usePartyState(campaignId: string | undefined) {
-  return useQuery({
-    queryKey: ['party-state', campaignId],
-    queryFn: async (): Promise<PartyFullState | null> => {
-      if (!campaignId) return null;
-      // HP lives on characters.current_hp (single source of truth); fetched in the same poll tick.
-      const [notesRes, hpRes] = await Promise.all([
-        supabase.from('campaigns').select('dm_notes').eq('id', campaignId).single(),
-        supabase
-          .from('characters')
-          .select('id, current_hp')
-          .eq('campaign_id', campaignId)
-          .not('current_hp', 'is', null),
-      ]);
-
-      if (notesRes.error) throw notesRes.error;
-      if (hpRes.error) throw hpRes.error;
-
-      const hp: Record<string, number> = {};
-      if (Array.isArray(hpRes.data)) {
-        for (const row of hpRes.data) if (row.current_hp != null) hp[row.id] = row.current_hp;
-      }
-
-      const rawNotes = notesRes.data?.dm_notes;
-      let parsed: Record<string, any> | null; // eslint-disable-line @typescript-eslint/no-explicit-any
-      try {
-        parsed = typeof rawNotes === 'string' ? JSON.parse(rawNotes) : rawNotes;
-      } catch {
-        parsed = null;
-      }
-      if (!parsed || typeof parsed !== 'object') {
-        if (Object.keys(hp).length === 0) return null;
-        parsed = {};
-      }
-
-      return {
-        campaignId,
-        initiatives: parsed.party_initiatives?.initiatives ?? {},
-        hp,
-        lastRolls: parsed.character_rolls?.rollsMap ?? parsed.character_rolls ?? {},
-        displayImage: parsed.shared_image ?? null,
-        updatedAt: parsed.updatedAt ?? new Date().toISOString(),
-      };
-    },
-    enabled: !!campaignId,
-    refetchInterval: 2000,
-  });
+  const select = useMemo(() => selectPartyState(campaignId ?? ''), [campaignId]);
+  return usePartySnapshot(campaignId, select);
 }
 
 /**
@@ -92,8 +70,23 @@ export function useUpdatePartyHP() {
       const failed = results.find((r) => r.error);
       if (failed?.error) throw failed.error;
     },
-    onSuccess: (_, { campaignId }) => {
-      queryClient.invalidateQueries({ queryKey: ['party-state', campaignId] });
+    // Optimistic: show the new HP at once so rapid -5/-1/+1 clicks compound instead of racing the poll.
+    onMutate: async ({ campaignId, hpMap }) => {
+      await queryClient.cancelQueries({ queryKey: partySnapshotKey(campaignId) });
+      const previous = queryClient.getQueryData<PartySnapshot>(partySnapshotKey(campaignId));
+      if (previous) {
+        queryClient.setQueryData<PartySnapshot>(partySnapshotKey(campaignId), {
+          ...previous,
+          hp: { ...previous.hp, ...hpMap },
+        });
+      }
+      return { previous };
+    },
+    onError: (_err, { campaignId }, context) => {
+      if (context?.previous) queryClient.setQueryData(partySnapshotKey(campaignId), context.previous);
+    },
+    onSettled: (_data, _err, { campaignId }) => {
+      invalidatePartySnapshot(queryClient, campaignId);
       queryClient.invalidateQueries({ queryKey: ['character'] });
     },
   });
@@ -170,9 +163,7 @@ export function useRecordCharacterRoll() {
       return updatedMeta;
     },
     onSuccess: (_, { campaignId }) => {
-      queryClient.invalidateQueries({ queryKey: ['party-state', campaignId] });
-      queryClient.invalidateQueries({ queryKey: ['party-initiatives', campaignId] });
-      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+      invalidatePartySnapshot(queryClient, campaignId);
     },
   });
 }
@@ -229,8 +220,7 @@ export function useUpdateSharedImage() {
       return updatedMeta;
     },
     onSuccess: (_, { campaignId }) => {
-      queryClient.invalidateQueries({ queryKey: ['party-state', campaignId] });
-      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+      invalidatePartySnapshot(queryClient, campaignId);
     },
   });
 }

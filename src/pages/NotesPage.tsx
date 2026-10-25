@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { Note } from '@/types/database';
 import type { TablesUpdate } from '@/types/supabase';
 import { NOTE_DETAIL_COLS } from '@/lib/query-columns';
+import { SHARED_LIST_QUERY } from '@/lib/query-options';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertCircle,
@@ -17,12 +18,12 @@ import {
   Trash2,
   Users,
   Wand2,
-  X,
 } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCampaignContext } from '@/hooks/useCampaignContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useDebouncedSave } from '@/hooks/useDebouncedSave';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -35,6 +36,14 @@ import {
 import { ValidationError } from '@/components/ui/validation-error';
 
 type NoteCategory = 'lore' | 'npc' | 'location' | 'quest' | 'item' | 'general';
+
+type NotePatch = Partial<Pick<Note, 'title' | 'content' | 'category' | 'tags' | 'is_pinned'>> & { id: string };
+
+const parseTags = (raw: string) =>
+  raw
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter(Boolean);
 
 const CATEGORIES: { value: NoteCategory; icon: React.ReactNode }[] = [
   { value: 'lore', icon: <Scroll className="size-4" /> },
@@ -59,12 +68,6 @@ export default function NotesPage() {
   const [showNewNoteModal, setShowNewNoteModal] = useState(false);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null);
-  const autoSaveTimer = useRef<NodeJS.Timeout>(null);
-  useEffect(() => {
-    return () => {
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    };
-  }, []);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'error'>('idle');
 
   const [titleError, setTitleError] = useState<string>('');
@@ -95,6 +98,7 @@ export default function NotesPage() {
       return data as unknown as Note[];
     },
     enabled: !!campaignId,
+    ...SHARED_LIST_QUERY,
   });
 
   // Extract unique tags
@@ -147,10 +151,7 @@ export default function NotesPage() {
             title: noteData.title,
             content: noteData.content,
             category: noteData.category,
-            tags: noteData.tags
-              .split(',')
-              .map((t) => t.trim())
-              .filter((t) => t),
+            tags: parseTags(noteData.tags),
             is_pinned: noteData.pinned,
           },
         ])
@@ -168,13 +169,11 @@ export default function NotesPage() {
 
   // Update note mutation
   const updateNoteMutation = useMutation({
-    mutationFn: async (noteData: Partial<Note>) => {
-      if (!editingNote) throw new Error('No note selected');
-
+    mutationFn: async ({ id, ...updates }: NotePatch) => {
       const { error } = await supabase
         .from('notes')
-        .update(noteData as unknown as TablesUpdate<'notes'>)
-        .eq('id', editingNote.id);
+        .update(updates as unknown as TablesUpdate<'notes'>)
+        .eq('id', id);
 
       if (error) throw error;
     },
@@ -187,6 +186,9 @@ export default function NotesPage() {
     },
   });
 
+  // Debounced field-level autosave; pending edits are flushed when the editor closes or the page is left.
+  const autoSave = useDebouncedSave<NotePatch>(updateNoteMutation.mutate, 1000);
+
   // Delete note mutation
   const deleteNoteMutation = useMutation({
     mutationFn: async (noteId: string) => {
@@ -196,6 +198,8 @@ export default function NotesPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes', campaignId, 'full'] });
+      autoSave.cancel();
+      setShowNewNoteModal(false);
       setEditingNote(null);
     },
   });
@@ -208,6 +212,13 @@ export default function NotesPage() {
       tags: '',
       pinned: false,
     });
+  };
+
+  const closeEditor = () => {
+    autoSave.flush();
+    setShowNewNoteModal(false);
+    setTitleError('');
+    if (!editingNote) resetForm();
   };
 
   const handleOpenNewNote = () => {
@@ -241,14 +252,13 @@ export default function NotesPage() {
     }
 
     if (editingNote) {
+      autoSave.cancel();
       updateNoteMutation.mutate({
+        id: editingNote.id,
         title: formData.title,
         content: formData.content,
         category: formData.category,
-        tags: formData.tags
-          .split(',')
-          .map((t) => t.trim())
-          .filter((t) => t),
+        tags: parseTags(formData.tags),
         is_pinned: formData.pinned,
       });
       setShowNewNoteModal(false);
@@ -257,32 +267,23 @@ export default function NotesPage() {
     }
   };
 
-  const handleAutoSaveNote = useCallback(
-    (field: string, value: unknown) => {
-      const updated = { ...formData, [field]: value };
-      setFormData(updated);
-
-      if (!editingNote) return;
-
-      if (autoSaveTimer.current) {
-        clearTimeout(autoSaveTimer.current);
-      }
-
-      setSaveStatus('saving');
-      autoSaveTimer.current = setTimeout(() => {
-        updateNoteMutation.mutate({
-          [field]: value,
-        });
-      }, 1000);
-    },
-    [formData, editingNote, updateNoteMutation]
-  );
+  const handleAutoSaveNote = (field: keyof typeof formData, value: string | boolean) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (!editingNote) return;
+    // Never persist an empty title; the form still shows what was typed.
+    if (field === 'title' && !String(value).trim()) return;
+    const patch =
+      field === 'tags'
+        ? { tags: parseTags(value as string) }
+        : field === 'pinned'
+          ? { is_pinned: value as boolean }
+          : { [field]: value };
+    setSaveStatus('saving');
+    autoSave.schedule({ id: editingNote.id, ...patch });
+  };
 
   const handleTogglePinned = (note: Note) => {
-    updateNoteMutation.mutate({
-      id: note.id,
-      is_pinned: !note.is_pinned,
-    });
+    updateNoteMutation.mutate({ id: note.id, is_pinned: !note.is_pinned });
   };
 
   const handleDeleteNote = (noteId: string) => {
@@ -323,7 +324,7 @@ export default function NotesPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-muted/50 border-b border-border sticky top-0 z-10">
+      <div className="bg-muted/50 border-b border-border">
         <div className="max-w-6xl mx-auto px-8 py-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-3">
             <div>
@@ -357,7 +358,7 @@ export default function NotesPage() {
       </div>
 
       {/* Category Tabs and Controls */}
-      <div className="bg-muted/50 border-b border-border sticky top-24 z-10">
+      <div className="bg-muted/50 border-b border-border">
         <div className="max-w-6xl mx-auto px-8 py-4">
           <div className="flex items-center justify-between flex-wrap gap-4">
             {/* Category Tabs */}
@@ -487,7 +488,9 @@ export default function NotesPage() {
 
                   <button
                     onClick={() => handleTogglePinned(note)}
-                    className={`ml-2 transition-colors ${
+                    aria-label={t('notes.togglePin')}
+                    aria-pressed={note.is_pinned}
+                    className={`ml-2 p-2 -m-2 transition-colors ${
                       note.is_pinned ? 'text-primary' : 'text-muted-foreground hover:text-primary'
                     }`}
                   >
@@ -531,7 +534,8 @@ export default function NotesPage() {
                   </button>
                   <button
                     onClick={() => handleDeleteNote(note.id)}
-                    className="text-muted-foreground hover:text-destructive transition-colors"
+                    aria-label={t('buttons.delete')}
+                    className="text-muted-foreground hover:text-destructive transition-colors p-2 -m-2"
                   >
                     <Trash2 className="size-5" />
                   </button>
@@ -566,188 +570,146 @@ export default function NotesPage() {
       </Dialog>
 
       {/* Note Editor Modal */}
-      {showNewNoteModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-lg border border-border w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-            {/* Modal Header */}
-            <div className="sticky top-0 bg-card border-b border-border px-8 py-6 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-foreground">
-                {editingNote ? t('notes.editNote') : t('notes.newNote')}
-              </h2>
+      <Dialog
+        open={showNewNoteModal}
+        onOpenChange={(open) => {
+          if (!open) closeEditor();
+        }}
+      >
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center justify-between gap-4 pr-8">
+              <DialogTitle className="text-xl">{editingNote ? t('notes.editNote') : t('notes.newNote')}</DialogTitle>
               {saveStatus === 'saving' && (
-                <div className="flex items-center gap-2 text-primary text-sm">
+                <div role="status" className="flex items-center gap-2 text-primary text-sm">
                   <div className="size-2 bg-amber-400 rounded-full animate-pulse" />
                   {t('buttons.saving')}
                 </div>
               )}
               {saveStatus === 'error' && (
-                <div className="flex items-center gap-2 text-red-600 text-sm">
+                <div role="alert" className="flex items-center gap-2 text-destructive text-sm">
                   <AlertCircle className="size-4 shrink-0" />
                   {t('errors.saveFailed')}
                 </div>
               )}
-              <button
-                onClick={() => {
-                  setShowNewNoteModal(false);
-                  setTitleError('');
-                  if (!editingNote) resetForm();
-                }}
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <X className="size-6" />
-              </button>
+            </div>
+          </DialogHeader>
+
+          <form onSubmit={handleSaveNote} className="space-y-6">
+            <div>
+              <label htmlFor="note-title" className="block text-foreground font-semibold mb-2">
+                {t('notes.fields.titleRequired')}
+              </label>
+              <div className="flex flex-col gap-1">
+                <input
+                  id="note-title"
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => {
+                    setTitleError('');
+                    handleAutoSaveNote('title', e.target.value);
+                  }}
+                  placeholder={t('notes.placeholders.noteTitle')}
+                  className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                  autoFocus
+                />
+                <ValidationError message={titleError} />
+              </div>
             </div>
 
-            {/* Modal Content */}
-            <form onSubmit={handleSaveNote} className="px-8 py-6 space-y-6">
-              <div>
-                <label className="block text-foreground font-semibold mb-2">{t('notes.fields.titleRequired')}</label>
-                <div className="flex flex-col gap-1">
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => {
-                      setTitleError('');
-                      if (editingNote) {
-                        handleAutoSaveNote('title', e.target.value);
-                      } else {
-                        setFormData({ ...formData, title: e.target.value });
-                      }
-                    }}
-                    placeholder={t('notes.placeholders.noteTitle')}
-                    className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                    autoFocus
-                  />
-                  <ValidationError message={titleError} />
-                </div>
-              </div>
+            <div>
+              <label htmlFor="note-category" className="block text-foreground font-semibold mb-2">
+                {t('notes.fields.category')}
+              </label>
+              <select
+                id="note-category"
+                value={formData.category}
+                onChange={(e) => handleAutoSaveNote('category', e.target.value as NoteCategory)}
+                className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              >
+                {CATEGORIES.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {t(`notes.categories.${cat.value}`)}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              <div>
-                <label className="block text-foreground font-semibold mb-2">{t('notes.fields.category')}</label>
-                <select
-                  value={formData.category}
-                  onChange={(e) => {
-                    const value = e.target.value as NoteCategory;
-                    if (editingNote) {
-                      handleAutoSaveNote('category', value);
-                    } else {
-                      setFormData({ ...formData, category: value });
-                    }
-                  }}
-                  className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                >
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat.value} value={cat.value}>
-                      {t(`notes.categories.${cat.value}`)}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div>
+              <label htmlFor="note-content" className="block text-foreground font-semibold mb-2">
+                {t('notes.fields.content')}
+              </label>
+              <textarea
+                id="note-content"
+                value={formData.content}
+                onChange={(e) => handleAutoSaveNote('content', e.target.value)}
+                placeholder={t('notes.placeholders.noteContent')}
+                rows={8}
+                className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 resize-none"
+              />
+            </div>
 
-              <div>
-                <label className="block text-foreground font-semibold mb-2">{t('notes.fields.content')}</label>
-                <textarea
-                  value={formData.content}
-                  onChange={(e) => {
-                    if (editingNote) {
-                      handleAutoSaveNote('content', e.target.value);
-                    } else {
-                      setFormData({ ...formData, content: e.target.value });
-                    }
-                  }}
-                  placeholder={t('notes.placeholders.noteContent')}
-                  rows={8}
-                  className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 resize-none"
-                />
-              </div>
+            <div>
+              <label htmlFor="note-tags" className="block text-foreground font-semibold mb-2">
+                {t('notes.fields.tagsCommaSeparated')}
+              </label>
+              <input
+                id="note-tags"
+                type="text"
+                value={formData.tags}
+                onChange={(e) => handleAutoSaveNote('tags', e.target.value)}
+                placeholder={t('notes.placeholders.tags')}
+                className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              />
+            </div>
 
-              <div>
-                <label className="block text-foreground font-semibold mb-2">
-                  {t('notes.fields.tagsCommaSeparated')}
-                </label>
-                <input
-                  type="text"
-                  value={formData.tags}
-                  onChange={(e) => {
-                    if (editingNote) {
-                      handleAutoSaveNote(
-                        'tags',
-                        e.target.value
-                          .split(',')
-                          .map((t) => t.trim())
-                          .filter((t) => t)
-                      );
-                    } else {
-                      setFormData({ ...formData, tags: e.target.value });
-                    }
-                  }}
-                  placeholder={t('notes.placeholders.tags')}
-                  className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                />
-              </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="pinned-checkbox"
+                checked={formData.pinned}
+                onChange={(e) => handleAutoSaveNote('pinned', e.target.checked)}
+                className="size-4 rounded bg-muted border border-border cursor-pointer accent-primary"
+              />
+              <label htmlFor="pinned-checkbox" className="text-foreground">
+                {t('notes.fields.pinNote')}
+              </label>
+            </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="pinned-checkbox"
-                  checked={formData.pinned}
-                  onChange={(e) => {
-                    if (editingNote) {
-                      handleAutoSaveNote('pinned', e.target.checked);
-                    } else {
-                      setFormData({ ...formData, pinned: e.target.checked });
-                    }
-                  }}
-                  className="size-4 rounded bg-muted border border-border cursor-pointer accent-primary"
-                />
-                <label htmlFor="pinned-checkbox" className="text-foreground">
-                  {t('notes.fields.pinNote')}
-                </label>
-              </div>
+            {/* Form Actions */}
+            <div className="flex gap-3 pt-4 border-t border-border">
+              <Button
+                type="submit"
+                className="flex-1"
+                pending={createNoteMutation.isPending || updateNoteMutation.isPending}
+              >
+                <Save className="size-4" />
+                {createNoteMutation.isPending || updateNoteMutation.isPending
+                  ? t('buttons.saving')
+                  : editingNote
+                    ? t('buttons.updateNote')
+                    : t('buttons.createNote')}
+              </Button>
 
-              {/* Form Actions */}
-              <div className="flex gap-3 pt-4 border-t border-border">
-                <Button
-                  type="submit"
-                  className="flex-1"
-                  pending={createNoteMutation.isPending || updateNoteMutation.isPending}
-                >
-                  <Save className="size-4" />
-                  {createNoteMutation.isPending || updateNoteMutation.isPending
-                    ? t('buttons.saving')
-                    : editingNote
-                      ? t('buttons.updateNote')
-                      : t('buttons.createNote')}
-                </Button>
-
-                {editingNote && (
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => handleDeleteNote(editingNote.id)}
-                    pending={deleteNoteMutation.isPending}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
-                )}
-
+              {editingNote && (
                 <Button
                   type="button"
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => {
-                    setShowNewNoteModal(false);
-                    setTitleError('');
-                    if (!editingNote) resetForm();
-                  }}
+                  variant="destructive"
+                  aria-label={t('buttons.delete')}
+                  onClick={() => handleDeleteNote(editingNote.id)}
+                  pending={deleteNoteMutation.isPending}
                 >
-                  {t('buttons.cancel')}
+                  <Trash2 className="size-4" />
                 </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+              )}
+
+              <Button type="button" variant="outline" className="flex-1" onClick={closeEditor}>
+                {t('buttons.cancel')}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

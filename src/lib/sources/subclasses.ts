@@ -1,6 +1,6 @@
 import type { ClassId } from '@/lib/dnd-helpers';
 import type { SubclassFeature, SubclassSource } from '@/types/sources';
-import type { Grant } from '@/types/grants';
+import type { FeatureChoiceGrant, Grant } from '@/types/grants';
 import { createChoiceKey } from '@/types/choices';
 import { FIGHTING_STYLE_IDS } from '@/lib/dnd-helpers';
 import { MANEUVER_OPTIONS } from '@/lib/sources/maneuvers';
@@ -60,9 +60,11 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
+          // Animal Speaker: Beast Sense and Speak with Animals, as Rituals only.
+          { type: 'spell', spellId: 'beast-sense', alwaysPrepared: true },
           { type: 'spell', spellId: 'speak-with-animals', alwaysPrepared: true },
           { type: 'feature', feature: { id: 'wildheart-animal-speaker' } },
-          // Beast Spirit (Bear/Eagle/Elk/Tiger/Wolf) is a free-form choice; no pending-choice
+          // Rage of the Wilds (Bear, Eagle or Wolf) is a free-form choice; no pending-choice
           // mechanism exists for arbitrary string options — modeled as inert feature grant for now
           { type: 'feature', feature: { id: 'wildheart-rage-of-the-wilds' } },
         ],
@@ -210,8 +212,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         classLevel: 3,
         grants: [
           { type: 'feature', feature: { id: 'collegeglamour-beguiling-magic' } },
-          // Mirror Image is also always prepared but is not yet in SPELL_CATALOG.
           { type: 'spell', spellId: 'charm-person', alwaysPrepared: true },
+          { type: 'spell', spellId: 'mirror-image', alwaysPrepared: true },
           { type: 'feature', feature: { id: 'collegeglamour-mantle-of-inspiration' } },
         ],
       },
@@ -329,8 +331,6 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Light domain bonus cantrip — routed to cantrips via level-0 (alwaysPrepared:false so resolver checks def.level)
-          { type: 'spell', spellId: 'light', alwaysPrepared: false },
           { type: 'feature', feature: { id: 'lightdomain-warding-flare' } },
           { type: 'feature', feature: { id: 'lightdomain-radiance-of-the-dawn' } },
           { type: 'spell', spellId: 'burning-hands', alwaysPrepared: true },
@@ -419,15 +419,13 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          { type: 'proficiency', category: 'armor', id: 'heavy' },
-          { type: 'proficiency', category: 'weapon', id: 'martial' },
-          // War Priest: a number of Bonus Action attacks equal to your Proficiency Bonus, regained on a Long Rest.
+          // War Priest: Bonus Action attacks, Wisdom modifier (minimum 1) uses, regained on a Short or Long Rest.
           { type: 'feature', feature: { id: 'wardomain-war-priest' } },
           {
             type: 'resource-pool',
             poolId: 'war-priest',
-            max: { mode: 'proficiency-bonus', classId: 'cleric' },
-            regen: 'long-rest',
+            max: { mode: 'ability-mod', ability: 'wis' },
+            regen: 'short-rest',
           },
           { type: 'feature', feature: { id: 'wardomain-guided-strike' } },
           { type: 'spell', spellId: 'guiding-bolt', alwaysPrepared: true },
@@ -601,12 +599,13 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 10,
         grants: [
-          // Moonlight Step: teleport 30 ft as a Bonus Action with Advantage on next attack; PB uses per Long Rest
+          // Moonlight Step: teleport 30 ft as a Bonus Action with Advantage on next attack; Wisdom modifier
+          // (minimum 1) uses per Long Rest (a level 2+ slot also restores one use, not modeled).
           { type: 'feature', feature: { id: 'circlemoon-moonlight-step' } },
           {
             type: 'resource-pool',
             poolId: 'moonlight-step',
-            max: { mode: 'proficiency-bonus', classId: 'druid' },
+            max: { mode: 'ability-mod', ability: 'wis' },
             regen: 'long-rest',
           },
         ],
@@ -631,7 +630,6 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spell', spellId: 'fog-cloud', alwaysPrepared: true },
           { type: 'spell', spellId: 'gust-of-wind', alwaysPrepared: true },
           { type: 'spell', spellId: 'ray-of-frost', alwaysPrepared: true },
-          { type: 'spell', spellId: 'shatter', alwaysPrepared: true },
           { type: 'spell', spellId: 'thunderwave', alwaysPrepared: true },
           { type: 'spell', spellId: 'lightning-bolt', alwaysPrepared: true, minClassLevel: 5 },
           { type: 'spell', spellId: 'water-breathing', alwaysPrepared: true, minClassLevel: 5 },
@@ -653,11 +651,12 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 10,
         grants: [
-          // Stormborn: Fly speed 30 ft while not in an enclosed space (2024 PHB). Modeled as a
-          // condition-tagged speed grant (descriptive, not runtime-evaluated) plus the feature
-          // grant for the full description — mirrors the L6 Aquatic Affinity speed+feature pairing.
+          // Stormborn (2024): while Wrath of the Sea is active you gain a Fly Speed equal to your Speed and
+          // Resistance to Cold, Lightning and Thunder damage. Modeled as a condition-tagged speed grant
+          // (descriptive, not runtime-evaluated); the resistances are conditional on the aura, so they
+          // are described in the feature text rather than granted permanently.
           { type: 'feature', feature: { id: 'circlesea-stormborn' } },
-          { type: 'speed', mode: 'fly', value: 30, condition: 'not-enclosed' },
+          { type: 'speed', mode: 'fly', value: 'walk-equivalent', condition: 'wrath-of-the-sea' },
         ],
       },
       {
@@ -798,7 +797,11 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       },
       {
         classLevel: 7,
-        grants: [{ type: 'feature', feature: { id: 'battlemaster-know-your-enemy' } }, ...maneuverPicks(3, 2)],
+        grants: [
+          { type: 'feature', feature: { id: 'battlemaster-know-your-enemy' } },
+          { type: 'resource-pool', poolId: 'know-your-enemy', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+          ...maneuverPicks(3, 2),
+        ],
       },
       {
         classLevel: 10,
@@ -905,6 +908,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Spend Psionic Energy dice to grant half cover to allies within 30 ft as a Bonus Action
           { type: 'feature', feature: { id: 'psiwarrior-bulwark-of-force' } },
+          { type: 'resource-pool', poolId: 'bulwark-of-force', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
       {
@@ -912,6 +916,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Cast Telekinesis (no spell slot, Concentration) using INT as spellcasting ability; also expands Psionic Strike
           { type: 'feature', feature: { id: 'psiwarrior-telekinetic-master' } },
+          { type: 'resource-pool', poolId: 'telekinetic-master', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -946,7 +951,15 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       },
       {
         classLevel: 11,
-        grants: [{ type: 'feature', feature: { id: 'warriorofmercy-flurry-of-healing-and-harm' } }],
+        grants: [
+          { type: 'feature', feature: { id: 'warriorofmercy-flurry-of-healing-and-harm' } },
+          {
+            type: 'resource-pool',
+            poolId: 'flurry-of-healing-and-harm',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
+        ],
       },
       {
         classLevel: 17,
@@ -972,9 +985,6 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spellcasting', ability: 'wis', source: 'class' },
           { type: 'spell', spellId: 'minor-illusion', alwaysPrepared: true, ability: 'wis' },
           { type: 'spell', spellId: 'darkness', alwaysPrepared: true, ability: 'wis' },
-          { type: 'spell', spellId: 'darkvision', alwaysPrepared: true, ability: 'wis' },
-          { type: 'spell', spellId: 'pass-without-trace', alwaysPrepared: true, ability: 'wis' },
-          { type: 'spell', spellId: 'silence', alwaysPrepared: true, ability: 'wis' },
         ],
       },
       {
@@ -1040,12 +1050,12 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 6,
         grants: [
-          // Bonus Action: regain HP equal to 3× Martial Arts die roll; usable PB times per long rest
+          // Bonus Action: regain HP equal to 3× Martial Arts die roll; usable WIS-modifier times (min 1) per long rest
           { type: 'feature', feature: { id: 'warrioropenhand-wholeness-of-body' } },
           {
             type: 'resource-pool',
             poolId: 'wholeness-of-body',
-            max: { mode: 'proficiency-bonus', classId: 'monk' },
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
             regen: 'long-rest',
           },
         ],
@@ -1122,6 +1132,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Holy Nimbus: action, 1 minute — aura of sunlight (60 ft radius), enemies starting turn in it take 10 Radiant damage; advantage on saves vs spells cast by Fiends and Undead
           { type: 'feature', feature: { id: 'oathofdevotion-holy-nimbus' } },
+          { type: 'resource-pool', poolId: 'holy-nimbus', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1176,6 +1187,12 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Glorious Defense: when you or another creature within 10 ft is hit, use your Reaction to grant a bonus to AC equal to your CHA modifier; if the attack misses, you can make one weapon attack against the attacker
           { type: 'feature', feature: { id: 'oathofglory-glorious-defense' } },
+          {
+            type: 'resource-pool',
+            poolId: 'glorious-defense',
+            max: { mode: 'ability-mod', ability: 'cha', min: 1 },
+            regen: 'long-rest',
+          },
         ],
       },
       {
@@ -1191,6 +1208,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Living Legend: bonus action, 1 minute — become a figure of divine glory; CHA modifier replaces any ability modifier for attack rolls, and once per turn on a hit add CHA modifier as extra damage; failed saves can be rerolled once
           { type: 'feature', feature: { id: 'oathofglory-living-legend' } },
+          { type: 'resource-pool', poolId: 'living-legend', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1252,6 +1270,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Undying Sentinel: when you are reduced to 0 HP, you can drop to 1 HP instead; you can't use this feature again until you finish a Long Rest; you don't age and can't be aged magically
           { type: 'feature', feature: { id: 'oathofancients-undying-sentinel' } },
+          { type: 'resource-pool', poolId: 'undying-sentinel', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
       {
@@ -1267,6 +1286,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Elder Champion: action, 1 minute — transform into avatar of ancient nature; regain 10 HP at start of each turn, Druid spells cost 1 fewer spell slot, enemies within 10 ft must save vs frightened/blinded by nature
           { type: 'feature', feature: { id: 'oathofancients-elder-champion' } },
+          { type: 'resource-pool', poolId: 'elder-champion', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1335,6 +1355,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Avenging Angel: action, 1 hour — sprout wings (fly speed 60 ft), aura of menace (30 ft radius) frightens enemies on failed WIS save for 1 minute, frightened creatures grant you Advantage and your attacks deal extra 2d8 Radiant damage
           { type: 'feature', feature: { id: 'oathofvengeance-avenging-angel' } },
+          { type: 'resource-pool', poolId: 'avenging-angel', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1406,7 +1427,13 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spell', spellId: 'summon-fey', alwaysPrepared: true },
         ],
       },
-      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'feywanderer-fey-reinforcements' } }] },
+      {
+        classLevel: 11,
+        grants: [
+          { type: 'feature', feature: { id: 'feywanderer-fey-reinforcements' } },
+          { type: 'resource-pool', poolId: 'fey-reinforcements', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+        ],
+      },
       {
         classLevel: 13,
         grants: [
@@ -1414,7 +1441,18 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spell', spellId: 'dimension-door', alwaysPrepared: true },
         ],
       },
-      { classLevel: 15, grants: [{ type: 'feature', feature: { id: 'feywanderer-misty-wanderer' } }] },
+      {
+        classLevel: 15,
+        grants: [
+          { type: 'feature', feature: { id: 'feywanderer-misty-wanderer' } },
+          {
+            type: 'resource-pool',
+            poolId: 'misty-wanderer',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
+        ],
+      },
       {
         classLevel: 17,
         grants: [
@@ -1432,6 +1470,12 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           // Dread Ambusher: first turn of combat — +WIS mod to initiative, walk speed +10,
           // extra attack on Attack action that deals 1d8 extra damage
           { type: 'feature', feature: { id: 'gloomstalker-dread-ambusher' } },
+          {
+            type: 'resource-pool',
+            poolId: 'dreadful-strike',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
           // Umbral Sight: Darkvision 60 ft (or +30 to existing); invisible to creatures relying on Darkvision
           { type: 'feature', feature: { id: 'gloomstalker-umbral-sight' } },
           // Gloom Stalker Spells — L3 tier (2024 PHB)
@@ -1587,11 +1631,38 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           { type: 'spellcasting', ability: 'int', source: 'class' },
           { type: 'feature', feature: { id: 'arcanetrickster-mage-hand-legerdemain' } },
+          // Cantrips (2024): Mage Hand plus two other Wizard cantrips; a fourth cantrip arrives at L10.
+          { type: 'spell', spellId: 'mage-hand', alwaysPrepared: false },
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'subclass', 'arcanetrickster', 0),
+            count: 2,
+            spellList: 'wizard',
+            spellLevel: 0,
+          },
         ],
       },
       { classLevel: 9, grants: [{ type: 'feature', feature: { id: 'arcanetrickster-magical-ambush' } }] },
+      {
+        classLevel: 10,
+        grants: [
+          {
+            type: 'spell-choice',
+            key: createChoiceKey('spell-choice', 'subclass', 'arcanetrickster', 1),
+            count: 1,
+            spellList: 'wizard',
+            spellLevel: 0,
+          },
+        ],
+      },
       { classLevel: 13, grants: [{ type: 'feature', feature: { id: 'arcanetrickster-versatile-trickster' } }] },
-      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'arcanetrickster-spell-thief' } }] },
+      {
+        classLevel: 17,
+        grants: [
+          { type: 'feature', feature: { id: 'arcanetrickster-spell-thief' } },
+          { type: 'resource-pool', poolId: 'spell-thief', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+        ],
+      },
     ],
   },
   soulknife: {
@@ -1627,8 +1698,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
               { minLevel: 17, dieSize: 12 },
             ],
           },
-          // Psychic Blades: Bonus Action to produce glowing psychic blades as Unarmed Strike alternatives;
-          // 1d6 psychic damage (1d8 for the off-hand blade in a two-weapon attack); counts as Finesse for Sneak Attack.
+          // Psychic Blades: Attack-action weapon attacks with Psychic Blades (1d6 Psychic + ability modifier,
+          // Finesse/Thrown); a Bonus Action second blade after an attack deals 1d4.
           // No weapon-grant infrastructure exists — described entirely in feature text.
           { type: 'feature', feature: { id: 'soulknife-psychic-blades' } },
         ],
@@ -1640,8 +1711,22 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'feature', feature: { id: 'soulknife-soul-blades' } },
         ],
       },
-      { classLevel: 13, grants: [{ type: 'feature', feature: { id: 'soulknife-psychic-veil' } }] },
-      { classLevel: 17, grants: [{ type: 'feature', feature: { id: 'soulknife-rend-mind' } }] },
+      {
+        classLevel: 13,
+        grants: [
+          { type: 'feature', feature: { id: 'soulknife-psychic-veil' } },
+          // Psychic Veil: free Invisibility cast once per Long Rest (otherwise it spends a Psionic Energy die).
+          { type: 'resource-pool', poolId: 'psychic-veil', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+        ],
+      },
+      {
+        classLevel: 17,
+        grants: [
+          { type: 'feature', feature: { id: 'soulknife-rend-mind' } },
+          // Rend Mind: once per Long Rest for free (or by spending 3 Psionic Energy dice).
+          { type: 'resource-pool', poolId: 'rend-mind', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+        ],
+      },
     ] satisfies readonly SubclassFeature[],
   },
   // Sorcerer
@@ -1788,69 +1873,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Draconic Resilience: +1 HP per Sorcerer level (structural grant)
           { type: 'hp-bonus', perLevel: 1 },
-          // Draconic Resilience: unarmored AC. 2024 is 10 + DEX + CHA; AcCalculation cannot express that, so the
-          // 2014-style 13 + DEX natural armor approximation is kept.
-          { type: 'armor-class', calculation: { mode: 'natural', baseAc: 13 } },
-          // Dragon Ancestor: gain proficiency in Draconic language
-          { type: 'proficiency', category: 'language', id: 'draconic' },
-          // Dragon Ancestor: 1-of-10 ancestry choice. Each option carries the Elemental Affinity (L6) resistance
-          // for its element; ponytail: applied from L3 because option grants cannot be level-gated. (Black/Blue/Brass/Bronze/Copper/Gold/Green/Red/Silver/White)
-          {
-            type: 'feature-choice',
-            key: createChoiceKey('feature-choice', 'subclass', 'draconicsorcery', 0),
-            options: [
-              {
-                optionId: 'black',
-                featureId: 'draconicsorcery-dragon-ancestor-black',
-                grants: [{ type: 'resistance', damageType: 'acid' }],
-              },
-              {
-                optionId: 'blue',
-                featureId: 'draconicsorcery-dragon-ancestor-blue',
-                grants: [{ type: 'resistance', damageType: 'lightning' }],
-              },
-              {
-                optionId: 'brass',
-                featureId: 'draconicsorcery-dragon-ancestor-brass',
-                grants: [{ type: 'resistance', damageType: 'fire' }],
-              },
-              {
-                optionId: 'bronze',
-                featureId: 'draconicsorcery-dragon-ancestor-bronze',
-                grants: [{ type: 'resistance', damageType: 'lightning' }],
-              },
-              {
-                optionId: 'copper',
-                featureId: 'draconicsorcery-dragon-ancestor-copper',
-                grants: [{ type: 'resistance', damageType: 'acid' }],
-              },
-              {
-                optionId: 'gold',
-                featureId: 'draconicsorcery-dragon-ancestor-gold',
-                grants: [{ type: 'resistance', damageType: 'fire' }],
-              },
-              {
-                optionId: 'green',
-                featureId: 'draconicsorcery-dragon-ancestor-green',
-                grants: [{ type: 'resistance', damageType: 'poison' }],
-              },
-              {
-                optionId: 'red',
-                featureId: 'draconicsorcery-dragon-ancestor-red',
-                grants: [{ type: 'resistance', damageType: 'fire' }],
-              },
-              {
-                optionId: 'silver',
-                featureId: 'draconicsorcery-dragon-ancestor-silver',
-                grants: [{ type: 'resistance', damageType: 'cold' }],
-              },
-              {
-                optionId: 'white',
-                featureId: 'draconicsorcery-dragon-ancestor-white',
-                grants: [{ type: 'resistance', damageType: 'cold' }],
-              },
-            ],
-          },
+          // Draconic Resilience (2024): while unarmored, base AC = 10 + DEX + CHA.
+          { type: 'armor-class', calculation: { mode: 'unarmored', formula: 'draconic' } },
           // Expanded spells (always prepared)
           { type: 'spell', spellId: 'alter-self', alwaysPrepared: true },
           { type: 'spell', spellId: 'chromatic-orb', alwaysPrepared: true },
@@ -1868,8 +1892,18 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 6,
         grants: [
-          // Elemental Affinity: add CHA mod to one damage roll of ancestor's element; spend 1 SP for 1hr resistance
+          // Elemental Affinity (2024): choose Acid, Cold, Fire, Lightning or Poison — permanent Resistance to it, and
+          // add CHA mod to one damage roll of a spell of that type.
           { type: 'feature', feature: { id: 'draconicsorcery-elemental-affinity' } },
+          {
+            type: 'feature-choice',
+            key: createChoiceKey('feature-choice', 'subclass', 'draconicsorcery', 0),
+            options: (['acid', 'cold', 'fire', 'lightning', 'poison'] as const).map((damageType) => ({
+              optionId: damageType,
+              featureId: `draconicsorcery-elemental-affinity-${damageType}` as const,
+              grants: [{ type: 'resistance', damageType }],
+            })) as unknown as FeatureChoiceGrant['options'],
+          },
         ],
       },
       {
@@ -1889,18 +1923,19 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 14,
         grants: [
-          // Dragon Wings: sprout dragon wings as a Bonus Action, gaining a Fly speed equal to your Speed
+          // Dragon Wings: Bonus Action, 1 hour, Fly Speed 60 ft; once per Long Rest or restored for 3 Sorcery Points.
+          // Not a permanent speed grant — the wings are an activated feature.
           { type: 'feature', feature: { id: 'draconicsorcery-dragon-wings' } },
           { type: 'resource-pool', poolId: 'dragon-wings', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
-          // Fly speed equal to your Speed while the wings are manifested (shown permanently; toggle not modelled)
-          { type: 'speed', mode: 'fly', value: 'walk-equivalent' },
         ],
       },
       {
         classLevel: 18,
         grants: [
-          // Dragon Companion: your draconic power manifests as a permanent Dragon form you can assume as a Bonus Action (no cost)
+          // Dragon Companion: cast Summon Dragon without a Material component, and once per Long Rest without a slot
+          // (optionally without Concentration for 1 minute).
           { type: 'feature', feature: { id: 'draconicsorcery-dragon-companion' } },
+          { type: 'resource-pool', poolId: 'dragon-companion', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1910,10 +1945,11 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Wild Magic Surge: after casting a L1+ Sorcerer spell, DM may have you roll d20; on 1, roll Wild Magic Surge table
+          // Wild Magic Surge (2024): once per turn, right after you cast a Sorcerer spell with a spell slot, roll a d20;
+          // on a 20, roll on the Wild Magic Surge table
           { type: 'feature', feature: { id: 'wildmagicsorcery-wild-magic-surge' } },
-          // Tides of Chaos: gain Advantage on one attack roll, ability check, or saving throw per long rest;
-          // automatically replenishes when you experience a Wild Magic Surge
+          // Tides of Chaos: Advantage on one D20 Test; regained on a Long Rest or after casting a Sorcerer spell
+          // with a spell slot (the Surge-regain step is tracked manually)
           { type: 'feature', feature: { id: 'wildmagicsorcery-tides-of-chaos' } },
           { type: 'resource-pool', poolId: 'tides-of-chaos', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
           // 2024 Wild Magic has no subclass spell list
@@ -1922,7 +1958,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 6,
         grants: [
-          // Bend Luck: Reaction — spend 2 Sorcery Points to add or subtract 1d4 from a creature's roll within 60 ft
+          // Bend Luck: Reaction — spend 1 Sorcery Point to add or subtract 1d4 from a creature's D20 Test within 60 ft
           { type: 'feature', feature: { id: 'wildmagicsorcery-bend-luck' } },
         ],
       },
@@ -1936,8 +1972,9 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 18,
         grants: [
-          // Tamed Surge: immediately after casting a Sorcerer spell of L1+, you can create a controlled Wild Magic Surge effect chosen from the table (no d20 roll needed)
+          // Tamed Surge: immediately after casting a Sorcerer spell with a slot, choose any Wild Magic Surge effect; once per Long Rest
           { type: 'feature', feature: { id: 'wildmagicsorcery-tamed-surge' } },
+          { type: 'resource-pool', poolId: 'tamed-surge', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1948,8 +1985,15 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Steps of the Fey: Misty Step is always prepared; Bonus Action teleport with rider effects (Refreshing Step or Taunting Step)
+          // Steps of the Fey: free Misty Step (CHA mod, min 1, per Long Rest) with a Refreshing Step (1d10 Temp HP)
+          // or Taunting Step (WIS save) rider.
           { type: 'feature', feature: { id: 'archfeypatron-steps-of-the-fey' } },
+          {
+            type: 'resource-pool',
+            poolId: 'steps-of-the-fey',
+            max: { mode: 'ability-mod', ability: 'cha', min: 1 },
+            regen: 'long-rest',
+          },
           // Archfey patron spells (always prepared)
           { type: 'spell', spellId: 'calm-emotions', alwaysPrepared: true },
           { type: 'spell', spellId: 'faerie-fire', alwaysPrepared: true },
@@ -1968,14 +2012,9 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 6,
         grants: [
-          // Misty Escape: Reaction when you take damage — Misty Step and become Invisible until end of next turn; uses = PB/long rest
+          // Misty Escape: Reaction when you take damage — cast Misty Step, with Disappearing Step (Invisible)
+          // or Dreadful Step (2d10 Psychic, WIS save) options. No separate use limit is listed in the 2024 text.
           { type: 'feature', feature: { id: 'archfeypatron-misty-escape' } },
-          {
-            type: 'resource-pool',
-            poolId: 'misty-escape',
-            max: { mode: 'proficiency-bonus', classId: 'warlock' },
-            regen: 'long-rest',
-          },
         ],
       },
       {
@@ -1995,8 +2034,10 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 10,
         grants: [
-          // Beguiling Defenses: immunity to Charmed; when a creature tries to Charm you, target makes WIS save or is Charmed by you for 1 minute
+          // Beguiling Defenses: immune to Charmed; Reaction after being hit — halve the damage and the attacker
+          // takes that much Psychic (WIS save). Once per Long Rest, or expend a Pact Magic slot to restore it.
           { type: 'feature', feature: { id: 'archfeypatron-beguiling-defenses' } },
+          { type: 'resource-pool', poolId: 'beguiling-defenses', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
       {
@@ -2063,14 +2104,14 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 10,
         grants: [
-          // Celestial Resilience: gain temp HP = Warlock level + CHA mod on short/long rest; allies gain half Warlock level
+          // Celestial Resilience: gain temp HP = Warlock level + CHA mod on short/long rest (or Magical Cunning); allies gain half Warlock level + CHA mod
           { type: 'feature', feature: { id: 'celestialpatron-celestial-resilience' } },
         ],
       },
       {
         classLevel: 14,
         grants: [
-          // Searing Vengeance: Reaction when you/an ally within 60 ft drops to 0 HP — Radiant burst (2d8 + CHA) and Blind nearby foes; the creature rises with 1 HP; 1/long rest
+          // Searing Vengeance: Reaction when you/an ally within 60 ft is about to make a Death Saving Throw — Radiant burst (2d8 + CHA) and Blind nearby foes; the creature regains half its HP maximum; 1/long rest
           { type: 'feature', feature: { id: 'celestialpatron-searing-vengeance' } },
           { type: 'resource-pool', poolId: 'searing-vengeance', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
@@ -2101,14 +2142,13 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 6,
         grants: [
-          // Dark One's Own Luck: add d10 to an ability check or save; uses = PB; regained on a Short or Long Rest
-          // ('short-rest' regen covers both short and long).
+          // Dark One's Own Luck: add d10 to an ability check or save; uses = CHA mod (min 1); regained on a Long Rest
           { type: 'feature', feature: { id: 'fiendpatron-dark-ones-own-luck' } },
           {
             type: 'resource-pool',
             poolId: 'dark-ones-own-luck',
-            max: { mode: 'proficiency-bonus', classId: 'warlock' },
-            regen: 'short-rest',
+            max: { mode: 'ability-mod', ability: 'cha', min: 1 },
+            regen: 'long-rest',
           },
         ],
       },
@@ -2129,14 +2169,14 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 10,
         grants: [
-          // Fiendish Resilience: after short/long rest, choose one damage type to gain resistance to (runtime choice — no static resistance grant)
+          // Fiendish Resilience: after short/long rest, choose one damage type other than Force to gain resistance to (runtime choice — no static resistance grant)
           { type: 'feature', feature: { id: 'fiendpatron-fiendish-resilience' } },
         ],
       },
       {
         classLevel: 14,
         grants: [
-          // Hurl Through Hell: on a hit, teleport the target through the Lower Planes; it returns next turn taking 10d10 Psychic damage; 1/long rest
+          // Hurl Through Hell: once per turn on a hit, CHA save or banished through the Lower Planes — Incapacitated until the end of your next turn and 8d10 Psychic (non-Fiends); 1/long rest or expend a Pact Magic slot
           { type: 'feature', feature: { id: 'fiendpatron-hurl-through-hell' } },
           { type: 'resource-pool', poolId: 'hurl-through-hell', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
@@ -2148,8 +2188,10 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Awakened Mind: telepathic communication with creatures within 30 ft sharing a language
+          // Awakened Mind: Bonus Action telepathic link with a creature within 30 ft (range CHA-mod miles, Warlock level minutes)
           { type: 'feature', feature: { id: 'greatoldonepatron-awakened-mind' } },
+          // Psychic Spells: Warlock damage spells can deal Psychic; Enchantment/Illusion Warlock spells need no V/S
+          { type: 'feature', feature: { id: 'greatoldonepatron-psychic-spells' } },
           // Great Old One patron spells (always prepared)
           { type: 'spell', spellId: 'detect-thoughts', alwaysPrepared: true },
           { type: 'spell', spellId: 'dissonant-whispers', alwaysPrepared: true },
@@ -2167,13 +2209,14 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 6,
         grants: [
-          // Clairvoyant Combatant: creature within 60 ft must make WIS save or you have Advantage against it and are invisible to it for 1 min; uses = PB/long rest
+          // Clairvoyant Combatant: WIS save on the Awakened Mind target — on a fail, Advantage for you and Disadvantage
+          // against you for the link; once per Short/Long Rest, or restored by expending a Pact Magic slot
           { type: 'feature', feature: { id: 'greatoldonepatron-clairvoyant-combatant' } },
           {
             type: 'resource-pool',
             poolId: 'clairvoyant-combatant',
-            max: { mode: 'proficiency-bonus', classId: 'warlock' },
-            regen: 'long-rest',
+            max: { mode: 'fixed', value: 1 },
+            regen: 'short-rest',
           },
         ],
       },
@@ -2194,15 +2237,18 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 10,
         grants: [
-          // Eldritch Hex: one creature you can see becomes Hexed; if it damages you, it takes psychic damage = PB; 1 use/long rest
+          // Eldritch Hex: Hex is always prepared; when you cast it and choose an ability, the target also has Disadvantage on saves of that ability
           { type: 'feature', feature: { id: 'greatoldonepatron-eldritch-hex' } },
-          { type: 'resource-pool', poolId: 'eldritch-hex', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+          { type: 'spell', spellId: 'hex', alwaysPrepared: true },
+          // Thought Shield: thoughts can't be read, Psychic resistance, reflect Psychic damage
+          { type: 'feature', feature: { id: 'greatoldonepatron-thought-shield' } },
+          { type: 'resistance', damageType: 'psychic' },
         ],
       },
       {
         classLevel: 14,
         grants: [
-          // Create Thrall: cast Dominate Monster on a Humanoid as an action without a slot (1 hour, no Concentration); the thrall is immune to Charm from others; 1/long rest
+          // Create Thrall: Summon Aberration without Concentration (1 minute) with Temp HP and Hex-bonus Psychic damage on the aberration
           { type: 'feature', feature: { id: 'greatoldonepatron-create-thrall' } },
         ],
       },
@@ -2214,7 +2260,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Abjuration Savant: copy/inscribe Abjuration spells into spellbook at half the usual cost
+          // Abjuration Savant (2024): add two Abjuration spells of level 2 or lower to your spellbook free, plus one more at each new slot level
           { type: 'feature', feature: { id: 'abjurer-abjuration-savant' } },
           // Arcane Ward: casting a L1+ Abjuration spell creates or repairs a ward with HP = 2× Wizard level + INT mod;
           // ward absorbs damage; casting more Abjuration spells (L1+) repairs the ward
@@ -2252,7 +2298,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Divination Savant: copy/inscribe Divination spells into spellbook at half the usual cost
+          // Divination Savant (2024): add two Divination spells of level 2 or lower to your spellbook free, plus one more at each new slot level
           { type: 'feature', feature: { id: 'diviner-divination-savant' } },
           // Portent: after each long rest, roll 2 d20s; replace any attack roll, ability check, or saving throw
           // you can see with one of these rolls; each pre-rolled die can be used once
@@ -2285,8 +2331,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 10,
         grants: [
-          // The Third Eye: Bonus Action — gain one of: Darkvision 120 ft, Ethereal Sight,
-          // Greater Comprehension, or See Invisibility; lasts until incapacitated or until used again
+          // The Third Eye (2024): Bonus Action — gain Darkvision 120 ft, Greater Comprehension or See Invisibility
+          // (cast without a slot); lasts until you start a Short or Long Rest
           { type: 'feature', feature: { id: 'diviner-the-third-eye' } },
         ],
       },
@@ -2304,7 +2350,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Evocation Savant: copy/inscribe Evocation spells into spellbook at half the usual cost
+          // Evocation Savant (2024): add two Evocation spells of level 2 or lower to your spellbook free, plus one more at each new slot level
           { type: 'feature', feature: { id: 'evoker-evocation-savant' } },
           // Potent Cantrip: when a creature succeeds on a saving throw against a cantrip you cast,
           // it takes half damage (2024 PHB: moved from L6 to L3)
@@ -2342,21 +2388,26 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 3,
         grants: [
-          // Illusion Savant: copy/inscribe Illusion spells into spellbook at half the usual cost
+          // Illusion Savant (2024): add two Illusion spells of level 2 or lower to your spellbook free, plus one more at each new slot level
           { type: 'feature', feature: { id: 'illusionist-illusion-savant' } },
-          // Improved Illusions: when you cast an Illusion spell of L1+, you can alter one feature of the
-          // illusion as a Bonus Action
+          // Improved Illusions (2024): Illusion spells need no Verbal component, +60 ft range on range 10+ ft spells,
+          // and you learn Minor Illusion (sound and image together)
           { type: 'feature', feature: { id: 'illusionist-improved-illusions' } },
-          // Improved Illusions also grants the Minor Illusion cantrip
           { type: 'spell', spellId: 'minor-illusion', alwaysPrepared: false },
         ],
       },
       {
         classLevel: 6,
         grants: [
-          // Phantasmal Creatures: 2024 PHB grants Summon Beast + Summon Fey always prepared (issue #213).
-          // The PB free-casts-per-long-rest pool is deferred (runtime/PB-max blocker, refs #159).
+          // Phantasmal Creatures: Summon Beast + Summon Fey always prepared; each can be cast once per Long Rest
+          // without a slot (2 uses total; creature has half HP, Illusion school).
           { type: 'feature', feature: { id: 'illusionist-phantasmal-creatures' } },
+          {
+            type: 'resource-pool',
+            poolId: 'phantasmal-creatures',
+            max: { mode: 'fixed', value: 2 },
+            regen: 'long-rest',
+          },
           { type: 'spell', spellId: 'summon-beast', alwaysPrepared: true },
           { type: 'spell', spellId: 'summon-fey', alwaysPrepared: true },
         ],

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { LevelUpDialog } from '@/components/character-sheet/LevelUpDialog';
 import { useCharacterContext } from '@/hooks/useCharacterContext';
@@ -23,6 +24,7 @@ export function LevelControls({ classId }: LevelControlsProps) {
     useCharacterContext();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [bulkTarget, setBulkTarget] = useState('');
+  const [confirmLevelDown, setConfirmLevelDown] = useState(false);
 
   const canLevelUp = level < 20;
   const canLevelDown = level > 1;
@@ -94,7 +96,7 @@ export function LevelControls({ classId }: LevelControlsProps) {
         </Button>
 
         {canLevelDown && (
-          <Button variant="outline" size="sm" onClick={levelDown}>
+          <Button variant="outline" size="sm" onClick={() => setConfirmLevelDown(true)}>
             {t('characterSheet.levelManagement.levelDown')}
           </Button>
         )}
@@ -129,6 +131,33 @@ export function LevelControls({ classId }: LevelControlsProps) {
         </div>
       )}
 
+      {confirmLevelDown && (
+        <Dialog open onOpenChange={(open) => !open && setConfirmLevelDown(false)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{t('characterSheet.levelManagement.levelDownTitle', { level })}</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              {t('characterSheet.levelManagement.levelDownConfirm', { className, level })}
+            </p>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConfirmLevelDown(false)}>
+                {t('buttons.cancel')}
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  levelDown();
+                  setConfirmLevelDown(false);
+                }}
+              >
+                {t('characterSheet.levelManagement.levelDown')}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
       <LevelUpDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
@@ -143,6 +172,8 @@ export function LevelControls({ classId }: LevelControlsProps) {
         resolvedWeaponProficiencies={resolved?.weaponProficiencies ?? []}
         resolvedSkills={resolved?.skills ?? null}
         allDecisions={allDecisions}
+        currentMaxHp={resolved?.hitPoints.max}
+        conModifier={resolved?.abilities.con.modifier}
       />
     </>
   );

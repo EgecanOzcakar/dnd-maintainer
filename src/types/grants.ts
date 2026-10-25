@@ -17,7 +17,7 @@ import type { SpellDef } from '@/types/spells';
 
 // Supporting types
 
-export type UnarmoredFormula = 'barbarian' | 'monk' | 'dance';
+export type UnarmoredFormula = 'barbarian' | 'monk' | 'dance' | 'draconic';
 
 export type AcCalculation =
   | { readonly mode: 'armored' }
@@ -61,6 +61,32 @@ export interface AbilityBonusGrant {
   readonly type: 'ability-bonus';
   readonly ability: AbilityKey;
   readonly bonus: number;
+}
+
+/** Magic items that fix an ability score (Belt of Giant Strength): the score becomes `score` if it is lower. */
+export interface AbilitySetGrant {
+  readonly type: 'ability-set';
+  readonly ability: AbilityKey;
+  readonly score: number;
+}
+
+export const ROLL_TARGETS = ['save', 'check', 'attack', 'damage', 'spell-attack', 'spell-dc'] as const;
+export type RollTarget = (typeof ROLL_TARGETS)[number];
+
+/**
+ * A bonus, extra die, or advantage/disadvantage on a kind of roll. `abilities`/`skills` narrow it
+ * (omitted = all). `label` names the source in roll breakdowns (e.g. the item's name).
+ */
+export interface RollModifierGrant {
+  readonly type: 'roll-modifier';
+  readonly target: RollTarget;
+  readonly abilities?: readonly AbilityKey[];
+  readonly skills?: readonly SkillId[];
+  readonly bonus?: number;
+  /** Signed extra die, e.g. `+1d4` or `-1d4`. */
+  readonly dice?: string;
+  readonly mode?: 'adv' | 'dis';
+  readonly label?: string;
 }
 
 export interface AbilityChoiceGrant {
@@ -147,9 +173,11 @@ export type SpeedMode = 'walk' | 'fly' | 'swim' | 'climb' | 'burrow';
  * Environment condition that gates a speed (descriptive, not runtime-evaluated).
  * The label is carried through to the resolved speed so the UI can show e.g.
  * "Fly 30 ft (while not in an enclosed space)" without modeling enclosed-space detection.
- * - `'not-enclosed'`: Circle of the Sea L10 Stormborn fly speed.
+ * - `'not-enclosed'`: legacy 2014 wording, kept for stored data.
+ * - `'wrath-of-the-sea'`: Circle of the Sea L10 Stormborn fly speed (only while Wrath of the Sea is active).
  */
-export type SpeedCondition = 'not-enclosed';
+// 'unarmored' / 'no-heavy-armor' gate additive grants (Unarmored Movement / Fast Movement); 'not-enclosed' is display-only.
+export type SpeedCondition = 'not-enclosed' | 'wrath-of-the-sea' | 'unarmored' | 'no-heavy-armor';
 
 export interface SpeedGrant {
   readonly type: 'speed';
@@ -160,6 +188,9 @@ export interface SpeedGrant {
   // Optional descriptive gating condition (e.g. Stormborn fly only when not enclosed).
   // Carried through to the resolved speed for display; never evaluated at runtime.
   readonly condition?: SpeedCondition;
+  // When true the value is added to the base walking speed (Speedy, Boon of Speed: "+10/+30 feet")
+  // instead of competing with it as a set value.
+  readonly additive?: boolean;
 }
 
 export type HitDie = 4 | 6 | 8 | 10 | 12;
@@ -172,6 +203,8 @@ export interface HitDieGrant {
 export interface HpBonusGrant {
   readonly type: 'hp-bonus';
   readonly perLevel: number;
+  // One-off Hit Point maximum increase on top of `perLevel` (Boon of Fortitude: +40).
+  readonly flat?: number;
 }
 
 export interface ResistanceGrant {
@@ -187,6 +220,8 @@ export interface ArmorClassGrant {
 export interface AcBonusGrant {
   readonly type: 'ac-bonus';
   readonly bonus: number;
+  /** Only applies while body armor is worn (Defense fighting style). */
+  readonly requiresArmor?: boolean;
 }
 
 export interface SpellcastingGrant {
@@ -203,6 +238,9 @@ export interface SpellGrant {
   // (e.g. Circle of the Land progressively unlocks its circle spells at druid L3/5/7/9).
   // Gated generically in collectBundles against the granting class's level — see issue #189.
   readonly minClassLevel?: number;
+  // Level gate on *total character level*, for non-class sources that have no class level
+  // (species lineage spells unlock at character level 3 and 5).
+  readonly minCharacterLevel?: number;
   /**
    * Optional ability override: when set, this spell uses the specified ability for its
    * attack bonus and save DC instead of the character's dominant spellcasting ability.
@@ -332,7 +370,13 @@ export type ResourcePoolMax =
    * single class's level (same single-class assumption as the other level-keyed
    * modes). The resolver clamps the result at 0.
    */
-  | { readonly mode: 'class-level-plus'; readonly classId: ClassId; readonly offset: number };
+  | { readonly mode: 'class-level-plus'; readonly classId: ClassId; readonly offset: number }
+  /**
+   * The max equals the character's modifier in `ability`, floored at `min` (default 1) — e.g. the
+   * Fiend Patron's Dark One's Own Luck (Charisma modifier, minimum once). Needs the resolved ability
+   * modifiers, so it only resolves where `resolveResourcePools` is given them.
+   */
+  | { readonly mode: 'ability-mod'; readonly ability: AbilityKey; readonly min?: number };
 
 /**
  * Die sizes that scale with character level — currently only the Psi Warrior /
@@ -376,6 +420,8 @@ export interface SpellChoiceGrant {
 
 export type Grant =
   | AbilityBonusGrant
+  | AbilitySetGrant
+  | RollModifierGrant
   | AbilityChoiceGrant
   | ProficiencyGrant
   | ProficiencyChoiceGrant

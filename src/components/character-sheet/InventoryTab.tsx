@@ -17,10 +17,14 @@ import type { ItemDef, ArmorCategory } from '@/types/items';
 import type { CharacterSummary } from '@/types/database';
 import type { ArmorProficiencyId } from '@/lib/dnd-helpers';
 import type { Sourced } from '@/types/resolved';
+import type { SourceTag } from '@/types/sources';
 import { isProficientWithArmor } from '@/lib/resolver/equipment';
 import { useInventoryMutations } from '@/hooks/useInventoryMutations';
 import { useCharacters } from '@/hooks/useCharacters';
 import { toast } from 'sonner';
+
+/** Catalog rows shown at once in the add dialog (the rest need a narrower search). */
+const CATALOG_CAP = 40;
 
 interface InventoryTabProps {
   readonly characterId: string;
@@ -135,7 +139,7 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
         },
         {
           onSuccess: () => {
-            toast.success(`Added ${customName}`);
+            toast.success(tc('inventory.added', { name: customName }));
             setIsAddItemOpen(false);
             setCustomName('');
             setAddQty(1);
@@ -153,7 +157,13 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
         },
         {
           onSuccess: () => {
-            toast.success(`Added ${selectedCatalogItem.id}`);
+            toast.success(
+              tc('inventory.added', {
+                name: t(getItemNameKey(selectedCatalogItem.type, selectedCatalogItem.id), {
+                  defaultValue: selectedCatalogItem.id,
+                }),
+              })
+            );
             setIsAddItemOpen(false);
             setSelectedCatalogItem(null);
             setAddQty(1);
@@ -162,6 +172,32 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
       );
     }
   };
+
+  // Removing is immediate, but the toast offers to put the row back (same qty, equipped state and source).
+  const handleRemove = (item: (typeof itemRows)[number]) => {
+    removeItem.mutate(
+      { characterId, id: item.id },
+      {
+        onSuccess: () =>
+          toast(tc('inventory.removed', { name: item.itemName }), {
+            action: {
+              label: tc('inventory.undo'),
+              onClick: () =>
+                addItem.mutate({
+                  characterId,
+                  itemId: item.item_id,
+                  quantity: item.quantity,
+                  equipped: item.equipped,
+                  attuned: item.attuned,
+                  source: item.source as SourceTag | undefined,
+                }),
+            },
+          }),
+      }
+    );
+  };
+
+  const filterLabel = (type: 'all' | 'weapon' | 'armor' | 'gear' | 'pack') => tc(`inventory.filter.${type}`);
 
   const handleConfirmTransfer = () => {
     if (!transferingItem || !targetCharId) return;
@@ -175,12 +211,14 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
       },
       {
         onSuccess: () => {
-          const targetName = partyMembers.find((c: CharacterSummary) => c.id === targetCharId)?.name ?? 'Party Member';
-          toast.success(`Transferred item to ${targetName}`);
+          const targetName =
+            partyMembers.find((c: CharacterSummary) => c.id === targetCharId)?.name ??
+            tc('inventory.partyMemberFallback');
+          toast.success(tc('inventory.transferred', { target: targetName }));
           setTransferingItem(null);
         },
         onError: () => {
-          toast.error('Transfer failed');
+          toast.error(tc('inventory.transferFailed'));
         },
       }
     );
@@ -222,7 +260,8 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
           <Input
-            placeholder="Search inventory items..."
+            placeholder={tc('inventory.searchPlaceholder')}
+            aria-label={tc('inventory.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -235,13 +274,14 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
               key={type}
               type="button"
               onClick={() => setFilterType(type)}
-              className={`px-3 py-1 text-xs font-semibold rounded-md capitalize transition-colors ${
+              aria-pressed={filterType === type}
+              className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
                 filterType === type
                   ? 'bg-card text-foreground shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              {type}
+              {filterLabel(type)}
             </button>
           ))}
         </div>
@@ -267,7 +307,17 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
               <div className="flex items-center gap-3 flex-1 min-w-0 pr-2">
                 <button
                   type="button"
-                  title={item.equipped ? 'Unequip' : 'Equip'}
+                  title={
+                    item.equipped
+                      ? tc('inventory.unequipItem', { name: item.itemName })
+                      : tc('inventory.equipItem', { name: item.itemName })
+                  }
+                  aria-label={
+                    item.equipped
+                      ? tc('inventory.unequipItem', { name: item.itemName })
+                      : tc('inventory.equipItem', { name: item.itemName })
+                  }
+                  aria-pressed={!!item.equipped}
                   onClick={() =>
                     updateItem.mutate({
                       characterId,
@@ -275,7 +325,7 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                       equipped: !item.equipped,
                     })
                   }
-                  className="text-muted-foreground hover:text-primary transition-colors shrink-0"
+                  className="-m-1.5 p-1.5 text-muted-foreground hover:text-primary transition-colors shrink-0"
                 >
                   {item.equipped ? (
                     <CheckCircle2 className="size-5 text-green-600 dark:text-green-500" />
@@ -303,12 +353,14 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                           variant="outline"
                           title={
                             item.def.category === 'shield'
-                              ? 'No AC bonus without shield training'
-                              : 'Disadvantage on STR/DEX tests & cannot cast spells'
+                              ? tc('inventory.noShieldBonusTitle')
+                              : tc('inventory.armorPenaltyTitle')
                           }
                           className="text-[10px] py-0 border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/10 cursor-help"
                         >
-                          {item.def.category === 'shield' ? 'No Shield Training' : 'Lacks Armor Training'}
+                          {item.def.category === 'shield'
+                            ? tc('inventory.noShieldTraining')
+                            : tc('inventory.lacksArmorTraining')}
                         </Badge>
                       )}
                   </div>
@@ -331,22 +383,19 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                 <div className="flex items-center border rounded bg-muted/30">
                   <button
                     type="button"
-                    onClick={() => {
-                      if (item.quantity > 1) {
-                        updateItem.mutate({ characterId, id: item.id, quantity: item.quantity - 1 });
-                      } else {
-                        removeItem.mutate({ characterId, id: item.id });
-                      }
-                    }}
-                    className="px-2 py-0.5 text-xs text-muted-foreground hover:text-foreground font-bold"
+                    disabled={item.quantity <= 1}
+                    aria-label={tc('inventory.decreaseQty', { name: item.itemName })}
+                    onClick={() => updateItem.mutate({ characterId, id: item.id, quantity: item.quantity - 1 })}
+                    className="px-2.5 py-1 text-sm text-muted-foreground hover:text-foreground font-bold disabled:opacity-30"
                   >
                     -
                   </button>
                   <span className="px-1.5 text-xs font-mono font-bold text-foreground">{item.quantity}</span>
                   <button
                     type="button"
+                    aria-label={tc('inventory.increaseQty', { name: item.itemName })}
                     onClick={() => updateItem.mutate({ characterId, id: item.id, quantity: item.quantity + 1 })}
-                    className="px-2 py-0.5 text-xs text-muted-foreground hover:text-foreground font-bold"
+                    className="px-2.5 py-1 text-sm text-muted-foreground hover:text-foreground font-bold"
                   >
                     +
                   </button>
@@ -358,7 +407,8 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                     variant="ghost"
                     size="icon"
                     className="size-8 text-muted-foreground hover:text-primary"
-                    title="Transfer to party member"
+                    title={tc('inventory.transferItemAria', { name: item.itemName })}
+                    aria-label={tc('inventory.transferItemAria', { name: item.itemName })}
                     onClick={() => {
                       setTransferingItem({ id: item.id, item_id: item.item_id, maxQty: item.quantity });
                       setTargetCharId(partyMembers[0]?.id ?? '');
@@ -374,8 +424,9 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                   variant="ghost"
                   size="icon"
                   className="size-8 text-muted-foreground hover:text-destructive"
-                  title="Remove item"
-                  onClick={() => removeItem.mutate({ characterId, id: item.id })}
+                  title={tc('inventory.removeItemAria', { name: item.itemName })}
+                  aria-label={tc('inventory.removeItemAria', { name: item.itemName })}
+                  onClick={() => handleRemove(item)}
                 >
                   <Trash2 className="size-4" />
                 </Button>
@@ -414,7 +465,8 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
           {!isCustom ? (
             <div className="space-y-3">
               <Input
-                placeholder="Search catalog items (weapons, armor, gear)..."
+                placeholder={tc('inventory.catalogSearchPlaceholder')}
+                aria-label={tc('inventory.catalogSearchPlaceholder')}
                 value={catalogSearch}
                 onChange={(e) => setCatalogSearch(e.target.value)}
               />
@@ -424,13 +476,14 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                     key={type}
                     type="button"
                     onClick={() => setCatalogFilterType(type)}
-                    className={`flex-1 py-0.5 font-semibold rounded capitalize transition-colors ${
+                    aria-pressed={catalogFilterType === type}
+                    className={`flex-1 py-0.5 font-semibold rounded transition-colors ${
                       catalogFilterType === type
                         ? 'bg-card text-foreground shadow-sm'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
-                    {type}
+                    {filterLabel(type)}
                   </button>
                 ))}
               </div>
@@ -438,7 +491,7 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                 {catalogFiltered.length === 0 ? (
                   <div className="text-center py-4 text-xs text-muted-foreground">{tc('inventory.noMatch')}</div>
                 ) : (
-                  catalogFiltered.slice(0, 40).map((item) => {
+                  catalogFiltered.slice(0, CATALOG_CAP).map((item) => {
                     const name = t(getItemNameKey(item.type, item.id), {
                       defaultValue: item.id.replace(/-/g, ' '),
                     });
@@ -454,6 +507,7 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                         key={item.id}
                         type="button"
                         onClick={() => setSelectedCatalogItem(item)}
+                        aria-pressed={isSelected}
                         className={`w-full text-left px-3 py-1.5 rounded text-xs flex justify-between items-center transition-colors ${
                           isSelected ? 'bg-primary/10 text-primary font-bold' : 'hover:bg-muted/50'
                         }`}
@@ -470,25 +524,35 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                   })
                 )}
               </div>
+              {catalogFiltered.length > CATALOG_CAP && (
+                <p className="text-xs text-muted-foreground">
+                  {tc('inventory.catalogCap', { shown: CATALOG_CAP, total: catalogFiltered.length })}
+                </p>
+              )}
             </div>
           ) : (
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                <label htmlFor="custom-item-name" className="text-xs font-semibold text-muted-foreground block mb-1">
                   {tc('inventory.itemName')}
                 </label>
                 <Input
-                  placeholder="e.g. Ring of Protection"
+                  id="custom-item-name"
+                  placeholder={tc('inventory.customNamePlaceholder')}
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                  <label
+                    htmlFor="custom-item-category"
+                    className="text-xs font-semibold text-muted-foreground block mb-1"
+                  >
                     {tc('inventory.category')}
                   </label>
                   <select
+                    id="custom-item-category"
                     value={customType}
                     onChange={(e) => setCustomType(e.target.value as 'weapon' | 'armor' | 'gear')}
                     className="w-full bg-background border rounded px-3 py-2 text-xs"
@@ -499,10 +563,14 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                  <label
+                    htmlFor="custom-item-weight"
+                    className="text-xs font-semibold text-muted-foreground block mb-1"
+                  >
                     {tc('inventory.weightLbs')}
                   </label>
                   <Input
+                    id="custom-item-weight"
                     type="number"
                     value={customWeight}
                     onChange={(e) => setCustomWeight(parseFloat(e.target.value) || 0)}
@@ -512,10 +580,14 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
               {customType === 'armor' && (
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    <label
+                      htmlFor="custom-item-armor-category"
+                      className="text-xs font-semibold text-muted-foreground block mb-1"
+                    >
                       {tc('inventory.armorCategory')}
                     </label>
                     <select
+                      id="custom-item-armor-category"
                       value={customArmorCategory}
                       onChange={(e) => setCustomArmorCategory(e.target.value as ArmorCategory)}
                       className="w-full bg-background border rounded px-3 py-2 text-xs"
@@ -527,10 +599,11 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground block mb-1">
+                    <label htmlFor="custom-item-ac" className="text-xs font-semibold text-muted-foreground block mb-1">
                       {tc('inventory.baseAc')}
                     </label>
                     <Input
+                      id="custom-item-ac"
                       type="number"
                       value={customAc}
                       onChange={(e) => setCustomAc(parseInt(e.target.value, 10) || 0)}
@@ -542,8 +615,11 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
           )}
 
           <div className="flex items-center gap-2 pt-2">
-            <label className="text-xs font-semibold text-muted-foreground">{tc('inventory.quantity')}</label>
+            <label htmlFor="add-item-qty" className="text-xs font-semibold text-muted-foreground">
+              {tc('inventory.quantity')}
+            </label>
             <Input
+              id="add-item-qty"
               type="number"
               min="1"
               value={addQty}
@@ -571,27 +647,33 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
 
           <div className="space-y-4 py-2">
             <div>
-              <label className="text-xs font-semibold text-muted-foreground block mb-1">
+              <label htmlFor="transfer-target" className="text-xs font-semibold text-muted-foreground block mb-1">
                 {tc('inventory.targetMember')}
               </label>
               <select
+                id="transfer-target"
                 value={targetCharId}
                 onChange={(e) => setTargetCharId(e.target.value)}
                 className="w-full bg-background border rounded px-3 py-2 text-sm"
               >
                 {partyMembers.map((member: CharacterSummary) => (
                   <option key={member.id} value={member.id}>
-                    {member.name} ({member.class ?? 'Character'})
+                    {member.name} (
+                    {member.class
+                      ? t(`classes.${member.class}` as 'classes.fighter', { defaultValue: member.class })
+                      : tc('inventory.characterFallback')}
+                    )
                   </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-muted-foreground block mb-1">
+              <label htmlFor="transfer-qty" className="text-xs font-semibold text-muted-foreground block mb-1">
                 {tc('inventory.quantityToTransfer', { max: transferingItem?.maxQty })}
               </label>
               <Input
+                id="transfer-qty"
                 type="number"
                 min="1"
                 max={transferingItem?.maxQty ?? 1}

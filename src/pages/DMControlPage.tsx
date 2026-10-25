@@ -18,6 +18,17 @@ import {
   UserMinus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { HpDraftInput } from '@/components/HpDraftInput';
+import { useClassLabel } from '@/hooks/useClassLabel';
+import { getLogger } from '@/lib/logger';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useCharacters } from '@/hooks/useCharacters';
@@ -34,7 +45,13 @@ import { BattleMapView } from '@/components/battle-map/BattleMapView';
 import { DisplayModeToggle } from '@/components/battle-map/DisplayModeToggle';
 import { toast } from 'sonner';
 
+const logger = getLogger('DMControlPage');
+
 const rollDie = (sides: number) => Math.floor(Math.random() * sides) + 1;
+
+type CheckName = 'perception' | 'wisdom' | 'intelligence';
+
+const signed = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
 
 export default function DMControlPage() {
   const { t: tc } = useTranslation('common');
@@ -52,17 +69,38 @@ export default function DMControlPage() {
   const updatePartyHP = useUpdatePartyHP();
   const updatePartyNpcs = useUpdatePartyNpcs();
   const recordCharacterRoll = useRecordCharacterRoll();
+  const classLabel = useClassLabel();
+
+  const [confirming, setConfirming] = useState<'heal' | 'reset' | null>(null);
 
   // The party: all Player Characters plus any NPC the DM has added to it.
   const pcs = selectPartyMembers(characters, partyNpcIds);
   const recruitableNpcs = selectRecruitableNpcs(characters);
 
-  const toggleNpcInParty = async (npcId: string, join: boolean) => {
-    const next = join ? [...partyNpcIds, npcId] : partyNpcIds.filter((id) => id !== npcId);
-    await updatePartyNpcs.mutateAsync({ campaignId: targetCampaignId, npcIds: next });
-    const npc = characters.find((c) => c.id === npcId);
-    toast.success(join ? `${npc?.name ?? 'NPC'} joined the party` : `${npc?.name ?? 'NPC'} left the party`);
+  const classLine = (c: Pick<CharacterSummary, 'class' | 'level'>) =>
+    c.class
+      ? tc('dmControl.classLevel', { class: classLabel(c.class), level: c.level })
+      : tc('dmControl.levelOnly', { level: c.level });
+
+  /** Run a DM action; failures are already toasted by the global mutation handler, so just log them. */
+  const attempt = async (action: () => Promise<unknown>) => {
+    try {
+      await action();
+    } catch (error) {
+      logger.error('DM action failed:', error);
+    }
   };
+
+  const toggleNpcInParty = (npcId: string, join: boolean) =>
+    attempt(async () => {
+      // Send only the delta; the server applies it to the freshly-read list.
+      await updatePartyNpcs.mutateAsync({
+        campaignId: targetCampaignId,
+        ...(join ? { add: npcId } : { remove: npcId }),
+      });
+      const name = characters.find((c) => c.id === npcId)?.name ?? tc('dmControl.npcFallback');
+      toast.success(tc(join ? 'dmControl.joinedParty' : 'dmControl.leftParty', { name }));
+    });
 
   // Fetch Perception, Wisdom, and Intelligence statistics for all PCs
   const { data: partyStats = {} } = usePartyCharacterStats(targetCampaignId, pcs);
@@ -74,12 +112,6 @@ export default function DMControlPage() {
     []
   );
 
-  // Roll d20 helper with optional modifier
-  const rollD20 = (mod: number = 0) => {
-    const d20 = rollDie(20);
-    return d20 + mod;
-  };
-
   // Roll Generic Dice
   const handleGenericRoll = (sides: number) => {
     const rolls: number[] = [];
@@ -90,155 +122,125 @@ export default function DMControlPage() {
       total += r;
     }
     total += modifier;
-    const formula = `${numDice}d${sides}${modifier >= 0 ? `+${modifier}` : modifier}`;
+    const formula = `${numDice}d${sides}${signed(modifier)}`;
     const newEntry = { id: crypto.randomUUID(), formula, result: total, rolls };
     setRollHistory((prev) => [newEntry, ...prev.slice(0, 9)]);
-    toast.success(`Rolled ${formula}: ${total}`);
+    toast.success(tc('dmControl.rolledGeneric', { formula, total }));
   };
 
   // Roll on behalf of a specific PC
-  const handleRollForPC = async (pc: CharacterSummary) => {
-    const d20 = rollDie(20);
-    const formula = '1d20';
-    await recordCharacterRoll.mutateAsync({
-      campaignId: targetCampaignId,
-      characterId: pc.id,
-      roll: {
-        formula,
-        total: d20,
-        rolls: [d20],
-        modifier: 0,
-      },
-    });
-    toast.success(`Rolled d20 for ${pc.name}: ${d20}`);
-  };
-
-  // Roll specific check (Perception, Wisdom, Intelligence) on behalf of a specific PC
-  const handleRollCheckForPC = async (
-    pc: CharacterSummary,
-    checkName: 'Perception' | 'Wisdom' | 'Intelligence',
-    mod: number
-  ) => {
-    const d20 = rollDie(20);
-    const total = d20 + mod;
-    const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
-    const formula = `1d20${mod !== 0 ? modStr : ''}`;
-    await recordCharacterRoll.mutateAsync({
-      campaignId: targetCampaignId,
-      characterId: pc.id,
-      roll: {
-        formula,
-        total,
-        rolls: [d20],
-        modifier: mod,
-        label: `${pc.name} - ${checkName} Check`,
-      },
-    });
-    toast.success(`Rolled ${checkName} Check for ${pc.name}: ${total} (d20: ${d20}${modStr})`);
-  };
-
-  // Roll batch check for all party characters simultaneously
-  const handleBatchRollCheck = async (checkName: 'Perception' | 'Wisdom' | 'Intelligence') => {
-    if (!targetCampaignId || pcs.length === 0) {
-      toast.error('No characters found to roll.');
-      return;
-    }
-
-    const summaries: string[] = [];
-    for (const pc of pcs) {
-      const pcStat = partyStats[pc.id];
-      const mod =
-        checkName === 'Perception'
-          ? (pcStat?.perceptionBonus ?? 0)
-          : checkName === 'Wisdom'
-            ? (pcStat?.wisMod ?? 0)
-            : (pcStat?.intMod ?? 0);
-
+  const handleRollForPC = (pc: CharacterSummary) =>
+    attempt(async () => {
       const d20 = rollDie(20);
-      const total = d20 + mod;
-      const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
-      const formula = `1d20${mod !== 0 ? modStr : ''}`;
-
       await recordCharacterRoll.mutateAsync({
         campaignId: targetCampaignId,
         characterId: pc.id,
-        roll: {
-          formula,
-          total,
-          rolls: [d20],
-          modifier: mod,
-          label: `${pc.name} - ${checkName} Check`,
-        },
+        roll: { formula: '1d20', total: d20, rolls: [d20], modifier: 0 },
       });
-      summaries.push(`${pc.name}: ${total}`);
-    }
-
-    toast.success(`Rolled ${checkName} checks for party: ${summaries.join(', ')}`);
-  };
-
-  // Trigger Standalone Initiative Roll for all characters
-  const handleTriggerInitiatives = async () => {
-    if (!targetCampaignId || pcs.length === 0) {
-      toast.error('No characters found in campaign to roll initiatives.');
-      return;
-    }
-
-    const initiatives: Record<string, number> = {};
-    pcs.forEach((pc) => {
-      initiatives[pc.id] = rollD20(0);
+      toast.success(tc('dmControl.rolledD20For', { name: pc.name, total: d20 }));
     });
 
-    await updatePartyInitiatives.mutateAsync({
+  const rollCheck = async (pc: CharacterSummary, check: CheckName, mod: number) => {
+    const d20 = rollDie(20);
+    const total = d20 + mod;
+    await recordCharacterRoll.mutateAsync({
       campaignId: targetCampaignId,
-      initiatives,
+      characterId: pc.id,
+      roll: {
+        formula: `1d20${mod !== 0 ? signed(mod) : ''}`,
+        total,
+        rolls: [d20],
+        modifier: mod,
+        label: tc('dmControl.checkLabel', { name: pc.name, check: tc(`dmControl.checkNames.${check}`) }),
+      },
+    });
+    return { d20, total };
+  };
+
+  // Roll specific check (Perception, Wisdom, Intelligence) on behalf of a specific PC
+  const handleRollCheckForPC = (pc: CharacterSummary, check: CheckName, mod: number) =>
+    attempt(async () => {
+      const { d20, total } = await rollCheck(pc, check, mod);
+      toast.success(
+        tc('dmControl.rolledCheckFor', {
+          check: tc(`dmControl.checkNames.${check}`),
+          name: pc.name,
+          total,
+          d20,
+          mod: signed(mod),
+        })
+      );
     });
 
-    toast.success('Rolled standalone initiatives for all party characters!');
-  };
+  // Roll batch check for all party characters simultaneously
+  const handleBatchRollCheck = (check: CheckName) =>
+    attempt(async () => {
+      if (!targetCampaignId || pcs.length === 0) {
+        toast.error(tc('dmControl.noCharactersToRoll'));
+        return;
+      }
+
+      const summaries: string[] = [];
+      for (const pc of pcs) {
+        const pcStat = partyStats[pc.id];
+        const mod =
+          check === 'perception'
+            ? (pcStat?.perceptionBonus ?? 0)
+            : check === 'wisdom'
+              ? (pcStat?.wisMod ?? 0)
+              : (pcStat?.intMod ?? 0);
+        const { total } = await rollCheck(pc, check, mod);
+        summaries.push(`${pc.name}: ${total}`);
+      }
+
+      toast.success(
+        tc('dmControl.rolledPartyChecks', { check: tc(`dmControl.checkNames.${check}`), summary: summaries.join(', ') })
+      );
+    });
+
+  // Roll initiative for the whole party: d20 + each member's initiative modifier
+  const handleTriggerInitiatives = () =>
+    attempt(async () => {
+      if (!targetCampaignId || pcs.length === 0) {
+        toast.error(tc('dmControl.noCharactersToRoll'));
+        return;
+      }
+
+      const initiatives: Record<string, number> = {};
+      pcs.forEach((pc) => {
+        initiatives[pc.id] = rollDie(20) + (partyStats[pc.id]?.initiativeBonus ?? 0);
+      });
+
+      await updatePartyInitiatives.mutateAsync({ campaignId: targetCampaignId, initiatives });
+      toast.success(tc('dmControl.initiativesRolled'));
+    });
 
   // Clear / Reset Standalone Initiatives
-  const handleResetInitiatives = async () => {
-    if (!targetCampaignId) return;
-    await updatePartyInitiatives.mutateAsync({
-      campaignId: targetCampaignId,
-      initiatives: {},
+  const handleResetInitiatives = () =>
+    attempt(async () => {
+      if (!targetCampaignId) return;
+      await updatePartyInitiatives.mutateAsync({ campaignId: targetCampaignId, initiatives: {} });
+      toast.info(tc('dmControl.initiativesReset'));
     });
-    toast.info('Initiative rolls reset.');
-  };
 
-  // Update single character HP
-  const handleAdjustHP = async (pcId: string, currentVal: number, maxVal: number, delta: number) => {
-    const newHp = Math.max(0, Math.min(maxVal, currentVal + delta));
-    await updatePartyHP.mutateAsync({
-      campaignId: targetCampaignId,
-      hpMap: { [pcId]: newHp },
-    });
-  };
+  // Set HP; `current` comes from the optimistic cache, so back-to-back clicks compound.
+  const handleAdjustHP = (pcId: string, currentVal: number, maxVal: number, delta: number) =>
+    handleSetHP(pcId, Math.max(0, Math.min(maxVal, currentVal + delta)));
 
-  const handleSetExactHP = async (pcId: string, maxVal: number, valStr: string) => {
-    const parsed = parseInt(valStr, 10);
-    if (isNaN(parsed)) return;
-    const clamped = Math.max(0, Math.min(maxVal, parsed));
-    await updatePartyHP.mutateAsync({
-      campaignId: targetCampaignId,
-      hpMap: { [pcId]: clamped },
-    });
-  };
+  const handleSetHP = (pcId: string, hp: number) =>
+    attempt(() => updatePartyHP.mutateAsync({ campaignId: targetCampaignId, hpMap: { [pcId]: hp } }));
 
-  // Full Heal All Characters
-  const handleHealAllParty = async () => {
-    if (!targetCampaignId || pcs.length === 0) return;
-    const hpMap: Record<string, number> = {};
-    pcs.forEach((pc) => {
-      const maxHp = pc.hit_points_max ?? 10;
-      hpMap[pc.id] = maxHp;
+  // Full Heal All Characters (members without a max HP are skipped: there's nothing to heal them to)
+  const handleHealAllParty = () =>
+    attempt(async () => {
+      const hpMap: Record<string, number> = {};
+      pcs.forEach((pc) => {
+        if (pc.hit_points_max != null) hpMap[pc.id] = pc.hit_points_max;
+      });
+      if (!targetCampaignId || Object.keys(hpMap).length === 0) return;
+      await updatePartyHP.mutateAsync({ campaignId: targetCampaignId, hpMap });
+      toast.success(tc('dmControl.partyHealed'));
     });
-    await updatePartyHP.mutateAsync({
-      campaignId: targetCampaignId,
-      hpMap,
-    });
-    toast.success('Fully healed all party characters!');
-  };
 
   const initiativesMap = partyInitState?.initiatives ?? partyState?.initiatives ?? {};
   const hpMap = partyState?.hp ?? {};
@@ -260,7 +262,7 @@ export default function DMControlPage() {
 
         <div className="flex flex-wrap items-center gap-3">
           <Button
-            onClick={handleHealAllParty}
+            onClick={() => setConfirming('heal')}
             variant="outline"
             className="gap-2 text-rose-500 border-rose-500/30 hover:bg-rose-500/10"
           >
@@ -274,7 +276,7 @@ export default function DMControlPage() {
           {hasInitiatives && (
             <Button
               variant="outline"
-              onClick={handleResetInitiatives}
+              onClick={() => setConfirming('reset')}
               className="gap-1.5 text-muted-foreground hover:text-destructive"
             >
               <RotateCcw className="size-4" /> {tc('dmControl.resetInitiatives')}
@@ -312,9 +314,7 @@ export default function DMControlPage() {
                 >
                   <div className="min-w-0">
                     <div className="font-bold text-sm text-foreground truncate">{npc.name}</div>
-                    <div className="text-xs text-muted-foreground truncate">
-                      {npc.class ? `${npc.class} (lvl ${npc.level})` : `Lvl ${npc.level}`}
-                    </div>
+                    <div className="text-xs text-muted-foreground truncate">{classLine(npc)}</div>
                   </div>
                   <Button
                     size="sm"
@@ -371,7 +371,7 @@ export default function DMControlPage() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => handleBatchRollCheck('Perception')}
+              onClick={() => handleBatchRollCheck('perception')}
               className="gap-1.5 text-xs text-sky-500 border-sky-500/30 hover:bg-sky-500/10"
             >
               <Eye className="size-3.5" /> {tc('dmControl.rollPerception')}
@@ -379,7 +379,7 @@ export default function DMControlPage() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => handleBatchRollCheck('Wisdom')}
+              onClick={() => handleBatchRollCheck('wisdom')}
               className="gap-1.5 text-xs text-purple-500 border-purple-500/30 hover:bg-purple-500/10"
             >
               <Brain className="size-3.5" /> {tc('dmControl.rollWisdom')}
@@ -387,7 +387,7 @@ export default function DMControlPage() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => handleBatchRollCheck('Intelligence')}
+              onClick={() => handleBatchRollCheck('intelligence')}
               className="gap-1.5 text-xs text-amber-500 border-amber-500/30 hover:bg-amber-500/10"
             >
               <BookOpen className="size-3.5" /> {tc('dmControl.rollIntelligence')}
@@ -405,6 +405,7 @@ export default function DMControlPage() {
                 wisMod: 0,
                 intScore: 10,
                 intMod: 0,
+                initiativeBonus: 0,
                 perceptionBonus: 0,
                 passivePerception: 10,
                 passiveWisdom: 10,
@@ -424,9 +425,7 @@ export default function DMControlPage() {
                   <div className="flex items-center justify-between border-b pb-2">
                     <div>
                       <div className="font-bold text-sm text-foreground">{pc.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {pc.class ? `${pc.class} (lvl ${pc.level})` : `Lvl ${pc.level}`}
-                      </div>
+                      <div className="text-xs text-muted-foreground">{classLine(pc)}</div>
                     </div>
                     {stat.perceptionExpertise ? (
                       <Badge variant="outline" className="text-[10px] text-sky-500 border-sky-500/30 bg-sky-500/10">
@@ -451,7 +450,7 @@ export default function DMControlPage() {
                       </div>
                       <div
                         className="text-lg font-black font-mono text-sky-600 dark:text-sky-400"
-                        title="Passive Perception"
+                        title={tc('dmControl.passivePerception')}
                       >
                         {stat.passivePerception}
                       </div>
@@ -461,7 +460,7 @@ export default function DMControlPage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleRollCheckForPC(pc, 'Perception', stat.perceptionBonus)}
+                        onClick={() => handleRollCheckForPC(pc, 'perception', stat.perceptionBonus)}
                         className="h-6 w-full text-[10px] px-1 gap-1 text-sky-600 dark:text-sky-400 hover:bg-sky-500/20"
                       >
                         <Dices className="size-2.5" /> {tc('dmControl.roll')}
@@ -475,7 +474,7 @@ export default function DMControlPage() {
                       </div>
                       <div
                         className="text-lg font-black font-mono text-purple-600 dark:text-purple-400"
-                        title="Passive Wisdom (10 + WIS mod)"
+                        title={tc('dmControl.passiveWisdom')}
                       >
                         {stat.passiveWisdom}
                       </div>
@@ -486,7 +485,7 @@ export default function DMControlPage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleRollCheckForPC(pc, 'Wisdom', stat.wisMod)}
+                        onClick={() => handleRollCheckForPC(pc, 'wisdom', stat.wisMod)}
                         className="h-6 w-full text-[10px] px-1 gap-1 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20"
                       >
                         <Dices className="size-2.5" /> {tc('dmControl.roll')}
@@ -500,7 +499,7 @@ export default function DMControlPage() {
                       </div>
                       <div
                         className="text-lg font-black font-mono text-amber-600 dark:text-amber-400"
-                        title="Passive Intelligence (10 + INT mod)"
+                        title={tc('dmControl.passiveIntelligence')}
                       >
                         {stat.passiveIntelligence}
                       </div>
@@ -511,7 +510,7 @@ export default function DMControlPage() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleRollCheckForPC(pc, 'Intelligence', stat.intMod)}
+                        onClick={() => handleRollCheckForPC(pc, 'intelligence', stat.intMod)}
                         className="h-6 w-full text-[10px] px-1 gap-1 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20"
                       >
                         <Dices className="size-2.5" /> {tc('dmControl.roll')}
@@ -533,7 +532,7 @@ export default function DMControlPage() {
             <h2 className="text-lg font-bold text-foreground">{tc('dmControl.hpTitle')}</h2>
           </div>
           <span className="text-xs text-muted-foreground font-mono">
-            {pcs.length} {pcs.length === 1 ? 'Character' : 'Characters'}
+            {tc('dmControl.characterCount', { count: pcs.length })}
           </span>
         </div>
 
@@ -542,9 +541,17 @@ export default function DMControlPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {pcs.map((pc) => {
-              const maxHp = pc.hit_points_max ?? 10;
-              const currentHp = hpMap[pc.id] ?? maxHp;
+              const maxHp = pc.hit_points_max;
               const lastRoll = lastRollsMap[pc.id];
+              if (maxHp == null) {
+                return (
+                  <div key={pc.id} className="p-4 rounded-xl border bg-muted/20 space-y-1">
+                    <div className="font-bold text-base text-foreground">{pc.name}</div>
+                    <div className="text-xs text-muted-foreground">{tc('dmControl.noMaxHp')}</div>
+                  </div>
+                );
+              }
+              const currentHp = hpMap[pc.id] ?? maxHp;
 
               const percent = Math.min(100, Math.max(0, Math.round((currentHp / maxHp) * 100)));
 
@@ -553,16 +560,28 @@ export default function DMControlPage() {
                 variant: 'default' | 'secondary' | 'destructive' | 'outline';
                 colorClass: string;
               } = {
-                label: 'Healthy',
+                label: tc('dmControl.status.healthy'),
                 variant: 'default',
                 colorClass: 'bg-emerald-600',
               };
               if (currentHp === 0) {
-                statusBadge = { label: 'Unconscious', variant: 'destructive', colorClass: 'bg-slate-700' };
+                statusBadge = {
+                  label: tc('dmControl.status.unconscious'),
+                  variant: 'destructive',
+                  colorClass: 'bg-slate-700',
+                };
               } else if (percent <= 25) {
-                statusBadge = { label: 'Critical', variant: 'destructive', colorClass: 'bg-rose-600' };
+                statusBadge = {
+                  label: tc('dmControl.status.critical'),
+                  variant: 'destructive',
+                  colorClass: 'bg-rose-600',
+                };
               } else if (percent <= 50) {
-                statusBadge = { label: 'Injured', variant: 'secondary', colorClass: 'bg-amber-600 text-white' };
+                statusBadge = {
+                  label: tc('dmControl.status.injured'),
+                  variant: 'secondary',
+                  colorClass: 'bg-amber-600 text-white',
+                };
               }
 
               const barColor =
@@ -583,13 +602,11 @@ export default function DMControlPage() {
                         {pc.name}
                         {pc.armor_class != null && (
                           <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground flex items-center gap-1 border">
-                            <Shield className="size-3 text-sky-500" /> AC {pc.armor_class}
+                            <Shield className="size-3 text-sky-500" /> {tc('dmControl.acLabel', { ac: pc.armor_class })}
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        {pc.class ? `${pc.class} (lvl ${pc.level})` : `Lvl ${pc.level}`}
-                      </div>
+                      <div className="text-xs text-muted-foreground">{classLine(pc)}</div>
                     </div>
 
                     <Badge className={statusBadge.colorClass}>{statusBadge.label}</Badge>
@@ -617,7 +634,7 @@ export default function DMControlPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, -5)}
-                      className="h-8 px-2 text-xs text-rose-500 hover:bg-rose-500/10"
+                      className="h-9 min-w-9 px-2 text-xs text-rose-500 hover:bg-rose-500/10"
                     >
                       -5
                     </Button>
@@ -625,19 +642,17 @@ export default function DMControlPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, -1)}
-                      className="h-8 px-2 text-xs text-rose-500 hover:bg-rose-500/10"
+                      className="h-9 min-w-9 px-2 text-xs text-rose-500 hover:bg-rose-500/10"
                     >
                       <Minus className="size-3" /> 1
                     </Button>
 
                     <div className="w-16">
-                      <Input
-                        type="number"
-                        min={0}
-                        max={maxHp}
+                      <HpDraftInput
                         value={currentHp}
-                        onChange={(e) => handleSetExactHP(pc.id, maxHp, e.target.value)}
-                        className="h-8 text-center text-xs font-bold font-mono px-1"
+                        max={maxHp}
+                        aria-label={tc('dmControl.setHpFor', { name: pc.name })}
+                        onCommit={(hp) => handleSetHP(pc.id, hp)}
                       />
                     </div>
 
@@ -645,7 +660,7 @@ export default function DMControlPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, 1)}
-                      className="h-8 px-2 text-xs text-emerald-600 hover:bg-emerald-500/10"
+                      className="h-9 min-w-9 px-2 text-xs text-emerald-600 hover:bg-emerald-500/10"
                     >
                       <Plus className="size-3" /> 1
                     </Button>
@@ -653,7 +668,7 @@ export default function DMControlPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => handleAdjustHP(pc.id, currentHp, maxHp, 5)}
-                      className="h-8 px-2 text-xs text-emerald-600 hover:bg-emerald-500/10"
+                      className="h-9 min-w-9 px-2 text-xs text-emerald-600 hover:bg-emerald-500/10"
                     >
                       +5
                     </Button>
@@ -734,17 +749,13 @@ export default function DMControlPage() {
                 <div key={pc.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
                   <div>
                     <div className="font-bold text-sm text-foreground">{pc.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {pc.class ? `${pc.class} (lvl ${pc.level})` : `Lvl ${pc.level}`}
-                    </div>
+                    <div className="text-xs text-muted-foreground">{classLine(pc)}</div>
                   </div>
                   <div className="text-right">
                     <div className="text-[10px] text-muted-foreground uppercase font-bold">
                       {tc('dmControl.initiative')}
                     </div>
-                    <div className="text-xl font-extrabold font-mono text-primary">
-                      {init !== null ? (init >= 0 ? `+${init}` : init) : '--'}
-                    </div>
+                    <div className="text-xl font-extrabold font-mono text-primary">{init !== null ? init : '--'}</div>
                   </div>
                 </div>
               );
@@ -813,6 +824,33 @@ export default function DMControlPage() {
           </div>
         )}
       </div>
+
+      <Dialog open={confirming !== null} onOpenChange={(open) => !open && setConfirming(null)}>
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>
+              {confirming === 'heal' ? tc('dmControl.confirmHealTitle') : tc('dmControl.confirmResetTitle')}
+            </DialogTitle>
+            <DialogDescription>
+              {confirming === 'heal' ? tc('dmControl.confirmHeal') : tc('dmControl.confirmReset')}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirming(null)}>
+              {tc('buttons.cancel')}
+            </Button>
+            <Button
+              onClick={() => {
+                if (confirming === 'heal') handleHealAllParty();
+                else handleResetInitiatives();
+                setConfirming(null);
+              }}
+            >
+              {confirming === 'heal' ? tc('dmControl.healAll') : tc('dmControl.resetInitiatives')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

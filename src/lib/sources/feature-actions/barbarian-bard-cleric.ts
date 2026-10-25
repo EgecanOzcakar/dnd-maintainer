@@ -190,7 +190,7 @@ export const BARBARIAN_BARD_CLERIC_ACTIONS: Readonly<Record<string, FeatureActio
   'trickerydomain-tricksters-transposition': { activation: 'bonus-action' },
 
   // ─── War Domain ──────────────────────────────────────────────────────────────
-  // Bonus Action weapon attack after the Attack action; Proficiency Bonus uses per Long Rest.
+  // Bonus Action weapon attack after the Attack action; Wisdom-modifier (min 1) uses, regained on a Short or Long Rest.
   'wardomain-war-priest': { activation: 'bonus-action', poolId: 'war-priest' },
   // +10 to an attack roll just made by you or a creature within 30 ft.
   'wardomain-guided-strike': { activation: 'free', poolId: 'channel-divinity' },

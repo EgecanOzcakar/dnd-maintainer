@@ -4,6 +4,7 @@ import type { Session, SessionSummary } from '@/types/database';
 import type { TablesInsert, TablesUpdate } from '@/types/supabase';
 import { SESSION_SUMMARY_COLS, SESSION_DETAIL_COLS } from '@/lib/query-columns';
 import { validateSlug } from '@/lib/slug-utils';
+import { SHARED_LIST_QUERY } from '@/lib/query-options';
 
 export function useSessions(campaignId: string) {
   return useQuery({
@@ -18,6 +19,7 @@ export function useSessions(campaignId: string) {
       return (data || []) as unknown as SessionSummary[];
     },
     enabled: !!campaignId,
+    ...SHARED_LIST_QUERY,
   });
 }
 
@@ -53,6 +55,7 @@ export function useCreateSession() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['sessions', data.campaign_id] });
+      queryClient.invalidateQueries({ queryKey: ['sessions-xp', data.campaign_id] });
     },
   });
 }
@@ -73,6 +76,7 @@ export function useUpdateSession() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['sessions', data.campaign_id] });
+      queryClient.invalidateQueries({ queryKey: ['sessions-xp', data.campaign_id] });
       queryClient.invalidateQueries({ queryKey: ['session'] });
       queryClient.setQueryData(['session', data.slug], data);
     },
@@ -89,6 +93,7 @@ export function useDeleteSession() {
     },
     onSuccess: (_, { campaignId }) => {
       queryClient.invalidateQueries({ queryKey: ['sessions', campaignId] });
+      queryClient.invalidateQueries({ queryKey: ['sessions-xp', campaignId] });
     },
   });
 }

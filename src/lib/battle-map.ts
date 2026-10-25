@@ -35,6 +35,16 @@ export function isCellOccupied(map: BattleMap, x: number, y: number): boolean {
   return map.objects.some((o) => o.x === x && o.y === y) || map.tokens.some((tk) => tk.x === x && tk.y === y);
 }
 
+/** First unoccupied cell scanning row by row from the top-left, or null when the grid is full. */
+export function findFreeCell(map: BattleMap): { x: number; y: number } | null {
+  for (let y = 0; y < map.gridHeight; y++) {
+    for (let x = 0; x < map.gridWidth; x++) {
+      if (!isCellOccupied(map, x, y)) return { x, y };
+    }
+  }
+  return null;
+}
+
 const coord = z
   .number()
   .int()

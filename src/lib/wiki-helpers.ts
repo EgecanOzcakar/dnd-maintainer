@@ -85,6 +85,9 @@ export function evaluateResourcePoolMax(grant: Extract<Grant, { type: 'resource-
       return Math.max(0, level + maxSpec.offset);
     case 'proficiency-bonus':
       return getProficiencyBonus(level);
+    case 'ability-mod':
+      // No ability scores in the wiki — show the guaranteed minimum.
+      return maxSpec.min ?? 1;
     case 'level-steps': {
       let activeVal = 0;
       for (const step of maxSpec.steps) {

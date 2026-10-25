@@ -117,7 +117,9 @@ export function resolveSkills(
     if (grant.category === 'skill') {
       const decision = choices[grant.key];
       if (decision?.type === 'skill-choice') {
-        for (const skillId of decision.skills) {
+        // Only skills from the grant's pool, capped at its count (a stale or overfilled decision can't grant extras).
+        const pool = decision.skills.filter((s) => grant.from === null || grant.from.includes(s));
+        for (const skillId of pool.slice(0, grant.count)) {
           const existing = proficientSkills.get(skillId) ?? [];
           existing.push(source);
           proficientSkills.set(skillId, existing);

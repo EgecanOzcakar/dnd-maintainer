@@ -54,9 +54,9 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: '120 feet',
-    components: { verbal: true, somatic: true, material: 'a copper wire' },
+    components: { verbal: false, somatic: true, material: 'a copper wire' },
     duration: '1 round',
-    nativeClasses: ['bard', 'sorcerer', 'wizard'],
+    nativeClasses: ['bard', 'druid', 'sorcerer', 'wizard'],
   },
   {
     id: 'poison-spray',
@@ -76,7 +76,7 @@ export const SPELL_CATALOG = [
     school: 'conjuration',
     ritual: false,
     concentration: false,
-    castingTime: 'Action',
+    castingTime: 'Bonus Action',
     range: 'Self',
     components: { verbal: true, somatic: true, material: false },
     duration: '10 minutes',
@@ -90,7 +90,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: 'Touch',
-    components: { verbal: true, somatic: true, material: 'a miniature cloak' },
+    components: { verbal: true, somatic: true, material: false },
     duration: '1 minute',
     nativeClasses: ['cleric', 'druid'],
   },
@@ -102,7 +102,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Bonus Action',
     range: 'Self',
-    components: { verbal: true, somatic: true, material: 'mistletoe and shamrock leaves, plus a club or quarterstaff' },
+    components: { verbal: true, somatic: true, material: 'mistletoe' },
     duration: '1 minute',
     nativeClasses: ['druid'],
   },
@@ -140,7 +140,7 @@ export const SPELL_CATALOG = [
     range: 'Self',
     components: { verbal: true, somatic: true, material: false },
     duration: '10 minutes',
-    nativeClasses: ['bard', 'druid', 'ranger'],
+    nativeClasses: ['bard', 'druid', 'ranger', 'warlock'],
   },
   {
     id: 'commune-with-nature',
@@ -151,7 +151,7 @@ export const SPELL_CATALOG = [
     castingTime: '1 minute',
     range: 'Self',
     components: { verbal: true, somatic: true, material: false },
-    duration: 'Instantaneous',
+    duration: '1 minute',
     nativeClasses: ['druid', 'ranger'],
   },
   // ── Cleric domain spells (added for issue #142) ──────────────────────────
@@ -177,9 +177,9 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: '30 feet',
-    components: { verbal: true, somatic: true, material: 'a tiny strip of white cloth' },
+    components: { verbal: true, somatic: true, material: 'a strip of white cloth' },
     duration: '8 hours',
-    nativeClasses: ['cleric', 'paladin', 'ranger'],
+    nativeClasses: ['bard', 'cleric', 'druid', 'paladin', 'ranger'],
   },
   {
     id: 'bless',
@@ -189,7 +189,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '30 feet',
-    components: { verbal: true, somatic: true, material: 'a sprinkle of holy water' },
+    components: { verbal: true, somatic: true, material: 'a Holy Symbol worth 5+ GP' },
     duration: 'Up to 1 minute',
     nativeClasses: ['cleric', 'paladin'],
   },
@@ -278,7 +278,7 @@ export const SPELL_CATALOG = [
     range: 'Touch',
     components: { verbal: true, somatic: true, material: 'diamond dust worth 100+ GP, which the spell consumes' },
     duration: 'Instantaneous',
-    nativeClasses: ['bard', 'cleric', 'druid'],
+    nativeClasses: ['bard', 'cleric', 'druid', 'paladin', 'ranger'],
   },
   {
     id: 'mass-cure-wounds',
@@ -337,7 +337,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: 'Self',
-    components: { verbal: true, somatic: true, material: 'a pinch of talc and a small sprinkling of powdered silver' },
+    components: { verbal: true, somatic: true, material: 'a pinch of talc' },
     duration: '1 hour',
     nativeClasses: ['bard', 'sorcerer', 'wizard'],
   },
@@ -362,7 +362,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: '150 feet',
-    components: { verbal: true, somatic: true, material: 'a tiny ball of bat guano and sulfur' },
+    components: { verbal: true, somatic: true, material: 'a ball of bat guano and sulfur' },
     duration: 'Instantaneous',
     nativeClasses: ['sorcerer', 'wizard'],
   },
@@ -387,7 +387,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '120 feet',
-    components: { verbal: true, somatic: true, material: 'a small piece of phosphorus' },
+    components: { verbal: true, somatic: true, material: 'a piece of charcoal' },
     duration: 'Up to 1 minute',
     nativeClasses: ['druid', 'sorcerer', 'wizard'],
   },
@@ -400,7 +400,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: '60 feet',
-    components: { verbal: true, somatic: true, material: 'pinch of sulfur' },
+    components: { verbal: true, somatic: true, material: 'a pinch of sulfur' },
     duration: 'Instantaneous',
     nativeClasses: ['cleric'],
   },
@@ -415,7 +415,7 @@ export const SPELL_CATALOG = [
     components: {
       verbal: true,
       somatic: true,
-      material: 'a focus worth 1,000+ GP, such as a crystal ball, a silver mirror, or a font filled with holy water',
+      material: 'a focus worth 1,000+ GP, such as a crystal ball, mirror, or water-filled font',
     },
     duration: 'Up to 10 minutes',
     nativeClasses: ['bard', 'cleric', 'druid', 'warlock', 'wizard'],
@@ -453,7 +453,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: 'Touch',
-    components: { verbal: true, somatic: true, material: 'an eyelash encased in gum arabic' },
+    components: { verbal: true, somatic: true, material: 'an eyelash in gum arabic' },
     duration: 'Up to 1 hour',
     nativeClasses: ['bard', 'sorcerer', 'warlock', 'wizard'],
   },
@@ -465,11 +465,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: 'Self',
-    components: {
-      verbal: false,
-      somatic: true,
-      material: 'ashes from a burned leaf of mistletoe and a sprig of spruce',
-    },
+    components: { verbal: true, somatic: true, material: 'ashes from burned mistletoe' },
     duration: 'Up to 1 hour',
     nativeClasses: ['druid', 'ranger'],
   },
@@ -482,11 +478,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '120 feet',
-    components: {
-      verbal: false,
-      somatic: true,
-      material: 'a glowing stick of incense or a crystal vial filled with phosphorescent material',
-    },
+    components: { verbal: false, somatic: true, material: 'a pinch of confetti' },
     duration: 'Up to 1 minute',
     nativeClasses: ['bard', 'sorcerer', 'warlock', 'wizard'],
   },
@@ -552,7 +544,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '30 feet',
-    components: { verbal: false, somatic: true, material: false },
+    components: { verbal: true, somatic: true, material: false },
     duration: 'Up to 1 minute',
     nativeClasses: ['bard', 'wizard'],
   },
@@ -590,21 +582,21 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Bonus Action',
     range: '60 feet',
-    components: { verbal: true, somatic: true, material: 'a small parchment with a bit of holy text on it' },
+    components: { verbal: true, somatic: true, material: 'a prayer scroll' },
     duration: 'Up to 10 minutes',
     nativeClasses: ['cleric', 'paladin'],
   },
   {
-    // 2024 PHB: Spiritual Weapon — no longer concentration, uses Bonus Action to summon and attack
+    // 2024 PHB: Spiritual Weapon — Bonus Action to cast and to attack; requires concentration (up to 1 minute)
     id: 'spiritual-weapon',
     level: 2,
     school: 'evocation',
     ritual: false,
-    concentration: false,
+    concentration: true,
     castingTime: 'Bonus Action',
     range: '60 feet',
     components: { verbal: true, somatic: true, material: false },
-    duration: '1 minute',
+    duration: 'Up to 1 minute',
     nativeClasses: ['cleric'],
   },
   // War Domain L5
@@ -628,7 +620,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: 'Self (15-foot emanation)',
-    components: { verbal: true, somatic: true, material: 'a holy symbol' },
+    components: { verbal: true, somatic: true, material: 'a prayer scroll' },
     duration: 'Up to 10 minutes',
     nativeClasses: ['cleric'],
   },
@@ -643,7 +635,7 @@ export const SPELL_CATALOG = [
     range: 'Self',
     components: { verbal: true, somatic: true, material: 'a bit of phosphorus or a firefly' },
     duration: '10 minutes',
-    nativeClasses: ['sorcerer', 'wizard'],
+    nativeClasses: ['druid', 'sorcerer', 'wizard'],
   },
   {
     id: 'freedom-of-movement',
@@ -653,11 +645,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: 'Touch',
-    components: {
-      verbal: true,
-      somatic: true,
-      material: 'a leather strap, bound around the arm or a similar appendage',
-    },
+    components: { verbal: true, somatic: true, material: 'a leather strap' },
     duration: '1 hour',
     nativeClasses: ['bard', 'cleric', 'druid', 'ranger'],
   },
@@ -670,7 +658,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '90 feet',
-    components: { verbal: true, somatic: true, material: 'a small, straight piece of iron' },
+    components: { verbal: true, somatic: true, material: 'a straight piece of iron' },
     duration: 'Up to 1 minute',
     nativeClasses: ['bard', 'sorcerer', 'warlock', 'wizard'],
   },
@@ -682,7 +670,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: '30 feet',
-    components: { verbal: false, somatic: true, material: 'a melee weapon worth at least 1 SP' },
+    components: { verbal: false, somatic: true, material: 'a Melee weapon worth 1+ SP' },
     duration: 'Instantaneous',
     nativeClasses: ['ranger', 'wizard'],
   },
@@ -734,7 +722,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '120 feet',
-    components: { verbal: true, somatic: true, material: 'a small block of granite' },
+    components: { verbal: true, somatic: true, material: 'a cube of granite' },
     duration: 'Up to 10 minutes',
     nativeClasses: ['druid', 'sorcerer', 'wizard'],
   },
@@ -773,7 +761,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '60 feet',
-    components: { verbal: true, somatic: true, material: 'a small, straight piece of iron' },
+    components: { verbal: true, somatic: true, material: 'a straight piece of iron' },
     duration: 'Up to 1 minute',
     nativeClasses: ['bard', 'cleric', 'druid', 'sorcerer', 'warlock', 'wizard'],
   },
@@ -786,7 +774,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '150 feet',
-    components: { verbal: true, somatic: true, material: 'a pinch of dust and a few drops of water' },
+    components: { verbal: true, somatic: true, material: 'a miniature umbrella' },
     duration: 'Up to 1 minute',
     nativeClasses: ['druid', 'sorcerer', 'wizard'],
   },
@@ -799,7 +787,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: '300 feet',
-    components: { verbal: true, somatic: true, material: 'a pinch of dust and a few drops of water' },
+    components: { verbal: true, somatic: true, material: 'a mitten' },
     duration: 'Instantaneous',
     nativeClasses: ['druid', 'sorcerer', 'wizard'],
   },
@@ -814,7 +802,7 @@ export const SPELL_CATALOG = [
     range: 'Self (60-foot cone)',
     components: { verbal: true, somatic: true, material: 'a small crystal or glass cone' },
     duration: 'Instantaneous',
-    nativeClasses: ['sorcerer', 'wizard'],
+    nativeClasses: ['druid', 'sorcerer', 'wizard'],
   },
   // Circle of the Land — Temperate cantrip
   {
@@ -838,7 +826,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '60 feet',
-    components: { verbal: true, somatic: true, material: 'a pinch of sand, rose petals, or a cricket' },
+    components: { verbal: true, somatic: true, material: 'a pinch of sand or rose petals' },
     duration: 'Up to 1 minute',
     nativeClasses: ['bard', 'sorcerer', 'wizard'],
   },
@@ -864,7 +852,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: 'Self (100-foot line)',
-    components: { verbal: true, somatic: true, material: 'a bit of fur and a rod of amber, crystal, or glass' },
+    components: { verbal: true, somatic: true, material: 'a bit of fur and a crystal rod' },
     duration: 'Instantaneous',
     nativeClasses: ['sorcerer', 'wizard'],
   },
@@ -885,7 +873,7 @@ export const SPELL_CATALOG = [
   {
     id: 'acid-splash',
     level: 0,
-    school: 'conjuration',
+    school: 'evocation',
     ritual: false,
     concentration: false,
     castingTime: 'Action',
@@ -929,7 +917,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '90 feet',
-    components: { verbal: true, somatic: true, material: 'a rotten egg or several skunk cabbage leaves' },
+    components: { verbal: true, somatic: true, material: 'a rotten egg' },
     duration: 'Up to 1 minute',
     nativeClasses: ['bard', 'sorcerer', 'wizard'],
   },
@@ -955,11 +943,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '300 feet',
-    components: {
-      verbal: true,
-      somatic: true,
-      material: 'a few grains of sugar, some kernels of grain, and a smear of fat',
-    },
+    components: { verbal: true, somatic: true, material: 'a locust' },
     duration: 'Up to 10 minutes',
     nativeClasses: ['cleric', 'druid', 'sorcerer'],
   },
@@ -976,7 +960,7 @@ export const SPELL_CATALOG = [
     components: {
       verbal: true,
       somatic: true,
-      material: 'holy water or powdered silver and iron, which the spell consumes',
+      material: 'a flask of Holy Water worth 25+ GP, which the spell consumes',
     },
     duration: 'Up to 10 minutes',
     // 2024 PHB: native to cleric, druid, paladin, warlock, wizard
@@ -994,7 +978,7 @@ export const SPELL_CATALOG = [
     components: { verbal: true, somatic: true, material: false },
     duration: '10 minutes',
     // 2024 PHB: native to cleric, paladin
-    nativeClasses: ['cleric', 'paladin'],
+    nativeClasses: ['bard', 'cleric', 'paladin'],
   },
   // Devotion L9
   {
@@ -1023,7 +1007,7 @@ export const SPELL_CATALOG = [
     components: { verbal: true, somatic: true, material: false },
     duration: 'Instantaneous',
     // 2024 PHB: native to bard, cleric, druid, paladin, sorcerer, warlock, wizard
-    nativeClasses: ['bard', 'cleric', 'druid', 'paladin', 'sorcerer', 'warlock', 'wizard'],
+    nativeClasses: ['bard', 'cleric', 'druid', 'paladin', 'ranger', 'sorcerer', 'warlock', 'wizard'],
   },
   {
     id: 'counterspell',
@@ -1036,7 +1020,7 @@ export const SPELL_CATALOG = [
     components: { verbal: false, somatic: true, material: false },
     duration: 'Instantaneous',
     // 2024 PHB: native to bard, sorcerer, warlock, wizard
-    nativeClasses: ['bard', 'sorcerer', 'warlock', 'wizard'],
+    nativeClasses: ['sorcerer', 'warlock', 'wizard'],
   },
   // Devotion L13
   {
@@ -1061,7 +1045,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: '1 minute',
     range: 'Self',
-    components: { verbal: true, somatic: true, material: 'incense and a vial of holy or unholy water' },
+    components: { verbal: true, somatic: true, material: 'incense' },
     duration: '1 minute',
     // 2024 PHB: native to cleric only (oath-granted to Devotion Paladins but not on the native Paladin list)
     nativeClasses: ['cleric'],
@@ -1089,14 +1073,10 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: 'Touch',
-    components: {
-      verbal: true,
-      somatic: true,
-      material: 'fur or a feather from a beast',
-    },
+    components: { verbal: true, somatic: true, material: 'fur or a feather' },
     duration: 'Up to 1 hour',
     // 2024 PHB: native to bard, cleric, druid, ranger, sorcerer, warlock, wizard
-    nativeClasses: ['bard', 'cleric', 'druid', 'ranger', 'sorcerer', 'warlock', 'wizard'],
+    nativeClasses: ['bard', 'cleric', 'druid', 'ranger', 'sorcerer', 'wizard'],
   },
   // Glory/Vengeance L9
   {
@@ -1191,11 +1171,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '120 feet',
-    components: {
-      verbal: true,
-      somatic: true,
-      material: 'several seeds of any moonseed plant and a piece of opalescent feldspar',
-    },
+    components: { verbal: true, somatic: true, material: 'a moonseed leaf' },
     duration: 'Up to 1 minute',
     nativeClasses: ['druid'],
   },
@@ -1216,7 +1192,7 @@ export const SPELL_CATALOG = [
   {
     id: 'stoneskin',
     level: 4,
-    school: 'abjuration',
+    school: 'transmutation',
     ritual: false,
     concentration: true,
     castingTime: 'Action',
@@ -1245,7 +1221,7 @@ export const SPELL_CATALOG = [
     },
     duration: 'Up to 1 minute',
     // 2024 PHB: native to bard, cleric, warlock
-    nativeClasses: ['bard', 'cleric'],
+    nativeClasses: ['bard', 'cleric', 'warlock'],
   },
   {
     id: 'hunters-mark',
@@ -1268,7 +1244,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '30 feet',
-    components: { verbal: true, somatic: true, material: 'an item distasteful to the target' },
+    components: { verbal: true, somatic: true, material: 'a pentacle' },
     duration: 'Up to 1 minute',
     // 2024 PHB: native to cleric, paladin, sorcerer, warlock, wizard
     nativeClasses: ['cleric', 'paladin', 'sorcerer', 'warlock', 'wizard'],
@@ -1282,7 +1258,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: 'Touch',
-    components: { verbal: true, somatic: true, material: 'powdered corn extract and a twisted loop of parchment' },
+    components: { verbal: true, somatic: true, material: 'a segment of rope' },
     duration: '1 hour',
     // 2024 PHB: native to wizard
     nativeClasses: ['wizard'],
@@ -1296,7 +1272,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: 'Self',
-    components: { verbal: true, somatic: true, material: 'a white feather or the heart of a hen' },
+    components: { verbal: true, somatic: true, material: 'a white feather' },
     duration: 'Up to 1 minute',
     // 2024 PHB: native to bard, sorcerer, warlock, wizard
     nativeClasses: ['bard', 'sorcerer', 'warlock', 'wizard'],
@@ -1324,10 +1300,14 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '90 feet',
-    components: { verbal: true, somatic: true, material: 'a gilded acorn worth 200+ GP' },
+    components: {
+      verbal: true,
+      somatic: true,
+      material: 'a feather, tuft of fur, and fish tail inside a gilded acorn worth 200+ GP',
+    },
     duration: 'Up to 1 hour',
     // 2024 PHB: native to druid, ranger, wizard
-    nativeClasses: ['druid', 'ranger', 'wizard'],
+    nativeClasses: ['druid', 'ranger'],
   },
   // Gloom Stalker L13
   {
@@ -1355,7 +1335,7 @@ export const SPELL_CATALOG = [
     components: { verbal: false, somatic: true, material: false },
     duration: 'Up to 1 hour',
     // 2024 PHB: native to bard, wizard
-    nativeClasses: ['bard', 'wizard'],
+    nativeClasses: ['bard', 'warlock', 'wizard'],
   },
   // Gloom Stalker L17
   {
@@ -1407,7 +1387,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: 'Self',
-    components: { verbal: true, somatic: true, material: 'a copper piece' },
+    components: { verbal: true, somatic: true, material: '1 Copper Piece' },
     duration: 'Up to 1 minute',
     // 2024 PHB: native to bard, sorcerer, wizard
     nativeClasses: ['bard', 'sorcerer', 'wizard'],
@@ -1423,7 +1403,7 @@ export const SPELL_CATALOG = [
     components: { verbal: true, somatic: false, material: false },
     duration: 'Instantaneous',
     // 2024 PHB: native to bard, warlock, wizard
-    nativeClasses: ['bard', 'warlock', 'wizard'],
+    nativeClasses: ['bard'],
   },
   {
     id: 'mind-sliver',
@@ -1447,7 +1427,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '150 feet',
-    components: { verbal: true, somatic: true, material: 'a pickled octopus tentacle' },
+    components: { verbal: true, somatic: true, material: 'a pickled tentacle' },
     duration: 'Up to 1 minute',
     // 2024 PHB: native to warlock
     nativeClasses: ['warlock'],
@@ -1460,7 +1440,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: 'Unlimited',
-    components: { verbal: true, somatic: true, material: 'a short piece of fine copper wire' },
+    components: { verbal: true, somatic: true, material: 'a copper wire' },
     duration: 'Instantaneous',
     // 2024 PHB: native to bard, cleric, wizard
     nativeClasses: ['bard', 'cleric', 'wizard'],
@@ -1474,7 +1454,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '90 feet',
-    components: { verbal: true, somatic: true, material: 'a piece of tentacle from a giant octopus or giant squid' },
+    components: { verbal: true, somatic: true, material: 'a tentacle' },
     duration: 'Up to 1 minute',
     // 2024 PHB: native to wizard
     nativeClasses: ['wizard'],
@@ -1508,7 +1488,7 @@ export const SPELL_CATALOG = [
     components: { verbal: true, somatic: true, material: 'two eggs' },
     duration: '1 hour',
     // 2024 PHB: native to wizard
-    nativeClasses: ['wizard'],
+    nativeClasses: ['bard', 'wizard'],
   },
   {
     id: 'telekinesis',
@@ -1530,9 +1510,9 @@ export const SPELL_CATALOG = [
     school: 'abjuration',
     ritual: true,
     concentration: false,
-    castingTime: 'Action',
+    castingTime: '1 minute',
     range: '30 feet',
-    components: { verbal: true, somatic: true, material: 'a tiny bell and a piece of fine silver wire' },
+    components: { verbal: true, somatic: true, material: 'a bell and silver wire' },
     duration: '8 hours',
     // 2024 PHB: native to ranger, wizard
     nativeClasses: ['ranger', 'wizard'],
@@ -1546,7 +1526,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '90 feet',
-    components: { verbal: true, somatic: true, material: 'an ornate stone and metal lockbox worth 400+ GP' },
+    components: { verbal: true, somatic: true, material: 'a lockbox worth 400+ GP' },
     duration: 'Up to 1 hour',
     // 2024 PHB: native to artificer, wizard
     // Note: artificer is not a ClassId in this codebase; omitted; wizard confirmed native
@@ -1561,7 +1541,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '120 feet',
-    components: { verbal: true, somatic: true, material: 'a pinch of powder made by crushing a clear gemstone' },
+    components: { verbal: true, somatic: true, material: 'a shard of glass' },
     duration: 'Up to 10 minutes',
     // 2024 PHB: native to wizard
     nativeClasses: ['wizard'],
@@ -1628,7 +1608,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: 'Touch',
-    components: { verbal: true, somatic: true, material: 'a wing feather from any bird' },
+    components: { verbal: true, somatic: true, material: 'a feather' },
     duration: 'Up to 10 minutes',
     // 2024 PHB: native to sorcerer, warlock, wizard
     nativeClasses: ['sorcerer', 'warlock', 'wizard'],
@@ -1704,11 +1684,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '30 feet',
-    components: {
-      verbal: true,
-      somatic: false,
-      material: "a snake's tongue and either a bit of honeycomb or a drop of sweet oil",
-    },
+    components: { verbal: true, somatic: false, material: 'a drop of honey' },
     duration: 'Up to 8 hours',
     // 2024 PHB: native to bard, sorcerer, warlock, wizard
     nativeClasses: ['bard', 'sorcerer', 'warlock', 'wizard'],
@@ -1721,11 +1697,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '30 feet',
-    components: {
-      verbal: true,
-      somatic: true,
-      material: 'tiny tarts and a feather waved in the air',
-    },
+    components: { verbal: true, somatic: true, material: 'a tart and a feather' },
     duration: 'Up to 1 minute',
     // 2024 PHB: still named "Tasha's Hideous Laughter"; native to bard, warlock, wizard
     nativeClasses: ['bard', 'warlock', 'wizard'],
@@ -1771,7 +1743,7 @@ export const SPELL_CATALOG = [
     components: { verbal: true, somatic: true, material: false },
     duration: 'Up to 1 minute',
     // 2024 PHB: native to druid, ranger
-    nativeClasses: ['druid', 'sorcerer'],
+    nativeClasses: ['druid', 'ranger', 'sorcerer'],
   },
   {
     id: 'geas',
@@ -1794,11 +1766,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '90 feet',
-    components: {
-      verbal: true,
-      somatic: true,
-      material: 'a golden reliquary worth 500+ GP',
-    },
+    components: { verbal: true, somatic: true, material: 'a reliquary worth 500+ GP' },
     duration: 'Up to 1 hour',
     // 2024 PHB: native to cleric, paladin
     nativeClasses: ['cleric', 'paladin'],
@@ -1823,7 +1791,7 @@ export const SPELL_CATALOG = [
     concentration: true,
     castingTime: 'Action',
     range: '60 feet',
-    components: { verbal: true, somatic: false, material: 'bat fur and coal' },
+    components: { verbal: true, somatic: false, material: 'bat fur and a piece of coal' },
     duration: '10 minutes',
     nativeClasses: ['sorcerer', 'warlock', 'wizard'],
   },
@@ -1835,7 +1803,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: 'Touch',
-    components: { verbal: true, somatic: true, material: 'dried carrot' },
+    components: { verbal: true, somatic: true, material: 'a dried carrot' },
     duration: '8 hours',
     nativeClasses: ['druid', 'ranger', 'sorcerer', 'wizard'],
   },
@@ -1859,7 +1827,7 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: 'Touch',
-    components: { verbal: true, somatic: true, material: 'pinch of dirt' },
+    components: { verbal: true, somatic: true, material: 'a pinch of dirt' },
     duration: '1 hour',
     nativeClasses: ['bard', 'druid', 'ranger', 'wizard'],
   },
@@ -1873,7 +1841,7 @@ export const SPELL_CATALOG = [
     range: 'Self',
     components: { verbal: true, somatic: true, material: false },
     duration: '10 minutes',
-    nativeClasses: ['bard', 'cleric', 'druid', 'paladin', 'ranger', 'sorcerer', 'wizard'],
+    nativeClasses: ['bard', 'cleric', 'druid', 'paladin', 'ranger', 'sorcerer', 'warlock', 'wizard'],
   },
   {
     id: 'prestidigitation',
@@ -1906,9 +1874,9 @@ export const SPELL_CATALOG = [
     ritual: false,
     concentration: false,
     castingTime: 'Action',
-    range: '120 feet',
+    range: 'Touch',
     components: { verbal: true, somatic: true, material: false },
-    duration: '1 round',
+    duration: 'Instantaneous',
     nativeClasses: ['sorcerer', 'warlock', 'wizard'],
   },
   {
@@ -1919,8 +1887,8 @@ export const SPELL_CATALOG = [
     concentration: false,
     castingTime: 'Action',
     range: 'Self',
-    components: { verbal: true, somatic: true, material: 'a small amount of alcohol' },
-    duration: '1 hour',
+    components: { verbal: true, somatic: true, material: 'a drop of alcohol' },
+    duration: 'Instantaneous',
     nativeClasses: ['sorcerer', 'wizard'],
   },
   {
@@ -1962,7 +1930,7 @@ export const SPELL_CATALOG = [
   {
     id: 'dancing-lights',
     level: 0,
-    school: 'evocation',
+    school: 'illusion',
     ritual: false,
     concentration: true,
     castingTime: 'Action',

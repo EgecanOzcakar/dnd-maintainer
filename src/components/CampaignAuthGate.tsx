@@ -65,7 +65,8 @@ export function CampaignAuthGate({ campaign, campaignSlug, children }: CampaignA
         setErrorMessage(t('auth.incorrectPassphrase'));
       }
     } catch {
-      setErrorMessage(t('auth.incorrectPassphrase'));
+      // A failed request is not a wrong passphrase: say so, so the player retries instead of re-typing.
+      setErrorMessage(t('auth.verifyFailed'));
     } finally {
       setIsVerifying(false);
     }
@@ -99,16 +100,21 @@ export function CampaignAuthGate({ campaign, campaignSlug, children }: CampaignA
           <CardDescription className="text-sm text-muted-foreground pt-1">
             {t('auth.passphraseDescription')}
           </CardDescription>
+          <p className="text-xs text-muted-foreground">{t('auth.softLockNote')}</p>
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4 pt-2">
             <div className="space-y-2">
+              <label htmlFor="campaign-passphrase" className="sr-only">
+                {t('auth.passphraseLabel')}
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
                   <KeyRound className="size-4" />
                 </div>
                 <Input
+                  id="campaign-passphrase"
                   type={showPassword ? 'text' : 'password'}
                   value={passphrase}
                   onChange={(e) => {
@@ -123,8 +129,8 @@ export function CampaignAuthGate({ campaign, campaignSlug, children }: CampaignA
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
-                  aria-label={showPassword ? 'Hide passphrase' : 'Show passphrase'}
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showPassword ? t('auth.hidePassphrase') : t('auth.showPassphrase')}
                 >
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>

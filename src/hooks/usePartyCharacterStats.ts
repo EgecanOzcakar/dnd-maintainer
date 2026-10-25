@@ -19,6 +19,8 @@ export interface CharacterChecksStats {
   passiveIntelligence: number;
   perceptionProficient: boolean;
   perceptionExpertise: boolean;
+  /** Initiative modifier (Dex mod plus bonuses such as Alert). */
+  initiativeBonus: number;
 }
 
 export function usePartyCharacterStats(campaignId: string | undefined, pcs: CharacterSummary[]) {
@@ -101,6 +103,7 @@ export function usePartyCharacterStats(campaignId: string | undefined, pcs: Char
         let perceptionBonus = 0;
         let perceptionProficient = false;
         let perceptionExpertise = false;
+        let initiativeBonus = 0;
 
         try {
           const build = reconstructBuild({ species, background }, rows, equippedItems);
@@ -121,6 +124,7 @@ export function usePartyCharacterStats(campaignId: string | undefined, pcs: Char
             wisMod = resolved.abilities.wis.modifier;
             intScore = resolved.abilities.int.total;
             intMod = resolved.abilities.int.modifier;
+            initiativeBonus = resolved.initiative;
             const pSkill = resolved.skills.perception;
             if (pSkill) {
               perceptionBonus = pSkill.bonus;
@@ -155,6 +159,7 @@ export function usePartyCharacterStats(campaignId: string | undefined, pcs: Char
           passiveIntelligence,
           perceptionProficient,
           perceptionExpertise,
+          initiativeBonus,
         };
       }
 

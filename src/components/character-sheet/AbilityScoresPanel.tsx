@@ -44,6 +44,7 @@ export function AbilityScoresPanel({
       modifier: total,
       contextLabel: `Ability Check: ${t(`abilities.${ability}`)} (${formatSigned(total)})`,
       mode: mods?.mode,
+      extra: mods?.extra,
       breakdown: rollParts([{ type: 'ability', label: ability, value: modifier }, ...(mods?.parts ?? [])]),
     };
   };

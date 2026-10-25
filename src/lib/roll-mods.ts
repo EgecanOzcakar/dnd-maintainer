@@ -12,6 +12,8 @@ export interface CheckRollMods {
   readonly parts: readonly BreakdownPart[];
   /** Reliable Talent: any d20 below this counts as this. */
   readonly min?: number;
+  /** Extra dice from items / custom modifiers, e.g. `1d4`. */
+  readonly extra?: readonly string[];
 }
 
 interface CheckTarget {
@@ -27,7 +29,7 @@ interface CheckTarget {
 export function checkRollMods(
   resolved: ResolvedCharacter,
   { ability, skillId }: CheckTarget,
-  applied?: Pick<AppliedEffects, 'checks' | 'checkPenalty'>
+  applied?: Pick<AppliedEffects, 'checks' | 'checkPenalty' | 'checkFor'>
 ): CheckRollMods {
   const has = (id: string) => resolved.features.some((f) => f.feature.id === id);
   const armorDis = Boolean(resolved.savingThrows[ability].disadvantageFromArmor);
@@ -36,15 +38,21 @@ export function checkRollMods(
   const base = applied?.checks[ability] ?? null;
   const jack = !skillId && has('bard-jack-of-all-trades') ? Math.floor(resolved.proficiencyBonus / 2) : 0;
   const penalty = applied?.checkPenalty ?? 0;
+  const item = applied?.checkFor(ability, skillId);
   const parts: BreakdownPart[] = [
     ...(jack ? [{ type: 'ability-check-bonus', label: 'bard-jack-of-all-trades', value: jack }] : []),
     ...(penalty ? [{ type: 'exhaustion', label: 'exhaustion', value: -penalty }] : []),
+    ...(item?.parts ?? []),
   ];
   return {
-    mode: combineMode(base === 'adv' || athleteAdv, base === 'dis' || armorDis),
-    bonus: jack - penalty,
+    mode: combineMode(
+      base === 'adv' || athleteAdv || Boolean(item?.adv),
+      base === 'dis' || armorDis || Boolean(item?.dis)
+    ),
+    bonus: jack - penalty + (item?.bonus ?? 0),
     parts,
     ...(reliable ? { min: 10 } : {}),
+    ...(item?.extra.length ? { extra: item.extra } : {}),
   };
 }
 

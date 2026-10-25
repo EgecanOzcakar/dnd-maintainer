@@ -1,5 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { invalidatePartySnapshot, usePartySnapshot, type PartySnapshot } from '@/hooks/usePartySnapshot';
 import type { BattleMap, DisplayMode } from '@/types/battle-map';
 
 export interface BattleMapState {
@@ -32,23 +33,17 @@ async function writeMeta(campaignId: string, meta: Record<string, unknown>): Pro
   if (error) throw error;
 }
 
+const selectBattleMap = ({ meta }: PartySnapshot): BattleMapState => ({
+  map: (meta?.battle_map as BattleMap | undefined) ?? null,
+  displayMode: meta?.display_mode === 'map' ? 'map' : 'image',
+});
+
 /**
  * Reads the campaign's active battle map and the DM's current display mode from
- * `campaigns.dm_notes`. Polled like the rest of the shared party state.
+ * `campaigns.dm_notes`, via the shared party poll.
  */
 export function useBattleMap(campaignId: string | undefined) {
-  return useQuery({
-    queryKey: ['battle-map', campaignId],
-    queryFn: async (): Promise<BattleMapState> => {
-      if (!campaignId) return { map: null, displayMode: 'image' };
-      const meta = await readMeta(campaignId);
-      const map = (meta.battle_map as BattleMap | undefined) ?? null;
-      const displayMode: DisplayMode = meta.display_mode === 'map' ? 'map' : 'image';
-      return { map, displayMode };
-    },
-    enabled: !!campaignId,
-    refetchInterval: 2000,
-  });
+  return usePartySnapshot(campaignId, selectBattleMap);
 }
 
 export function useUpdateBattleMap() {
@@ -63,9 +58,7 @@ export function useUpdateBattleMap() {
       });
     },
     onSuccess: (_, { campaignId }) => {
-      queryClient.invalidateQueries({ queryKey: ['battle-map', campaignId] });
-      queryClient.invalidateQueries({ queryKey: ['party-state', campaignId] });
-      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+      invalidatePartySnapshot(queryClient, campaignId);
     },
   });
 }
@@ -79,9 +72,7 @@ export function useSetDisplayMode() {
       await writeMeta(campaignId, { ...meta, display_mode: mode });
     },
     onSuccess: (_, { campaignId }) => {
-      queryClient.invalidateQueries({ queryKey: ['battle-map', campaignId] });
-      queryClient.invalidateQueries({ queryKey: ['party-state', campaignId] });
-      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+      invalidatePartySnapshot(queryClient, campaignId);
     },
   });
 }

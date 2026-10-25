@@ -8,6 +8,7 @@ import type { Character } from '@/types/database';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ModalFooter } from './ModalFooter';
+import { useDirtyClose } from './useDirtyClose';
 
 export function EditHeaderDialog({
   character,
@@ -28,6 +29,13 @@ export function EditHeaderDialog({
     gender: (character.gender ?? '') as DndGender | '',
   });
 
+  const dirty =
+    form.name !== character.name ||
+    form.player_name !== (character.player_name ?? '') ||
+    form.character_type !== character.character_type ||
+    form.gender !== (character.gender ?? '');
+  const { requestClose, prompt } = useDirtyClose(dirty, onClose);
+
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
@@ -35,7 +43,7 @@ export function EditHeaderDialog({
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open) onClose();
+        if (!open) requestClose();
       }}
     >
       <DialogContent className="sm:max-w-md">
@@ -73,17 +81,19 @@ export function EditHeaderDialog({
             <GenderToggle value={form.gender} onChange={(g) => update('gender', g)} />
           </div>
         </div>
-        <ModalFooter
-          onSave={() =>
-            onSave({
-              ...form,
-              player_name: form.player_name || null,
-              gender: form.gender === 'male' || form.gender === 'female' ? form.gender : null,
-            })
-          }
-          onCancel={onClose}
-          saving={saving}
-        />
+        {prompt ?? (
+          <ModalFooter
+            onSave={() =>
+              onSave({
+                ...form,
+                player_name: form.player_name || null,
+                gender: form.gender === 'male' || form.gender === 'female' ? form.gender : null,
+              })
+            }
+            onCancel={requestClose}
+            saving={saving}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

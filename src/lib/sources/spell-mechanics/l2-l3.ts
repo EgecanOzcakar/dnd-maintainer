@@ -9,7 +9,7 @@ export const SPELL_MECHANICS_L2_L3: Readonly<Record<string, SpellMechanics>> = {
   'branding-smite': { damage: { dice: '2d6', type: 'radiant', perSlot: '1d6' } },
   'calm-emotions': { save: 'cha' },
   'cloud-of-daggers': { damage: { dice: '4d4', type: 'slashing', perSlot: '2d4' } },
-  'cordon-of-arrows': { save: 'dex', damage: { dice: '1d6', type: 'piercing' } },
+  'cordon-of-arrows': { save: 'dex', damage: { dice: '2d4', type: 'piercing' } },
   'crown-of-madness': { save: 'wis' },
   'detect-thoughts': { save: 'wis' }, // only when probing deeper
   // Damage type is chosen at cast (acid/cold/fire/lightning/poison); fire is the default shown.
@@ -51,17 +51,17 @@ export const SPELL_MECHANICS_L2_L3: Readonly<Record<string, SpellMechanics>> = {
   'zone-of-truth': { save: 'cha' },
 
   // ---- Level 3 ----
-  'aura-of-vitality': { heal: { dice: '2d6', perSlot: '1d6' } },
+  // Heals on cast and at the start of each of your turns; no higher-level scaling in 2024.
+  'aura-of-vitality': { heal: { dice: '2d6' } },
   'bestow-curse': { save: 'wis' }, // curse rider 1d8 necrotic not modeled
   // Rider on the next weapon hit; CON save to avoid Blinded.
   'blinding-smite': { save: 'con', damage: { dice: '3d8', type: 'radiant', perSlot: '1d8' } },
   'call-lightning': { save: 'dex', damage: { dice: '3d10', type: 'lightning', perSlot: '1d10' } },
-  // Unsure of 2024 damage type: modeled as force.
-  'conjure-barrage': { save: 'dex', damage: { dice: '5d8', type: 'force' } },
+  'conjure-barrage': { save: 'dex', damage: { dice: '5d8', type: 'force', perSlot: '1d8' } },
   'conjure-animals': { save: 'dex', damage: { dice: '3d10', type: 'slashing', perSlot: '1d10' } },
   counterspell: { save: 'con' },
   // Extra damage on each hit of the caster's attacks, no roll of its own.
-  'crusaders-mantle': { damage: { dice: '1d6', type: 'radiant' } },
+  'crusaders-mantle': { damage: { dice: '1d4', type: 'radiant' } },
   // Extra damage on weapon hits; type chosen at cast, 2d4 at slot 5, 3d4 at slot 7.
   'elemental-weapon': { damage: { dice: '1d4', type: 'fire' } },
   fear: { save: 'wis' },
@@ -71,8 +71,9 @@ export const SPELL_MECHANICS_L2_L3: Readonly<Record<string, SpellMechanics>> = {
   // Cold on entering/starting in the void; acid (DEX save) at end of turn is the saved damage.
   'hunger-of-hadar': { save: 'dex', damage: { dice: '2d6', type: 'acid', perSlot: '1d6' } },
   'hypnotic-pattern': { save: 'wis' },
-  // Triggers off a ranged weapon attack; targets in the burst save DEX.
-  'lightning-arrow': { save: 'dex', damage: { dice: '4d8', type: 'lightning', perSlot: '1d8' } },
+  // Rider on a ranged weapon attack: 4d8 on a hit (half on a miss), no save. The 2d8 burst around the target
+  // (DEX save, half on success) is not modeled.
+  'lightning-arrow': { damage: { dice: '4d8', type: 'lightning', perSlot: '1d8' } },
   'lightning-bolt': { save: 'dex', damage: { dice: '8d6', type: 'lightning', perSlot: '1d6' } },
   'mass-healing-word': { heal: { dice: '2d4', perSlot: '1d4', addMod: true } },
   'sleet-storm': { save: 'dex' },

@@ -22,5 +22,8 @@ describe('sorcery points', () => {
     expect(r).toEqual({ slots: { '3': -1 }, pools: { 'sorcery-points': 5 } });
     expect(createSlot({ slots: {}, pools: { 'sorcery-points': 2 } }, 6, 3)).toBeNull();
     expect(createSlot({ slots: {}, pools: {} }, 9, 6)).toBeNull();
+    // Minimum Sorcerer level: a 4th-level slot needs level 7 even when 6 points are available.
+    expect(createSlot({ slots: {}, pools: {} }, 6, 4)).toBeNull();
+    expect(createSlot({ slots: {}, pools: {} }, 7, 4)).not.toBeNull();
   });
 });

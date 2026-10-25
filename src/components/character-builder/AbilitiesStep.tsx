@@ -38,7 +38,47 @@ type AbilityMethod = (typeof VALID_METHODS)[number];
 // Those bounds naturally permit both +2/+1 and +1/+1/+1 shapes without a separate mode toggle.
 const BACKGROUND_ASI_PER_ABILITY_MAX = 2;
 
-export function AbilitiesStep() {
+/** A value from the standard array / rolled pool. Assigned values are real buttons that free the value again. */
+function PoolChip({
+  value,
+  assigned,
+  onUnassign,
+}: {
+  readonly value: number;
+  readonly assigned: boolean;
+  readonly onUnassign: () => void;
+}) {
+  const { t: tc } = useTranslation('common');
+  if (!assigned) {
+    return (
+      <Badge variant="default" className="text-xs select-none cursor-default">
+        {value}
+      </Badge>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={onUnassign}
+      aria-label={tc('characterBuilder.abilities.unassignValue', { value })}
+      title={tc('characterBuilder.abilities.unassignValue', { value })}
+      className="rounded-full focus-visible:outline-2 focus-visible:outline-ring"
+    >
+      <Badge variant="outline" className="text-xs select-none opacity-60 hover:opacity-100 transition-opacity">
+        {value}
+        <Check aria-hidden className="size-3" />
+      </Badge>
+    </button>
+  );
+}
+
+export interface AbilitiesStepProps {
+  /** Rolled pool kept by the parent so it survives step navigation (the step unmounts). */
+  readonly initialRolledValues?: readonly number[];
+  readonly onRolledValuesChange?: (values: number[]) => void;
+}
+
+export function AbilitiesStep({ initialRolledValues, onRolledValuesChange }: AbilitiesStepProps = {}) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
   const context = useCharacterContext();
@@ -79,7 +119,11 @@ export function AbilitiesStep() {
     }
     return assignments;
   });
-  const [rolledValues, setRolledValues] = useState<number[]>([]);
+  const [rolledValues, setRolledValuesState] = useState<number[]>(() => [...(initialRolledValues ?? [])]);
+  const setRolledValues = (values: number[]) => {
+    setRolledValuesState(values);
+    onRolledValuesChange?.(values);
+  };
   const [isRolling, setIsRolling] = useState<boolean>(false);
   const rollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -135,6 +179,11 @@ export function AbilitiesStep() {
     onAbilitiesChangeRef.current = context.updateCreation;
   });
 
+  const setRolledValuesRef = useRef(setRolledValues);
+  useLayoutEffect(() => {
+    setRolledValuesRef.current = setRolledValues;
+  });
+
   const handleRollScores = useCallback(() => {
     if (isRolling) return;
     setIsRolling(true);
@@ -148,7 +197,7 @@ export function AbilitiesStep() {
       ticks++;
       if (ticks >= totalTicks) {
         if (rollIntervalRef.current) clearInterval(rollIntervalRef.current);
-        setRolledValues(finalValues);
+        setRolledValuesRef.current(finalValues);
         const resetAbilities: AbilityScores = { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
         const resetAssignments: Record<keyof AbilityScores, number | null> = {
           str: null,
@@ -334,7 +383,11 @@ export function AbilitiesStep() {
         value={currentValue !== null ? String(currentValue) : ''}
         onValueChange={(val) => assignAbilityScore(ability, val ? Number(val) : null)}
       >
-        <SelectTrigger size="sm" className="w-16 text-center font-bold">
+        <SelectTrigger
+          size="sm"
+          className="w-16 text-center font-bold"
+          aria-label={tc('characterBuilder.abilities.assignScore', { ability: t(`abilities.${ability}`) })}
+        >
           <SelectValue placeholder="—" />
         </SelectTrigger>
         <SelectContent>
@@ -352,6 +405,12 @@ export function AbilitiesStep() {
   };
 
   const abilityKeys = Object.keys(baseAbilities) as Array<keyof AbilityScores>;
+  const unassignedCount = Object.values(abilityAssignments).filter((v) => v === null).length;
+  const unassignedNote = (
+    <p role="status" className="text-xs text-amber-700 dark:text-amber-400">
+      {tc('characterBuilder.abilities.unassigned', { count: unassignedCount })}
+    </p>
+  );
   const pointsSpent = Object.values(baseAbilities).reduce((sum, s) => sum + getPointBuyCost(s), 0);
   const pointsRemaining = POINT_BUY_TOTAL - pointsSpent;
   const pointBuyEquiv = rolledValues.length > 0 ? getPointBuyEquivalent(rolledValues) : null;
@@ -364,7 +423,21 @@ export function AbilitiesStep() {
       rollIntervalRef.current = null;
     }
     setIsRolling(false);
-    context.updateCreation({ ability_method: val as CreationUpdates['ability_method'] });
+    if (val === abilityMethod) return;
+    // Scores from the previous method (e.g. a 15/14/13 array) are not valid in the new one: start clean.
+    const startScore = val === 'point-buy' ? 8 : 10;
+    setAbilityAssignments({ ...DEFAULT_ASSIGNMENTS });
+    context.updateCreation({
+      ability_method: val as CreationUpdates['ability_method'],
+      base_abilities: {
+        str: startScore,
+        dex: startScore,
+        con: startScore,
+        int: startScore,
+        wis: startScore,
+        cha: startScore,
+      },
+    });
   };
 
   return (
@@ -402,19 +475,11 @@ export function AbilitiesStep() {
             <div className="flex gap-1.5">
               {STANDARD_ARRAY.map((v) => {
                 const isAssigned = Object.values(abilityAssignments).includes(v);
-                return (
-                  <Badge
-                    key={v}
-                    variant={isAssigned ? 'outline' : 'default'}
-                    className={`text-xs select-none ${isAssigned ? 'opacity-30 cursor-pointer hover:opacity-60 transition-opacity' : 'cursor-default'}`}
-                    onClick={isAssigned ? () => unassignValue(v) : undefined}
-                  >
-                    {v}
-                  </Badge>
-                );
+                return <PoolChip key={v} value={v} assigned={isAssigned} onUnassign={() => unassignValue(v)} />;
               })}
             </div>
           </div>
+          {unassignedCount > 0 && unassignedNote}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {abilityKeys.map((ability) => renderAbilityCard(ability, renderAssignmentSelect(ability, STANDARD_ARRAY)))}
           </div>
@@ -435,6 +500,11 @@ export function AbilitiesStep() {
               <span className="text-sm text-muted-foreground">/ {POINT_BUY_TOTAL}</span>
             </div>
           </div>
+          {pointsRemaining > 0 && (
+            <p role="status" className="text-xs text-amber-700 dark:text-amber-400">
+              {tc('characterBuilder.abilities.pointsLeft', { count: pointsRemaining })}
+            </p>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {abilityKeys.map((ability) => {
               const score = baseAbilities[ability];
@@ -451,6 +521,7 @@ export function AbilitiesStep() {
                     size="xs"
                     onClick={() => decrementAbility(ability)}
                     disabled={!canDecrement}
+                    aria-label={tc('characterBuilder.abilities.decreaseBase', { ability: t(`abilities.${ability}`) })}
                     title={
                       canDecrement
                         ? tc('characterBuilder.abilities.decreaseScore', { count: decReturn })
@@ -466,6 +537,7 @@ export function AbilitiesStep() {
                     size="xs"
                     onClick={() => incrementAbility(ability)}
                     disabled={!canIncrement}
+                    aria-label={tc('characterBuilder.abilities.increaseBase', { ability: t(`abilities.${ability}`) })}
                     title={
                       canIncrement
                         ? tc('characterBuilder.abilities.increaseScore', { count: incCost })
@@ -528,19 +600,11 @@ export function AbilitiesStep() {
                     const assignedCount = Object.values(abilityAssignments).filter((a) => a === v).length;
                     const poolCountUpToHere = rolledValues.slice(0, i + 1).filter((rv) => rv === v).length;
                     const isAssigned = assignedCount >= poolCountUpToHere;
-                    return (
-                      <Badge
-                        key={i}
-                        variant={isAssigned ? 'outline' : 'default'}
-                        className={`text-xs select-none transition-all duration-100 ${isAssigned ? 'opacity-30 cursor-pointer hover:opacity-60' : 'cursor-default'}`}
-                        onClick={isAssigned ? () => unassignValue(v) : undefined}
-                      >
-                        {v}
-                      </Badge>
-                    );
+                    return <PoolChip key={i} value={v} assigned={isAssigned} onUnassign={() => unassignValue(v)} />;
                   })}
             </div>
           )}
+          {rolledValues.length > 0 && !isRolling && unassignedCount > 0 && unassignedNote}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {abilityKeys.map((ability) =>
               renderAbilityCard(

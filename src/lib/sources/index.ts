@@ -95,6 +95,8 @@ export function getItemSource(id: string): ItemSource | undefined {
  * Gating is on the *granting class's* level (subclass → its `classId`, class → its `id`), which is
  * multiclass-correct: a druid 5 / wizard 3 unlocks the druid-5 tier, not a total-level tier.
  *
+ * `minCharacterLevel` is the same gate against total character level, for sources with no class level.
+ *
  * If a grant carries `minClassLevel` but its source has no class level to gate against (e.g. a
  * feat/species/background origin), the grant is KEPT and a warning is surfaced rather than silently
  * dropped — `minClassLevel` is only meaningful on class/subclass grants, so this flags an authoring
@@ -110,9 +112,13 @@ export function gateGrantsByMinClassLevel(
     if (source.origin === 'class') return classCounts.get(source.id);
     return undefined;
   };
+  const characterLevel = [...classCounts.values()].reduce((sum, n) => sum + n, 0);
   const gated = bundles.map((bundle) => {
     const classLevel = classLevelOf(bundle.source);
     const kept = bundle.grants.filter((g) => {
+      // `minCharacterLevel` gates on total level (species lineage spells), regardless of source.
+      const minChar = (g as { readonly minCharacterLevel?: number }).minCharacterLevel;
+      if (minChar != null && characterLevel < minChar) return false;
       const min = (g as { readonly minClassLevel?: number }).minClassLevel;
       if (min == null) return true;
       if (classLevel == null) {

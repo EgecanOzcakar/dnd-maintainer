@@ -323,4 +323,55 @@ describe('LevelUpDialog', () => {
     const confirmBtn = screen.getByText('confirmLevelUp');
     expect(confirmBtn).not.toBeDisabled();
   });
+  describe('usability', () => {
+    const masteryChoice: PendingChoice = {
+      type: 'weapon-mastery-choice',
+      choiceKey: 'weapon-mastery-choice:class:fighter:0' as ChoiceKey,
+      source: { origin: 'class', id: 'fighter' as const, level: 4 },
+      count: 1,
+      from: ['longsword', 'shortsword'],
+      alreadyChosen: [],
+    };
+
+    it('says how many choices are left until they are all made', () => {
+      mockCollectChoiceGrants.mockReturnValue([masteryChoice]);
+      render(<LevelUpDialog {...BASE_PROPS} />);
+
+      expect(screen.getByRole('status').textContent).toBe('choicesLeft');
+      fireEvent.click(screen.getByText('Satisfy weapon-mastery-choice'));
+      expect(screen.queryByRole('status')).toBeNull();
+    });
+
+    it('closes straight away when nothing has been picked', () => {
+      const onOpenChange = vi.fn();
+      render(<LevelUpDialog {...BASE_PROPS} onOpenChange={onOpenChange} />);
+
+      fireEvent.click(screen.getByText('cancel'));
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+    });
+
+    it('asks before discarding picks that were already made', () => {
+      const onOpenChange = vi.fn();
+      mockCollectChoiceGrants.mockReturnValue([masteryChoice]);
+      render(<LevelUpDialog {...BASE_PROPS} onOpenChange={onOpenChange} />);
+
+      fireEvent.click(screen.getByText('Satisfy weapon-mastery-choice'));
+      fireEvent.click(screen.getByText('cancel'));
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(screen.getByText('discardPrompt')).toBeTruthy();
+
+      fireEvent.click(screen.getByText('keepEditing'));
+      expect(screen.queryByText('discardPrompt')).toBeNull();
+
+      fireEvent.click(screen.getByText('cancel'));
+      fireEvent.click(screen.getByText('discard'));
+      expect(onOpenChange).toHaveBeenCalledWith(false);
+    });
+
+    it('previews the resulting max HP when the current total is known', () => {
+      render(<LevelUpDialog {...BASE_PROPS} currentMaxHp={30} conModifier={2} />);
+
+      expect(screen.getByText('hpResult')).toBeTruthy();
+    });
+  });
 });

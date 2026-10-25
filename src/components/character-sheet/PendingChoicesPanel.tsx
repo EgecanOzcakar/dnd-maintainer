@@ -1,4 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AsiAllocator } from '@/components/character-sheet/AsiAllocator';
 import { ExpertiseChoicePicker } from '@/components/character-sheet/ExpertiseChoicePicker';
 import { FightingStylePicker } from '@/components/character-sheet/FightingStylePicker';
@@ -10,7 +12,10 @@ import { collectGrantsByType } from '@/lib/resolver/helpers';
 import { useAllChoiceGrants } from '@/lib/use-all-choice-grants';
 import type { PendingChoice, ResolvedCharacter } from '@/types/resolved';
 import type { ChoiceDecision, ChoiceKey } from '@/types/choices';
+import { AlertTriangle } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 function PendingChoiceRow({
   choice,
@@ -92,15 +97,28 @@ function PendingChoiceRow({
 export function PendingChoicesPanel() {
   const { t } = useTranslation('common');
   const { resolved, build, makeChoice, clearChoice } = useCharacterContext();
+  const [open, setOpen] = useState(false);
 
   // Drive the picker list from grants so resolved pickers stay mounted
   const allChoiceGrants = useAllChoiceGrants();
 
   const pendingChoices = resolved?.pendingChoices ?? [];
   const choices = build?.choices ?? {};
+  const pendingCount = pendingChoices.length;
+
+  // Celebrate finishing the last choice (only for a real resolve, not a transient null `resolved`).
+  const previousCount = useRef(pendingCount);
+  const hasResolved = resolved !== null;
+  useEffect(() => {
+    if (hasResolved && previousCount.current > 0 && pendingCount === 0) {
+      toast.success(t('characterSheet.pendingChoices.allDone'));
+      setOpen(false);
+    }
+    previousCount.current = pendingCount;
+  }, [pendingCount, hasResolved, t]);
 
   // Panel is only visible when there are unresolved choices
-  if (pendingChoices.length === 0) return null;
+  if (pendingCount === 0) return null;
 
   const handleDecide = (key: ChoiceKey, decision: ChoiceDecision) => {
     makeChoice(key, decision);
@@ -111,33 +129,52 @@ export function PendingChoicesPanel() {
   };
 
   return (
-    <Card className="border-amber-500/40 bg-amber-50/30 dark:bg-amber-950/10">
-      <CardHeader>
-        <CardTitle className="text-amber-700 dark:text-amber-400">
-          {t('characterBuilder.pendingChoices.title')}
-        </CardTitle>
-        <p className="text-xs text-muted-foreground">
-          {t('characterSheet.pendingChoices.description', { count: pendingChoices.length })}
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {allChoiceGrants.map((choice) => {
-          const currentDecision = choices[choice.choiceKey];
-          // Include a hash of the decision in the key so pickers with local state
-          // (AsiAllocator, FightingStylePicker, SubclassPicker) remount when the
-          // decision is cleared or changed externally.
-          const decisionHash = currentDecision ? JSON.stringify(currentDecision) : 'none';
-          return (
-            <PendingChoiceRow
-              key={`${choice.choiceKey}::${decisionHash}`}
-              choice={choice}
-              currentDecision={currentDecision}
-              onDecide={handleDecide}
-              onClear={handleClear}
-            />
-          );
-        })}
-      </CardContent>
-    </Card>
+    <>
+      <Card className="border-amber-500/40 bg-amber-50/30 dark:bg-amber-950/10">
+        <CardContent className="flex flex-wrap items-center gap-3 p-3">
+          <AlertTriangle aria-hidden className="size-5 shrink-0 text-amber-600 dark:text-amber-400" />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">
+              {t('characterBuilder.pendingChoices.title')}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {t('characterSheet.pendingChoices.description', { count: pendingCount })}
+            </p>
+          </div>
+          <Button size="sm" onClick={() => setOpen(true)}>
+            {t('characterSheet.pendingChoices.resolve')}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{t('characterBuilder.pendingChoices.title')}</DialogTitle>
+            <DialogDescription>
+              {t('characterSheet.pendingChoices.description', { count: pendingCount })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {allChoiceGrants.map((choice) => {
+              const currentDecision = choices[choice.choiceKey];
+              // Include a hash of the decision in the key so pickers with local state
+              // (AsiAllocator, FightingStylePicker, SubclassPicker) remount when the
+              // decision is cleared or changed externally.
+              const decisionHash = currentDecision ? JSON.stringify(currentDecision) : 'none';
+              return (
+                <PendingChoiceRow
+                  key={`${choice.choiceKey}::${decisionHash}`}
+                  choice={choice}
+                  currentDecision={currentDecision}
+                  onDecide={handleDecide}
+                  onClear={handleClear}
+                />
+              );
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

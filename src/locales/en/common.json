@@ -752,7 +752,13 @@
       "abilitiesUnavailable": "Unable to allocate ability scores. Please fix any build errors first.",
       "chooseAsi": "Ability Score Improvement",
       "chooseFeat": "Feat",
-      "asiOrFeatPrompt": "Increase ability scores or take a feat"
+      "asiOrFeatPrompt": "Increase ability scores or take a feat",
+      "hpResult": "Max HP {{from}} → {{to}} (+{{gain}}, including your CON modifier)",
+      "discardPrompt": "Discard the choices you have made for this level?",
+      "keepEditing": "Keep editing",
+      "discard": "Discard",
+      "choicesLeft": "{{count}} choice left to make",
+      "choicesLeft_other": "{{count}} choices left to make"
     },
     "levelManagement": {
       "levelUp": "Level Up",
@@ -774,7 +780,9 @@
       "bulkAdvance": "Jump to level",
       "bulkAdvanceButton": "Advance",
       "bulkAdvanceHint": "Adds levels with average HP. Resolve subclass, ASI, and feature choices in Pending Choices.",
-      "bulkAdvanceSuccess": "Advanced to {{className}} level {{level}}"
+      "bulkAdvanceSuccess": "Advanced to {{className}} level {{level}}",
+      "levelDownTitle": "Remove level {{level}}?",
+      "levelDownConfirm": "Your {{className}} level {{level}} choices (HP roll, features, spells) are set aside. You can restore the level straight afterwards with Restore Level."
     },
     "asi": {
       "asiTitle": "Ability Score Improvement",
@@ -785,7 +793,9 @@
       "lockIn": "Lock In"
     },
     "pendingChoices": {
-      "description": "{{count}} choice(s) require your attention."
+      "description": "{{count}} choice(s) require your attention.",
+      "resolve": "Make choices",
+      "allDone": "All choices made"
     },
     "classLevelLabel": "(Lv. {{level}})",
     "subclassPicker": {

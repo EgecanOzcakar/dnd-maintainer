@@ -47,6 +47,9 @@ interface LevelUpDialogProps {
   readonly resolvedSkills: ResolvedCharacter['skills'] | null;
   /** All decisions already made across all level rows — for expertise cross-dedup. */
   readonly allDecisions: Readonly<Record<ChoiceKey, ChoiceDecision>>;
+  /** Current max HP and CON modifier, used to preview the HP total after this level. */
+  readonly currentMaxHp?: number;
+  readonly conModifier?: number;
 }
 
 /** Returns true when a single PendingChoice is satisfied by the given decision map. */
@@ -125,6 +128,8 @@ export function LevelUpDialog({
   resolvedWeaponProficiencies,
   resolvedSkills,
   allDecisions,
+  currentMaxHp,
+  conModifier = 0,
 }: LevelUpDialogProps) {
   const { t } = useTranslation('common');
   const { t: tg } = useTranslation('gamedata');
@@ -134,6 +139,7 @@ export function LevelUpDialog({
   const [isRolling, setIsRolling] = useState<boolean>(false);
   const [hpSelection, setHpSelection] = useState<number | null>(hpAverageGrant);
   const [decisions, setDecisions] = useState<Map<ChoiceKey, ChoiceDecision>>(new Map());
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
   const rollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -290,39 +296,29 @@ export function LevelUpDialog({
     });
   };
 
-  // Combined choices for gate: level choices + feat sub-choices
-  const allChoicesMade = useMemo(() => {
-    // Check ASI/feat pairs: exactly one of the pair must be satisfied
+  // Choices still open: level choices + the sub-choices of any feat taken
+  const openChoices = useMemo(() => {
+    const openSubChoices = (parentKey: ChoiceKey) =>
+      featSubChoices.filter(
+        (sc) =>
+          (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey === parentKey &&
+          !isChoiceSatisfied(sc, decisions)
+      ).length;
+    let open = 0;
+    // ASI/feat pairs: exactly one of the pair must be satisfied
     for (const { asiChoice, featChoice } of asiOrFeatPairs) {
       const asiSatisfied = isChoiceSatisfied(asiChoice, decisions);
       const featSatisfied = isChoiceSatisfied(featChoice, decisions);
-      if (!asiSatisfied && !featSatisfied) return false;
-      // If feat is selected, ensure all feat sub-choices for this pair are also satisfied
-      if (featSatisfied) {
-        const pairSubChoices = featSubChoices.filter(
-          (sc) =>
-            (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey === featChoice.choiceKey
-        );
-        for (const subChoice of pairSubChoices) {
-          if (!isChoiceSatisfied(subChoice, decisions)) return false;
-        }
-      }
+      if (!asiSatisfied && !featSatisfied) open++;
+      else if (featSatisfied) open += openSubChoices(featChoice.choiceKey);
     }
-    // Check all standalone choices (including feat sub-choices for standalone feat-choices)
     for (const choice of standaloneChoices) {
-      if (!isChoiceSatisfied(choice, decisions)) return false;
-      // If this is a standalone feat-choice that has been satisfied, check its sub-choices too
-      if (choice.type === 'feat-choice') {
-        const pairSubChoices = featSubChoices.filter(
-          (sc) => (sc as PendingChoice & { _parentFeatChoiceKey?: ChoiceKey })._parentFeatChoiceKey === choice.choiceKey
-        );
-        for (const subChoice of pairSubChoices) {
-          if (!isChoiceSatisfied(subChoice, decisions)) return false;
-        }
-      }
+      if (!isChoiceSatisfied(choice, decisions)) open++;
+      else if (choice.type === 'feat-choice') open += openSubChoices(choice.choiceKey);
     }
-    return true;
+    return open;
   }, [asiOrFeatPairs, standaloneChoices, featSubChoices, decisions]);
+  const allChoicesMade = openChoices === 0;
 
   const canConfirm = hpSelection !== null && allChoicesMade;
 
@@ -341,6 +337,8 @@ export function LevelUpDialog({
       if (ticks >= totalTicks) {
         if (rollIntervalRef.current) clearInterval(rollIntervalRef.current);
         setRolledValue(finalValue);
+        // A fresh roll is what the player asked for: select it so Confirm isn't blocked on a second click.
+        setHpSelection(finalValue);
         setIsRolling(false);
       }
     }, 60);
@@ -357,15 +355,25 @@ export function LevelUpDialog({
     onOpenChange(false);
   };
 
+  const hpGain = hpSelection === null ? null : hpSelection + conModifier;
+
   const resetState = () => {
     if (rollIntervalRef.current) clearInterval(rollIntervalRef.current);
     setRolledValue(null);
     setIsRolling(false);
-    setHpSelection(null);
+    setHpSelection(hpAverageGrant);
     setDecisions(new Map());
+    setConfirmDiscard(false);
   };
 
+  // Anything the player already picked is lost on close, so ask before throwing it away.
+  const hasUnsavedPicks = decisions.size > 0 || rolledValue !== null;
+
   const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen && hasUnsavedPicks && !confirmDiscard) {
+      setConfirmDiscard(true);
+      return;
+    }
     if (!nextOpen) resetState();
     onOpenChange(nextOpen);
   };
@@ -408,6 +416,7 @@ export function LevelUpDialog({
           currentDecision={currentDecision}
           onDecide={handleDecide}
           onClear={handleClear}
+          autoCommit
         />
       );
     }
@@ -420,6 +429,7 @@ export function LevelUpDialog({
           currentDecision={currentDecision}
           onDecide={handleDecide}
           onClear={handleClear}
+          autoCommit
         />
       );
     }
@@ -537,6 +547,15 @@ export function LevelUpDialog({
               </div>
             </div>
           </div>
+          {currentMaxHp !== undefined && hpGain !== null && (
+            <p className="text-sm text-muted-foreground" aria-live="polite">
+              {t('characterSheet.levelUp.hpResult', {
+                from: currentMaxHp,
+                to: currentMaxHp + hpGain,
+                gain: hpGain,
+              })}
+            </p>
+          )}
         </div>
 
         {/* ASI / feat pairs + their feat sub-choices */}
@@ -595,14 +614,33 @@ export function LevelUpDialog({
           );
         })}
 
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="ghost" onClick={() => handleOpenChange(false)}>
-            {t('buttons.cancel')}
-          </Button>
-          <Button disabled={!canConfirm} onClick={handleConfirm}>
-            {t('characterSheet.levelManagement.confirmLevelUp')}
-          </Button>
-        </DialogFooter>
+        {confirmDiscard ? (
+          <div role="alert" className="space-y-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3">
+            <p className="text-sm text-foreground">{t('characterSheet.levelUp.discardPrompt')}</p>
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setConfirmDiscard(false)}>
+                {t('characterSheet.levelUp.keepEditing')}
+              </Button>
+              <Button variant="destructive" size="sm" onClick={() => handleOpenChange(false)}>
+                {t('characterSheet.levelUp.discard')}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <DialogFooter className="items-center gap-2 sm:gap-0">
+            {openChoices > 0 && (
+              <p className="mr-auto text-xs text-muted-foreground" role="status">
+                {t('characterSheet.levelUp.choicesLeft', { count: openChoices })}
+              </p>
+            )}
+            <Button variant="ghost" onClick={() => handleOpenChange(false)}>
+              {t('buttons.cancel')}
+            </Button>
+            <Button disabled={!canConfirm} onClick={handleConfirm}>
+              {t('characterSheet.levelManagement.confirmLevelUp')}
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );

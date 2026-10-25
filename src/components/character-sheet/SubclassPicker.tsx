@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -93,12 +94,14 @@ export function SubclassPicker({
               key={sc.id}
               type="button"
               onClick={() => handleSelect(sc.id)}
+              aria-pressed={isSelected}
               className={`w-full rounded-lg border p-4 text-left transition-colors hover:bg-muted/50 ${
                 isSelected ? 'border-primary bg-primary/5' : 'border-border bg-muted/20'
               }`}
             >
               <div className={`flex items-center gap-2 text-sm text-foreground ${isSelected ? 'font-semibold' : ''}`}>
                 {t(`subclasses.${sc.id}.name`)}
+                {isSelected && <Check aria-hidden className="size-4 shrink-0 text-primary" />}
                 {isDisabledBook && (
                   <Badge variant="destructive" className="text-xs">
                     {tc('characterBuilder.hints.disabledSourceBook')}

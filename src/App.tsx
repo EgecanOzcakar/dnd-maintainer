@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { Layout } from '@/components/Layout';
 import { PWAUpdatePrompt } from '@/components/PWAUpdatePrompt';
@@ -17,6 +17,7 @@ import DMControlPage from '@/pages/DMControlPage';
 import BattleMapPage from '@/pages/BattleMapPage';
 import MagicItemsPage from '@/pages/MagicItemsPage';
 import RulesPage from '@/pages/RulesPage';
+import NotFound from '@/pages/NotFound';
 
 export default function App() {
   return (
@@ -42,8 +43,8 @@ export default function App() {
           <Route path="/rules" element={<RulesPage />} />
           <Route path="/export" element={<ExportData />} />
           <Route path="/settings/theme" element={<SettingsTheme />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Toaster position="bottom-center" />
       <PWAUpdatePrompt />

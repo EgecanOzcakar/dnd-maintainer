@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Sun, Moon, Monitor, RefreshCw } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/components/ThemeProvider';
+import { isCampaignUnlocked, isDemoCampaign } from '@/lib/campaign-auth';
 import { ThemePicker } from '@/components/ThemePicker';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -29,21 +30,26 @@ function CampaignThemeRow({ campaign }: { campaign: CampaignSummary }): React.JS
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
-      queryClient.invalidateQueries({ queryKey: ['campaign', campaign.id] });
+      // Detail entries are keyed by slug, so match the whole prefix.
+      queryClient.invalidateQueries({ queryKey: ['campaign'] });
     },
   });
 
+  // A campaign's settings can only be changed from a device that has unlocked it.
+  const unlocked = isDemoCampaign(campaign) || isCampaignUnlocked(campaign.id) || isCampaignUnlocked(campaign.slug);
+
   return (
     <div className="rounded-lg border border-border p-4 space-y-2">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <span className="font-medium">{campaign.name}</span>
         <ThemePicker
           value={campaign.theme ?? null}
           onChange={(id) => updateTheme.mutate(id)}
           allowNone
-          disabled={updateTheme.isPending}
+          disabled={updateTheme.isPending || !unlocked}
         />
       </div>
+      {!unlocked && <p className="text-xs text-amber-500">{t('settings.campaignLockedHint')}</p>}
       {updateTheme.isError && <p className="text-sm text-destructive">{t('errors.saveFailed')}</p>}
     </div>
   );
@@ -75,6 +81,7 @@ export default function SettingsTheme(): React.JSX.Element {
                 key={mode}
                 type="button"
                 onClick={() => setColorMode(mode)}
+                aria-pressed={colorMode === mode}
                 className={cn(
                   'flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium transition-colors',
                   colorMode === mode

@@ -2,9 +2,10 @@ import { useCampaigns } from '@/hooks/useCampaigns';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import type { ExportData as ExportDataType } from '@/lib/export-sql';
 import { downloadFile, generateSeedSql } from '@/lib/export-sql';
+import { isCampaignUnlocked, isDemoCampaign } from '@/lib/campaign-auth';
 import { getLogger } from '@/lib/logger';
 import { supabase } from '@/lib/supabase';
-import { AlertCircle, CheckSquare, Download, Loader2, Square } from 'lucide-react';
+import { AlertCircle, CheckSquare, Download, Loader2, Lock, Square } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,6 +19,9 @@ export default function ExportData() {
     isError: isCampaignsError,
     error: campaignsError,
   } = useCampaigns();
+  // A campaign's data may only be exported from a device that has unlocked it.
+  const isUnlocked = (c: { id: string; slug: string; is_demo?: boolean }): boolean =>
+    isDemoCampaign(c) || isCampaignUnlocked(c.id) || isCampaignUnlocked(c.slug);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -31,6 +35,7 @@ export default function ExportData() {
   }, [isCampaignsError, campaignsError]);
 
   const toggleCampaign = (id: string): void => {
+    if (!campaigns.some((c) => c.id === id && isUnlocked(c))) return;
     setSelectedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
@@ -43,7 +48,7 @@ export default function ExportData() {
   };
 
   const selectAll = (): void => {
-    setSelectedIds(new Set(campaigns.map((c) => c.id)));
+    setSelectedIds(new Set(campaigns.filter(isUnlocked).map((c) => c.id)));
   };
 
   const deselectAll = (): void => {
@@ -232,13 +237,17 @@ export default function ExportData() {
             <div className="space-y-2 mb-8">
               {campaigns.map((campaign) => {
                 const isSelected = selectedIds.has(campaign.id);
+                const locked = !isUnlocked(campaign);
                 return (
                   <button
                     key={campaign.id}
                     onClick={() => toggleCampaign(campaign.id)}
+                    disabled={locked}
+                    aria-pressed={isSelected}
+                    title={locked ? t('export.lockedHint') : undefined}
                     className={`
                       w-full flex items-center gap-3 px-4 py-3 rounded-lg
-                      text-left transition-all
+                      text-left transition-all disabled:opacity-60 disabled:cursor-not-allowed
                       ${
                         isSelected
                           ? 'bg-amber-900/20 border border-border text-primary'
@@ -246,7 +255,9 @@ export default function ExportData() {
                       }
                     `}
                   >
-                    {isSelected ? (
+                    {locked ? (
+                      <Lock className="size-5 text-amber-500 shrink-0" />
+                    ) : isSelected ? (
                       <CheckSquare className="size-5 text-primary shrink-0" />
                     ) : (
                       <Square className="size-5 text-muted-foreground shrink-0" />
@@ -254,6 +265,7 @@ export default function ExportData() {
                     <div className="flex-1 min-w-0">
                       <p className="font-medium truncate">{campaign.name}</p>
                       {campaign.setting && <p className="text-xs text-muted-foreground mt-0.5">{campaign.setting}</p>}
+                      {locked && <p className="text-xs text-amber-500 mt-0.5">{t('export.lockedHint')}</p>}
                     </div>
                   </button>
                 );
@@ -279,7 +291,9 @@ export default function ExportData() {
               )}
             </button>
 
-            <p className="text-xs text-muted-foreground mt-4 text-center">
+            <p className="text-xs text-muted-foreground mt-4 text-center">{t('export.limitNote')}</p>
+
+            <p className="text-xs text-muted-foreground mt-2 text-center">
               {t('export.restoreHint')}{' '}
               {/* eslint-disable-next-line i18next/no-literal-string -- CLI command, not translatable */}
               <code className="bg-muted px-2 py-0.5 rounded text-muted-foreground">

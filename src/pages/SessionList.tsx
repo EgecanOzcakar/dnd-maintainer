@@ -1,5 +1,6 @@
-import { parseIntOrDefault } from '@/lib/utils';
+import { parseIntOrDefault, todayLocal } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import { SHARED_LIST_QUERY } from '@/lib/query-options';
 import { useSessions } from '@/hooks/useSessions';
 import { useCampaignContext } from '@/hooks/useCampaignContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -7,9 +8,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, BookOpen, Calendar, ChevronRight, Plus, Search, Zap } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ValidationError } from '@/components/ui/validation-error';
 
 export default function SessionList() {
@@ -23,7 +25,7 @@ export default function SessionList() {
   const [newSession, setNewSession] = useState({
     name: '',
     session_number: 1,
-    date: new Date().toISOString().split('T')[0],
+    date: todayLocal(),
   });
   const [titleError, setTitleError] = useState<string>('');
 
@@ -46,6 +48,7 @@ export default function SessionList() {
       return data.reduce((sum, session) => sum + (session.experience_awarded || 0), 0);
     },
     enabled: !!campaignId,
+    ...SHARED_LIST_QUERY,
   });
 
   // Create session mutation
@@ -70,12 +73,14 @@ export default function SessionList() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['sessions', campaignId] });
+      queryClient.invalidateQueries({ queryKey: ['sessions-xp', campaignId] });
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
       setShowNewSessionForm(false);
       setTitleError('');
       setNewSession({
         name: '',
         session_number: Math.max(...sessions.map((s) => s.session_number), 0) + 1,
-        date: new Date().toISOString().split('T')[0],
+        date: todayLocal(),
       });
       if (data?.slug) {
         navigate(`/campaign/${campaignSlug}/session/${data.slug}`);
@@ -84,6 +89,17 @@ export default function SessionList() {
       }
     },
   });
+
+  const openNewSessionForm = () => {
+    // Seed the next number so the DM doesn't have to count.
+    setNewSession({
+      name: '',
+      session_number: Math.max(...sessions.map((s) => s.session_number), 0) + 1,
+      date: todayLocal(),
+    });
+    setTitleError('');
+    setShowNewSessionForm(true);
+  };
 
   const handleCreateSession = (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,7 +144,7 @@ export default function SessionList() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-muted/50 border-b border-border sticky top-0 z-10">
+      <div className="bg-muted/50 border-b border-border">
         <div className="max-w-4xl mx-auto px-8 py-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-3">
             <div>
@@ -141,10 +157,7 @@ export default function SessionList() {
               </p>
             </div>
             <button
-              onClick={() => {
-                setShowNewSessionForm(true);
-                setTitleError('');
-              }}
+              onClick={openNewSessionForm}
               className="self-start md:self-auto flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 px-6 rounded-lg transition-colors shadow-lg hover:shadow-md"
             >
               <Plus className="size-5" />
@@ -167,76 +180,90 @@ export default function SessionList() {
       </div>
 
       {/* New Session Modal */}
-      {showNewSessionForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-card rounded-lg border border-border p-8 max-w-md w-full shadow-2xl">
-            <h2 className="text-2xl font-bold text-foreground mb-6">{t('sessions.logNewSession')}</h2>
+      <Dialog
+        open={showNewSessionForm}
+        onOpenChange={(open) => {
+          setShowNewSessionForm(open);
+          if (!open) setTitleError('');
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl">{t('sessions.logNewSession')}</DialogTitle>
+          </DialogHeader>
 
-            <form onSubmit={handleCreateSession} className="space-y-4">
-              <div>
-                <label className="block text-foreground font-semibold mb-2">{t('sessions.sessionTitle')}</label>
-                <div className="flex flex-col gap-1">
-                  <input
-                    type="text"
-                    value={newSession.name}
-                    onChange={(e) => {
-                      setTitleError('');
-                      setNewSession({ ...newSession, name: e.target.value });
-                    }}
-                    placeholder={t('sessions.placeholderTitle')}
-                    className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                    autoFocus
-                  />
-                  <ValidationError message={titleError} />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-foreground font-semibold mb-2">{t('sessions.sessionNumber')}</label>
+          <form onSubmit={handleCreateSession} className="space-y-4">
+            <div>
+              <label htmlFor="new-session-title" className="block text-foreground font-semibold mb-2">
+                {t('sessions.sessionTitle')}
+              </label>
+              <div className="flex flex-col gap-1">
                 <input
-                  type="number"
-                  value={newSession.session_number}
-                  onChange={(e) =>
-                    setNewSession({
-                      ...newSession,
-                      session_number: parseIntOrDefault(e.target.value, 1),
-                    })
-                  }
-                  className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                  min="1"
-                />
-              </div>
-
-              <div>
-                <label className="block text-foreground font-semibold mb-2">{t('sessions.sessionDate')}</label>
-                <input
-                  type="date"
-                  value={newSession.date}
-                  onChange={(e) => setNewSession({ ...newSession, date: e.target.value })}
-                  className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <Button type="submit" className="flex-1" pending={createSessionMutation.isPending}>
-                  {createSessionMutation.isPending ? t('buttons.creating') : t('buttons.create')}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => {
-                    setShowNewSessionForm(false);
+                  id="new-session-title"
+                  type="text"
+                  value={newSession.name}
+                  onChange={(e) => {
                     setTitleError('');
+                    setNewSession({ ...newSession, name: e.target.value });
                   }}
-                >
-                  {t('buttons.cancel')}
-                </Button>
+                  placeholder={t('sessions.placeholderTitle')}
+                  className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                />
+                <ValidationError message={titleError} />
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+            </div>
+
+            <div>
+              <label htmlFor="new-session-number" className="block text-foreground font-semibold mb-2">
+                {t('sessions.sessionNumber')}
+              </label>
+              <input
+                id="new-session-number"
+                type="number"
+                value={newSession.session_number}
+                onChange={(e) =>
+                  setNewSession({
+                    ...newSession,
+                    session_number: parseIntOrDefault(e.target.value, 1),
+                  })
+                }
+                className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                min="1"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="new-session-date" className="block text-foreground font-semibold mb-2">
+                {t('sessions.sessionDate')}
+              </label>
+              <input
+                id="new-session-date"
+                type="date"
+                value={newSession.date}
+                onChange={(e) => setNewSession({ ...newSession, date: e.target.value })}
+                className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button type="submit" className="flex-1" pending={createSessionMutation.isPending}>
+                {createSessionMutation.isPending ? t('buttons.creating') : t('buttons.create')}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setShowNewSessionForm(false);
+                  setTitleError('');
+                }}
+              >
+                {t('buttons.cancel')}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-8 py-12">
@@ -258,10 +285,7 @@ export default function SessionList() {
             </p>
             {sessions.length === 0 && (
               <button
-                onClick={() => {
-                  setShowNewSessionForm(true);
-                  setTitleError('');
-                }}
+                onClick={openNewSessionForm}
                 className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 px-6 rounded-lg transition-colors"
               >
                 <Plus className="size-5" />
@@ -280,9 +304,9 @@ export default function SessionList() {
                 )}
 
                 {/* Session card */}
-                <div
-                  onClick={() => navigate(`/campaign/${campaignSlug}/session/${session.slug}`)}
-                  className="group flex gap-6 pb-8 cursor-pointer"
+                <Link
+                  to={`/campaign/${campaignSlug}/session/${session.slug}`}
+                  className="group flex gap-6 pb-8 rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   {/* Timeline dot */}
                   <div className="flex flex-col items-center pt-1">
@@ -326,7 +350,7 @@ export default function SessionList() {
                       )}
                     </div>
                   </div>
-                </div>
+                </Link>
               </div>
             ))}
           </div>

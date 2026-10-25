@@ -3,7 +3,11 @@ import { supabase } from '@/lib/supabase';
 import { Campaign, CampaignSummary } from '@/types/database';
 import { CAMPAIGN_SUMMARY_COLS, CAMPAIGN_DETAIL_COLS } from '@/lib/query-columns';
 import { validateSlug } from '@/lib/slug-utils';
-import { setCampaignPassphrase, setCampaignUnlocked } from '@/lib/campaign-auth';
+import { PassphraseSetupError, setCampaignPassphrase, setCampaignUnlocked } from '@/lib/campaign-auth';
+import { getLogger } from '@/lib/logger';
+import { SHARED_LIST_QUERY } from '@/lib/query-options';
+
+const logger = getLogger('useCampaigns');
 
 // --- Queries ---
 
@@ -49,6 +53,23 @@ export function useCampaigns() {
         }))
         .sort((a, b) => (a._activity < b._activity ? 1 : -1))
         .map(({ _activity, ...c }) => c) as CampaignListItem[];
+    },
+    ...SHARED_LIST_QUERY,
+  });
+}
+
+/** Archived (soft-deleted) campaigns, so they can be restored from the list page. */
+export function useArchivedCampaigns() {
+  return useQuery({
+    queryKey: ['campaigns', 'archived'],
+    queryFn: async (): Promise<CampaignSummary[]> => {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select(CAMPAIGN_SUMMARY_COLS)
+        .not('archived_at', 'is', null)
+        .order('archived_at', { ascending: false });
+      if (error) throw error;
+      return (data || []) as unknown as CampaignSummary[];
     },
   });
 }
@@ -121,7 +142,18 @@ export function useCampaignMutations() {
         .single();
       if (error) throw error;
       if (passphrase && passphrase.trim()) {
-        await setCampaignPassphrase(data.id, passphrase.trim());
+        let protectedOk = false;
+        try {
+          protectedOk = await setCampaignPassphrase(data.id, passphrase.trim());
+        } catch (err) {
+          logger.error('Setting the campaign passphrase failed:', err);
+        }
+        if (!protectedOk) {
+          // Never leave an unprotected campaign behind: undo the insert so the user can simply retry.
+          const { error: rollbackError } = await supabase.from('campaigns').delete().eq('id', data.id);
+          if (rollbackError) logger.error('Could not remove the half-created campaign:', rollbackError);
+          throw new PassphraseSetupError();
+        }
       }
       setCampaignUnlocked(data.id, data.slug);
       return data as Campaign;
@@ -174,5 +206,13 @@ export function useCampaignMutations() {
     onSuccess: invalidate,
   });
 
-  return { create, update, archive };
+  const restore = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('campaigns').update({ archived_at: null }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  return { create, update, archive, restore };
 }

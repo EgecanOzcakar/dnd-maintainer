@@ -24,29 +24,23 @@ describe('campaign-auth', () => {
   });
 
   describe('isDemoCampaign', () => {
-    it('returns true for campaign with is_demo = true', () => {
-      expect(isDemoCampaign({ is_demo: true, id: '123' })).toBe(true);
+    it('returns true only for campaigns flagged is_demo', () => {
+      expect(isDemoCampaign({ is_demo: true })).toBe(true);
+      expect(isDemoCampaign({ is_demo: false })).toBe(false);
+      expect(isDemoCampaign({})).toBe(false);
     });
 
-    it('returns true for campaign with demo UUID', () => {
-      expect(isDemoCampaign({ id: DEMO_CAMPAIGN_ID })).toBe(true);
+    it('does not trust the name, slug or id of a campaign', () => {
+      const lookalikes = [
+        { id: DEMO_CAMPAIGN_ID, name: 'Demo Campaign', slug: 'demo-campaign', is_demo: false },
+        { id: 'x', name: '  DEMO CAMPAIGN  ', slug: 'demo-campaign-aaaaaaaa', is_demo: undefined },
+      ];
+      for (const campaign of lookalikes) expect(isDemoCampaign(campaign)).toBe(false);
     });
 
-    it('returns true for campaign named "Demo Campaign" case-insensitively', () => {
-      expect(isDemoCampaign({ name: 'Demo Campaign' })).toBe(true);
-      expect(isDemoCampaign({ name: 'demo campaign' })).toBe(true);
-      expect(isDemoCampaign({ name: '  DEMO CAMPAIGN  ' })).toBe(true);
-    });
-
-    it('returns true for campaign with slug demo-campaign', () => {
-      expect(isDemoCampaign({ slug: 'demo-campaign' })).toBe(true);
-      expect(isDemoCampaign({ slug: 'demo-campaign-aaaaaaaa' })).toBe(true);
-    });
-
-    it('returns false for null or normal campaigns', () => {
+    it('returns false for null or undefined', () => {
       expect(isDemoCampaign(null)).toBe(false);
       expect(isDemoCampaign(undefined)).toBe(false);
-      expect(isDemoCampaign({ name: 'Curse of the Mist Lord', slug: 'curse-of-the-mist-lord' })).toBe(false);
     });
   });
 

@@ -4,6 +4,7 @@ import { get, set, del } from 'idb-keyval';
 import i18next from 'i18next';
 import { toast } from 'sonner';
 import { getLogger } from '@/lib/logger';
+import { PassphraseSetupError } from '@/lib/campaign-auth';
 
 const logger = getLogger('query-client');
 
@@ -25,7 +26,11 @@ export const queryClient = new QueryClient({
     mutations: {
       retry: 1,
       onError: (error) => {
-        toast.error(i18next.t('errors.saveFailed', { ns: 'common' }));
+        toast.error(
+          i18next.t(error instanceof PassphraseSetupError ? 'errors.passphraseSetupFailed' : 'errors.saveFailed', {
+            ns: 'common',
+          })
+        );
         logger.error('Mutation failed:', error);
       },
     },

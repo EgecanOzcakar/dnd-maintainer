@@ -3927,7 +3927,7 @@
   "spells": {
     "blade-ward": {
       "name": "Blade Ward",
-      "description": "You trace a protective sign and gain resistance to bludgeoning, piercing, and slashing damage from weapon attacks until the end of your next turn."
+      "description": "Whenever a creature makes an attack roll against you before the spell ends, the attacker subtracts 1d4 from the attack roll."
     },
     "eldritch-blast": {
       "name": "Eldritch Blast",
@@ -3939,7 +3939,7 @@
     },
     "friends": {
       "name": "Friends",
-      "description": "You gain advantage on Charisma checks against one creature that is not hostile to you, but it knows afterward that you used magic on it."
+      "description": "One creature you can see within range must succeed on a Wisdom saving throw or have the Charmed condition for the duration. It succeeds automatically if it isn't a Humanoid, if you're fighting it, or if you've cast this spell on it in the past 24 hours. The spell ends early if you attack, deal damage, or force anyone to make a saving throw. When it ends, the target knows you charmed it."
     },
     "sorcerous-burst": {
       "name": "Sorcerous Burst",
@@ -4043,7 +4043,7 @@
     },
     "hail-of-thorns": {
       "name": "Hail of Thorns",
-      "description": "Your next ranged weapon hit bursts into a spray of thorns, dealing piercing damage to the target and creatures near it."
+      "description": "As you hit a creature with a Ranged weapon attack, thorns sprout from the weapon or ammunition. The target and each creature within 5 feet of it make a Dexterity saving throw, taking 1d10 Piercing damage on a failed save or half as much on a successful one. The damage increases by 1d10 for each spell slot level above 1."
     },
     "healing-word": {
       "name": "Healing Word",
@@ -4071,7 +4071,7 @@
     },
     "jump": {
       "name": "Jump",
-      "description": "A creature you touch can jump three times as far as normal for the duration."
+      "description": "You touch a willing creature. Once on each of its turns until the spell ends, that creature can jump up to 30 feet by spending 10 feet of movement. You can target one additional creature for each spell slot level above 1."
     },
     "mage-armor": {
       "name": "Mage Armor",
@@ -4119,7 +4119,7 @@
     },
     "wrathful-smite": {
       "name": "Wrathful Smite",
-      "description": "Your next weapon hit deals extra psychic damage and may frighten the target, who must save or stay afraid."
+      "description": "The target takes an extra 1d6 Necrotic damage from the attack, and it must succeed on a Wisdom saving throw or have the Frightened condition until the spell ends, repeating the save at the end of each of its turns. The damage increases by 1d6 for each spell slot level above 1."
     },
     "zephyr-strike": {
       "name": "Zephyr Strike",
@@ -4131,7 +4131,7 @@
     },
     "guidance": {
       "name": "Guidance",
-      "description": "You touch one willing creature. Once before the spell ends, the target can roll a d4 and add the number rolled to one ability check of its choice, potentially turning a failure into a success."
+      "description": "You touch a willing creature and choose a skill. Until the spell ends, the creature adds 1d4 to any ability check using the chosen skill."
     },
     "mending": {
       "name": "Mending",
@@ -4139,11 +4139,11 @@
     },
     "message": {
       "name": "Message",
-      "description": "You point your finger toward a creature within range and whisper a message. The target (and only the target) hears the message and can reply in a whisper that only you can hear."
+      "description": "You point toward a creature within range and whisper a message. The target (and only the target) hears it and can reply in a whisper only you can hear. You can cast this spell through solid objects if you know the target is beyond the barrier; magical silence, 1 foot of stone, metal, or wood, or a thin sheet of lead blocks it."
     },
     "poison-spray": {
       "name": "Poison Spray",
-      "description": "You extend your hand toward a creature you can see within range and project a puff of noxious gas. The creature must succeed on a Constitution saving throw or take 1d12 Poison damage."
+      "description": "Make a ranged spell attack against a creature within range. On a hit, the target takes 1d12 Poison damage. The damage increases by 1d12 at levels 5, 11, and 17."
     },
     "produce-flame": {
       "name": "Produce Flame",
@@ -4151,7 +4151,7 @@
     },
     "resistance": {
       "name": "Resistance",
-      "description": "You touch one willing creature. Once before the spell ends, the target can roll a d4 and add the number rolled to one saving throw of its choice, potentially turning a failure into a success."
+      "description": "You touch a willing creature and choose a damage type (Acid, Bludgeoning, Cold, Fire, Lightning, Necrotic, Piercing, Poison, Radiant, Slashing, or Thunder). When the creature takes damage of the chosen type before the spell ends, it reduces the total damage taken by 1d4. A creature can benefit from this spell only once per turn."
     },
     "shillelagh": {
       "name": "Shillelagh",
@@ -4187,7 +4187,7 @@
     },
     "cure-wounds": {
       "name": "Cure Wounds",
-      "description": "A creature you touch regains a number of Hit Points equal to 2d8 plus your spellcasting ability modifier. This spell has no effect on constructs or undead."
+      "description": "A creature you touch regains Hit Points equal to 2d8 plus your spellcasting ability modifier. The healing increases by 2d8 for each spell slot level above 1."
     },
     "lesser-restoration": {
       "name": "Lesser Restoration",
@@ -4203,7 +4203,7 @@
     },
     "aura-of-life": {
       "name": "Aura of Life",
-      "description": "Life-preserving energy radiates from you in a 30-foot emanation. Until the spell ends, the aura reduces the maximum HP reduction from necrotic damage to 0 for creatures inside it, and any creature that starts its turn in the aura with 0 Hit Points regains 1 Hit Point."
+      "description": "An aura radiates from you in a 30-foot Emanation for the duration. While in it, you and your allies have Resistance to Necrotic damage, and your Hit Point maximums can't be reduced. If an ally with 0 Hit Points starts its turn in the aura, that ally regains 1 Hit Point."
     },
     "death-ward": {
       "name": "Death Ward",
@@ -4251,7 +4251,7 @@
     },
     "flame-strike": {
       "name": "Flame Strike",
-      "description": "A vertical column of divine fire roars down from the heavens in a location you specify. Each creature in a 10-foot-radius, 40-foot-high Cylinder centered on a point within range must make a Dexterity saving throw. A creature takes 4d6 Fire damage and 4d6 Radiant damage on a failed save, or half as much on a successful one."
+      "description": "A vertical column of brilliant fire roars down from above. Each creature in a 10-foot-radius, 40-foot-high Cylinder centered on a point within range makes a Dexterity saving throw, taking 5d6 Fire damage and 5d6 Radiant damage on a failed save or half as much on a successful one. The Fire and Radiant damage each increase by 1d6 for each spell slot level above 5."
     },
     "scrying": {
       "name": "Scrying",
@@ -4327,7 +4327,7 @@
     },
     "enthrall": {
       "name": "Enthrall",
-      "description": "You weave a compelling performance of words; creatures that fail their saves become so fixated on you that they have disadvantage on Perception checks to notice anyone else."
+      "description": "You weave a distracting string of words, causing creatures of your choice that you can see within range to make a Wisdom saving throw. Any creature you or your companions are fighting automatically succeeds. On a failed save, a target has a -10 penalty to Wisdom (Perception) checks and Passive Perception until the spell ends."
     },
     "find-steed": {
       "name": "Find Steed",
@@ -4427,7 +4427,7 @@
     },
     "aura-of-vitality": {
       "name": "Aura of Vitality",
-      "description": "Healing energy radiates from you, and each turn you can use a bonus action to restore hit points to one creature in the aura."
+      "description": "An aura radiates from you in a 30-foot Emanation for the duration. When you create the aura and at the start of each of your turns while it persists, you can restore 2d6 Hit Points to one creature in it."
     },
     "bestow-curse": {
       "name": "Bestow Curse",
@@ -4471,7 +4471,7 @@
     },
     "leomunds-tiny-hut": {
       "name": "Tiny Hut",
-      "description": "A dome of force surrounds you, sheltering up to nine creatures from weather and blocking creatures and spells from entering."
+      "description": "A 10-foot Emanation springs into existence around you and remains stationary for the duration. Creatures and objects inside when you cast the spell can move through it freely; all others are barred. Spells of level 3 or lower can't be cast through it. The interior is comfortable and dry, and you can command it to have Dim Light or Darkness. The spell ends early if you leave the Emanation or cast it again."
     },
     "lightning-arrow": {
       "name": "Lightning Arrow",
@@ -4583,11 +4583,11 @@
     },
     "spirit-guardians": {
       "name": "Spirit Guardians",
-      "description": "You call forth spirits to protect you. They flit around you to a distance of 15 feet for the duration. Choose Necrotic or Radiant damage. Whenever the spirits appear, each creature of your choice that is within 15 feet of you must make a Wisdom saving throw, taking 3d8 damage of the chosen type on a failed save, or half as much on a successful one."
+      "description": "Protective spirits flit around you in a 15-foot Emanation for the duration; you can designate creatures to be unaffected. Any other creature's Speed is halved in the Emanation, and when it enters or ends its turn there (or the Emanation enters its space) it must make a Wisdom saving throw once per turn, taking 3d8 Radiant damage (if you are good or neutral) or Necrotic damage (if you are evil) on a failed save, or half as much on a success. The damage increases by 1d8 for each spell slot level above 3."
     },
     "fire-shield": {
       "name": "Fire Shield",
-      "description": "Thin and wispy flames wreathe your body for the duration, shedding bright light in a 10-foot radius and dim light for an additional 10 feet. The flames provide you with a warm shield or a chill shield, as you choose. The warm shield grants you Resistance to Cold damage, and the chill shield grants you Resistance to Fire damage."
+      "description": "Wispy flames wreathe your body for the duration, shedding Bright Light in a 10-foot radius and Dim Light for an additional 10 feet. Choose a warm shield (Resistance to Cold damage) or a chill shield (Resistance to Fire damage). Whenever a creature within 5 feet of you hits you with a melee attack roll, the attacker takes 2d8 Fire damage from a warm shield or 2d8 Cold damage from a chill shield."
     },
     "freedom-of-movement": {
       "name": "Freedom of Movement",
@@ -4611,7 +4611,7 @@
     },
     "blight": {
       "name": "Blight",
-      "description": "Necromantic energy washes over a creature of your choice that you can see within range, draining moisture and vitality from it. The target must make a Constitution saving throw. On a failed save, the target takes 8d8 Necrotic damage, or half as much on a successful save. Plants and water elementals make this save with Disadvantage."
+      "description": "A creature you can see within range makes a Constitution saving throw, taking 8d8 Necrotic damage on a failed save or half as much on a successful one. A Plant creature automatically fails the save. Alternatively, target a nonmagical plant that isn't a creature; it withers and dies. The damage increases by 1d8 for each spell slot level above 4."
     },
     "wall-of-stone": {
       "name": "Wall of Stone",
@@ -4631,11 +4631,11 @@
     },
     "sleet-storm": {
       "name": "Sleet Storm",
-      "description": "Until the spell ends, freezing rain and sleet fall in a 20-foot-tall cylinder with a 40-foot radius centered on a point you choose within range. The area is Heavily Obscured, and exposed flames in the area are doused. The ground in the area is covered with slick ice, making it Difficult Terrain."
+      "description": "Until the spell ends, sleet falls in a 40-foot-tall, 20-foot-radius Cylinder centered on a point you choose within range. The area is Heavily Obscured, exposed flames in it are doused, and the ground is Difficult Terrain. When a creature enters the area for the first time on a turn or starts its turn there, it must succeed on a Dexterity saving throw or have the Prone condition and lose Concentration."
     },
     "ice-storm": {
       "name": "Ice Storm",
-      "description": "A hail of rock-hard ice pounds to the ground in a 20-foot-radius, 40-foot-high Cylinder centered on a point within range. Each creature in the Cylinder makes a Dexterity saving throw. On a failed save, a creature takes 2d8 Bludgeoning damage plus 4d6 Cold damage. On a successful save, it takes half as much damage."
+      "description": "Hail falls in a 20-foot-radius, 40-foot-high Cylinder centered on a point within range. Each creature in it makes a Dexterity saving throw, taking 2d10 Bludgeoning damage and 4d6 Cold damage on a failed save or half as much on a successful one. Hailstones make the ground Difficult Terrain until the end of your next turn. The Bludgeoning damage increases by 1d10 for each spell slot level above 4."
     },
     "cone-of-cold": {
       "name": "Cone of Cold",
@@ -4667,7 +4667,7 @@
     },
     "ray-of-sickness": {
       "name": "Ray of Sickness",
-      "description": "A ray of sickening greenish energy lashes out toward a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 2d8 Poison damage and must make a Constitution saving throw. On a failed save, the target has the Poisoned condition until the end of your next turn."
+      "description": "Make a ranged spell attack against a creature within range. On a hit, the target takes 2d8 Poison damage and has the Poisoned condition until the end of your next turn. The damage increases by 1d8 for each spell slot level above 1."
     },
     "web": {
       "name": "Web",
@@ -4683,7 +4683,7 @@
     },
     "aura-of-purity": {
       "name": "Aura of Purity",
-      "description": "A protective aura surrounds you and your allies nearby, granting resistance to Poison damage and advantage on saves against several conditions such as Blinded, Charmed, Deafened, Frightened, Paralyzed, and Stunned, while also ending a poisoned condition at the start of each of their turns."
+      "description": "An aura radiates from you in a 30-foot Emanation for the duration. While in it, you and your allies have Resistance to Poison damage and Advantage on saving throws to avoid or end effects that include the Blinded, Charmed, Deafened, Frightened, Paralyzed, Poisoned, or Stunned condition."
     },
     "control-water": {
       "name": "Control Water",
@@ -4711,11 +4711,11 @@
     },
     "fount-of-moonlight": {
       "name": "Fount of Moonlight",
-      "description": "You glow with a cool lunar radiance, shedding bright light around you. Your melee strikes deal extra radiant damage, and attackers who hit you are dazzled and blinded unless they resist."
+      "description": "A cool light wreathes your body for the duration, emitting Bright Light in a 20-foot radius and Dim Light for an additional 20 feet. You have Resistance to Radiant damage, and your melee attacks deal an extra 2d6 Radiant damage on a hit. When you take damage from a creature you can see within 60 feet, you can use a Reaction to force it to make a Constitution saving throw; on a failure it has the Blinded condition until the end of your next turn."
     },
     "giant-insect": {
       "name": "Giant Insect",
-      "description": "You summon a gigantic spider, centipede, or wasp, a spirit that fights beside you. It attacks on your command using a bonus action and carries out a ranged or melee strike depending on its form."
+      "description": "You summon a giant centipede, spider, or wasp (chosen when you cast the spell) that uses the Giant Insect stat block. It is an ally to you and your allies, shares your Initiative count but takes its turn immediately after yours, and obeys your verbal commands (no action required). If you issue none, it takes the Dodge action. Use the spell slot's level for the spell's level in the stat block."
     },
     "grasping-vine": {
       "name": "Grasping Vine",
@@ -4755,7 +4755,7 @@
     },
     "staggering-smite": {
       "name": "Staggering Smite",
-      "description": "Your next weapon hit channels psychic force into the target, dealing extra psychic damage and leaving it reeling, with disadvantage on attacks and ability checks until the end of its next turn unless it succeeds on a Wisdom save."
+      "description": "The target takes an extra 4d6 Psychic damage from the attack, and it must succeed on a Wisdom saving throw or have the Stunned condition until the end of your next turn. The extra damage increases by 1d6 for each spell slot level above 4."
     },
     "stone-shape": {
       "name": "Stone Shape",
@@ -4811,7 +4811,7 @@
     },
     "contagion": {
       "name": "Contagion",
-      "description": "A touch infects a creature with a magical disease. Over several failed saves the target can become poisoned, blinded, slowed, or weakened by one of several named maladies."
+      "description": "Your touch inflicts a magical contagion. The target must succeed on a Constitution saving throw or take 11d8 Necrotic damage and have the Poisoned condition; choose one ability, and while Poisoned the target has Disadvantage on saving throws made with it. The target repeats the save at the end of each of its turns until it gets three successes (the spell ends) or three failures (the spell lasts 7 days on it)."
     },
     "creation": {
       "name": "Creation",
@@ -4891,7 +4891,7 @@
     },
     "counterspell": {
       "name": "Counterspell",
-      "description": "You attempt to interrupt a creature casting a spell. The creature makes a Constitution saving throw (DC 10 + the spell's level). On a failed save, the spell dissipates with no effect and the action, Bonus Action, or Reaction used to cast it is wasted; if it was cast with a spell slot, the slot isn't expended."
+      "description": "You attempt to interrupt a creature in the process of casting a spell. The creature makes a Constitution saving throw. On a failed save, the spell dissipates with no effect, and the action, Bonus Action, or Reaction used to cast it is wasted. If that spell was cast with a spell slot, the slot isn't expended."
     },
     "guardian-of-faith": {
       "name": "Guardian of Faith",
@@ -4907,11 +4907,11 @@
     },
     "enhance-ability": {
       "name": "Enhance Ability",
-      "description": "You touch a creature and give it a magical enhancement. Choose one of the following effects: Bear's Endurance (Advantage on CON checks, 2d6 Temp HP), Bull's Strength (Advantage on STR checks, carrying capacity doubled), Cat's Grace (Advantage on DEX checks, no fall damage up to 20 ft), Eagle's Splendor (Advantage on CHA checks), Fox's Cunning (Advantage on INT checks), or Owl's Wisdom (Advantage on WIS checks)."
+      "description": "You touch a creature and choose Strength, Dexterity, Intelligence, Wisdom, or Charisma. For the duration, the target has Advantage on ability checks using the chosen ability. You can target one additional creature for each spell slot level above 2, choosing a different ability for each."
     },
     "haste": {
       "name": "Haste",
-      "description": "Choose a willing creature that you can see within range. Until the spell ends, the target's Speed is doubled, it gains a +2 bonus to AC, it has Advantage on Dexterity saving throws, and it gains one additional action on each of its turns. When the spell ends, the target can't move or take actions until after its next turn."
+      "description": "Choose a willing creature you can see within range. Until the spell ends, the target's Speed is doubled, it gains a +2 bonus to Armor Class, it has Advantage on Dexterity saving throws, and it gains an additional action on each of its turns, usable only for one weapon attack, Dash, Disengage, Hide, or Utilize. When the spell ends, the target is Incapacitated and has a Speed of 0 until the end of its next turn."
     },
     "protection-from-energy": {
       "name": "Protection from Energy",
@@ -4927,7 +4927,7 @@
     },
     "yolandes-regal-presence": {
       "name": "Regal Presence",
-      "description": "You surround yourself with an unearthly presence, taking on the bearing of fey royalty. For the duration, whenever any creature tries to move into a space within 10 feet of you for the first time on a turn, it must succeed on a Wisdom saving throw or its speed drops to 0 until the start of your next turn, and the creature falls Prone."
+      "description": "You surround yourself with unearthly majesty in a 10-foot Emanation. Whenever the Emanation enters the space of a creature you can see, or such a creature enters it or ends its turn there, you can force it to make a Wisdom saving throw (once per turn). On a failed save, it takes 4d6 Psychic damage and has the Prone condition, and you can push it up to 10 feet away; on a success it takes half as much damage only."
     },
     "ensnaring-strike": {
       "name": "Ensnaring Strike",
@@ -4971,7 +4971,7 @@
     },
     "summon-beast": {
       "name": "Summon Beast",
-      "description": "You call forth a bestial spirit. It manifests in an unoccupied space that you can see within range in a form you choose: Land, Sea, or Sky. The creature disappears when it drops to 0 Hit Points or when the spell ends. The creature is an ally to you and your companions. In combat, it shares your Initiative count but takes its turn immediately after yours."
+      "description": "You call forth a bestial spirit that uses the Bestial Spirit stat block. Choose an environment: Air, Land, or Water; this determines certain details in its stat block. The creature is an ally to you and your allies, shares your Initiative count but takes its turn immediately after yours, and obeys your verbal commands (no action required). If you issue none, it takes the Dodge action. Use the spell slot's level for the spell's level in the stat block."
     },
     "greater-invisibility": {
       "name": "Greater Invisibility",
@@ -4979,7 +4979,7 @@
     },
     "mislead": {
       "name": "Mislead",
-      "description": "You become Invisible and simultaneously cause an illusory double of yourself to appear. You can use a Bonus Action to move the illusion up to twice your Speed. Through the illusion's senses, you can perceive its surroundings; you are Blinded and Deafened while doing so."
+      "description": "You gain the Invisible condition at the same time an illusory double of you appears where you stand. The double lasts for the duration, but the invisibility ends immediately after you make an attack roll, deal damage, or cast a spell. As a Magic action, you can move the double up to twice your Speed and make it behave as you choose. It is intangible and invulnerable, and you can see and hear through it."
     },
     "seeming": {
       "name": "Seeming",
@@ -4987,7 +4987,7 @@
     },
     "arms-of-hadar": {
       "name": "Arms of Hadar",
-      "description": "Tendrils of dark energy erupt from you in a 10-foot-radius sphere. Each creature in the area must succeed on a Strength save or take 2d6 Necrotic damage and lose its Reaction until its next turn."
+      "description": "Tendrils of dark energy erupt from you in a 10-foot Emanation. Each creature in it makes a Strength saving throw, taking 2d6 Necrotic damage and being unable to take Reactions until the start of its next turn on a failed save, or half as much damage only on a successful one. The damage increases by 1d6 for each spell slot level above 1."
     },
     "calm-emotions": {
       "name": "Calm Emotions",
@@ -5007,7 +5007,7 @@
     },
     "hunger-of-hadar": {
       "name": "Hunger of Hadar",
-      "description": "A 20-foot-radius sphere of blackness and bitter cold appears centered on a point within range. Creatures inside are Blinded and take cold or acid damage at the start and end of each turn for the duration."
+      "description": "A 20-foot-radius Sphere of Darkness appears, centered on a point within range, for the duration. It is Difficult Terrain, no light can illuminate it, and creatures fully within it have the Blinded condition. A creature that starts its turn there takes 2d6 Cold damage; one that ends its turn there must succeed on a Dexterity saving throw or take 2d6 Acid damage. The Cold or Acid damage (your choice) increases by 1d6 for each spell slot level above 3."
     },
     "sending": {
       "name": "Sending",
@@ -5035,7 +5035,7 @@
     },
     "conjure-fey": {
       "name": "Conjure Fey",
-      "description": "You summon a fey creature that fights for you; if your concentration breaks it may turn hostile."
+      "description": "You conjure a Medium spirit from the Feywild in an unoccupied space you can see within range, lasting for the duration. When it appears, you can make one melee spell attack against a creature within 5 feet of it, dealing Psychic damage equal to 3d12 plus your spellcasting ability modifier and leaving the target Frightened until the start of your next turn. As a Bonus Action on later turns, you can teleport the spirit up to 30 feet and make the attack again. The damage increases by 1d12 for each spell slot level above 6."
     },
     "contingency": {
       "name": "Contingency",
@@ -5079,7 +5079,7 @@
     },
     "heal": {
       "name": "Heal",
-      "description": "You restore a large number of hit points to a creature and end blindness, deafness, and many diseases afflicting it."
+      "description": "Choose a creature you can see within range. Positive energy washes through the target, restoring 70 Hit Points and ending the Blinded, Deafened, and Poisoned conditions on it. The healing increases by 70 for each spell slot level above 6."
     },
     "heroes-feast": {
       "name": "Heroes' Feast",
@@ -5271,7 +5271,7 @@
     },
     "befuddlement": {
       "name": "Befuddlement",
-      "description": "You blast a creature's mind with psychic energy, reducing its Intelligence and Charisma."
+      "description": "The target makes an Intelligence saving throw. On a failed save, it takes 10d12 Psychic damage and can't cast spells or take the Magic action; at the end of every 30 days it repeats the save, ending the effect on a success (Greater Restoration, Heal, or Wish also end it). On a successful save, the target takes half as much damage only."
     },
     "clone": {
       "name": "Clone",
@@ -5451,7 +5451,7 @@
     },
     "chromatic-orb": {
       "name": "Chromatic Orb",
-      "description": "You hurl a 4-inch-diameter sphere of energy at a creature. Choose acid, cold, fire, lightning, poison, or thunder. The target must succeed on a Dexterity save or take 3d8 damage of the chosen type."
+      "description": "Choose Acid, Cold, Fire, Lightning, Poison, or Thunder and make a ranged spell attack against a target within range. On a hit, the target takes 3d8 damage of the chosen type. If you roll the same number on two or more of the d8s, the orb leaps to a different target within 30 feet of the first; make a new attack and damage roll against it. The damage increases by 1d8 for each spell slot level above 1, and the orb can leap a number of times equal to the slot's level."
     },
     "command": {
       "name": "Command",
@@ -5467,7 +5467,7 @@
     },
     "charm-monster": {
       "name": "Charm Monster",
-      "description": "You attempt to charm a creature you can see within 30 feet. It must succeed on a Wisdom save or have the Charmed condition for 1 hour or until you or your companions harm it."
+      "description": "One creature you can see within range makes a Wisdom saving throw, with Advantage if you or your allies are fighting it. On a failed save, the target has the Charmed condition until the spell ends or until you or your allies damage it, and it is Friendly to you. When the spell ends, the target knows you charmed it. You can target one additional creature for each spell slot level above 4."
     },
     "summon-dragon": {
       "name": "Summon Dragon",
@@ -5479,7 +5479,7 @@
     },
     "phantasmal-force": {
       "name": "Phantasmal Force",
-      "description": "You craft an illusion that takes root in the mind of one creature you can see within range. The target must succeed on an Intelligence saving throw or believe the illusion is real for the duration, taking 1d6 Psychic damage at the start of each of its turns."
+      "description": "The target makes an Intelligence saving throw. On a failed save, you create a phantasm (no larger than a 10-foot Cube) perceivable only to the target, which treats it as real. The target can take a Study action to make an Intelligence (Investigation) check against your spell save DC to realize it is an illusion, ending the spell. On each of your turns, the phantasm can deal 2d8 Psychic damage to the target if it is in the phantasm's area or within 5 feet of it."
     },
     "suggestion": {
       "name": "Suggestion",
@@ -5491,7 +5491,7 @@
     },
     "blink": {
       "name": "Blink",
-      "description": "Roll a d20 at the end of each of your turns for the duration. On a 11 or higher, you vanish from your current plane of existence and appear in the Ethereal Plane. At the start of your next turn, you return to an unoccupied space within 10 feet of where you left."
+      "description": "Roll 1d6 at the end of each of your turns for the duration. On a roll of 4-6, you vanish from your current plane and appear in the Ethereal Plane (the spell ends instantly if you are already there). You return at the start of your next turn and when the spell ends, appearing in an unoccupied space of your choice within 10 feet of the space you left. While on the Ethereal Plane you can perceive the plane you left in shades of gray out to 60 feet."
     },
     "clairvoyance": {
       "name": "Clairvoyance",
@@ -5519,7 +5519,7 @@
     },
     "darkvision": {
       "name": "Darkvision",
-      "description": "You touch a willing creature to grant it the ability to see in the dark. For the duration, that creature has Darkvision out to a range of 60 feet."
+      "description": "For the duration, a willing creature you touch has Darkvision with a range of 150 feet."
     },
     "silence": {
       "name": "Silence",
@@ -5543,15 +5543,15 @@
     },
     "chill-touch": {
       "name": "Chill Touch",
-      "description": "You create a ghostly, skeletal hand in the space of a creature within range to assail it with the chill of the grave. Make a ranged spell attack against the creature. On a hit, the target takes 1d8 Necrotic damage, and it can't regain Hit Points until the start of your next turn."
+      "description": "Channeling the chill of the grave, make a melee spell attack against a target within reach. On a hit, the target takes 1d10 Necrotic damage, and it can't regain Hit Points until the end of your next turn. The damage increases by 1d10 at levels 5, 11, and 17."
     },
     "false-life": {
       "name": "False Life",
-      "description": "Bolstering yourself with a necromantic facsimile of life, you gain 1d4 + 4 Temporary Hit Points for the duration."
+      "description": "You gain 2d4 + 4 Temporary Hit Points. You gain 5 additional Temporary Hit Points for each spell slot level above 1."
     },
     "ray-of-enfeeblement": {
       "name": "Ray of Enfeeblement",
-      "description": "A black beam of enervating energy springs from your finger toward a creature within range. Make a ranged spell attack against the target. On a hit, the target deals only half damage with Strength-based attacks until the spell ends."
+      "description": "The target must make a Constitution saving throw. On a success, it has Disadvantage on the next attack roll it makes until the start of your next turn. On a failure, it has Disadvantage on Strength-based D20 Tests for the duration and subtracts 1d8 from all its damage rolls. The target repeats the save at the end of each of its turns, ending the spell on a success."
     },
     "hellish-rebuke": {
       "name": "Hellish Rebuke",

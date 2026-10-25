@@ -5,6 +5,7 @@ import { SUBCLASS_SOURCES } from '@/lib/sources/subclasses';
 import { SPECIES_SOURCES, LINEAGE_GRANTS_REGISTRY } from '@/lib/sources/species';
 import { BACKGROUND_SOURCES } from '@/lib/sources/backgrounds';
 import { FEAT_SOURCES } from '@/lib/sources/feats';
+import { SPELL_MECHANICS } from '@/lib/sources/spell-mechanics';
 import gamedata from '@/locales/en/gamedata.json';
 
 describe('SPELL_CATALOG', () => {
@@ -41,7 +42,7 @@ describe('getSpellsForList', () => {
   it("returns all druid cantrips when filtered by classId='druid' and level=0", () => {
     const druidCantrips = getSpellsForList('druid', 0);
     // 2024 PHB druid cantrip list
-    expect(druidCantrips.length).toBe(12);
+    expect(druidCantrips.length).toBe(13);
   });
 
   it('returns spells that include druid in nativeClasses', () => {
@@ -225,5 +226,28 @@ describe('level 6-9 spells', () => {
     const names = gamedata.spells as Record<string, { name: string }>;
     expect(SPELL_CATALOG.filter((s) => s.level >= 6).filter((s) => !names[s.id])).toEqual([]);
     expect(getSpellsForList('wizard', 9).map((s) => s.id)).toContain('wish');
+  });
+});
+
+describe('2024 PHB corrections', () => {
+  it('matches official casting stats', () => {
+    expect(requireSpellDef('chill-touch')).toMatchObject({ range: 'Touch', duration: 'Instantaneous' });
+    expect(requireSpellDef('produce-flame').castingTime).toBe('Bonus Action');
+    expect(requireSpellDef('spiritual-weapon')).toMatchObject({ concentration: true, duration: 'Up to 1 minute' });
+    expect(requireSpellDef('wrathful-smite').concentration).toBe(false);
+    expect(requireSpellDef('witch-bolt').range).toBe('60 feet');
+  });
+
+  it('matches official modelled mechanics', () => {
+    expect(SPELL_MECHANICS['wrathful-smite']?.damage).toMatchObject({ dice: '1d6', type: 'necrotic' });
+    expect(SPELL_MECHANICS['cordon-of-arrows']).toMatchObject({ save: 'dex', damage: { dice: '2d4' } });
+    expect(SPELL_MECHANICS['banishing-smite']?.save).toBe('cha');
+  });
+
+  it('descriptions carry corrected numbers', () => {
+    const d = gamedata.spells as Record<string, { description: string }>;
+    expect(d['false-life']!.description).toContain('2d4 + 4');
+    expect(d['flame-strike']!.description).toContain('5d6 Fire');
+    expect(d['ice-storm']!.description).toContain('2d10 Bludgeoning');
   });
 });

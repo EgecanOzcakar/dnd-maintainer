@@ -798,7 +798,11 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       },
       {
         classLevel: 7,
-        grants: [{ type: 'feature', feature: { id: 'battlemaster-know-your-enemy' } }, ...maneuverPicks(3, 2)],
+        grants: [
+          { type: 'feature', feature: { id: 'battlemaster-know-your-enemy' } },
+          { type: 'resource-pool', poolId: 'know-your-enemy', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+          ...maneuverPicks(3, 2),
+        ],
       },
       {
         classLevel: 10,
@@ -905,6 +909,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Spend Psionic Energy dice to grant half cover to allies within 30 ft as a Bonus Action
           { type: 'feature', feature: { id: 'psiwarrior-bulwark-of-force' } },
+          { type: 'resource-pool', poolId: 'bulwark-of-force', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
       {
@@ -912,6 +917,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Cast Telekinesis (no spell slot, Concentration) using INT as spellcasting ability; also expands Psionic Strike
           { type: 'feature', feature: { id: 'psiwarrior-telekinetic-master' } },
+          { type: 'resource-pool', poolId: 'telekinetic-master', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -946,7 +952,15 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       },
       {
         classLevel: 11,
-        grants: [{ type: 'feature', feature: { id: 'warriorofmercy-flurry-of-healing-and-harm' } }],
+        grants: [
+          { type: 'feature', feature: { id: 'warriorofmercy-flurry-of-healing-and-harm' } },
+          {
+            type: 'resource-pool',
+            poolId: 'flurry-of-healing-and-harm',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
+        ],
       },
       {
         classLevel: 17,
@@ -972,9 +986,6 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spellcasting', ability: 'wis', source: 'class' },
           { type: 'spell', spellId: 'minor-illusion', alwaysPrepared: true, ability: 'wis' },
           { type: 'spell', spellId: 'darkness', alwaysPrepared: true, ability: 'wis' },
-          { type: 'spell', spellId: 'darkvision', alwaysPrepared: true, ability: 'wis' },
-          { type: 'spell', spellId: 'pass-without-trace', alwaysPrepared: true, ability: 'wis' },
-          { type: 'spell', spellId: 'silence', alwaysPrepared: true, ability: 'wis' },
         ],
       },
       {
@@ -1040,12 +1051,12 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       {
         classLevel: 6,
         grants: [
-          // Bonus Action: regain HP equal to 3× Martial Arts die roll; usable PB times per long rest
+          // Bonus Action: regain HP equal to 3× Martial Arts die roll; usable WIS-modifier times (min 1) per long rest
           { type: 'feature', feature: { id: 'warrioropenhand-wholeness-of-body' } },
           {
             type: 'resource-pool',
             poolId: 'wholeness-of-body',
-            max: { mode: 'proficiency-bonus', classId: 'monk' },
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
             regen: 'long-rest',
           },
         ],
@@ -1122,6 +1133,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Holy Nimbus: action, 1 minute — aura of sunlight (60 ft radius), enemies starting turn in it take 10 Radiant damage; advantage on saves vs spells cast by Fiends and Undead
           { type: 'feature', feature: { id: 'oathofdevotion-holy-nimbus' } },
+          { type: 'resource-pool', poolId: 'holy-nimbus', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1176,6 +1188,12 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Glorious Defense: when you or another creature within 10 ft is hit, use your Reaction to grant a bonus to AC equal to your CHA modifier; if the attack misses, you can make one weapon attack against the attacker
           { type: 'feature', feature: { id: 'oathofglory-glorious-defense' } },
+          {
+            type: 'resource-pool',
+            poolId: 'glorious-defense',
+            max: { mode: 'ability-mod', ability: 'cha', min: 1 },
+            regen: 'long-rest',
+          },
         ],
       },
       {
@@ -1191,6 +1209,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Living Legend: bonus action, 1 minute — become a figure of divine glory; CHA modifier replaces any ability modifier for attack rolls, and once per turn on a hit add CHA modifier as extra damage; failed saves can be rerolled once
           { type: 'feature', feature: { id: 'oathofglory-living-legend' } },
+          { type: 'resource-pool', poolId: 'living-legend', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1252,6 +1271,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Undying Sentinel: when you are reduced to 0 HP, you can drop to 1 HP instead; you can't use this feature again until you finish a Long Rest; you don't age and can't be aged magically
           { type: 'feature', feature: { id: 'oathofancients-undying-sentinel' } },
+          { type: 'resource-pool', poolId: 'undying-sentinel', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
       {
@@ -1267,6 +1287,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Elder Champion: action, 1 minute — transform into avatar of ancient nature; regain 10 HP at start of each turn, Druid spells cost 1 fewer spell slot, enemies within 10 ft must save vs frightened/blinded by nature
           { type: 'feature', feature: { id: 'oathofancients-elder-champion' } },
+          { type: 'resource-pool', poolId: 'elder-champion', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1335,6 +1356,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Avenging Angel: action, 1 hour — sprout wings (fly speed 60 ft), aura of menace (30 ft radius) frightens enemies on failed WIS save for 1 minute, frightened creatures grant you Advantage and your attacks deal extra 2d8 Radiant damage
           { type: 'feature', feature: { id: 'oathofvengeance-avenging-angel' } },
+          { type: 'resource-pool', poolId: 'avenging-angel', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
     ] satisfies readonly SubclassFeature[],
@@ -1406,7 +1428,13 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spell', spellId: 'summon-fey', alwaysPrepared: true },
         ],
       },
-      { classLevel: 11, grants: [{ type: 'feature', feature: { id: 'feywanderer-fey-reinforcements' } }] },
+      {
+        classLevel: 11,
+        grants: [
+          { type: 'feature', feature: { id: 'feywanderer-fey-reinforcements' } },
+          { type: 'resource-pool', poolId: 'fey-reinforcements', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+        ],
+      },
       {
         classLevel: 13,
         grants: [
@@ -1414,7 +1442,18 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           { type: 'spell', spellId: 'dimension-door', alwaysPrepared: true },
         ],
       },
-      { classLevel: 15, grants: [{ type: 'feature', feature: { id: 'feywanderer-misty-wanderer' } }] },
+      {
+        classLevel: 15,
+        grants: [
+          { type: 'feature', feature: { id: 'feywanderer-misty-wanderer' } },
+          {
+            type: 'resource-pool',
+            poolId: 'misty-wanderer',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
+        ],
+      },
       {
         classLevel: 17,
         grants: [
@@ -1432,6 +1471,12 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           // Dread Ambusher: first turn of combat — +WIS mod to initiative, walk speed +10,
           // extra attack on Attack action that deals 1d8 extra damage
           { type: 'feature', feature: { id: 'gloomstalker-dread-ambusher' } },
+          {
+            type: 'resource-pool',
+            poolId: 'dreadful-strike',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
           // Umbral Sight: Darkvision 60 ft (or +30 to existing); invisible to creatures relying on Darkvision
           { type: 'feature', feature: { id: 'gloomstalker-umbral-sight' } },
           // Gloom Stalker Spells — L3 tier (2024 PHB)

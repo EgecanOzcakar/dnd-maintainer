@@ -106,6 +106,17 @@ const epicBoon = (classId: FullCasterId, n: number): readonly Grant[] => [
   },
 ];
 
+/** Level 19 Epic Boon for the martial classes: display feature plus an Epic Boon feat pick (replaces the ASI/feat at that level). */
+const martialEpicBoon = (classId: 'fighter' | 'monk' | 'paladin' | 'ranger', n: number): readonly Grant[] => [
+  { type: 'feature', feature: { id: `${classId}-epic-boon` } },
+  {
+    type: 'feat-choice',
+    key: createChoiceKey('feat-choice', 'class', classId, n),
+    from: null,
+    category: 'epicBoon',
+  },
+];
+
 const metamagicPick = (n: number): Grant => ({
   type: 'feature-choice',
   key: createChoiceKey('feature-choice', 'class', 'sorcerer', n),
@@ -1119,7 +1130,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             count: 3,
           },
           { type: 'feature', feature: { id: 'fighter-second-wind' } },
-          // Second Wind uses: 2 (L1), 3 (L4), 4 (L10). Short Rest regains one use, Long Rest all; modeled as short-rest.
+          // Second Wind uses: 2 (L1), 3 (L4), 4 (L10). Short Rest regains one use, Long Rest all.
           {
             type: 'resource-pool',
             poolId: 'second-wind',
@@ -1132,7 +1143,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
                 { minLevel: 10, value: 4 },
               ],
             },
-            regen: 'short-rest',
+            regen: { mode: 'compound', shortRestAmount: 1 },
           },
           {
             type: 'bundle-choice',
@@ -1309,17 +1320,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       EMPTY_LEVEL,
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'fighter', 6), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'fighter', 6),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
+      { grants: martialEpicBoon('fighter', 6) },
       { grants: [{ type: 'feature', feature: { id: 'fighter-extra-attack-3' } }] },
     ],
   },
@@ -1451,7 +1452,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'monk-superior-defense' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'monk-epic-boon' } }] },
+      { grants: martialEpicBoon('monk', 4) },
       { grants: [{ type: 'feature', feature: { id: 'monk-body-and-mind' } }] },
     ],
   },
@@ -1497,7 +1498,6 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             },
             regen: 'long-rest',
           },
-          { type: 'feature', feature: { id: 'paladin-divine-sense' } },
           { type: 'armor-class', calculation: { mode: 'armored' } },
           {
             type: 'weapon-mastery-choice',
@@ -1517,6 +1517,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           // Paladin's Smite (id kept as divine-smite): always-prepared Divine Smite spell is not in the catalog yet.
           { type: 'feature', feature: { id: 'paladin-divine-smite' } },
+          // Paladin's Smite: one free Divine Smite cast (no slot) per Long Rest.
+          { type: 'resource-pool', poolId: 'paladins-smite', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
           {
             type: 'fighting-style-choice',
             key: createChoiceKey('fighting-style-choice', 'class', 'paladin', 0),
@@ -1529,6 +1531,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           { type: 'subclass', classId: 'paladin', key: createChoiceKey('subclass', 'class', 'paladin', 0) },
           { type: 'feature', feature: { id: 'paladin-channel-divinity' } },
+          // Divine Sense is a Channel Divinity option (Bonus Action) from level 3.
+          { type: 'feature', feature: { id: 'paladin-divine-sense' } },
           // Channel Divinity (2024 PHB): 2 uses at L3, 3 at L11; 1 regained on a Short Rest, all on a Long Rest.
           {
             type: 'resource-pool',
@@ -1561,6 +1565,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'feature', feature: { id: 'paladin-extra-attack' } },
           // Faithful Steed: always-prepared Find Steed is not in the catalog yet.
           { type: 'feature', feature: { id: 'paladin-faithful-steed' } },
+          // Faithful Steed: one free Find Steed cast per Long Rest.
+          { type: 'resource-pool', poolId: 'faithful-steed', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'paladin-aura-of-protection' } }] },
@@ -1606,7 +1612,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'paladin-aura-expansion' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'paladin-epic-boon' } }] },
+      { grants: martialEpicBoon('paladin', 4) },
       // L20: the Oath capstone comes from the subclass.
       EMPTY_LEVEL,
     ],
@@ -1759,7 +1765,18 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'ranger-tireless' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'ranger-tireless' } },
+          // Tireless: Wisdom-modifier uses (minimum 1) per Long Rest.
+          {
+            type: 'resource-pool',
+            poolId: 'tireless',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       {
         grants: [
@@ -1773,7 +1790,18 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       { grants: [{ type: 'feature', feature: { id: 'ranger-relentless-hunter' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'ranger-natures-veil' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'ranger-natures-veil' } },
+          // Nature's Veil: Wisdom-modifier uses (minimum 1) per Long Rest.
+          {
+            type: 'resource-pool',
+            poolId: 'natures-veil',
+            max: { mode: 'ability-mod', ability: 'wis', min: 1 },
+            regen: 'long-rest',
+          },
+        ],
+      },
       EMPTY_LEVEL,
       {
         grants: [
@@ -1788,7 +1816,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       { grants: [{ type: 'feature', feature: { id: 'ranger-precise-hunter' } }] },
       { grants: [{ type: 'feature', feature: { id: 'ranger-feral-senses' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'ranger-epic-boon' } }] },
+      { grants: martialEpicBoon('ranger', 4) },
       { grants: [{ type: 'feature', feature: { id: 'ranger-foe-slayer' } }] },
     ],
   },

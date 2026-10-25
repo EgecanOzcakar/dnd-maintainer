@@ -505,7 +505,7 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     bardicInspiration,
     pendingChoices,
     weaponMasteries,
-    resourcePools: resolveResourcePools(bundles),
+    resourcePools: resolveResourcePools(bundles, abilities),
   };
 }
 

@@ -44,8 +44,8 @@ describe('Fighter class levels 1–20 grant structures', () => {
     });
   });
 
-  it('grants ASI + feat-choice pairs at levels 4, 6, 8, 12, 14, 16, 19 with sequential indices', () => {
-    [4, 6, 8, 12, 14, 16, 19].forEach((level, i) => {
+  it('grants ASI + feat-choice pairs at levels 4, 6, 8, 12, 14, 16 with sequential indices', () => {
+    [4, 6, 8, 12, 14, 16].forEach((level, i) => {
       const grants = source?.levels[level - 1]?.grants ?? [];
       const asi = grants.find((g) => g.type === 'asi');
       expect(asi && asi.type === 'asi' && asi.key).toBe(createChoiceKey('asi', 'class', 'fighter', i));
@@ -54,6 +54,15 @@ describe('Fighter class levels 1–20 grant structures', () => {
         createChoiceKey('feat-choice', 'class', 'fighter', i)
       );
     });
+  });
+
+  it('grants an Epic Boon (no ASI) at level 19, reusing the sixth feat-choice key', () => {
+    const grants = source?.levels[18]?.grants ?? [];
+    expect(grants.some((g) => g.type === 'asi')).toBe(false);
+    const feat = grants.find((g) => g.type === 'feat-choice');
+    expect(feat && feat.type === 'feat-choice' && feat.key).toBe(createChoiceKey('feat-choice', 'class', 'fighter', 6));
+    expect(feat && feat.type === 'feat-choice' && feat.category).toBe('epicBoon');
+    expect(grants).toContainEqual({ type: 'feature', feature: { id: 'fighter-epic-boon' } });
   });
 
   it('grants weapon mastery choices at levels 4, 10, 16 (indices 1, 2, 3)', () => {
@@ -954,12 +963,14 @@ describe('Paladin class grant structures', () => {
     }
   });
 
-  it('level 1 has lay-on-hands and divine-sense features', () => {
-    const featureIds = source?.levels[0].grants
-      .filter((g) => g.type === 'feature')
-      .map((g) => (g.type === 'feature' ? g.feature.id : ''));
-    expect(featureIds).toContain('paladin-lay-on-hands');
-    expect(featureIds).toContain('paladin-divine-sense');
+  it('level 1 has lay-on-hands; Divine Sense is a Channel Divinity option from level 3', () => {
+    const idsAt = (i: number) =>
+      source?.levels[i].grants
+        .filter((g) => g.type === 'feature')
+        .map((g) => (g.type === 'feature' ? g.feature.id : ''));
+    expect(idsAt(0)).toContain('paladin-lay-on-hands');
+    expect(idsAt(0)).not.toContain('paladin-divine-sense');
+    expect(idsAt(2)).toContain('paladin-divine-sense');
   });
 
   it('level 1 has a weapon-mastery-choice grant with count 2', () => {
@@ -1015,7 +1026,9 @@ describe('Paladin class grant structures', () => {
     const pools = source?.levels.flatMap((l) => l.grants.filter((g) => g.type === 'resource-pool')) ?? [];
     expect(pools.map((p) => (p.type === 'resource-pool' ? p.poolId : ''))).toEqual([
       'lay-on-hands',
+      'paladins-smite',
       'channel-divinity',
+      'faithful-steed',
     ]);
     const loh = pools[0];
     if (loh.type === 'resource-pool' && loh.max.mode === 'level-steps') {

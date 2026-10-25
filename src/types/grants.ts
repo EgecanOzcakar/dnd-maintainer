@@ -332,7 +332,13 @@ export type ResourcePoolMax =
    * single class's level (same single-class assumption as the other level-keyed
    * modes). The resolver clamps the result at 0.
    */
-  | { readonly mode: 'class-level-plus'; readonly classId: ClassId; readonly offset: number };
+  | { readonly mode: 'class-level-plus'; readonly classId: ClassId; readonly offset: number }
+  /**
+   * The max equals the character's modifier in `ability`, floored at `min` — e.g. the 2024
+   * Wholeness of Body / Tireless / Nature's Veil uses (WIS modifier, minimum 1). Needs no
+   * class level, so it is resolved from the final ability scores.
+   */
+  | { readonly mode: 'ability-mod'; readonly ability: AbilityKey; readonly min: number };
 
 /**
  * Die sizes that scale with character level — currently only the Psi Warrior /

@@ -583,7 +583,7 @@ describe('getSubclassSource — Psi Warrior', () => {
     const source = getSubclassSource('psiwarrior');
     const level15 = source?.features.find((f) => f.classLevel === 15);
     expect(level15).toBeDefined();
-    expect(level15?.grants).toHaveLength(1);
+    expect(level15?.grants).toHaveLength(2);
     expect(level15?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'psiwarrior-bulwark-of-force' },
@@ -594,7 +594,7 @@ describe('getSubclassSource — Psi Warrior', () => {
     const source = getSubclassSource('psiwarrior');
     const level18 = source?.features.find((f) => f.classLevel === 18);
     expect(level18).toBeDefined();
-    expect(level18?.grants).toHaveLength(1);
+    expect(level18?.grants).toHaveLength(2);
     expect(level18?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'psiwarrior-telekinetic-master' },
@@ -665,7 +665,7 @@ describe('getSubclassSource — Warrior of Shadow', () => {
     const source = getSubclassSource('warriorofshadow');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(7);
+    expect(level3?.grants).toHaveLength(4);
     expect(level3?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'warriorofshadow-shadow-arts' },
@@ -674,6 +674,12 @@ describe('getSubclassSource — Warrior of Shadow', () => {
       expect.objectContaining({ type: 'spellcasting', ability: 'wis', source: 'class' })
     );
     expect(level3?.grants).toContainEqual(expect.objectContaining({ type: 'spell', spellId: 'minor-illusion' }));
+    expect(level3?.grants).toContainEqual(expect.objectContaining({ type: 'spell', spellId: 'darkness' }));
+    // Pass without Trace, Silence and Darkvision are not Shadow Arts spells in the 2024 PHB.
+    const spellIds = level3?.grants.flatMap((g) => (g.type === 'spell' ? [g.spellId] : []));
+    expect(spellIds).not.toContain('pass-without-trace');
+    expect(spellIds).not.toContain('silence');
+    expect(spellIds).not.toContain('darkvision');
   });
 
   it('warriorofshadow level 6 grants shadow-step feature', () => {
@@ -764,7 +770,7 @@ describe('getSubclassSource — Warrior of the Open Hand', () => {
     expect(level6?.grants[1]).toMatchObject({
       type: 'resource-pool',
       poolId: 'wholeness-of-body',
-      max: { mode: 'proficiency-bonus', classId: 'monk' },
+      max: { mode: 'ability-mod', ability: 'wis', min: 1 },
     });
   });
 });
@@ -880,7 +886,7 @@ describe('getSubclassSource — Oath of Devotion', () => {
     const source = getSubclassSource('oathofdevotion');
     const level20 = source?.features.find((f) => f.classLevel === 20);
     expect(level20).toBeDefined();
-    expect(level20?.grants).toHaveLength(1);
+    expect(level20?.grants).toHaveLength(2);
     expect(level20?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'oathofdevotion-holy-nimbus' },
@@ -988,7 +994,7 @@ describe('getSubclassSource — Oath of Glory', () => {
     const source = getSubclassSource('oathofglory');
     const level15 = source?.features.find((f) => f.classLevel === 15);
     expect(level15).toBeDefined();
-    expect(level15?.grants).toHaveLength(1);
+    expect(level15?.grants).toHaveLength(2);
     expect(level15?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'oathofglory-glorious-defense' },
@@ -999,7 +1005,7 @@ describe('getSubclassSource — Oath of Glory', () => {
     const source = getSubclassSource('oathofglory');
     const level20 = source?.features.find((f) => f.classLevel === 20);
     expect(level20).toBeDefined();
-    expect(level20?.grants).toHaveLength(1);
+    expect(level20?.grants).toHaveLength(2);
     expect(level20?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'oathofglory-living-legend' },
@@ -1136,7 +1142,7 @@ describe('getSubclassSource — Oath of the Ancients', () => {
     const source = getSubclassSource('oathofancients');
     const level15 = source?.features.find((f) => f.classLevel === 15);
     expect(level15).toBeDefined();
-    expect(level15?.grants).toHaveLength(1);
+    expect(level15?.grants).toHaveLength(2);
     expect(level15?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'oathofancients-undying-sentinel' },
@@ -1147,7 +1153,7 @@ describe('getSubclassSource — Oath of the Ancients', () => {
     const source = getSubclassSource('oathofancients');
     const level20 = source?.features.find((f) => f.classLevel === 20);
     expect(level20).toBeDefined();
-    expect(level20?.grants).toHaveLength(1);
+    expect(level20?.grants).toHaveLength(2);
     expect(level20?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'oathofancients-elder-champion' },
@@ -1267,7 +1273,7 @@ describe('getSubclassSource — Oath of Vengeance', () => {
     const source = getSubclassSource('oathofvengeance');
     const level20 = source?.features.find((f) => f.classLevel === 20);
     expect(level20).toBeDefined();
-    expect(level20?.grants).toHaveLength(1);
+    expect(level20?.grants).toHaveLength(2);
     expect(level20?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'oathofvengeance-avenging-angel' },
@@ -1433,13 +1439,14 @@ describe('getSubclassSource — Gloom Stalker', () => {
     const source = getSubclassSource('gloomstalker');
     const level3 = source?.features.find((f) => f.classLevel === 3);
     expect(level3).toBeDefined();
-    expect(level3?.grants).toHaveLength(3);
+    expect(level3?.grants).toHaveLength(4);
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           type: 'feature',
           feature: expect.objectContaining({ id: 'gloomstalker-dread-ambusher' }),
         }),
+        expect.objectContaining({ type: 'resource-pool', poolId: 'dreadful-strike' }),
         expect.objectContaining({
           type: 'feature',
           feature: expect.objectContaining({ id: 'gloomstalker-umbral-sight' }),

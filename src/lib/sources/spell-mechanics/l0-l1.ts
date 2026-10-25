@@ -85,5 +85,5 @@ export const SPELL_MECHANICS_L0_L1: Readonly<Record<string, SpellMechanics>> = {
   'thunderous-smite': { save: 'str', damage: { dice: '2d6', type: 'thunder', perSlot: '1d6' } },
   thunderwave: { save: 'con', damage: { dice: '2d8', type: 'thunder', perSlot: '1d8' } },
   'witch-bolt': { attack: 'ranged', damage: { dice: '2d12', type: 'lightning', perSlot: '1d12' } },
-  'wrathful-smite': { save: 'wis', damage: { dice: '1d6', type: 'psychic' } },
+  'wrathful-smite': { save: 'wis', damage: { dice: '1d6', type: 'necrotic', perSlot: '1d6' } },
 };

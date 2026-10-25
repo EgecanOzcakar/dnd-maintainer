@@ -32,7 +32,8 @@ export const SPELL_MECHANICS_L4_L5: Readonly<Record<string, SpellMechanics>> = {
   'control-water': { save: 'str', damage: { dice: '2d8', type: 'bludgeoning' } },
   'conjure-woodland-beings': { save: 'wis', damage: { dice: '5d8', type: 'force', perSlot: '1d8' } },
   'mordenkainens-faithful-hound': { save: 'dex', damage: { dice: '4d8', type: 'force' } },
-  'grasping-vine': { save: 'str' },
+  // Melee spell attack within 30 ft of the vine: 4d8 bludgeoning and pulled up to 30 ft (grapple escape uses the spell save DC).
+  'grasping-vine': { attack: 'melee', damage: { dice: '4d8', type: 'bludgeoning' } },
   'otilukes-resilient-sphere': { save: 'dex' },
   banishment: { save: 'cha' },
   compulsion: { save: 'wis' },
@@ -40,7 +41,8 @@ export const SPELL_MECHANICS_L4_L5: Readonly<Record<string, SpellMechanics>> = {
   polymorph: { save: 'wis' },
   // ---- Level 5 ----
   'banishing-smite': {
-    // Rider on a weapon hit: 5d10 force; no save of its own.
+    // Rider on a weapon hit: 5d10 force; if that leaves the target at 50 HP or fewer, a CHA save or it is banished.
+    save: 'cha',
     damage: { dice: '5d10', type: 'force' },
   },
   'bigbys-hand': {
@@ -50,8 +52,7 @@ export const SPELL_MECHANICS_L4_L5: Readonly<Record<string, SpellMechanics>> = {
   },
   cloudkill: { save: 'con', damage: { dice: '5d8', type: 'poison', perSlot: '1d8' } },
   'cone-of-cold': { save: 'con', damage: { dice: '8d8', type: 'cold', perSlot: '1d8' } },
-  // Damage type matches the ammunition used; piercing is the common case.
-  'conjure-volley': { save: 'dex', damage: { dice: '8d8', type: 'piercing' } },
+  'conjure-volley': { save: 'dex', damage: { dice: '8d8', type: 'force' } },
   'contact-other-plane': { save: 'int', damage: { dice: '6d6', type: 'psychic' } },
   contagion: {
     // CON save or 11d8 necrotic and Poisoned; later saves use CON as well.
@@ -75,8 +76,8 @@ export const SPELL_MECHANICS_L4_L5: Readonly<Record<string, SpellMechanics>> = {
   'insect-plague': { save: 'con', damage: { dice: '4d10', type: 'piercing', perSlot: '1d10' } },
   'jallarzis-storm-of-radiance': {
     save: 'con',
-    // Real spell: 2d10 radiant AND 2d10 thunder; models one half.
-    damage: { dice: '2d10', type: 'radiant' },
+    // Real spell: 2d10 radiant AND 2d10 thunder; models one half. Upcast adds 1d10 of each.
+    damage: { dice: '2d10', type: 'radiant', perSlot: '1d10' },
   },
   'mass-cure-wounds': { heal: { dice: '5d8', perSlot: '1d8', addMod: true } },
   'steel-wind-strike': { attack: 'melee', damage: { dice: '6d10', type: 'force' } },
@@ -84,7 +85,7 @@ export const SPELL_MECHANICS_L4_L5: Readonly<Record<string, SpellMechanics>> = {
   'wall-of-fire': { save: 'dex', damage: { dice: '5d8', type: 'fire', perSlot: '1d8' } },
   'yolandes-regal-presence': {
     save: 'wis',
-    damage: { dice: '4d6', type: 'psychic', perSlot: '1d6' },
+    damage: { dice: '4d6', type: 'psychic' },
   },
   'dominate-person': { save: 'wis' },
   'dominate-beast': { save: 'wis' },

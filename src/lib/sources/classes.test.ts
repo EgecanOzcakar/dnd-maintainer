@@ -358,14 +358,10 @@ describe('Barbarian class grant structures', () => {
   });
 
   it('level 1 has barbarian unarmored AC formula', () => {
-    const acGrant = source?.levels[0].grants.find((g) => g.type === 'armor-class');
-    expect(acGrant?.type).toBe('armor-class');
-    if (acGrant?.type === 'armor-class') {
-      expect(acGrant.calculation.mode).toBe('unarmored');
-      if (acGrant.calculation.mode === 'unarmored') {
-        expect(acGrant.calculation.formula).toBe('barbarian');
-      }
-    }
+    // An 'armored' fallback sits beside it so worn armor still sets the base.
+    const calcs = source?.levels[0].grants.flatMap((g) => (g.type === 'armor-class' ? [g.calculation] : []));
+    expect(calcs).toContainEqual({ mode: 'unarmored', formula: 'barbarian' });
+    expect(calcs).toContainEqual({ mode: 'armored' });
   });
 
   it('level 1 has rage and unarmored-defense features', () => {
@@ -722,12 +718,11 @@ describe('Druid class grant structures', () => {
     }
   });
 
-  it('level 1 has nonmetal armor proficiencies', () => {
+  it('level 1 has light armor and shield proficiencies (2024)', () => {
     const armorIds = source?.levels[0].grants
       .filter((g) => g.type === 'proficiency' && g.category === 'armor')
       .map((g) => (g.type === 'proficiency' ? g.id : ''));
-    expect(armorIds).toContain('medium-nonmetal');
-    expect(armorIds).toContain('shields-nonmetal');
+    expect(armorIds).toEqual(['light', 'shields']);
   });
 
   it('level 2 has wild-shape and wild-companion features', () => {

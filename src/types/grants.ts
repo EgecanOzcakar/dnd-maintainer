@@ -17,7 +17,7 @@ import type { SpellDef } from '@/types/spells';
 
 // Supporting types
 
-export type UnarmoredFormula = 'barbarian' | 'monk' | 'dance';
+export type UnarmoredFormula = 'barbarian' | 'monk' | 'dance' | 'draconic';
 
 export type AcCalculation =
   | { readonly mode: 'armored' }
@@ -149,7 +149,8 @@ export type SpeedMode = 'walk' | 'fly' | 'swim' | 'climb' | 'burrow';
  * "Fly 30 ft (while not in an enclosed space)" without modeling enclosed-space detection.
  * - `'not-enclosed'`: Circle of the Sea L10 Stormborn fly speed.
  */
-export type SpeedCondition = 'not-enclosed';
+// 'unarmored' / 'no-heavy-armor' gate additive grants (Unarmored Movement / Fast Movement); 'not-enclosed' is display-only.
+export type SpeedCondition = 'not-enclosed' | 'unarmored' | 'no-heavy-armor';
 
 export interface SpeedGrant {
   readonly type: 'speed';
@@ -160,6 +161,8 @@ export interface SpeedGrant {
   // Optional descriptive gating condition (e.g. Stormborn fly only when not enclosed).
   // Carried through to the resolved speed for display; never evaluated at runtime.
   readonly condition?: SpeedCondition;
+  // Adds `value` feet to the walk speed instead of setting a mode's speed (Fast Movement, Unarmored Movement).
+  readonly additive?: boolean;
 }
 
 export type HitDie = 4 | 6 | 8 | 10 | 12;
@@ -187,6 +190,8 @@ export interface ArmorClassGrant {
 export interface AcBonusGrant {
   readonly type: 'ac-bonus';
   readonly bonus: number;
+  /** Only applies while body armor is worn (Defense fighting style). */
+  readonly requiresArmor?: boolean;
 }
 
 export interface SpellcastingGrant {

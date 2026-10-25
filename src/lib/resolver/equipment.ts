@@ -17,7 +17,7 @@ import { collectGrantsByType } from '@/lib/resolver/helpers';
 import { getItemDef, requireItemDef } from '@/lib/sources/items';
 import { getBundleDef, getItemsForSlot, resolveBundleRef } from '@/lib/sources/bundles';
 import type { ArmorProficiencyId, WeaponProficiencyId } from '@/lib/dnd-helpers';
-import type { BundleSlot, SlotFilter, DamageDice, ArmorCategory } from '@/types/items';
+import type { BundleSlot, SlotFilter, DamageDice, ArmorCategory, WeaponDef } from '@/types/items';
 
 /**
  * Confirms that a slot pick is an item in the catalog that satisfies the slot's filter.
@@ -148,6 +148,26 @@ export function resolveEquipment(
   return { items, pendingChoices };
 }
 
+/**
+ * Proficient when the character has the weapon's category (Simple/Martial), its own proficiency id, or a
+ * restricted martial proficiency it qualifies for (Rogue: Finesse or Light; Monk: Light).
+ */
+export function isProficientWithWeapon(
+  weapon: Pick<WeaponDef, 'category' | 'weaponProficiencyId' | 'properties'>,
+  weaponProficiencies: readonly Sourced<WeaponProficiencyId>[]
+): boolean {
+  const martial = weapon.category === 'martial';
+  const light = weapon.properties.includes('light');
+  const finesse = weapon.properties.includes('finesse');
+  return weaponProficiencies.some(
+    (p) =>
+      p.value === weapon.weaponProficiencyId ||
+      p.value === weapon.category ||
+      (martial && p.value === 'martial-light' && light) ||
+      (martial && p.value === 'martial-finesse-light' && (light || finesse))
+  );
+}
+
 export function resolveAttacks(
   equippedItems: readonly ResolvedEquipmentItem[],
   abilities: Readonly<Record<AbilityKey, ResolvedAbility>>,
@@ -183,9 +203,7 @@ export function resolveAttacks(
 
     const abilityMod = abilities[attackAbility].modifier;
 
-    const proficient = weaponProficiencies.some(
-      (p) => p.value === weapon.weaponProficiencyId || p.value === weapon.category
-    );
+    const proficient = isProficientWithWeapon(weapon, weaponProficiencies);
 
     const attackBreakdown: AttackBonusComponent[] = [{ type: 'ability', value: abilityMod, label: attackAbility }];
     if (proficient) {
@@ -383,8 +401,9 @@ export function resolveEquippedArmorAc(
     };
   }
 
+  // Light armor: full DEX. Medium: DEX capped (a negative DEX still lowers AC). Heavy (cap 0): no DEX at all.
   const dexContribution =
-    armor.maxDexBonus === null ? dexModifier : Math.max(0, Math.min(dexModifier, armor.maxDexBonus));
+    armor.maxDexBonus === null ? dexModifier : armor.maxDexBonus === 0 ? 0 : Math.min(dexModifier, armor.maxDexBonus);
 
   return {
     totalBase: armor.baseAc + dexContribution,

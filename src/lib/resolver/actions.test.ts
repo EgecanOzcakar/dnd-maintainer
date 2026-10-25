@@ -216,6 +216,11 @@ describe('resolveActions', () => {
 });
 
 describe('upcastRoll', () => {
+  it('a flat part rides along per step (Magic Missile: +1d4+1 per slot level)', () => {
+    const r = upcastRoll({ dice: '3d4', bonus: 3 } as Parameters<typeof upcastRoll>[0], '1d4+1', 2).roll;
+    expect(r).toEqual({ dice: '5d4', bonus: 5 });
+  });
+
   const base = { dice: '8d6', bonus: 0 };
   it('merges the same die and scales per slot level', () => {
     expect(upcastRoll(base, '1d6', 2).roll).toEqual({ dice: '10d6', bonus: 0 });

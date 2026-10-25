@@ -248,7 +248,8 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     prerequisites: [],
     grants: [
       { type: 'feature', feature: { id: 'fighting-style-defense' } },
-      { type: 'ac-bonus', bonus: 1 },
+      // Defense: +1 AC only while wearing armor.
+      { type: 'ac-bonus', bonus: 1, requiresArmor: true },
     ],
   },
   {

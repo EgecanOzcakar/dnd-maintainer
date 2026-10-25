@@ -328,88 +328,20 @@ describe('applyLongRest', () => {
     expect(result.spellSlotsUsed).toEqual({ pact: 0 });
   });
 
-  it('recovers floor(level/2) hit dice for single class at level 4', () => {
-    // level 4: budget = floor(4/2) = 2; used 3 of 4; recover 2 → used becomes 1
-    const used: RestUsed = {
-      hitDiceUsed: { '8': 3 },
-      spellSlotsUsed: {},
-    };
-    const resolved = makeResolved({ hitDie: [{ die: 8, count: 4 }] });
-    const result = applyLongRest(used, resolved);
-    expect(result.hitDiceUsed['8']).toBe(1);
-  });
-
-  it('enforces minimum recovery of 1 at level 1', () => {
-    // level 1: budget = max(1, floor(1/2)) = max(1, 0) = 1
-    const used: RestUsed = {
-      hitDiceUsed: { '8': 1 },
-      spellSlotsUsed: {},
-    };
-    const resolved = makeResolved({ hitDie: [{ die: 8, count: 1 }] });
-    const result = applyLongRest(used, resolved);
-    expect(result.hitDiceUsed['8']).toBe(0);
-  });
-
-  it('recovery budget is based on total character level, not stored used count', () => {
-    // totalLevel = 2 (count=2) → budget = max(1, floor(2/2)) = 1
-    // used = 4 → a used-count-derived budget would be 4; level-derived budget is 1
-    // so only 1 die is recovered: 4 - 1 = 3
-    const used: RestUsed = {
-      hitDiceUsed: { '8': 4 },
-      spellSlotsUsed: {},
-    };
-    const resolved = makeResolved({ hitDie: [{ die: 8, count: 2 }] });
-    const result = applyLongRest(used, resolved);
-    // budget comes from level (1), not from used (4) — proves level-derived formula
-    expect(result.hitDiceUsed['8']).toBe(3);
-  });
-
-  it('does not recover more than what is used (cannot go below 0)', () => {
-    // level 10 → budget = 5; but only 2 used
-    const used: RestUsed = {
-      hitDiceUsed: { '8': 2 },
-      spellSlotsUsed: {},
-    };
-    const resolved = makeResolved({ hitDie: [{ die: 8, count: 10 }] });
-    const result = applyLongRest(used, resolved);
-    expect(result.hitDiceUsed['8']).toBe(0);
-  });
-
-  it('allocates recovery largest-die-first for multiclass characters', () => {
-    // Fighter 3 (d10) + Wizard 3 (d6) = level 6, budget = 3
-    // Largest die first: recover from d10 first
-    // Used: d10=3, d6=2 → budget 3 → recover 3 from d10 → d10=0, d6=2 (budget exhausted)
-    const used: RestUsed = {
-      hitDiceUsed: { '10': 3, '6': 2 },
-      spellSlotsUsed: {},
-    };
-    const resolved = makeResolved({
-      hitDie: [
+  it.each<[string, HitDiceUsed, ResolvedCharacter['hitDie']]>([
+    ['single class', { '8': 3 }, [{ die: 8, count: 4 }]],
+    ['level 1', { '8': 1 }, [{ die: 8, count: 1 }]],
+    [
+      'multiclass',
+      { '10': 3, '6': 2 },
+      [
         { die: 10, count: 3 },
         { die: 6, count: 3 },
       ],
-    });
-    const result = applyLongRest(used, resolved);
-    expect(result.hitDiceUsed['10']).toBe(0);
-    expect(result.hitDiceUsed['6']).toBe(2); // budget exhausted after d10
-  });
-
-  it('continues to smaller dice when larger dice are fully recovered', () => {
-    // Fighter 2 (d10) + Wizard 4 (d6) = level 6, budget = 3
-    // Used: d10=2, d6=2 → recover 2 from d10 (budget left = 1) → recover 1 from d6
-    const used: RestUsed = {
-      hitDiceUsed: { '10': 2, '6': 2 },
-      spellSlotsUsed: {},
-    };
-    const resolved = makeResolved({
-      hitDie: [
-        { die: 10, count: 2 },
-        { die: 6, count: 4 },
-      ],
-    });
-    const result = applyLongRest(used, resolved);
-    expect(result.hitDiceUsed['10']).toBe(0);
-    expect(result.hitDiceUsed['6']).toBe(1); // 1 recovered from d6
+    ],
+  ])('recovers ALL spent hit dice (2024), %s', (_name, hitDiceUsed, hitDie) => {
+    const result = applyLongRest({ hitDiceUsed, spellSlotsUsed: {} }, makeResolved({ hitDie }));
+    expect(Object.values(result.hitDiceUsed).every((n) => n === 0)).toBe(true);
   });
 
   it('does not mutate the input used object', () => {
@@ -427,7 +359,7 @@ describe('applyLongRest', () => {
 
 describe('buildRestUpdate', () => {
   it('long rest resets all spell slots and recovers hit dice, returning both columns', () => {
-    // level 4 → budget = floor(4/2) = 2; used 3 of 4 → recovers 2 → used becomes 1
+    // 2024: a long rest recovers every spent hit die
     const character = {
       hit_dice_used: { '8': 3 } as HitDiceUsed,
       spell_slots_used: { '1': 4, '2': 3, pact: 2 } as SpellSlotsUsed,
@@ -442,8 +374,8 @@ describe('buildRestUpdate', () => {
     expect(result).toHaveProperty('spell_slots_used');
     // All spell slots reset to 0
     expect(result.spell_slots_used).toEqual({ '1': 0, '2': 0, pact: 0 });
-    // Hit dice recovered by budget (2): 3 - 2 = 1
-    expect(result.hit_dice_used['8']).toBe(1);
+    // 2024: every spent hit die comes back
+    expect(result.hit_dice_used['8'] ?? 0).toBe(0);
   });
 
   it('short rest leaves hit_dice_used untouched and resets only pact slots', () => {

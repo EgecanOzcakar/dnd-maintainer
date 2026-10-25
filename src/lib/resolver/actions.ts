@@ -98,12 +98,15 @@ export function upcastRoll(
   steps: number
 ): { roll: ResolvedRoll; extra: string[] } {
   if (!upcast || steps <= 0) return { roll: base, extra: [] };
-  const add = /^(\d+)d(\d+)$/.exec(upcast);
+  // `1d4+1` (Magic Missile: one more dart per slot level) adds its flat part per step too.
+  const add = /^(\d+)d(\d+)(?:\+(\d+))?$/.exec(upcast);
   if (!add) return { roll: { ...base, bonus: base.bonus + Number(upcast) * steps }, extra: [] };
   const count = Number(add[1]) * steps;
+  const flat = Number(add[3] ?? 0) * steps;
   const have = /^(\d+)d(\d+)$/.exec(base.dice);
-  if (have && have[2] === add[2]) return { roll: { ...base, dice: `${Number(have[1]) + count}d${add[2]}` }, extra: [] };
-  return { roll: base, extra: [`+${count}d${add[2]}`] };
+  if (have && have[2] === add[2])
+    return { roll: { ...base, dice: `${Number(have[1]) + count}d${add[2]}`, bonus: base.bonus + flat }, extra: [] };
+  return { roll: { ...base, bonus: base.bonus + flat }, extra: [`+${count}d${add[2]}`] };
 }
 
 export function attacksPerAction(featureIds: ReadonlySet<string>): number {

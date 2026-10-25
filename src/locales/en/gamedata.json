@@ -172,6 +172,8 @@
   "weapons": {
     "simple": "Simple",
     "martial": "Martial",
+    "martial-light": "Martial (Light)",
+    "martial-finesse-light": "Martial (Finesse or Light)",
     "handcrossbow": "Hand Crossbow",
     "lightcrossbow": "Light Crossbow",
     "longsword": "Longsword",

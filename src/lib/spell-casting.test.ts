@@ -35,6 +35,7 @@ describe('concentration', () => {
     expect(concentrationDC(7)).toBe(10);
     expect(concentrationDC(21)).toBe(10);
     expect(concentrationDC(30)).toBe(15);
+    expect(concentrationDC(100)).toBe(30); // capped at 30
   });
 });
 

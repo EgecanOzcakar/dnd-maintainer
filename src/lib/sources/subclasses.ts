@@ -1788,9 +1788,8 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         grants: [
           // Draconic Resilience: +1 HP per Sorcerer level (structural grant)
           { type: 'hp-bonus', perLevel: 1 },
-          // Draconic Resilience: unarmored AC. 2024 is 10 + DEX + CHA; AcCalculation cannot express that, so the
-          // 2014-style 13 + DEX natural armor approximation is kept.
-          { type: 'armor-class', calculation: { mode: 'natural', baseAc: 13 } },
+          // Draconic Resilience: while not wearing armor, base AC is 10 + DEX + CHA.
+          { type: 'armor-class', calculation: { mode: 'unarmored', formula: 'draconic' } },
           // Dragon Ancestor: gain proficiency in Draconic language
           { type: 'proficiency', category: 'language', id: 'draconic' },
           // Dragon Ancestor: 1-of-10 ancestry choice. Each option carries the Elemental Affinity (L6) resistance

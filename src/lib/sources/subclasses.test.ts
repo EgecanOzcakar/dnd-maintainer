@@ -1897,7 +1897,7 @@ describe('getSubclassSource — Draconic Sorcery', () => {
     expect(level3?.grants).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ type: 'hp-bonus', perLevel: 1 }),
-        expect.objectContaining({ type: 'armor-class', calculation: { mode: 'natural', baseAc: 13 } }),
+        expect.objectContaining({ type: 'armor-class', calculation: { mode: 'unarmored', formula: 'draconic' } }),
         expect.objectContaining({ type: 'proficiency', category: 'language', id: 'draconic' }),
         expect.objectContaining({ type: 'feature-choice' }),
         expect.objectContaining({ type: 'spell', spellId: 'alter-self', alwaysPrepared: true }),

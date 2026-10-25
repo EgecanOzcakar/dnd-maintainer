@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { formatSigned } from '@/lib/format';
 import { getHitDiceMax, spendHitDie } from '@/lib/rest';
 import type { Character } from '@/types/database';
 import type { ResolvedCharacter } from '@/types/resolved';
@@ -8,9 +9,11 @@ interface HitDicePanelProps {
   readonly resolved: ResolvedCharacter;
   readonly character: Character;
   readonly onUpdate: (u: Partial<Character>) => void;
+  /** Called after a die is spent: roll it (plus CON) and heal. */
+  readonly onRoll?: (die: number) => void;
 }
 
-export function HitDicePanel({ resolved, character, onUpdate }: HitDicePanelProps): React.JSX.Element | null {
+export function HitDicePanel({ resolved, character, onUpdate, onRoll }: HitDicePanelProps): React.JSX.Element | null {
   const { t: tc } = useTranslation('common');
 
   if (resolved.hitDie.length === 0) return null;
@@ -21,6 +24,7 @@ export function HitDicePanel({ resolved, character, onUpdate }: HitDicePanelProp
   function handleSpend(die: number): void {
     const next = spendHitDie(used, die, maxByDie);
     onUpdate({ hit_dice_used: next });
+    onRoll?.(die);
   }
 
   return (
@@ -43,7 +47,17 @@ export function HitDicePanel({ resolved, character, onUpdate }: HitDicePanelProp
                   {tc('characterSheet.hitDice.available', { available, max: maxByDie[key] ?? 0 })}
                 </span>
               </div>
-              <Button type="button" variant="outline" size="sm" disabled={isDisabled} onClick={() => handleSpend(die)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={isDisabled}
+                title={tc('characterSheet.hitDice.rollTitle', {
+                  die,
+                  mod: formatSigned(resolved.abilities.con?.modifier ?? 0),
+                })}
+                onClick={() => handleSpend(die)}
+              >
                 {tc('characterSheet.hitDice.spend')}
               </Button>
             </div>

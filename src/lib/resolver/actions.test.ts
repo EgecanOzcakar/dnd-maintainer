@@ -5,6 +5,7 @@ import {
   cantripDice,
   resolveActions,
   scaleDice,
+  upcastRoll,
 } from '@/lib/resolver/actions';
 import type { AbilityKey } from '@/types/database';
 import type { ResolvedAbility, ResolvedCharacter, ResolvedSpellcasting } from '@/types/resolved';
@@ -176,5 +177,23 @@ describe('resolveActions', () => {
       ],
     });
     expect(resolveActions(r, {}).actions[0]).toMatchObject({ activation: 'bonus-action', offHand: true });
+  });
+});
+
+describe('upcastRoll', () => {
+  const base = { dice: '8d6', bonus: 0 };
+  it('merges the same die and scales per slot level', () => {
+    expect(upcastRoll(base, '1d6', 2).roll).toEqual({ dice: '10d6', bonus: 0 });
+  });
+  it('rolls a different die separately', () => {
+    expect(upcastRoll({ dice: '4d6', bonus: 0 }, '1d10', 2)).toEqual({
+      roll: { dice: '4d6', bonus: 0 },
+      extra: ['+2d10'],
+    });
+  });
+  it('adds flat per-level amounts and ignores non-upcast casts', () => {
+    expect(upcastRoll({ dice: '', bonus: 70 }, '10', 3).roll.bonus).toBe(100);
+    expect(upcastRoll(base, '1d6', 0).roll).toBe(base);
+    expect(upcastRoll(base, undefined, 2).roll).toBe(base);
   });
 });

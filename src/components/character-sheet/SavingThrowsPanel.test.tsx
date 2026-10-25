@@ -52,16 +52,35 @@ describe('SavingThrowsPanel', () => {
       />
     );
 
-    const rollBtns = screen.getAllByTitle(/Roll.*Saving Throw/i);
+    const rollBtns = screen.getAllByRole('button', { name: /^roll$/i });
     expect(rollBtns.length).toBeGreaterThan(0);
 
     fireEvent.click(rollBtns[0]);
 
-    expect(mockSelectPreset).toHaveBeenCalledWith({
-      die: 20,
-      count: 1,
-      modifier: 3,
-      contextLabel: 'Save: str (+3)',
-    });
+    expect(mockSelectPreset).toHaveBeenCalledWith(
+      expect.objectContaining({ die: 20, count: 1, modifier: 3, contextLabel: 'Save: str (+3)', mode: null })
+    );
+  });
+
+  it('rolls with the active-effect bonus, advantage and extra dice', () => {
+    const mockSelectPreset = vi.fn();
+    render(
+      <SavingThrowsPanel
+        savingThrows={sampleSavingThrows as never}
+        buildError={null}
+        onSelectRollPreset={mockSelectPreset}
+        effects={{ str: { bonus: 1, mode: 'adv', extra: ['+1d4'] } } as never}
+      />
+    );
+    fireEvent.click(screen.getAllByRole('button', { name: /^roll$/i })[0]);
+    expect(mockSelectPreset).toHaveBeenCalledWith(
+      expect.objectContaining({
+        modifier: 1,
+        mode: 'adv',
+        extra: ['+1d4'],
+        // printed 3, effects bring it to 1: the -2 is listed as its own term
+        breakdown: expect.arrayContaining([expect.objectContaining({ value: '-2' })]),
+      })
+    );
   });
 });

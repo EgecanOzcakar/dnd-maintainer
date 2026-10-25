@@ -321,7 +321,7 @@ describe('resolveSkills', () => {
       },
     ];
     const result = resolveSkills(POSITIVE_ABILITIES, bundles, 2, NO_CHOICES);
-    // STR 16 → mod 3, not proficient, half prof (ceil(2/2)) = 1
+    // STR 16 → mod 3, not proficient, half prof (floor(2/2)) = 1
     expect(result.athletics.bonus).toBe(4);
     expect(result.athletics.breakdown).toEqual([
       { type: 'ability', value: 3, label: 'str' },
@@ -378,7 +378,7 @@ describe('resolveSkills', () => {
     expect(result.arcana.breakdown).toEqual([{ type: 'ability', value: -1, label: 'int' }]);
   });
 
-  it('scales ability-check-bonus with proficiency bonus (half, rounded up)', () => {
+  it('scales ability-check-bonus with proficiency bonus (half, rounded down)', () => {
     const bundles: GrantBundle[] = [
       {
         source: { origin: 'subclass', id: 'champion', classId: 'fighter', level: 7 },
@@ -393,12 +393,12 @@ describe('resolveSkills', () => {
         ],
       },
     ];
-    // Prof bonus 3 → half = ceil(3/2) = 2
+    // Prof bonus 3 → half = floor(3/2) = 1
     const result = resolveSkills(ZERO_ABILITIES, bundles, 3, NO_CHOICES);
-    expect(result.athletics.bonus).toBe(2);
+    expect(result.athletics.bonus).toBe(1);
     expect(result.athletics.breakdown[1]).toEqual({
       type: 'ability-check-bonus',
-      value: 2,
+      value: 1,
       label: 'champion-remarkable-athlete',
     });
   });

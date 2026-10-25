@@ -3,12 +3,15 @@ import { getSpellDisplayMeta } from '@/lib/spell-display';
 import type { ResolvedCharacter } from '@/types/resolved';
 import type { AbilityKey } from '@/lib/dnd-helpers';
 import type { RollPreset } from '@/components/character-sheet/roll-preset';
-import { parseDiceFormula, extractDiceFromText } from '@/lib/dice-helpers';
+import { ActionRolls } from '@/components/character-sheet/ActionRolls';
+import type { AdjustedAction } from '@/lib/resolver/effects';
+import { getSpellSlotMax } from '@/lib/rest';
+import { castOptions, type SlotOption } from '@/lib/spell-casting';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SpellPreparationDialog } from '@/components/character-sheet/SpellPreparationDialog';
 import { canPrepareSpells, getEffectivePrepared, getPreparationPool } from '@/lib/spell-preparation';
-import { ChevronDown, ChevronRight, Dices, AlertTriangle } from 'lucide-react';
+import { ChevronDown, ChevronRight, AlertTriangle, Sparkles } from 'lucide-react';
 import { useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
@@ -121,53 +124,37 @@ function SpellItemRow({
   id,
   level,
   school,
-  spellAttackBonus,
   abilityOverride,
+  action,
+  slotOptions,
+  concentrating,
   onSelectRollPreset,
+  onCast,
 }: {
   id: string;
   level?: number;
   school?: string;
-  spellAttackBonus?: number | null;
   /** When set, this spell uses a different ability than the dominant spellcasting stat. */
   abilityOverride?: AbilityKey;
+  /** Resolved attack/save/damage/heal for this spell, if it has any. */
+  action?: AdjustedAction;
+  /** Slots this spell can be cast with (higher levels upcast it). */
+  slotOptions: readonly SlotOption[];
+  concentrating?: boolean;
   onSelectRollPreset?: (preset: RollPreset) => void;
+  /** `slotKey` is null for cantrips. */
+  onCast?: (spellId: string, slotKey: string | null) => void;
 }) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
   const [expanded, setExpanded] = useState(false);
+  const [castKey, setCastKey] = useState<string | null>(null);
 
   const def = isSpellId(id) ? getSpellDef(id) : null;
   const spellName = isSpellId(id) ? t(`spells.${id}.name`) : id;
   const description = isSpellId(id) ? t(`spells.${id}.description`, { defaultValue: '' }) : '';
-
-  const handleSelectSpell = () => {
-    if (!onSelectRollPreset) return;
-    const extracted = extractDiceFromText(description);
-    if (extracted) {
-      const parsed = parseDiceFormula(extracted);
-      onSelectRollPreset({
-        die: parsed.die,
-        count: parsed.count,
-        modifier: parsed.modifier,
-        contextLabel: `Spell: ${spellName} (${extracted})`,
-      });
-    } else if (spellAttackBonus != null) {
-      onSelectRollPreset({
-        die: 20,
-        count: 1,
-        modifier: spellAttackBonus,
-        contextLabel: `Spell Attack: ${spellName} (${spellAttackBonus >= 0 ? `+${spellAttackBonus}` : spellAttackBonus})`,
-      });
-    } else {
-      onSelectRollPreset({
-        die: 20,
-        count: 1,
-        modifier: 0,
-        contextLabel: `Spell: ${spellName}`,
-      });
-    }
-  };
+  const baseLevel = def?.level ?? level ?? 0;
+  const chosen = slotOptions.find((o) => o.key === castKey) ?? slotOptions[0];
 
   const meta = isSpellId(id) ? getSpellDisplayMeta(id) : null;
   const metaSchool = meta?.school ? t(`spellSchools.${meta.school}`, { defaultValue: meta.school }) : null;
@@ -178,10 +165,7 @@ function SpellItemRow({
       <div className="w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 hover:bg-muted/40 transition-colors">
         <button
           type="button"
-          onClick={() => {
-            setExpanded((p) => !p);
-            handleSelectSpell();
-          }}
+          onClick={() => setExpanded((p) => !p)}
           className="flex items-center gap-1.5 flex-1 min-w-0 text-left"
         >
           {description ? (
@@ -215,20 +199,57 @@ function SpellItemRow({
 
           {renderSpellBadge(id, tc)}
         </button>
-
-        {onSelectRollPreset && (
-          <Button
-            type="button"
-            size="sm"
-            variant="ghost"
-            onClick={handleSelectSpell}
-            className="h-6 px-1.5 text-[10px] gap-0.5 text-indigo-500 hover:bg-indigo-500/10 shrink-0"
-            title={`Select ${spellName} for Dice Roller`}
-          >
-            <Dices className="size-3" /> {tc('rollButtons.roll')}
-          </Button>
-        )}
       </div>
+
+      {(action || ((baseLevel > 0 || def?.concentration) && onCast)) && (
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 px-2.5 pb-1.5 text-xs">
+          {concentrating && (
+            <Badge variant="secondary" className="text-[9px] py-0 px-1 gap-0.5 bg-amber-500/20 text-amber-600">
+              <Sparkles className="size-2.5" />
+              {tc('spellCasting.concentrating')}
+            </Badge>
+          )}
+          {action && (
+            <ActionRolls
+              action={action}
+              name={spellName}
+              onSelectRollPreset={onSelectRollPreset}
+              castLevel={baseLevel > 0 ? (chosen?.level ?? baseLevel) : undefined}
+            />
+          )}
+          {onCast && (baseLevel > 0 || def?.concentration) && (
+            <span className="ml-auto flex items-center gap-1">
+              {slotOptions.length > 1 && (
+                <select
+                  aria-label={tc('spellCasting.slotLevel', { spell: spellName })}
+                  value={chosen?.key}
+                  onChange={(e) => setCastKey(e.target.value)}
+                  className="h-6 rounded border bg-background px-1 text-[11px]"
+                >
+                  {slotOptions.map((o) => (
+                    <option key={o.key} value={o.key}>
+                      {tc(o.key === 'pact' ? 'spellCasting.pactOption' : 'spellCasting.levelOption', {
+                        level: o.level,
+                      })}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="h-6 px-2 text-[11px]"
+                disabled={baseLevel > 0 && !chosen}
+                title={baseLevel > 0 && !chosen ? tc('spellCasting.noSlots') : undefined}
+                onClick={() => onCast(id, baseLevel > 0 ? (chosen?.key ?? null) : null)}
+              >
+                {tc('spellCasting.cast')}
+              </Button>
+            </span>
+          )}
+        </div>
+      )}
 
       {expanded && description && (
         <div className="px-3 py-2 text-xs border-t border-border/50 bg-muted/20 space-y-1.5">
@@ -265,47 +286,26 @@ function FeatureRow({
   description,
   saveDC,
   saveAbility,
+  action,
   onSelectRollPreset,
 }: {
   name: string;
   description: string;
   saveDC?: number;
   saveAbility?: string;
+  /** Resolved attack/save/damage/heal for this feature, if it has any. */
+  action?: AdjustedAction;
   onSelectRollPreset?: (preset: RollPreset) => void;
 }) {
   const { t: tc } = useTranslation('common');
   const [expanded, setExpanded] = useState(false);
-
-  const handleSelectFeature = () => {
-    if (!onSelectRollPreset) return;
-    const extracted = extractDiceFromText(description);
-    if (extracted) {
-      const parsed = parseDiceFormula(extracted);
-      onSelectRollPreset({
-        die: parsed.die,
-        count: parsed.count,
-        modifier: parsed.modifier,
-        contextLabel: `Feature: ${name} (${extracted})`,
-      });
-    } else {
-      onSelectRollPreset({
-        die: 20,
-        count: 1,
-        modifier: 0,
-        contextLabel: `Feature: ${name}`,
-      });
-    }
-  };
 
   return (
     <div className="rounded border border-amber-500/30 bg-amber-500/5 dark:bg-amber-950/10 overflow-hidden transition-all">
       <div className="w-full flex items-center justify-between gap-1.5 px-2.5 py-1.5 hover:bg-amber-500/10 transition-colors">
         <button
           type="button"
-          onClick={() => {
-            setExpanded((p) => !p);
-            handleSelectFeature();
-          }}
+          onClick={() => setExpanded((p) => !p)}
           className="flex items-center gap-1.5 flex-1 min-w-0 text-left"
         >
           {description ? (
@@ -337,17 +337,10 @@ function FeatureRow({
           )}
         </button>
 
-        {onSelectRollPreset && (
-          <Button
-            type="button"
-            size="sm"
-            variant="ghost"
-            onClick={handleSelectFeature}
-            className="h-6 px-1.5 text-[10px] gap-0.5 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 shrink-0"
-            title={`Select ${name} for Dice Roller`}
-          >
-            <Dices className="size-3" /> {tc('rollButtons.roll')}
-          </Button>
+        {action && (
+          <span className="flex flex-wrap items-center gap-1 text-xs shrink-0">
+            <ActionRolls action={action} name={name} onSelectRollPreset={onSelectRollPreset} />
+          </span>
         )}
       </div>
 
@@ -367,6 +360,11 @@ export function SpellcastingPanel({
   classId = null,
   preparedSpells,
   onChangePrepared,
+  actions,
+  spellSlotsUsed,
+  onCast,
+  concentratingOn = null,
+  onEndConcentration,
 }: {
   spellcasting?: Spellcasting | null;
   resolved?: ResolvedCharacter;
@@ -377,12 +375,36 @@ export function SpellcastingPanel({
   preparedSpells?: readonly string[] | null;
   /** Persist a new prepared list. Omit for a read-only panel. */
   onChangePrepared?: (prepared: string[]) => void;
+  /** Effect-adjusted actions; spells and features with rolls get one-click buttons. */
+  actions?: readonly AdjustedAction[];
+  /** Stored `characters.spell_slots_used`; decides which slots a spell can be cast with. */
+  spellSlotsUsed?: Record<string, number> | null;
+  /** Cast a spell: spends the slot (`slotKey`, null for cantrips) and starts concentration. Omit to hide Cast. */
+  onCast?: (spellId: string, slotKey: string | null) => void;
+  concentratingOn?: string | null;
+  onEndConcentration?: () => void;
 }) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
   const [prepDialogOpen, setPrepDialogOpen] = useState(false);
   const prepSc = spellcasting && canPrepareSpells(spellcasting) ? spellcasting : null;
   const prepared = prepSc ? getEffectivePrepared(preparedSpells, prepSc) : [];
+
+  const slotMax = resolved ? getSpellSlotMax(resolved) : {};
+  const rowProps = (id: string) => ({
+    id,
+    abilityOverride: spellcasting?.spellAbilityOverrides[id],
+    action: actions?.find((a) => a.key === `spell:${id}`),
+    slotOptions: castOptions(
+      slotMax,
+      spellSlotsUsed ?? {},
+      spellcasting?.pactMagic?.slotLevel ?? null,
+      getSpellDef(id)?.level ?? 0
+    ),
+    concentrating: concentratingOn === id,
+    onSelectRollPreset,
+    onCast,
+  });
 
   // Group knownSpells by level, ascending
   const listedSpells = prepSc
@@ -549,6 +571,28 @@ export function SpellcastingPanel({
         </div>
       )}
 
+      {concentratingOn && (
+        <div className="mb-4 flex items-center justify-between gap-2 rounded border border-amber-500/40 bg-amber-500/10 p-2 text-xs">
+          <span className="flex items-center gap-1.5 font-semibold text-amber-700 dark:text-amber-400">
+            <Sparkles className="size-3.5" />
+            {tc('spellCasting.concentratingOn', {
+              spell: isSpellId(concentratingOn) ? t(`spells.${concentratingOn}.name`) : concentratingOn,
+            })}
+          </span>
+          {onEndConcentration && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="h-6 px-2 text-[11px]"
+              onClick={onEndConcentration}
+            >
+              {tc('spellCasting.endConcentration')}
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* Spellcasting stats header */}
       {spellcasting &&
         (spellcasting.ability != null || spellcasting.spellSaveDC != null || spellcasting.spellAttackBonus != null) && (
@@ -601,6 +645,7 @@ export function SpellcastingPanel({
                     description={featDesc}
                     saveDC={rf.saveDC}
                     saveAbility={rf.feature.saveDC?.dcAbility}
+                    action={actions?.find((a) => a.key === `feature:${rf.feature.id}`)}
                     onSelectRollPreset={onSelectRollPreset}
                   />
                 );
@@ -633,13 +678,7 @@ export function SpellcastingPanel({
             <div className="text-xs font-bold text-muted-foreground mb-2">{cantripsHeader}</div>
             <div className="space-y-1">
               {spellcasting.cantrips.map((id) => (
-                <SpellItemRow
-                  key={id}
-                  id={id}
-                  spellAttackBonus={spellcasting.spellAttackBonus}
-                  abilityOverride={spellcasting.spellAbilityOverrides[id]}
-                  onSelectRollPreset={onSelectRollPreset}
-                />
+                <SpellItemRow key={id} {...rowProps(id)} />
               ))}
             </div>
           </div>
@@ -652,13 +691,7 @@ export function SpellcastingPanel({
             </div>
             <div className="space-y-1">
               {spellcasting.alwaysPreparedSpells.map((id) => (
-                <SpellItemRow
-                  key={id}
-                  id={id}
-                  spellAttackBonus={spellcasting.spellAttackBonus}
-                  abilityOverride={spellcasting.spellAbilityOverrides[id]}
-                  onSelectRollPreset={onSelectRollPreset}
-                />
+                <SpellItemRow key={id} {...rowProps(id)} />
               ))}
             </div>
           </div>
@@ -682,14 +715,7 @@ export function SpellcastingPanel({
                 <div className="text-xs font-bold text-muted-foreground mb-2">{levelHeader}</div>
                 <div className="space-y-1">
                   {ids.map((id) => (
-                    <SpellItemRow
-                      key={id}
-                      id={id}
-                      level={lvl}
-                      spellAttackBonus={spellcasting.spellAttackBonus}
-                      abilityOverride={spellcasting.spellAbilityOverrides[id]}
-                      onSelectRollPreset={onSelectRollPreset}
-                    />
+                    <SpellItemRow key={id} {...rowProps(id)} level={lvl} />
                   ))}
                 </div>
               </div>

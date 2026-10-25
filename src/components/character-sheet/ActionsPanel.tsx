@@ -1,17 +1,15 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dices, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { HomebrewDialog } from '@/components/character-sheet/HomebrewDialog';
 import type { HomebrewAction } from '@/lib/homebrew';
-import { parseDiceFormula } from '@/lib/dice-helpers';
-import { formatSigned } from '@/lib/format';
 import { getItemNameKey } from '@/lib/sources/items';
 import { isSpellId } from '@/lib/sources/spells';
-import { RollModeBadge } from '@/components/character-sheet/ActiveEffectsPanel';
-import type { ResolvedAction, ResolvedRoll } from '@/lib/resolver/actions';
+import { ActionRolls } from '@/components/character-sheet/ActionRolls';
+import type { ResolvedAction } from '@/lib/resolver/actions';
 import type { AdjustedAction } from '@/lib/resolver/effects';
 import type { ActivationType } from '@/types/actions';
 import type { ResolvedCharacter } from '@/types/resolved';
@@ -79,19 +77,6 @@ export function ActionsPanel({
     return t(`features.${a.refId}.name` as `features.${string}.name`, { defaultValue: featName });
   };
 
-  const roll = (contextLabel: string, r: ResolvedRoll | { dice: 'd20'; bonus: number }) => {
-    if (!onSelectRollPreset || !r.dice.includes('d')) return;
-    const parsed = parseDiceFormula(r.dice === 'd20' ? '1d20' : r.dice);
-    onSelectRollPreset({
-      die: parsed.die,
-      count: parsed.count,
-      modifier: r.bonus,
-      contextLabel,
-      kind: r.dice === 'd20' ? 'd20' : 'damage',
-    });
-  };
-
-  const fmt = (r: ResolvedRoll) => (r.dice ? `${r.dice}${r.bonus !== 0 ? formatSigned(r.bonus) : ''}` : `${r.bonus}`);
   const visible = actions.filter((a) => matches(filter, a));
   const showBasics = filter === 'all' || filter === 'action';
 
@@ -151,57 +136,7 @@ export function ActionsPanel({
                   {tc('characterSheet.combatView.actions.uses', { count: uses })}
                 </span>
               )}
-              {a.toHit !== undefined && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 px-1.5 font-mono text-primary gap-0.5"
-                  onClick={() => roll(`${name} ${formatSigned(a.toHit ?? 0)}`, { dice: 'd20', bonus: a.toHit ?? 0 })}
-                >
-                  <Dices className="size-3" />
-                  {formatSigned(a.toHit)}
-                  {a.toHitExtra?.join('')}
-                </Button>
-              )}
-              <RollModeBadge mode={a.mode} />
-              {a.save && (
-                <span className="font-mono">
-                  {tc('characterSheet.combatView.actions.save', {
-                    ability: t(`abilities.${a.save.ability}`),
-                    dc: a.save.dc,
-                  })}
-                </span>
-              )}
-              {a.damage && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 px-1.5 font-mono text-emerald-600"
-                  disabled={!a.damage.dice.includes('d')}
-                  onClick={() => a.damage && roll(`${name} ${fmt(a.damage)}`, a.damage)}
-                >
-                  {fmt(a.damage)}
-                  {a.damageExtra?.join('')}{' '}
-                  {a.damage.type === 'weapon'
-                    ? tc('characterSheet.combatView.actions.weaponDamage')
-                    : t(`damageTypes.${a.damage.type}` as `damageTypes.${string}`, { defaultValue: a.damage.type })}
-                </Button>
-              )}
-              {a.heal && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 px-1.5 font-mono text-sky-600"
-                  onClick={() => a.heal && roll(`${name} ${fmt(a.heal)}`, a.heal)}
-                >
-                  {tc('characterSheet.combatView.actions.heal', { roll: fmt(a.heal) })}
-                </Button>
-              )}
-              {a.versatileDice && (
-                <span className="text-muted-foreground">
-                  {tc('characterSheet.combatView.actions.twoHanded', { dice: a.versatileDice })}
-                </span>
-              )}
+              <ActionRolls action={a} name={name} onSelectRollPreset={onSelectRollPreset} />
               {a.usesPerRest && (
                 <span className="text-muted-foreground">
                   {tc('homebrew.usesPerRest', {
@@ -228,11 +163,6 @@ export function ActionsPanel({
                   >
                     <Trash2 className="size-3" />
                   </Button>
-                </span>
-              )}
-              {a.upcast && (
-                <span className="text-muted-foreground">
-                  {tc('characterSheet.combatView.actions.upcast', { dice: a.upcast })}
                 </span>
               )}
             </li>

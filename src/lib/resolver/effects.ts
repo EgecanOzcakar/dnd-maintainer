@@ -143,9 +143,22 @@ export function applyEffects(
     return {
       ...a,
       ...(rollsAttack
-        ? { toHit: (a.toHit ?? 0) - d20Penalty, mode: combineMode(adv, attackDis), toHitExtra: d20Dice }
+        ? {
+            toHit: (a.toHit ?? 0) - d20Penalty,
+            toHitParts: [
+              ...(a.toHitParts ?? []),
+              ...(d20Penalty ? [{ type: 'exhaustion', label: 'exhaustion', value: -d20Penalty }] : []),
+            ],
+            mode: combineMode(adv, attackDis),
+            toHitExtra: d20Dice,
+          }
         : {}),
-      ...(a.damage && rage && isStrMelee ? { damage: { ...a.damage, bonus: a.damage.bonus + rage } } : {}),
+      ...(a.damage && rage && isStrMelee
+        ? {
+            damage: { ...a.damage, bonus: a.damage.bonus + rage },
+            damageParts: [...(a.damageParts ?? []), { type: 'effect', label: 'rage', value: rage }],
+          }
+        : {}),
       ...(damageExtra.length ? { damageExtra } : {}),
     };
   });

@@ -575,7 +575,9 @@
     "hitDice": {
       "dieLabel": "d{{die}} × {{count}}",
       "available": "{{available}} / {{max}} available",
-      "spend": "Spend"
+      "spend": "Roll",
+      "rollTitle": "Roll d{{die}} {{mod}} (CON) and regain that many HP",
+      "healed": "{{hp}} HP regained"
     },
     "spellSlots": {
       "levelLabel": "Level {{level}}",
@@ -646,7 +648,8 @@
       "proficiency": "Proficiency",
       "expertise": "Expertise",
       "expandAll": "Expand All",
-      "collapseAll": "Collapse All"
+      "collapseAll": "Collapse All",
+      "toggle": "Show {{skill}} breakdown"
     },
     "equipment": {
       "sourceFrom": "From {{name}}",
@@ -1428,12 +1431,40 @@
     },
     "showAll": "Show all {{count}}"
   },
+  "rollBreakdown": {
+    "exhaustion": "Exhaustion",
+    "level": "Class level",
+    "flat": "Flat bonus",
+    "effectDice": "Effect dice",
+    "reliableTalent": "Reliable Talent: d20 below 10 counts as 10",
+    "armorDisadvantage": "Untrained armor: disadvantage",
+    "total": "Total",
+    "hitDie": "Hit die"
+  },
+  "spellCasting": {
+    "cast": "Cast",
+    "concentrating": "Concentrating",
+    "concentratingOn": "Concentrating on {{spell}}",
+    "endConcentration": "End",
+    "slotLevel": "Slot level for {{spell}}",
+    "levelOption": "Level {{level}}",
+    "pactOption": "Pact (level {{level}})",
+    "noSlots": "No spell slots left",
+    "castToast": "Cast {{spell}}",
+    "castAtLevelToast": "Cast {{spell}} at level {{level}}",
+    "replacedConcentration": "Concentration on {{spell}} ended.",
+    "concentrationCheck": "Concentration check: {{spell}} (CON save DC {{dc}})",
+    "rollSave": "Roll save",
+    "drop": "Drop"
+  },
   "diceLog": {
     "title": "Campaign Rolls",
     "empty": "No shared rolls yet",
     "advantage": "Advantage",
     "disadvantage": "Disadvantage",
     "critical": "Critical hit (double dice)",
+    "critHint": "Shift-click to roll a critical hit",
+    "hint": "Click to roll. Shift-click: advantage / critical hit. Alt-click: disadvantage.",
     "natural20": "Natural 20",
     "natural1": "Natural 1",
     "unknownRoller": "Unknown"

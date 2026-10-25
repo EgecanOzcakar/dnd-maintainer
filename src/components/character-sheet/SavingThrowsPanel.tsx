@@ -2,6 +2,8 @@ import { BonusBreakdown } from '@/components/character-sheet/BonusBreakdown';
 import { RollModeBadge } from '@/components/character-sheet/ActiveEffectsPanel';
 import { Badge } from '@/components/ui/badge';
 import type { AdjustedSave } from '@/lib/resolver/effects';
+import { partsText, useRollParts } from '@/hooks/useRollParts';
+import { saveRollMods } from '@/lib/roll-mods';
 import type { ResolvedCharacter } from '@/types/resolved';
 import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { formatSigned } from '@/lib/format';
@@ -23,6 +25,7 @@ export function SavingThrowsPanel({
 }) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
+  const rollParts = useRollParts();
 
   if (!savingThrows) {
     return (
@@ -37,15 +40,21 @@ export function SavingThrowsPanel({
     );
   }
 
-  const handleSelectSave = (ability: keyof typeof savingThrows, bonus: number) => {
-    if (!onSelectRollPreset) return;
-    const abilityLabel = t(`abilities.${ability}`);
-    onSelectRollPreset({
+  const presetFor = (ability: keyof typeof savingThrows): RollPreset => {
+    const save = savingThrows[ability];
+    const mods = saveRollMods(save, effects?.[ability]);
+    // Whatever active effects (exhaustion) changed on top of the printed bonus.
+    const delta = mods.modifier - save.bonus;
+    return {
       die: 20,
       count: 1,
-      modifier: bonus,
-      contextLabel: `Save: ${abilityLabel} (${formatSigned(bonus)})`,
-    });
+      contextLabel: `Save: ${t(`abilities.${ability}`)} (${formatSigned(mods.modifier)})`,
+      ...mods,
+      breakdown: rollParts([
+        ...save.breakdown,
+        ...(delta ? [{ type: 'exhaustion', label: 'exhaustion', value: delta }] : []),
+      ]),
+    };
   };
 
   return (
@@ -55,6 +64,7 @@ export function SavingThrowsPanel({
         {(Object.keys(savingThrows) as Array<keyof typeof savingThrows>).map((ability) => {
           const save = savingThrows[ability];
           const abilityName = t(`abilities.${ability}`);
+          const preset = presetFor(ability);
 
           return (
             <div
@@ -63,7 +73,7 @@ export function SavingThrowsPanel({
             >
               <button
                 type="button"
-                onClick={() => handleSelectSave(ability, save.bonus)}
+                onClick={() => onSelectRollPreset?.(preset)}
                 className="flex items-center gap-2 flex-1 text-left"
               >
                 <span
@@ -91,9 +101,9 @@ export function SavingThrowsPanel({
                     type="button"
                     size="sm"
                     variant="ghost"
-                    onClick={() => handleSelectSave(ability, save.bonus)}
+                    onClick={() => onSelectRollPreset?.(preset)}
                     className="h-6 px-1.5 text-[10px] gap-0.5 text-primary hover:bg-primary/10"
-                    title={`Roll ${abilityName} Saving Throw`}
+                    title={`${abilityName} ${formatSigned(preset.modifier)} = ${partsText(preset.breakdown ?? [], preset.extra)}`}
                   >
                     <Dices className="size-3" /> {tc('rollButtons.roll')}
                   </Button>

@@ -22,6 +22,13 @@ export interface ResolvedRoll {
   readonly bonus: number;
 }
 
+/** One term of a to-hit or damage bonus, e.g. `{ type: 'ability', label: 'str', value: 3 }`. */
+export interface BreakdownPart {
+  readonly type: string;
+  readonly label: string;
+  readonly value: number;
+}
+
 export interface ResolvedAction {
   /** Unique within the list. */
   readonly key: string;
@@ -32,6 +39,9 @@ export interface ResolvedAction {
   /** Listed under the Attack filter: weapon attacks and anything that deals damage. */
   readonly isAttack: boolean;
   readonly toHit?: number;
+  /** What `toHit` and `damage.bonus` are made of, shown on the roll. */
+  readonly toHitParts?: readonly BreakdownPart[];
+  readonly damageParts?: readonly BreakdownPart[];
   readonly save?: { readonly ability: AbilityKey; readonly dc: number };
   readonly damage?: ResolvedRoll & { readonly type: ActionDamageType | string };
   readonly heal?: ResolvedRoll;
@@ -76,6 +86,24 @@ export function activationFromCastingTime(castingTime: string): ActivationType {
   return 'special';
 }
 
+/**
+ * Adds an upcast bonus (`1d6` or a flat `10` per slot level) for `steps` levels above the spell's own.
+ * Same-die dice merge into the base roll; a different die comes back as `extra` to roll alongside.
+ */
+export function upcastRoll(
+  base: ResolvedRoll,
+  upcast: string | undefined,
+  steps: number
+): { roll: ResolvedRoll; extra: string[] } {
+  if (!upcast || steps <= 0) return { roll: base, extra: [] };
+  const add = /^(\d+)d(\d+)$/.exec(upcast);
+  if (!add) return { roll: { ...base, bonus: base.bonus + Number(upcast) * steps }, extra: [] };
+  const count = Number(add[1]) * steps;
+  const have = /^(\d+)d(\d+)$/.exec(base.dice);
+  if (have && have[2] === add[2]) return { roll: { ...base, dice: `${Number(have[1]) + count}d${add[2]}` }, extra: [] };
+  return { roll: base, extra: [`+${count}d${add[2]}`] };
+}
+
 export function attacksPerAction(featureIds: ReadonlySet<string>): number {
   if (featureIds.has('fighter-extra-attack-3')) return 4;
   if (featureIds.has('fighter-extra-attack-2')) return 3;
@@ -98,6 +126,8 @@ export function resolveActions(
     return ability ? abilities[ability].modifier : 0;
   };
 
+  const abilityOf = (source: ModSource): string => (source === 'spellcasting' ? (spellcasting?.ability ?? '') : source);
+
   // Weapons (already resolved with full to-hit/damage breakdowns).
   for (const attack of resolved.attacks) {
     actions.push({
@@ -107,6 +137,8 @@ export function resolveActions(
       activation: attack.offHand ? 'bonus-action' : 'action',
       isAttack: true,
       toHit: attack.attackBonus,
+      toHitParts: attack.attackBreakdown,
+      damageParts: attack.damageBreakdown,
       damage: { dice: attack.damageDice, bonus: attack.damageBonus, type: attack.damageType },
       ...(attack.offHand ? { offHand: true } : {}),
       ...(attack.versatileDice ? { versatileDice: attack.versatileDice } : {}),
@@ -138,7 +170,23 @@ export function resolveActions(
         activation: activationFromCastingTime(def.castingTime),
         isAttack: Boolean(mech.attack || mech.damage),
         spellLevel: def.level,
-        ...(mech.attack ? { toHit: pb + mod } : {}),
+        ...(mech.attack
+          ? {
+              toHit: pb + mod,
+              toHitParts: [
+                { type: 'ability', label: ability ?? '', value: mod },
+                { type: 'proficiency', label: 'proficiency', value: pb },
+              ],
+            }
+          : {}),
+        ...(mech.damage && (mech.damage.addMod || mech.damage.flat)
+          ? {
+              damageParts: [
+                ...(mech.damage.addMod && ability ? [{ type: 'ability', label: ability, value: mod }] : []),
+                ...(mech.damage.flat ? [{ type: 'flat', label: 'flat', value: mech.damage.flat }] : []),
+              ],
+            }
+          : {}),
         ...(mech.save ? { save: { ability: mech.save, dc: 8 + pb + mod } } : {}),
         ...(mech.damage && damageDice
           ? {
@@ -184,7 +232,28 @@ export function resolveActions(
       refId: feature.id,
       activation: meta.activation,
       isAttack: Boolean(meta.attack || damageRoll),
-      ...(meta.attack ? { toHit: pb + modOf(meta.attack.ability) } : {}),
+      ...(meta.attack
+        ? {
+            toHit: pb + modOf(meta.attack.ability),
+            toHitParts: [
+              { type: 'ability', label: abilityOf(meta.attack.ability), value: modOf(meta.attack.ability) },
+              { type: 'proficiency', label: 'proficiency', value: pb },
+            ],
+          }
+        : {}),
+      ...(meta.damage && damageRoll
+        ? {
+            damageParts: [
+              ...(meta.damage.addMod
+                ? [{ type: 'ability', label: abilityOf(meta.damage.addMod), value: modOf(meta.damage.addMod) }]
+                : []),
+              ...(meta.damage.addLevel !== undefined
+                ? [{ type: 'level', label: 'level', value: levelBonus(meta.damage.addLevel) }]
+                : []),
+              ...(meta.damage.flat ? [{ type: 'flat', label: 'flat', value: meta.damage.flat }] : []),
+            ],
+          }
+        : {}),
       ...(meta.save ? { save: { ability: meta.save.ability, dc: 8 + pb + modOf(meta.save.dcAbility) } } : {}),
       ...(meta.damage && damageRoll ? { damage: { ...damageRoll, type: meta.damage.type } } : {}),
       ...(healRoll ? { heal: healRoll } : {}),

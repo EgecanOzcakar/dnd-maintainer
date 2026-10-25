@@ -9,8 +9,13 @@ import {
   GNOME_LINEAGE_GRANTS,
   LINEAGE_GRANTS_REGISTRY,
 } from '@/lib/sources/species';
-import { DND_SPECIES } from '@/lib/dnd-helpers';
+import { DND_LANGUAGE_DATA, DND_SPECIES } from '@/lib/dnd-helpers';
 import { createChoiceKey } from '@/types/choices';
+import type { Grant } from '@/types/grants';
+
+const STANDARD_LANGUAGE_IDS = DND_LANGUAGE_DATA.filter((l) => l.category === 'standard' && l.id !== 'common').map(
+  (l) => l.id
+);
 
 describe('SPECIES_SOURCES cross-reference', () => {
   it('every SpeciesId has a SPECIES_SOURCES entry', () => {
@@ -52,14 +57,14 @@ describe('Human species source (2024 PHB)', () => {
     expect(languages).toEqual([{ type: 'proficiency', category: 'language', id: 'common' }]);
   });
 
-  it('grants two language choices from any language', () => {
+  it('grants two language choices from the Standard languages', () => {
     const langChoice = source?.grants.find((g) => g.type === 'proficiency-choice' && g.category === 'language');
     expect(langChoice).toEqual({
       type: 'proficiency-choice',
       category: 'language',
       key: createChoiceKey('language-choice', 'species', 'human', 0),
       count: 2,
-      from: null,
+      from: STANDARD_LANGUAGE_IDS,
     });
   });
 
@@ -110,14 +115,14 @@ describe('Dwarf species source (2024 PHB)', () => {
     expect(languages).toEqual([{ type: 'proficiency', category: 'language', id: 'common' }]);
   });
 
-  it('grants two language choices from any language', () => {
+  it('grants two language choices from the Standard languages', () => {
     const langChoice = source?.grants.find((g) => g.type === 'proficiency-choice' && g.category === 'language');
     expect(langChoice).toEqual({
       type: 'proficiency-choice',
       category: 'language',
       key: createChoiceKey('language-choice', 'species', 'dwarf', 0),
       count: 2,
-      from: null,
+      from: STANDARD_LANGUAGE_IDS,
     });
   });
 
@@ -175,14 +180,14 @@ describe('Elf species source (2024 PHB)', () => {
     expect(languages).toEqual([{ type: 'proficiency', category: 'language', id: 'common' }]);
   });
 
-  it('grants two language choices from any language', () => {
+  it('grants two language choices from the Standard languages', () => {
     const langChoice = source?.grants.find((g) => g.type === 'proficiency-choice' && g.category === 'language');
     expect(langChoice).toEqual({
       type: 'proficiency-choice',
       category: 'language',
       key: createChoiceKey('language-choice', 'species', 'elf', 0),
       count: 2,
-      from: null,
+      from: STANDARD_LANGUAGE_IDS,
     });
   });
 
@@ -233,14 +238,14 @@ describe('Gnome species source (2024 PHB)', () => {
     expect(languages).toEqual([{ type: 'proficiency', category: 'language', id: 'common' }]);
   });
 
-  it('grants two language choices from any language', () => {
+  it('grants two language choices from the Standard languages', () => {
     const langChoice = source?.grants.find((g) => g.type === 'proficiency-choice' && g.category === 'language');
     expect(langChoice).toEqual({
       type: 'proficiency-choice',
       category: 'language',
       key: createChoiceKey('language-choice', 'species', 'gnome', 0),
       count: 2,
-      from: null,
+      from: STANDARD_LANGUAGE_IDS,
     });
   });
 
@@ -290,14 +295,14 @@ describe('Halfling species source (2024 PHB)', () => {
     expect(languages).toEqual([{ type: 'proficiency', category: 'language', id: 'common' }]);
   });
 
-  it('grants two language choices from any language', () => {
+  it('grants two language choices from the Standard languages', () => {
     const langChoice = source?.grants.find((g) => g.type === 'proficiency-choice' && g.category === 'language');
     expect(langChoice).toEqual({
       type: 'proficiency-choice',
       category: 'language',
       key: createChoiceKey('language-choice', 'species', 'halfling', 0),
       count: 2,
-      from: null,
+      from: STANDARD_LANGUAGE_IDS,
     });
   });
 
@@ -350,14 +355,14 @@ describe('Aasimar species source (2024 PHB)', () => {
     expect(languages).toEqual([{ type: 'proficiency', category: 'language', id: 'common' }]);
   });
 
-  it('grants two language choices from any language', () => {
+  it('grants two language choices from the Standard languages', () => {
     const langChoice = source?.grants.find((g) => g.type === 'proficiency-choice' && g.category === 'language');
     expect(langChoice).toEqual({
       type: 'proficiency-choice',
       category: 'language',
       key: createChoiceKey('language-choice', 'species', 'aasimar', 0),
       count: 2,
-      from: null,
+      from: STANDARD_LANGUAGE_IDS,
     });
   });
 
@@ -406,14 +411,14 @@ describe('Dragonborn species source (2024 PHB)', () => {
     expect(languages).toEqual([{ type: 'proficiency', category: 'language', id: 'common' }]);
   });
 
-  it('grants two language choices from any language', () => {
+  it('grants two language choices from the Standard languages', () => {
     const langChoice = source?.grants.find((g) => g.type === 'proficiency-choice' && g.category === 'language');
     expect(langChoice).toEqual({
       type: 'proficiency-choice',
       category: 'language',
       key: createChoiceKey('language-choice', 'species', 'dragonborn', 0),
       count: 2,
-      from: null,
+      from: STANDARD_LANGUAGE_IDS,
     });
   });
 
@@ -499,14 +504,14 @@ describe('Goliath species source (2024 PHB)', () => {
     expect(languages).toEqual([{ type: 'proficiency', category: 'language', id: 'common' }]);
   });
 
-  it('grants two language choices from any language', () => {
+  it('grants two language choices from the Standard languages', () => {
     const langChoice = source?.grants.find((g) => g.type === 'proficiency-choice' && g.category === 'language');
     expect(langChoice).toEqual({
       type: 'proficiency-choice',
       category: 'language',
       key: createChoiceKey('language-choice', 'species', 'goliath', 0),
       count: 2,
-      from: null,
+      from: STANDARD_LANGUAGE_IDS,
     });
   });
 
@@ -555,28 +560,23 @@ describe('Orc species source (2024 PHB)', () => {
     expect(languages).toEqual([{ type: 'proficiency', category: 'language', id: 'common' }]);
   });
 
-  it('grants two language choices from any language', () => {
+  it('grants two language choices from the Standard languages', () => {
     const langChoice = source?.grants.find((g) => g.type === 'proficiency-choice' && g.category === 'language');
     expect(langChoice).toEqual({
       type: 'proficiency-choice',
       category: 'language',
       key: createChoiceKey('language-choice', 'species', 'orc', 0),
       count: 2,
-      from: null,
+      from: STANDARD_LANGUAGE_IDS,
     });
   });
 
-  it('grants adrenaline-rush, darkvision, powerful-build, relentless-endurance features', () => {
+  it('grants adrenaline-rush, darkvision, relentless-endurance features (no Powerful Build)', () => {
     const features = source?.grants.filter((g) => g.type === 'feature');
-    expect(features).toHaveLength(4);
+    expect(features).toHaveLength(3);
     const featureIds = features?.map((g) => g.type === 'feature' && g.feature.id);
     expect(featureIds).toEqual(
-      expect.arrayContaining([
-        'orc-adrenaline-rush',
-        'orc-darkvision',
-        'orc-powerful-build',
-        'orc-relentless-endurance',
-      ])
+      expect.arrayContaining(['orc-adrenaline-rush', 'orc-darkvision', 'orc-relentless-endurance'])
     );
   });
 
@@ -604,21 +604,24 @@ describe('Tiefling species source (2024 PHB)', () => {
     expect(languages).toEqual([{ type: 'proficiency', category: 'language', id: 'common' }]);
   });
 
-  it('grants two language choices from any language', () => {
+  it('grants two language choices from the Standard languages', () => {
     const langChoice = source?.grants.find((g) => g.type === 'proficiency-choice' && g.category === 'language');
     expect(langChoice).toEqual({
       type: 'proficiency-choice',
       category: 'language',
       key: createChoiceKey('language-choice', 'species', 'tiefling', 0),
       count: 2,
-      from: null,
+      from: STANDARD_LANGUAGE_IDS,
     });
   });
 
-  it('grants darkvision feature', () => {
+  it('grants darkvision and Otherworldly Presence (Thaumaturgy)', () => {
     const features = source?.grants.filter((g) => g.type === 'feature');
-    expect(features).toHaveLength(1);
-    expect(features?.[0]).toEqual({ type: 'feature', feature: { id: 'tiefling-darkvision' } });
+    expect(features).toEqual([
+      { type: 'feature', feature: { id: 'tiefling-darkvision' } },
+      { type: 'feature', feature: { id: 'tiefling-otherworldly-presence' } },
+    ]);
+    expect(source?.grants).toContainEqual({ type: 'spell', spellId: 'thaumaturgy', alwaysPrepared: true });
   });
 
   it('grants lineage choice from Abyssal, Chthonic, Infernal', () => {
@@ -692,5 +695,83 @@ describe('SPECIES_SOURCES ↔ DND_SPECIES invariants', () => {
       const actual = languageChoiceGrant?.type === 'proficiency-choice' ? languageChoiceGrant.count : 0;
       expect(actual).toBe(expected);
     }
+  });
+});
+
+describe('2024 lineage accuracy', () => {
+  const ids = (grants: readonly Grant[] | undefined, type: 'spell' | 'feature') =>
+    (grants ?? []).flatMap((g) =>
+      g.type === 'spell' && type === 'spell'
+        ? [g.spellId]
+        : g.type === 'feature' && type === 'feature'
+          ? [g.feature.id]
+          : []
+    );
+
+  it('Forest Gnome: Minor Illusion + Speak with Animals only', () => {
+    expect(ids(GNOME_LINEAGE_GRANTS['forest'], 'spell')).toEqual(['minor-illusion', 'speak-with-animals']);
+  });
+
+  it("Rock Gnome: Mending + Prestidigitation + Tinker (Tinker's Tools)", () => {
+    expect(ids(GNOME_LINEAGE_GRANTS['rock'], 'spell')).toEqual(['mending', 'prestidigitation']);
+    expect(ids(GNOME_LINEAGE_GRANTS['rock'], 'feature')).toContain('gnome-rock-tinker');
+    expect(GNOME_LINEAGE_GRANTS['rock']).toContainEqual({ type: 'proficiency', category: 'tool', id: 'tinkerstools' });
+  });
+
+  it('High Elf knows Prestidigitation (no wizard-cantrip choice) and unlocks Detect Magic / Misty Step at 3 / 5', () => {
+    const grants = ELF_LINEAGE_GRANTS['high-elf'] ?? [];
+    expect(grants.some((g) => g.type === 'spell-choice')).toBe(false);
+    const spell = (id: string) => grants.find((g) => g.type === 'spell' && g.spellId === id);
+    expect(spell('prestidigitation')).toMatchObject({ alwaysPrepared: true });
+    expect(spell('prestidigitation')).not.toHaveProperty('minCharacterLevel');
+    expect(spell('detect-magic')).toMatchObject({ minCharacterLevel: 3 });
+    expect(spell('misty-step')).toMatchObject({ minCharacterLevel: 5 });
+  });
+
+  it('every non-cantrip lineage spell is gated to character level 3 or 5', () => {
+    const gated = [
+      ...Object.values(TIEFLING_LINEAGE_GRANTS),
+      ...Object.values(ELF_LINEAGE_GRANTS),
+      ...Object.values(GNOME_LINEAGE_GRANTS),
+    ].flatMap((grants) => grants ?? []);
+    const knownAtLevel1 = new Set([
+      'poison-spray',
+      'chill-touch',
+      'fire-bolt',
+      'dancing-lights',
+      'prestidigitation',
+      'druidcraft',
+      'minor-illusion',
+      'mending',
+      'speak-with-animals',
+    ]);
+    for (const g of gated) {
+      if (g.type !== 'spell' || knownAtLevel1.has(g.spellId)) continue;
+      expect([3, 5], `${g.spellId} must be level-gated`).toContain(g.minCharacterLevel);
+    }
+  });
+
+  it('Goliath Giant Ancestry is a single boon feature per ancestry (no spell list)', () => {
+    for (const [ancestry, grants] of Object.entries(GOLIATH_ANCESTRY_GRANTS)) {
+      expect(grants, ancestry).toEqual([{ type: 'feature', feature: { id: `goliath-giant-ancestry-${ancestry}` } }]);
+    }
+  });
+
+  it('Goliath keeps Powerful Build; Orc does not', () => {
+    const has = (id: string, feature: string) =>
+      getSpeciesSource(id as 'goliath')?.grants.some((g) => g.type === 'feature' && g.feature.id === feature);
+    expect(has('goliath', 'goliath-powerful-build')).toBe(true);
+    expect(has('orc', 'orc-powerful-build')).toBe(false);
+  });
+
+  it('Dragonborn gets Draconic Flight', () => {
+    expect(getSpeciesSource('dragonborn')?.grants).toContainEqual({
+      type: 'feature',
+      feature: { id: 'dragonborn-draconic-flight' },
+    });
+  });
+
+  it('Draconic is a Standard language', () => {
+    expect(STANDARD_LANGUAGE_IDS).toContain('draconic');
   });
 });

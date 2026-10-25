@@ -187,6 +187,9 @@ export interface SpeedGrant {
   // Optional descriptive gating condition (e.g. Stormborn fly only when not enclosed).
   // Carried through to the resolved speed for display; never evaluated at runtime.
   readonly condition?: SpeedCondition;
+  // When true the value is added to the base walking speed (Speedy, Boon of Speed: "+10/+30 feet")
+  // instead of competing with it as a set value.
+  readonly additive?: boolean;
 }
 
 export type HitDie = 4 | 6 | 8 | 10 | 12;
@@ -199,6 +202,8 @@ export interface HitDieGrant {
 export interface HpBonusGrant {
   readonly type: 'hp-bonus';
   readonly perLevel: number;
+  // One-off Hit Point maximum increase on top of `perLevel` (Boon of Fortitude: +40).
+  readonly flat?: number;
 }
 
 export interface ResistanceGrant {
@@ -230,6 +235,9 @@ export interface SpellGrant {
   // (e.g. Circle of the Land progressively unlocks its circle spells at druid L3/5/7/9).
   // Gated generically in collectBundles against the granting class's level — see issue #189.
   readonly minClassLevel?: number;
+  // Level gate on *total character level*, for non-class sources that have no class level
+  // (species lineage spells unlock at character level 3 and 5).
+  readonly minCharacterLevel?: number;
   /**
    * Optional ability override: when set, this spell uses the specified ability for its
    * attack bonus and save DC instead of the character's dominant spellcasting ability.

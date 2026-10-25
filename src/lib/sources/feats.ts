@@ -30,10 +30,7 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     id: 'healer',
     category: 'origin',
     prerequisites: [],
-    grants: [
-      { type: 'feature', feature: { id: 'feat-healer' } },
-      { type: 'proficiency', category: 'tool', id: 'herbalismkit' },
-    ],
+    grants: [{ type: 'feature', feature: { id: 'feat-healer' } }],
   },
   {
     id: 'lucky',
@@ -395,7 +392,10 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'defensive-duelist',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'ability-minimum', ability: 'dex', minimum: 13 },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-defensive-duelist' } },
       {
@@ -440,7 +440,7 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'elemental-adept',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [{ type: 'level-minimum', level: 4 }, { type: 'spellcasting' }],
     repeatable: true,
     grants: [
       {
@@ -502,7 +502,10 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'grappler',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'ability-minimum-any', abilities: ['str', 'dex'], minimum: 13 },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-grappler' } },
       {
@@ -517,7 +520,10 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'great-weapon-master',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'ability-minimum', ability: 'str', minimum: 13 },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-great-weapon-master' } },
       {
@@ -532,7 +538,10 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'heavily-armored',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'proficiency', category: 'armor', id: 'medium' },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-heavily-armored' } },
       { type: 'proficiency', category: 'armor', id: 'heavy' },
@@ -548,7 +557,10 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'heavy-armor-master',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'proficiency', category: 'armor', id: 'heavy' },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-heavy-armor-master' } },
       {
@@ -563,7 +575,10 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'inspiring-leader',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'ability-minimum-any', abilities: ['wis', 'cha'], minimum: 13 },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-inspiring-leader' } },
       {
@@ -632,7 +647,10 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'medium-armor-master',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'proficiency', category: 'armor', id: 'medium' },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-medium-armor-master' } },
       {
@@ -647,7 +665,10 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'moderately-armored',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'proficiency', category: 'armor', id: 'light' },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-moderately-armored' } },
       { type: 'proficiency', category: 'armor', id: 'medium' },
@@ -809,7 +830,10 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'ritual-caster',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'ability-minimum-any', abilities: ['int', 'wis', 'cha'], minimum: 13 },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-ritual-caster' } },
       {
@@ -870,7 +894,10 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'shield-master',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'proficiency', category: 'armor', id: 'shields' },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-shield-master' } },
       {
@@ -914,7 +941,10 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'skulker',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'ability-minimum', ability: 'dex', minimum: 13 },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-skulker' } },
       {
@@ -944,10 +974,13 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'speedy',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [
+      { type: 'level-minimum', level: 4 },
+      { type: 'ability-minimum-any', abilities: ['dex', 'con'], minimum: 13 },
+    ],
     grants: [
       { type: 'feature', feature: { id: 'feat-speedy' } },
-      { type: 'speed', mode: 'walk', value: 10 },
+      { type: 'speed', mode: 'walk', value: 10, additive: true },
       {
         type: 'ability-choice',
         key: createChoiceKey('ability-choice', 'feat', 'speedy', 0),
@@ -960,7 +993,7 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'spell-sniper',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [{ type: 'level-minimum', level: 4 }, { type: 'spellcasting' }],
     grants: [
       { type: 'feature', feature: { id: 'feat-spell-sniper' } },
       {
@@ -1007,7 +1040,7 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
   {
     id: 'war-caster',
     category: 'general',
-    prerequisites: [{ type: 'level-minimum', level: 4 }],
+    prerequisites: [{ type: 'level-minimum', level: 4 }, { type: 'spellcasting' }],
     grants: [
       { type: 'feature', feature: { id: 'feat-war-caster' } },
       {
@@ -1056,25 +1089,61 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     id: 'boon-of-combat-prowess',
     category: 'epicBoon',
     prerequisites: [{ type: 'level-minimum', level: 19 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-boon-of-combat-prowess' } }],
+    grants: [
+      { type: 'feature', feature: { id: 'feat-boon-of-combat-prowess' } },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-combat-prowess', 0),
+        count: 1,
+        bonus: 1,
+        from: null,
+      },
+    ],
   },
   {
     id: 'boon-of-dimensional-travel',
     category: 'epicBoon',
     prerequisites: [{ type: 'level-minimum', level: 19 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-boon-of-dimensional-travel' } }],
+    grants: [
+      { type: 'feature', feature: { id: 'feat-boon-of-dimensional-travel' } },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-dimensional-travel', 0),
+        count: 1,
+        bonus: 1,
+        from: null,
+      },
+    ],
   },
   {
     id: 'boon-of-energy-resistance',
     category: 'epicBoon',
     prerequisites: [{ type: 'level-minimum', level: 19 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-boon-of-energy-resistance' } }],
+    grants: [
+      { type: 'feature', feature: { id: 'feat-boon-of-energy-resistance' } },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-energy-resistance', 0),
+        count: 1,
+        bonus: 1,
+        from: null,
+      },
+    ],
   },
   {
     id: 'boon-of-fate',
     category: 'epicBoon',
     prerequisites: [{ type: 'level-minimum', level: 19 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-boon-of-fate' } }],
+    grants: [
+      { type: 'feature', feature: { id: 'feat-boon-of-fate' } },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-fate', 0),
+        count: 1,
+        bonus: 1,
+        from: null,
+      },
+    ],
   },
   {
     id: 'boon-of-fortitude',
@@ -1082,26 +1151,60 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     prerequisites: [{ type: 'level-minimum', level: 19 }],
     grants: [
       { type: 'feature', feature: { id: 'feat-boon-of-fortitude' } },
-      { type: 'hp-bonus', perLevel: 0 }, // +40 flat; we model as a feature since hp-bonus is perLevel
+      { type: 'hp-bonus', perLevel: 0, flat: 40 },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-fortitude', 0),
+        count: 1,
+        bonus: 1,
+        from: null,
+      },
     ],
   },
   {
     id: 'boon-of-irresistible-offense',
     category: 'epicBoon',
     prerequisites: [{ type: 'level-minimum', level: 19 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-boon-of-irresistible-offense' } }],
+    grants: [
+      { type: 'feature', feature: { id: 'feat-boon-of-irresistible-offense' } },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-irresistible-offense', 0),
+        count: 1,
+        bonus: 1,
+        from: ['str', 'dex'],
+      },
+    ],
   },
   {
     id: 'boon-of-night-spirit',
     category: 'epicBoon',
     prerequisites: [{ type: 'level-minimum', level: 19 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-boon-of-night-spirit' } }],
+    grants: [
+      { type: 'feature', feature: { id: 'feat-boon-of-night-spirit' } },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-night-spirit', 0),
+        count: 1,
+        bonus: 1,
+        from: null,
+      },
+    ],
   },
   {
     id: 'boon-of-recovery',
     category: 'epicBoon',
     prerequisites: [{ type: 'level-minimum', level: 19 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-boon-of-recovery' } }],
+    grants: [
+      { type: 'feature', feature: { id: 'feat-boon-of-recovery' } },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-recovery', 0),
+        count: 1,
+        bonus: 1,
+        from: null,
+      },
+    ],
   },
   {
     id: 'boon-of-skill',
@@ -1116,6 +1219,13 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
         from: null,
         fromTools: [],
       },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-skill', 0),
+        count: 1,
+        bonus: 1,
+        from: null,
+      },
     ],
   },
   {
@@ -1124,19 +1234,44 @@ export const FEAT_SOURCES: readonly FeatSource[] = [
     prerequisites: [{ type: 'level-minimum', level: 19 }],
     grants: [
       { type: 'feature', feature: { id: 'feat-boon-of-speed' } },
-      { type: 'speed', mode: 'walk', value: 30 },
+      { type: 'speed', mode: 'walk', value: 30, additive: true },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-speed', 0),
+        count: 1,
+        bonus: 1,
+        from: null,
+      },
     ],
   },
   {
     id: 'boon-of-spell-recall',
     category: 'epicBoon',
     prerequisites: [{ type: 'level-minimum', level: 19 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-boon-of-spell-recall' } }],
+    grants: [
+      { type: 'feature', feature: { id: 'feat-boon-of-spell-recall' } },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-spell-recall', 0),
+        count: 1,
+        bonus: 1,
+        from: ['int', 'wis', 'cha'],
+      },
+    ],
   },
   {
     id: 'boon-of-truesight',
     category: 'epicBoon',
     prerequisites: [{ type: 'level-minimum', level: 19 }],
-    grants: [{ type: 'feature', feature: { id: 'feat-boon-of-truesight' } }],
+    grants: [
+      { type: 'feature', feature: { id: 'feat-boon-of-truesight' } },
+      {
+        type: 'ability-choice',
+        key: createChoiceKey('ability-choice', 'feat', 'boon-of-truesight', 0),
+        count: 1,
+        bonus: 1,
+        from: null,
+      },
+    ],
   },
 ];

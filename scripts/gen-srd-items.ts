@@ -85,26 +85,63 @@ const SKIP_GEAR = new Set<string>([
   'string', // string-10ft
   'lantern-hooded', // hooded-lantern
   'clothes-travelers', // common-clothes
-  'net', // kept as the martial weapon in WEAPON_CATALOG
 ]);
 
-/** SRD content-item index -> our catalog id, for pack `contents`. */
-const CONTENT_ALIAS: Record<string, string> = {
-  arrows: 'arrows-20',
-  bolts: 'bolts-20',
-  'bullets-sling': 'sling-bullets-20',
-  needles: 'blowgun-needles-50',
-  rope: 'hemp-rope-50ft',
-  torch: 'torches-10',
-  rations: 'rations-10',
-  candle: 'candles-5',
-  'spikes-iron': 'pitons-10',
-  'ball-bearings': 'ball-bearings-1000',
-  oil: 'oil-flasks-2',
-  string: 'string-10ft',
-  'lantern-hooded': 'hooded-lantern',
-  'clothes-travelers': 'common-clothes',
+/**
+ * The vendored snapshot still carries a few 2014 prices/weights. These are the 2024 PHB values;
+ * applied on top of the snapshot so a refresh doesn't silently revert them.
+ */
+const GEAR_OVERRIDES: Record<string, { weight?: number; costGp?: number }> = {
+  'alchemists-fire': { costGp: 50 },
+  basket: { costGp: 0.4 },
+  blanket: { costGp: 0.5 },
+  caltrops: { costGp: 1 },
+  chain: { weight: 10 },
+  chest: { costGp: 5, weight: 25 },
+  'climbers-kit': { weight: 12 },
+  'clothes-fine': { weight: 6 },
+  'component-pouch': { costGp: 25, weight: 2 },
+  parchment: { costGp: 0.1 },
+  'poisoners-kit': { costGp: 50 },
+  robe: { weight: 4 },
+  sack: { weight: 0.5 },
+  viol: { weight: 1 },
 };
+
+/**
+ * SRD content-item index -> our catalog id, for pack `contents`. Where our catalog only has a
+ * bundled quantity (`per` units, e.g. `candles-5`), the SRD quantity is divided by `per`; when it
+ * isn't a whole number of bundles the one-unit `single` item is used instead (5 rations, 7 oil).
+ */
+const CONTENT_ALIAS: Record<string, { id: string; per?: number; single?: string }> = {
+  arrows: { id: 'arrows-20', per: 20 },
+  bolts: { id: 'bolts-20', per: 20 },
+  'bullets-sling': { id: 'sling-bullets-20', per: 20 },
+  needles: { id: 'blowgun-needles-50', per: 50 },
+  rope: { id: 'hemp-rope-50ft' },
+  torch: { id: 'torches-10', per: 10 },
+  rations: { id: 'rations-10', per: 10, single: 'ration' },
+  candle: { id: 'candles-5', per: 5 },
+  'spikes-iron': { id: 'pitons-10', per: 10 },
+  'ball-bearings': { id: 'ball-bearings-1000' },
+  oil: { id: 'oil-flasks-2', per: 2, single: 'oil-flask' },
+  string: { id: 'string-10ft' },
+  'lantern-hooded': { id: 'hooded-lantern' },
+  'clothes-travelers': { id: 'common-clothes' },
+};
+
+/** SRD pack lists repeat a flask next to every oil entry; the oil already is the flask. */
+const DROP_CONTENT = new Set<string>(['flask']);
+
+function packContent(entry: { item: { index: string }; quantity: number }): { itemId: string; quantity: number } {
+  const alias = CONTENT_ALIAS[entry.item.index];
+  if (!alias) return { itemId: entry.item.index, quantity: entry.quantity };
+  const per = alias.per ?? 1;
+  if (entry.quantity % per === 0) return { itemId: alias.id, quantity: entry.quantity / per };
+  if (!alias.single)
+    throw new Error(`pack content "${entry.item.index}" x${entry.quantity} is not a multiple of ${per}`);
+  return { itemId: alias.single, quantity: entry.quantity };
+}
 
 /** Packs already hand-authored in PACK_CATALOG (SRD uses slightly different indexes). */
 const SKIP_PACKS = new Set<string>(['burglars-pack', 'explorers-pack', 'dungeoneer-pack']);
@@ -207,10 +244,7 @@ for (const x of equipment) {
     packRows.push({
       id: x.index,
       costGp: costToGp(x.cost),
-      contents: x.contents!.map((entry) => ({
-        itemId: CONTENT_ALIAS[entry.item.index] ?? entry.item.index,
-        quantity: entry.quantity,
-      })),
+      contents: x.contents!.filter((entry) => !DROP_CONTENT.has(entry.item.index)).map(packContent),
       name: x.name,
     });
     continue;
@@ -222,7 +256,13 @@ for (const x of equipment) {
       `SRD gear "${x.index}" collides with a hand-authored items.ts id — add it to SKIP_GEAR or CONTENT_ALIAS`
     );
   }
-  gearRows.push({ id: x.index, weight: x.weight ?? 0, costGp: costToGp(x.cost), name: x.name });
+  const override = GEAR_OVERRIDES[x.index];
+  gearRows.push({
+    id: x.index,
+    weight: override?.weight ?? x.weight ?? 0,
+    costGp: override?.costGp ?? costToGp(x.cost),
+    name: x.name,
+  });
 }
 
 gearRows.sort((a, b) => a.id.localeCompare(b.id));

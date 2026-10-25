@@ -128,19 +128,10 @@ describe('Human Fighter L1 integration', () => {
       'asi:background:soldier:0': { type: 'asi', allocation: { str: 2, con: 1 } },
       // Soldier tool choice
       'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-      // Soldier language choice
-      'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
       // Human Versatile origin feat choice (2024 PHB)
       'feat-choice:species:human:0': { type: 'feat-choice', featId: 'alert' },
       // Fighter bundle choices
-      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-chainmail', slotPicks: {} },
-      'bundle-choice:class:fighter:1': {
-        type: 'bundle-choice',
-        bundleId: 'martial-weapon-and-shield',
-        slotPicks: { weapon: 'longsword', shield: 'shield' },
-      },
-      'bundle-choice:class:fighter:2': { type: 'bundle-choice', bundleId: 'light-crossbow-kit', slotPicks: {} },
-      'bundle-choice:class:fighter:3': { type: 'bundle-choice', bundleId: 'dungeoneers-pack', slotPicks: {} },
+      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-loadout-a', slotPicks: {} },
       // Fighter weapon mastery choices (L1: 3 slots)
       'weapon-mastery-choice:class:fighter:0': {
         type: 'weapon-mastery-choice',
@@ -265,7 +256,8 @@ describe('Human Fighter L1 integration', () => {
     const langIds = result.languages.map((l) => l.value);
     expect(langIds).toContain('common');
     expect(langIds).toContain('elvish');
-    expect(langIds).toContain('dwarvish');
+    // 2024 backgrounds grant no languages
+    expect(langIds).not.toContain('dwarvish');
   });
 
   it('hitDie contains d10 from fighter class', () => {
@@ -326,7 +318,6 @@ describe('Human Fighter L1 integration', () => {
       choices: {
         'language-choice:species:human:0': { type: 'language-choice', languages: ['elvish'] },
         'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-        'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
       },
     };
     const result = resolveCharacter(inputWithoutSkillChoice);
@@ -588,16 +579,8 @@ describe('Human Fighter L1 equipment integration', () => {
       'language-choice:species:human:0': { type: 'language-choice', languages: ['elvish'] },
       'asi:background:soldier:0': { type: 'asi', allocation: { str: 2, con: 1 } },
       'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-      'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
       // Fighter bundle choices
-      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-chainmail', slotPicks: {} },
-      'bundle-choice:class:fighter:1': {
-        type: 'bundle-choice',
-        bundleId: 'martial-weapon-and-shield',
-        slotPicks: { weapon: 'longsword', shield: 'shield' },
-      },
-      'bundle-choice:class:fighter:2': { type: 'bundle-choice', bundleId: 'light-crossbow-kit', slotPicks: {} },
-      'bundle-choice:class:fighter:3': { type: 'bundle-choice', bundleId: 'dungeoneers-pack', slotPicks: {} },
+      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-loadout-a', slotPicks: {} },
     },
     levels: [{ classId: 'fighter', classLevel: 1, hpRoll: null }],
     feats: [],
@@ -618,33 +601,33 @@ describe('Human Fighter L1 equipment integration', () => {
     expect(result.armorClass.effective).toBe(16);
   });
 
-  it('chain-mail + longsword equipped: AC 16 and longsword attack present', () => {
+  it('chain-mail + greatsword equipped: AC 16 and greatsword attack present', () => {
     const result = resolveCharacter({
       baseAbilities: humanFighterEquipBuild.baseAbilities,
       level: 1,
       bundles,
       choices: humanFighterEquipBuild.choices,
       levels: humanFighterEquipBuild.levels,
-      equippedItemIds: ['chain-mail', 'longsword'],
+      equippedItemIds: ['chain-mail', 'greatsword'],
     });
     expect(result.armorClass.effective).toBe(16);
     expect(result.attacks.length).toBeGreaterThan(0);
-    expect(result.attacks.some((a) => a.weaponId === 'longsword')).toBe(true);
+    expect(result.attacks.some((a) => a.weaponId === 'greatsword')).toBe(true);
   });
 
-  it('longsword attack bonus = STR mod (3) + proficiency (2) = 5', () => {
+  it('greatsword attack bonus = STR mod (3) + proficiency (2) = 5', () => {
     const result = resolveCharacter({
       baseAbilities: humanFighterEquipBuild.baseAbilities,
       level: 1,
       bundles,
       choices: humanFighterEquipBuild.choices,
       levels: humanFighterEquipBuild.levels,
-      equippedItemIds: ['chain-mail', 'longsword'],
+      equippedItemIds: ['chain-mail', 'greatsword'],
     });
-    const longswordAttack = result.attacks.find((a) => a.weaponId === 'longsword');
-    expect(longswordAttack).toBeDefined();
+    const greatswordAttack = result.attacks.find((a) => a.weaponId === 'greatsword');
+    expect(greatswordAttack).toBeDefined();
     // STR 15 + background +2 = 17 → mod 3, prof 2 = 5
-    expect(longswordAttack!.attackBonus).toBe(5);
+    expect(greatswordAttack!.attackBonus).toBe(5);
   });
 
   it('shield alone adds +2 to AC even without body armor', () => {
@@ -654,7 +637,8 @@ describe('Human Fighter L1 equipment integration', () => {
       bundles,
       choices: humanFighterEquipBuild.choices,
       levels: humanFighterEquipBuild.levels,
-      equippedItemIds: ['shield'],
+      useDBInventory: true,
+      persistedItems: [{ itemId: 'shield', quantity: 1, equipped: true, source: { origin: 'bundle', id: 'shield' } }],
     });
     // Unequipped armor → base 10 + DEX mod 1 (DEX 13, no 2024 human ASI) = 11, plus shield +2 = 13
     expect(result.armorClass.effective).toBe(13);
@@ -685,20 +669,12 @@ describe('Human Fighter L5 integration', () => {
       'language-choice:species:human:0': { type: 'language-choice', languages: ['elvish'] },
       'asi:background:soldier:0': { type: 'asi', allocation: { str: 2, con: 1 } },
       'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-      'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
       // Human Versatile origin feat choice (2024 PHB)
       'feat-choice:species:human:0': { type: 'feat-choice', featId: 'alert' },
       [subclassKey]: { type: 'subclass' as const, subclassId: 'champion' as SubclassId },
       [asiKey]: { type: 'asi' as const, allocation: { str: 2 } },
       // Fighter bundle choices
-      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-chainmail', slotPicks: {} },
-      'bundle-choice:class:fighter:1': {
-        type: 'bundle-choice',
-        bundleId: 'martial-weapon-and-shield',
-        slotPicks: { weapon: 'longsword', shield: 'shield' },
-      },
-      'bundle-choice:class:fighter:2': { type: 'bundle-choice', bundleId: 'light-crossbow-kit', slotPicks: {} },
-      'bundle-choice:class:fighter:3': { type: 'bundle-choice', bundleId: 'dungeoneers-pack', slotPicks: {} },
+      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-loadout-a', slotPicks: {} },
       // Fighter weapon mastery choices (L1: 3 slots, L4: 1 slot)
       'weapon-mastery-choice:class:fighter:0': {
         type: 'weapon-mastery-choice',
@@ -1289,14 +1265,7 @@ describe('Dragonborn lineage-choice integration', () => {
     choices: {
       'skill-choice:class:fighter:0': { type: 'skill-choice', skills: ['athletics', 'perception'] },
       'fighting-style-choice:class:fighter:0': { type: 'fighting-style-choice', styles: ['defense'] },
-      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-chainmail', slotPicks: {} },
-      'bundle-choice:class:fighter:1': {
-        type: 'bundle-choice',
-        bundleId: 'martial-weapon-and-shield',
-        slotPicks: { weapon: 'longsword', shield: 'shield' },
-      },
-      'bundle-choice:class:fighter:2': { type: 'bundle-choice', bundleId: 'light-crossbow-kit', slotPicks: {} },
-      'bundle-choice:class:fighter:3': { type: 'bundle-choice', bundleId: 'dungeoneers-pack', slotPicks: {} },
+      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-loadout-a', slotPicks: {} },
     } as Readonly<Record<ChoiceKey, ChoiceDecision>>,
     feats: [],
     activeItems: [],
@@ -1357,14 +1326,7 @@ describe('Tiefling lineage-choice integration', () => {
     choices: {
       'skill-choice:class:fighter:0': { type: 'skill-choice', skills: ['athletics', 'perception'] },
       'fighting-style-choice:class:fighter:0': { type: 'fighting-style-choice', styles: ['defense'] },
-      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-chainmail', slotPicks: {} },
-      'bundle-choice:class:fighter:1': {
-        type: 'bundle-choice',
-        bundleId: 'martial-weapon-and-shield',
-        slotPicks: { weapon: 'longsword', shield: 'shield' },
-      },
-      'bundle-choice:class:fighter:2': { type: 'bundle-choice', bundleId: 'light-crossbow-kit', slotPicks: {} },
-      'bundle-choice:class:fighter:3': { type: 'bundle-choice', bundleId: 'dungeoneers-pack', slotPicks: {} },
+      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-loadout-a', slotPicks: {} },
     } as Readonly<Record<ChoiceKey, ChoiceDecision>>,
     feats: [],
     activeItems: [],
@@ -1670,15 +1632,7 @@ describe('Weapon mastery resolver', () => {
       'language-choice:species:human:0': { type: 'language-choice', languages: ['elvish'] },
       'asi:background:soldier:0': { type: 'asi', allocation: { str: 2, con: 1 } },
       'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-      'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
-      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-chainmail', slotPicks: {} },
-      'bundle-choice:class:fighter:1': {
-        type: 'bundle-choice',
-        bundleId: 'martial-weapon-and-shield',
-        slotPicks: { weapon: 'longsword', shield: 'shield' },
-      },
-      'bundle-choice:class:fighter:2': { type: 'bundle-choice', bundleId: 'light-crossbow-kit', slotPicks: {} },
-      'bundle-choice:class:fighter:3': { type: 'bundle-choice', bundleId: 'dungeoneers-pack', slotPicks: {} },
+      'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-loadout-a', slotPicks: {} },
     },
     levels: [{ classId: 'fighter' as ClassId, classLevel: 1, hpRoll: null }],
     feats: [],
@@ -1714,7 +1668,6 @@ describe('Weapon mastery resolver', () => {
         'language-choice:species:human:0': { type: 'language-choice', languages: ['elvish'] },
         'asi:background:soldier:0': { type: 'asi', allocation: { str: 2, con: 1 } },
         'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-        'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
       },
       levels: [{ classId: 'barbarian' as ClassId, classLevel: 1, hpRoll: null }],
       feats: [],
@@ -1747,7 +1700,6 @@ describe('Weapon mastery resolver', () => {
         'language-choice:species:human:0': { type: 'language-choice', languages: ['elvish'] },
         'asi:background:soldier:0': { type: 'asi', allocation: { str: 2, con: 1 } },
         'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-        'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
         'subclass:class:barbarian:0': { type: 'subclass', subclassId: 'berserker' as SubclassId },
       },
       levels: [
@@ -1822,7 +1774,6 @@ describe('Weapon mastery resolver', () => {
         'language-choice:species:human:0': { type: 'language-choice', languages: ['elvish'] },
         'asi:background:soldier:0': { type: 'asi', allocation: { str: 2, con: 1 } },
         'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-        'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
       },
       levels: [{ classId: 'paladin' as ClassId, classLevel: 1, hpRoll: null }],
       feats: [],
@@ -1854,7 +1805,6 @@ describe('Weapon mastery resolver', () => {
         'language-choice:species:human:0': { type: 'language-choice', languages: ['elvish'] },
         'asi:background:soldier:0': { type: 'asi', allocation: { str: 2, con: 1 } },
         'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-        'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
       },
       levels: [{ classId: 'ranger' as ClassId, classLevel: 1, hpRoll: null }],
       feats: [],
@@ -1889,7 +1839,6 @@ describe('Weapon mastery resolver', () => {
         'language-choice:species:human:0': { type: 'language-choice', languages: ['elvish'] },
         'asi:background:soldier:0': { type: 'asi', allocation: { str: 2, con: 1 } },
         'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-        'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
       },
       levels: [{ classId: 'rogue' as ClassId, classLevel: 1, hpRoll: null }],
       feats: [],
@@ -1949,7 +1898,6 @@ describe('Weapon mastery resolver', () => {
         'language-choice:species:human:0': { type: 'language-choice', languages: ['elvish'] },
         'asi:background:soldier:0': { type: 'asi', allocation: { int: 2, con: 1 } },
         'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-        'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
       },
       levels: [
         { classId: 'wizard' as ClassId, classLevel: 1, hpRoll: null },

@@ -144,13 +144,9 @@ describe('ITEM_CATALOG', () => {
 describe('Weapon mastery data', () => {
   const VALID_MASTERIES = new Set<string>(WEAPON_MASTERIES);
 
-  it('every simple/martial weapon except net has a defined mastery', () => {
+  it('every simple/martial weapon has a defined mastery', () => {
     for (const weapon of WEAPON_CATALOG) {
-      if (weapon.id === 'net') {
-        expect(weapon.mastery, `net should have no mastery`).toBeUndefined();
-      } else {
-        expect(weapon.mastery, `weapon "${weapon.id}" is missing a mastery`).toBeDefined();
-      }
+      expect(weapon.mastery, `weapon "${weapon.id}" is missing a mastery`).toBeDefined();
     }
   });
 
@@ -175,5 +171,106 @@ describe('Weapon mastery data', () => {
     const def = getItemDef('greataxe');
     if (!def || def.type !== 'weapon') throw new Error('greataxe should be a weapon');
     expect(def.mastery).toBe('cleave');
+  });
+});
+
+describe('2024 equipment accuracy', () => {
+  const weapon = (id: string) => {
+    const def = getItemDef(id);
+    if (!def || def.type !== 'weapon') throw new Error(`${id} should be a weapon`);
+    return def;
+  };
+  const gear = (id: string) => {
+    const def = getItemDef(id);
+    if (!def || def.type !== 'gear') throw new Error(`${id} should be gear`);
+    return def;
+  };
+  const pack = (id: string) => {
+    const def = getItemDef(id);
+    if (!def || def.type !== 'pack') throw new Error(`${id} should be a pack`);
+    return def;
+  };
+  const contents = (id: string) => Object.fromEntries(pack(id).contents.map((c) => [c.itemId, c.quantity]));
+
+  it('lance is 1d10 piercing, Heavy, Reach, Two-Handed', () => {
+    expect(weapon('lance')).toMatchObject({ damageDice: '1d10', damageType: 'piercing' });
+    expect(weapon('lance').properties).toEqual(expect.arrayContaining(['heavy', 'reach', 'two-handed']));
+  });
+
+  it('trident is 1d8 (1d10 versatile) and warhammer weighs 5 lb', () => {
+    expect(weapon('trident')).toMatchObject({ damageDice: '1d8', versatileDice: '1d10' });
+    expect(weapon('warhammer').weight).toBe(5);
+  });
+
+  it('net is adventuring gear, not a weapon', () => {
+    expect(WEAPON_CATALOG.some((w) => w.id === 'net')).toBe(false);
+    expect(gear('net')).toMatchObject({ weight: 3, costGp: 1 });
+  });
+
+  it.each([
+    ['component-pouch', 25, 2],
+    ['alchemists-fire', 50, 1],
+    ['poisoners-kit', 50, 2],
+    ['chest', 5, 25],
+    ['caltrops', 1, 2],
+    ['blanket', 0.5, 3],
+    ['basket', 0.4, 2],
+    ['parchment', 0.1, 0],
+    ['chain', 5, 10],
+    ['clothes-fine', 15, 6],
+    ['climbers-kit', 25, 12],
+    ['robe', 1, 4],
+    ['sack', 0.01, 0.5],
+    ['viol', 30, 1],
+    ['bell', 1, 0],
+    ['hemp-rope-50ft', 1, 5],
+    ['common-clothes', 2, 4], // Traveler's Clothes
+  ])('%s costs %d gp and weighs %d lb', (id, costGp, weight) => {
+    expect(gear(id)).toMatchObject({ costGp, weight });
+  });
+
+  it("Explorer's Pack (2024): no mess kit, 2 flasks of oil", () => {
+    expect(contents('explorers-pack')).toEqual({
+      backpack: 1,
+      bedroll: 1,
+      'oil-flasks-2': 1,
+      'rations-10': 1,
+      'hemp-rope-50ft': 1,
+      tinderbox: 1,
+      'torches-10': 1,
+      waterskin: 1,
+    });
+  });
+
+  it("Dungeoneer's Pack (2024): caltrops, 2 oil, 10 rations, 10 torches", () => {
+    expect(contents('dungeoneers-pack')).toEqual({
+      backpack: 1,
+      caltrops: 1,
+      crowbar: 1,
+      'oil-flasks-2': 1,
+      'rations-10': 1,
+      'hemp-rope-50ft': 1,
+      tinderbox: 1,
+      'torches-10': 1,
+      waterskin: 1,
+    });
+  });
+
+  it("Burglar's Pack (2024): 10 candles, 7 oil flasks, 5 rations, bell, no hammer or pitons", () => {
+    const c = contents('burglars-pack');
+    expect(c['candles-5']).toBe(2);
+    expect(c['oil-flask']).toBe(7);
+    expect(c['ration']).toBe(5);
+    expect(c['bell']).toBe(1);
+    expect(c).not.toHaveProperty('hammer');
+    expect(c).not.toHaveProperty('pitons-10');
+  });
+
+  it('generated packs count single items, not bundles (no 25 candles / 70 rations)', () => {
+    expect(contents('entertainers-pack')).toMatchObject({ 'candles-5': 1, ration: 5, costume: 2 });
+    expect(contents('priests-pack')).toMatchObject({ ration: 7 });
+    expect(contents('scholars-pack')).toMatchObject({ 'oil-flasks-2': 5, parchment: 10 });
+    expect(contents('diplomat-pack')).toMatchObject({ 'oil-flasks-2': 2 });
+    expect(contents('diplomat-pack')).not.toHaveProperty('flask');
   });
 });

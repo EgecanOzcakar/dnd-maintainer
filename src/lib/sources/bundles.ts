@@ -11,6 +11,36 @@ export const BUNDLE_CATALOG: readonly BundleDef[] = [
       { itemId: 'handaxe', quantity: 4 },
       { itemId: 'explorers-pack', quantity: 1 },
     ],
+    gp: 15,
+    slots: [],
+  },
+  // Fighter starting equipment (2024 PHB): Option A and B; Option C (155 GP) is buy-with-gold.
+  {
+    id: 'fighter-loadout-a',
+    category: 'loadout',
+    contents: [
+      { itemId: 'chain-mail', quantity: 1 },
+      { itemId: 'greatsword', quantity: 1 },
+      { itemId: 'flail', quantity: 1 },
+      { itemId: 'javelin', quantity: 8 },
+      { itemId: 'dungeoneers-pack', quantity: 1 },
+    ],
+    gp: 4,
+    slots: [],
+  },
+  {
+    id: 'fighter-loadout-b',
+    category: 'loadout',
+    contents: [
+      { itemId: 'studded-leather', quantity: 1 },
+      { itemId: 'scimitar', quantity: 1 },
+      { itemId: 'shortsword', quantity: 1 },
+      { itemId: 'longbow', quantity: 1 },
+      { itemId: 'arrows-20', quantity: 1 },
+      { itemId: 'quiver', quantity: 1 },
+      { itemId: 'dungeoneers-pack', quantity: 1 },
+    ],
+    gp: 11,
     slots: [],
   },
   {
@@ -72,48 +102,21 @@ export const BUNDLE_CATALOG: readonly BundleDef[] = [
     ],
     slots: [],
   },
-  {
-    id: 'two-handaxes',
-    category: 'ranged-weapon',
-    contents: [{ itemId: 'handaxe', quantity: 2 }],
-    slots: [],
-  },
-  // Rogue starting equipment
+  // Rogue starting equipment (2024 PHB, Option A); Option B (100 GP) is buy-with-gold.
   {
     id: 'rogue-loadout',
     category: 'loadout',
     contents: [
       { itemId: 'leather', quantity: 1 },
       { itemId: 'dagger', quantity: 2 },
-      { itemId: 'thieves-tools', quantity: 1 },
-    ],
-    slots: [],
-  },
-  {
-    id: 'rogue-rapier',
-    category: 'melee-weapon',
-    contents: [{ itemId: 'rapier', quantity: 1 }],
-    slots: [],
-  },
-  {
-    id: 'rogue-shortsword-melee',
-    category: 'melee-weapon',
-    contents: [{ itemId: 'shortsword', quantity: 1 }],
-    slots: [],
-  },
-  {
-    id: 'rogue-shortbow-kit',
-    category: 'ranged-weapon',
-    contents: [
+      { itemId: 'shortsword', quantity: 1 },
       { itemId: 'shortbow', quantity: 1 },
       { itemId: 'arrows-20', quantity: 1 },
+      { itemId: 'quiver', quantity: 1 },
+      { itemId: 'thieves-tools', quantity: 1 },
+      { itemId: 'burglars-pack', quantity: 1 },
     ],
-    slots: [],
-  },
-  {
-    id: 'rogue-shortsword-ranged',
-    category: 'ranged-weapon',
-    contents: [{ itemId: 'shortsword', quantity: 1 }],
+    gp: 8,
     slots: [],
   },
 ];

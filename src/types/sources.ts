@@ -96,6 +96,8 @@ export type FeatCategory = (typeof FEAT_CATEGORIES)[number];
 
 export type FeatPrerequisite =
   | { readonly type: 'ability-minimum'; readonly ability: AbilityKey; readonly minimum: number }
+  // At least one of `abilities` must be `minimum` or higher (e.g. "Strength or Dexterity 13+").
+  | { readonly type: 'ability-minimum-any'; readonly abilities: readonly AbilityKey[]; readonly minimum: number }
   | { readonly type: 'proficiency'; readonly category: 'armor' | 'weapon'; readonly id: string }
   | { readonly type: 'spellcasting' }
   | { readonly type: 'class-feature'; readonly featureId: string }

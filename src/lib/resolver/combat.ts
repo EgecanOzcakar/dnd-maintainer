@@ -177,10 +177,6 @@ export function resolveAc(
             // Monk Unarmored Defense: 10 + DEX + WIS
             baseValue += wisModifier;
             break;
-          case 'draconic':
-            // Draconic Sorcery's Draconic Resilience (2024): 10 + DEX + CHA
-            baseValue += chaModifier;
-            break;
           default: {
             const _exhaustive: never = calc.formula;
             throw new Error(`Unhandled unarmored formula: ${JSON.stringify(_exhaustive)}`);

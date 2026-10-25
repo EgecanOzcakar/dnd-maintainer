@@ -68,6 +68,9 @@ function makeCampaignRow(overrides: Partial<Campaign> & { name: string }): Campa
 }
 
 function seedRow(world: DndWorld, row: Campaign): void {
+  // Seeded campaigns are ones the DM has already opened on this device (passphrase soft lock).
+  const unlocked: string[] = JSON.parse(globalThis.localStorage.getItem('dnd_unlocked_campaigns') ?? '[]');
+  globalThis.localStorage.setItem('dnd_unlocked_campaigns', JSON.stringify([...unlocked, row.id, row.slug]));
   world.db.seed('campaigns', [...world.db.rows('campaigns'), row as unknown as Row]);
 }
 
@@ -267,7 +270,10 @@ Then('the list is empty', function (this: DndWorld) {
 });
 
 Then('{string} does not appear in the list', function (this: DndWorld, name: string) {
-  const txt = document.body.textContent ?? '';
+  // Archived campaigns live in a collapsed <details> (hidden until opened); only visible text counts.
+  const body = document.body.cloneNode(true) as HTMLElement;
+  body.querySelectorAll('details:not([open]) > :not(summary)').forEach((el) => el.remove());
+  const txt = body.textContent ?? '';
   if (txt.includes(name)) {
     throw new Error(`Expected "${name}" NOT rendered, but it appeared`);
   }

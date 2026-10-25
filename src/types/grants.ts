@@ -176,7 +176,8 @@ export type SpeedMode = 'walk' | 'fly' | 'swim' | 'climb' | 'burrow';
  * - `'not-enclosed'`: legacy 2014 wording, kept for stored data.
  * - `'wrath-of-the-sea'`: Circle of the Sea L10 Stormborn fly speed (only while Wrath of the Sea is active).
  */
-export type SpeedCondition = 'not-enclosed' | 'wrath-of-the-sea';
+// 'unarmored' / 'no-heavy-armor' gate additive grants (Unarmored Movement / Fast Movement); 'not-enclosed' is display-only.
+export type SpeedCondition = 'not-enclosed' | 'wrath-of-the-sea' | 'unarmored' | 'no-heavy-armor';
 
 export interface SpeedGrant {
   readonly type: 'speed';
@@ -219,6 +220,8 @@ export interface ArmorClassGrant {
 export interface AcBonusGrant {
   readonly type: 'ac-bonus';
   readonly bonus: number;
+  /** Only applies while body armor is worn (Defense fighting style). */
+  readonly requiresArmor?: boolean;
 }
 
 export interface SpellcastingGrant {

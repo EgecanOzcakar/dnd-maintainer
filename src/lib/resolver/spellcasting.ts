@@ -38,7 +38,14 @@ export function resolveSpellcasting(
     abilityMod = abilities[ability].modifier;
     spellSaveDC = 8 + proficiencyBonus + abilityMod;
     spellAttackBonus = proficiencyBonus + abilityMod;
-    classId = primary.source.origin === 'class' ? primary.source.id : null;
+    // Third-casters (Eldritch Knight, Arcane Trickster) grant spellcasting from their subclass; the slot and
+    // prepared tables are keyed by that subclass id.
+    classId =
+      primary.source.origin === 'class'
+        ? primary.source.id
+        : primary.source.origin === 'subclass'
+          ? (primary.source.id as string as ClassId)
+          : null;
   }
 
   const cantrips: string[] = [];

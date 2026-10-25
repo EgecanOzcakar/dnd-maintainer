@@ -488,8 +488,8 @@ describe('Human Fighter Level 1 round-trip', () => {
     // HP: d10 max at level 1 + CON modifier (14 → +2)
     expect(resolved.hitPoints.max).toBe(12); // 10 + 2
 
-    // AC: armored = 10 + DEX modifier (13 → +1) + Defense style bonus (1)
-    expect(resolved.armorClass.effective).toBe(12); // 10 + 1 (DEX) + 1 (Defense style)
+    // AC: 10 + DEX modifier (13 → +1); Defense only adds +1 while armor is worn (none equipped here)
+    expect(resolved.armorClass.effective).toBe(11);
 
     // Speed: from human race
     expect(resolved.speed['walk']?.value).toBe(30);

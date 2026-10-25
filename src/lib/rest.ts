@@ -131,37 +131,17 @@ export function applyShortRest(used: RestUsed, resolved: ResolvedCharacter): Res
 /**
  * Applies a long rest.
  * - Resets ALL spell slots (including pact) to 0.
- * - Recovers hit dice: budget = max(1, floor(totalLevel / 2)), allocated
- *   largest-die-first (documented simplification — RAW lets the player choose).
+ * - Recovers ALL spent hit dice (2024 PHB; the 2014 half-your-level rule no longer applies).
  * Returns new objects (no mutation).
  */
-export function applyLongRest(used: RestUsed, resolved: ResolvedCharacter): RestUsed {
+export function applyLongRest(used: RestUsed, _resolved: ResolvedCharacter): RestUsed {
   // Reset all spell slots
   const spellSlotsUsed: SpellSlotsUsed = {};
   for (const key of Object.keys(used.spellSlotsUsed)) {
     spellSlotsUsed[key] = 0;
   }
 
-  // Recover hit dice: budget = max(1, floor(totalLevel / 2))
-  const totalLevel = resolved.hitDie.reduce((sum, { count }) => sum + count, 0);
-  let budget = Math.max(1, Math.floor(totalLevel / 2));
-
-  const hitDiceUsed = { ...used.hitDiceUsed };
-
-  // Sort hit die entries by die size descending (largest first)
-  const sortedDice = [...resolved.hitDie].sort((a, b) => b.die - a.die);
-
-  for (const { die } of sortedDice) {
-    if (budget <= 0) break;
-    const key = String(die);
-    const currentUsed = hitDiceUsed[key] ?? 0;
-    if (currentUsed <= 0) continue;
-    // Recover as many dice of this size as the budget allows
-    const recover = Math.min(budget, currentUsed);
-    hitDiceUsed[key] = currentUsed - recover;
-    budget -= recover;
-  }
-
+  const hitDiceUsed: HitDiceUsed = {};
   return { hitDiceUsed, spellSlotsUsed };
 }
 

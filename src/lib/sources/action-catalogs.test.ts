@@ -5,7 +5,7 @@ import { SPELL_MECHANICS_GROUPS } from '@/lib/sources/spell-mechanics';
 import { getSpellDef } from '@/lib/sources/spells';
 import type { ScaledDice } from '@/types/actions';
 
-const DICE = /^\d+d(4|6|8|10|12|20)$/;
+const DICE = /^\d+d(4|6|8|10|12|20)(\+\d+)?$/;
 const featureNames = gamedata.features as Record<string, unknown>;
 const featNames = gamedata.feats as Record<string, unknown>;
 

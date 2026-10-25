@@ -89,8 +89,8 @@ export interface SpellMechanics {
     readonly flat?: number;
     /** Cantrip: the dice count multiplies at character level 5 / 11 / 17. */
     readonly cantripScaling?: boolean;
-    /** Added once per slot level above the spell's level. */
-    readonly perSlot?: DamageDice;
+    /** Added once per slot level above the spell's level; `1d4+1` adds a flat part too (Magic Missile darts). */
+    readonly perSlot?: DamageDice | `${number}d${number}+${number}`;
     /** Add the spellcasting modifier (e.g. Spiritual Weapon, Booming Blade-style riders). */
     readonly addMod?: boolean;
   };

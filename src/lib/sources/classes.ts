@@ -2,6 +2,7 @@ import { makeQuickBuild, type ClassSource } from '@/types/sources';
 import type { FeatureChoiceGrant, Grant, SpellChoiceGrant } from '@/types/grants';
 import { createChoiceKey } from '@/types/choices';
 import { FIGHTING_STYLE_IDS, type ClassId } from '@/lib/dnd-helpers';
+import { ARTISAN_TOOL_IDS, MUSICAL_INSTRUMENT_IDS } from '@/lib/sources/tool-groups';
 
 const EMPTY_LEVEL = { grants: [] } as const;
 
@@ -223,6 +224,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'feature', feature: { id: 'barbarian-unarmored-defense' } },
           { type: 'feature', feature: { id: 'barbarian-weapon-mastery' } },
+          // Armored fallback: the barbarian uses worn armor's AC; Unarmored Defense only applies without armor.
+          { type: 'armor-class', calculation: { mode: 'armored' } },
           { type: 'armor-class', calculation: { mode: 'unarmored', formula: 'barbarian' } },
           {
             type: 'weapon-mastery-choice',
@@ -276,6 +279,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           { type: 'feature', feature: { id: 'barbarian-extra-attack' } },
           { type: 'feature', feature: { id: 'barbarian-fast-movement' } },
+          { type: 'speed', mode: 'walk', value: 10, additive: true, condition: 'no-heavy-armor' },
         ],
       },
       EMPTY_LEVEL,
@@ -355,10 +359,6 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'hit-die', die: 8 },
           { type: 'proficiency', category: 'armor', id: 'light' },
           { type: 'proficiency', category: 'weapon', id: 'simple' },
-          { type: 'proficiency', category: 'weapon', id: 'handcrossbow' },
-          { type: 'proficiency', category: 'weapon', id: 'longsword' },
-          { type: 'proficiency', category: 'weapon', id: 'rapier' },
-          { type: 'proficiency', category: 'weapon', id: 'shortsword' },
           { type: 'proficiency', category: 'saving-throw', id: 'dex' },
           { type: 'proficiency', category: 'saving-throw', id: 'cha' },
           {
@@ -881,18 +881,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           { type: 'hit-die', die: 8 },
           { type: 'proficiency', category: 'armor', id: 'light' },
-          { type: 'proficiency', category: 'armor', id: 'medium-nonmetal' },
-          { type: 'proficiency', category: 'armor', id: 'shields-nonmetal' },
-          { type: 'proficiency', category: 'weapon', id: 'club' },
-          { type: 'proficiency', category: 'weapon', id: 'dagger' },
-          { type: 'proficiency', category: 'weapon', id: 'dart' },
-          { type: 'proficiency', category: 'weapon', id: 'javelin' },
-          { type: 'proficiency', category: 'weapon', id: 'mace' },
-          { type: 'proficiency', category: 'weapon', id: 'quarterstaff' },
-          { type: 'proficiency', category: 'weapon', id: 'scimitar' },
-          { type: 'proficiency', category: 'weapon', id: 'sickle' },
-          { type: 'proficiency', category: 'weapon', id: 'sling' },
-          { type: 'proficiency', category: 'weapon', id: 'spear' },
+          { type: 'proficiency', category: 'armor', id: 'shields' },
+          { type: 'proficiency', category: 'weapon', id: 'simple' },
           { type: 'proficiency', category: 'tool', id: 'herbalismkit' },
           { type: 'proficiency', category: 'saving-throw', id: 'int' },
           { type: 'proficiency', category: 'saving-throw', id: 'wis' },
@@ -1105,6 +1095,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
               'insight',
               'intimidation',
               'perception',
+              'persuasion',
               'survival',
             ],
           },
@@ -1313,7 +1304,15 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           { type: 'hit-die', die: 8 },
           { type: 'proficiency', category: 'weapon', id: 'simple' },
-          { type: 'proficiency', category: 'weapon', id: 'shortsword' },
+          // Martial weapons that have the Light property.
+          { type: 'proficiency', category: 'weapon', id: 'martial-light' },
+          {
+            type: 'proficiency-choice',
+            category: 'tool',
+            key: createChoiceKey('tool-choice', 'class', 'monk', 1),
+            count: 1,
+            from: [...ARTISAN_TOOL_IDS, ...MUSICAL_INSTRUMENT_IDS],
+          },
           { type: 'proficiency', category: 'saving-throw', id: 'str' },
           { type: 'proficiency', category: 'saving-throw', id: 'dex' },
           {
@@ -1325,6 +1324,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'feature', feature: { id: 'monk-martial-arts' } },
           { type: 'feature', feature: { id: 'monk-unarmored-defense' } },
+          { type: 'armor-class', calculation: { mode: 'armored' } },
           { type: 'armor-class', calculation: { mode: 'unarmored', formula: 'monk' } },
         ],
       },
@@ -1341,6 +1341,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'feature', feature: { id: 'monk-patient-defense' } },
           { type: 'feature', feature: { id: 'monk-step-of-the-wind' } },
           { type: 'feature', feature: { id: 'monk-unarmored-movement' } },
+          { type: 'speed', mode: 'walk', value: 10, additive: true, condition: 'unarmored' },
           { type: 'feature', feature: { id: 'monk-uncanny-metabolism' } },
           { type: 'resource-pool', poolId: 'uncanny-metabolism', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
         ],
@@ -1369,7 +1370,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'feature', feature: { id: 'monk-stunning-strike' } },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'monk-empowered-strikes' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'monk-empowered-strikes' } },
+          { type: 'speed', mode: 'walk', value: 5, additive: true, condition: 'unarmored' },
+        ],
+      },
       { grants: [{ type: 'feature', feature: { id: 'monk-evasion' } }] },
       {
         grants: [
@@ -1387,6 +1393,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         grants: [
           { type: 'feature', feature: { id: 'monk-heightened-focus' } },
           { type: 'feature', feature: { id: 'monk-self-restoration' } },
+          { type: 'speed', mode: 'walk', value: 5, additive: true, condition: 'unarmored' },
         ],
       },
       EMPTY_LEVEL,
@@ -1405,6 +1412,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'feature', feature: { id: 'monk-disciplined-survivor' } },
+          { type: 'speed', mode: 'walk', value: 5, additive: true, condition: 'unarmored' },
           // Proficiency in all saving throws (STR and DEX already granted at L1)
           { type: 'proficiency', category: 'saving-throw', id: 'con' },
           { type: 'proficiency', category: 'saving-throw', id: 'int' },
@@ -1425,7 +1433,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       EMPTY_LEVEL,
-      { grants: [{ type: 'feature', feature: { id: 'monk-superior-defense' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'monk-superior-defense' } },
+          { type: 'speed', mode: 'walk', value: 5, additive: true, condition: 'unarmored' },
+        ],
+      },
       { grants: martialEpicBoon('monk', 4) },
       { grants: [{ type: 'feature', feature: { id: 'monk-body-and-mind' } }] },
     ],
@@ -1810,10 +1823,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           { type: 'hit-die', die: 8 },
           { type: 'proficiency', category: 'armor', id: 'light' },
           { type: 'proficiency', category: 'weapon', id: 'simple' },
-          { type: 'proficiency', category: 'weapon', id: 'handcrossbow' },
-          { type: 'proficiency', category: 'weapon', id: 'longsword' },
-          { type: 'proficiency', category: 'weapon', id: 'rapier' },
-          { type: 'proficiency', category: 'weapon', id: 'shortsword' },
+          // Martial weapons that have the Finesse or Light property.
+          { type: 'proficiency', category: 'weapon', id: 'martial-finesse-light' },
           { type: 'proficiency', category: 'tool', id: 'thievestools' },
           { type: 'proficiency', category: 'saving-throw', id: 'dex' },
           { type: 'proficiency', category: 'saving-throw', id: 'int' },
@@ -1978,11 +1989,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'hit-die', die: 6 },
-          { type: 'proficiency', category: 'weapon', id: 'dagger' },
-          { type: 'proficiency', category: 'weapon', id: 'dart' },
-          { type: 'proficiency', category: 'weapon', id: 'sling' },
-          { type: 'proficiency', category: 'weapon', id: 'quarterstaff' },
-          { type: 'proficiency', category: 'weapon', id: 'lightcrossbow' },
+          { type: 'proficiency', category: 'weapon', id: 'simple' },
           { type: 'proficiency', category: 'saving-throw', id: 'con' },
           { type: 'proficiency', category: 'saving-throw', id: 'cha' },
           {
@@ -2177,11 +2184,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'hit-die', die: 6 },
-          { type: 'proficiency', category: 'weapon', id: 'dagger' },
-          { type: 'proficiency', category: 'weapon', id: 'dart' },
-          { type: 'proficiency', category: 'weapon', id: 'sling' },
-          { type: 'proficiency', category: 'weapon', id: 'quarterstaff' },
-          { type: 'proficiency', category: 'weapon', id: 'lightcrossbow' },
+          { type: 'proficiency', category: 'weapon', id: 'simple' },
           { type: 'proficiency', category: 'saving-throw', id: 'int' },
           { type: 'proficiency', category: 'saving-throw', id: 'wis' },
           {
@@ -2189,7 +2192,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
             category: 'skill',
             key: createChoiceKey('skill-choice', 'class', 'wizard', 0),
             count: 2,
-            from: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'religion'],
+            from: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'nature', 'religion'],
           },
           { type: 'spellcasting', ability: 'int', source: 'class' },
           { type: 'feature', feature: { id: 'wizard-ritual-adept' } },

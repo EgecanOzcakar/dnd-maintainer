@@ -31,9 +31,9 @@ export function applyCast(
   return [...new Set([...base, ...spellEffects(spellId), ...(concentration ? [PREFIX + spellId] : [])])];
 }
 
-/** Constitution save DC to keep concentration after taking damage. */
+/** Constitution save DC to keep concentration after taking damage (10, or half the damage, max 30). */
 export function concentrationDC(damage: number): number {
-  return Math.max(10, Math.floor(damage / 2));
+  return Math.min(30, Math.max(10, Math.floor(damage / 2)));
 }
 
 export interface SlotOption {

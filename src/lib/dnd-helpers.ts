@@ -32,6 +32,27 @@ export function exhaustionPenalty(level: ExhaustionLevel) {
   } as const;
 }
 
+const THIRD_CASTER_SLOTS: Readonly<Record<number, number[]>> = {
+  3: [2],
+  4: [3],
+  5: [3],
+  6: [3],
+  7: [4, 2],
+  8: [4, 2],
+  9: [4, 2],
+  10: [4, 3],
+  11: [4, 3],
+  12: [4, 3],
+  13: [4, 3, 2],
+  14: [4, 3, 2],
+  15: [4, 3, 2],
+  16: [4, 3, 3],
+  17: [4, 3, 3],
+  18: [4, 3, 3],
+  19: [4, 3, 3, 1],
+  20: [4, 3, 3, 1],
+};
+
 export function getSpellSlots(className: string, level: number): number[] {
   // Returns spell slots for levels 1-9 (index 0 is level 1)
   const spellcasters: Record<string, Record<number, number[]>> = {
@@ -102,7 +123,7 @@ export function getSpellSlots(className: string, level: number): number[] {
       20: [4, 3, 3, 3, 3, 2, 2, 1, 1],
     },
     paladin: {
-      1: [],
+      1: [2],
       2: [2],
       3: [3],
       4: [3],
@@ -124,7 +145,7 @@ export function getSpellSlots(className: string, level: number): number[] {
       20: [4, 3, 3, 3, 2],
     },
     ranger: {
-      1: [],
+      1: [2],
       2: [2],
       3: [3],
       4: [3],
@@ -189,49 +210,10 @@ export function getSpellSlots(className: string, level: number): number[] {
       19: [4, 3, 3, 3, 3, 2, 1, 1, 1],
       20: [4, 3, 3, 3, 3, 2, 2, 1, 1],
     },
-    // Eldritch Knight (fighter subclass) and Arcane Trickster (rogue subclass)
-    // are 1/3 casters. Slots are keyed on class (fighter/rogue) level.
-    // Table sourced from brief's reconstruction of 2024 PHB.
-    eldritchknight: {
-      3: [2],
-      4: [3],
-      5: [4, 2],
-      6: [4, 2],
-      7: [4, 3],
-      8: [4, 3],
-      9: [4, 3, 2],
-      10: [4, 3, 2],
-      11: [4, 3, 3],
-      12: [4, 3, 3],
-      13: [4, 3, 3, 1],
-      14: [4, 3, 3, 1],
-      15: [4, 3, 3, 2],
-      16: [4, 3, 3, 2],
-      17: [4, 3, 3, 3, 1],
-      18: [4, 3, 3, 3, 1],
-      19: [4, 3, 3, 3, 1],
-      20: [4, 3, 3, 3, 1],
-    },
-    arcanetrickster: {
-      3: [2],
-      4: [3],
-      5: [4, 2],
-      6: [4, 2],
-      7: [4, 3],
-      8: [4, 3],
-      9: [4, 3, 2],
-      10: [4, 3, 2],
-      11: [4, 3, 3],
-      12: [4, 3, 3],
-      13: [4, 3, 3, 1],
-      14: [4, 3, 3, 1],
-      15: [4, 3, 3, 2],
-      16: [4, 3, 3, 2],
-      17: [4, 3, 3, 3, 1],
-      18: [4, 3, 3, 3, 1],
-      19: [4, 3, 3, 3, 1],
-      20: [4, 3, 3, 3, 1],
-    },
+    // Eldritch Knight (fighter subclass) and Arcane Trickster (rogue subclass) are 1/3 casters
+    // (2024 PHB). Slots are keyed on class (fighter/rogue) level; the highest spell level is 4th.
+    eldritchknight: THIRD_CASTER_SLOTS,
+    arcanetrickster: THIRD_CASTER_SLOTS,
   };
 
   return spellcasters[className.toLowerCase()]?.[level] || [];
@@ -264,11 +246,28 @@ export function getPactMagicSlots(level: number): { readonly count: number; read
   return PACT_MAGIC_PROGRESSION[level] ?? { count: 0, slotLevel: 0 };
 }
 
-const PREPARED_CASTER_CLASSES: ReadonlySet<string> = new Set(['cleric', 'druid', 'wizard', 'paladin', 'ranger']);
+/**
+ * 2024 "Prepared Spells" column of each caster's class table (index 0 = class level 1). It is a fixed
+ * table, not `level + ability modifier` (that was the 2014 formula). Eldritch Knight and Arcane
+ * Trickster start at class level 3 and share one table.
+ */
+const FULL_CASTER_PREPARED = [4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 16, 17, 17, 18, 18, 19, 20, 21, 22] as const;
+const PREPARED_SPELLS: Readonly<Record<string, readonly number[]>> = {
+  bard: FULL_CASTER_PREPARED,
+  cleric: FULL_CASTER_PREPARED,
+  druid: FULL_CASTER_PREPARED,
+  wizard: [4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 16, 17, 18, 19, 21, 22, 23, 24, 25],
+  sorcerer: [2, 4, 6, 7, 9, 10, 11, 12, 14, 15, 16, 16, 17, 17, 18, 18, 19, 20, 21, 22],
+  warlock: [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15],
+  paladin: [2, 3, 4, 5, 6, 6, 7, 7, 9, 9, 10, 10, 11, 11, 12, 12, 14, 14, 15, 15],
+  ranger: [2, 3, 4, 5, 6, 6, 7, 7, 9, 9, 10, 10, 11, 11, 12, 12, 14, 14, 15, 15],
+  eldritchknight: [0, 0, 3, 4, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 13],
+  arcanetrickster: [0, 0, 3, 4, 4, 4, 5, 6, 6, 7, 8, 8, 9, 10, 10, 11, 11, 11, 12, 13],
+};
 
-export function getPreparedSpellCount(classId: string, classLevel: number, abilityMod: number): number {
-  if (!PREPARED_CASTER_CLASSES.has(classId)) return 0;
-  return Math.max(1, classLevel + abilityMod);
+/** Spells prepared at a class level (0 for non-casters). `abilityMod` is unused since 2024 and kept for callers. */
+export function getPreparedSpellCount(classId: string, classLevel: number, _abilityMod?: number): number {
+  return PREPARED_SPELLS[classId]?.[classLevel - 1] ?? 0;
 }
 
 export interface DndSpecies {
@@ -381,6 +380,10 @@ export type ArmorProficiencyId = (typeof DND_ARMOR_PROFICIENCIES)[number];
 export const DND_WEAPON_PROFICIENCIES = [
   'simple',
   'martial',
+  /** Martial weapons that have the Light property (Monk). */
+  'martial-light',
+  /** Martial weapons that have the Finesse or Light property (Rogue). */
+  'martial-finesse-light',
   'handcrossbow',
   'lightcrossbow',
   'longsword',
@@ -550,7 +553,7 @@ export const DND_CLASSES = [
     skillChoices: 3,
     skillPool: null,
     armorProficiencies: ['light'],
-    weaponProficiencies: ['simple', 'handcrossbow', 'longsword', 'rapier', 'shortsword'],
+    weaponProficiencies: ['simple'],
     toolProficiencies: [],
     toolChoices: {
       count: 3,
@@ -577,19 +580,8 @@ export const DND_CLASSES = [
     spellcastingAbility: 'wis',
     skillChoices: 2,
     skillPool: ['arcana', 'animalhandling', 'insight', 'medicine', 'nature', 'perception', 'religion', 'survival'],
-    armorProficiencies: ['light', 'medium-nonmetal', 'shields-nonmetal'],
-    weaponProficiencies: [
-      'club',
-      'dagger',
-      'dart',
-      'javelin',
-      'mace',
-      'quarterstaff',
-      'scimitar',
-      'sickle',
-      'sling',
-      'spear',
-    ],
+    armorProficiencies: ['light', 'shields'],
+    weaponProficiencies: ['simple'],
     toolProficiencies: ['herbalismkit'],
   },
   {
@@ -606,6 +598,7 @@ export const DND_CLASSES = [
       'insight',
       'intimidation',
       'perception',
+      'persuasion',
       'survival',
     ],
     armorProficiencies: ['light', 'medium', 'heavy', 'shields'],
@@ -620,7 +613,7 @@ export const DND_CLASSES = [
     skillChoices: 2,
     skillPool: ['acrobatics', 'athletics', 'history', 'insight', 'religion', 'stealth'],
     armorProficiencies: [],
-    weaponProficiencies: ['simple', 'shortsword'],
+    weaponProficiencies: ['simple', 'martial-light'],
     toolProficiencies: [],
   },
   {
@@ -676,7 +669,7 @@ export const DND_CLASSES = [
       'stealth',
     ],
     armorProficiencies: ['light'],
-    weaponProficiencies: ['simple', 'handcrossbow', 'longsword', 'rapier', 'shortsword'],
+    weaponProficiencies: ['simple', 'martial-finesse-light'],
     toolProficiencies: ['thievestools'],
   },
   {
@@ -688,7 +681,7 @@ export const DND_CLASSES = [
     skillChoices: 2,
     skillPool: ['arcana', 'deception', 'insight', 'intimidation', 'persuasion', 'religion'],
     armorProficiencies: [],
-    weaponProficiencies: ['dagger', 'dart', 'sling', 'quarterstaff', 'lightcrossbow'],
+    weaponProficiencies: ['simple'],
     toolProficiencies: [],
   },
   {
@@ -710,9 +703,9 @@ export const DND_CLASSES = [
     savingThrowProficiencies: ['int', 'wis'],
     spellcastingAbility: 'int',
     skillChoices: 2,
-    skillPool: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'religion'],
+    skillPool: ['arcana', 'history', 'insight', 'investigation', 'medicine', 'nature', 'religion'],
     armorProficiencies: [],
-    weaponProficiencies: ['dagger', 'dart', 'sling', 'quarterstaff', 'lightcrossbow'],
+    weaponProficiencies: ['simple'],
     toolProficiencies: [],
   },
 ] as const;

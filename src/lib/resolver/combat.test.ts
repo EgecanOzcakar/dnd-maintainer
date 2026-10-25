@@ -515,33 +515,58 @@ describe('resolveAc with dance formula', () => {
     ...danceBundles,
   ];
 
-  it('dance unarmored: AC = 10 + DEX + bardicDieSize', () => {
-    // DEX +2, dieSize 8 → AC = 10 + 2 + 8 = 20
-    const result = resolveAc(danceBundles, 2, null, 8);
-    expect(result.effective).toBe(20);
+  it('dance unarmored: AC = 10 + DEX + CHA', () => {
+    // DEX +2, CHA +3 → AC = 10 + 2 + 3 = 15
+    const result = resolveAc(danceBundles, 2, null, null, 0, 0, 3);
+    expect(result.effective).toBe(15);
     expect(result.calculations[0].mode).toBe('unarmored');
-    expect(result.calculations[0].baseValue).toBe(20);
+    expect(result.calculations[0].baseValue).toBe(15);
   });
 
-  it('dance unarmored: bardicDieSize=null falls back to 10 + DEX', () => {
-    // DEX +3, no die → AC = 10 + 3 = 13
-    const result = resolveAc(danceBundles, 3, null, null);
-    expect(result.effective).toBe(13);
+  it('dance unarmored: no formula while wearing body armor (armored base is used)', () => {
+    const result = resolveAc(armoredBundles, 2, { totalBase: 16, shieldBonus: 0 }, null, 0, 0, 3);
+    expect(result.calculations.map((c) => c.mode)).toEqual(['armored']);
+    expect(result.effective).toBe(16);
   });
 
-  it('dance unarmored: armored calculation wins when body armor equipped', () => {
-    // Chain mail (16) vs dance (10 + 2 + 8 = 20 with dex+2, die 8)
-    // Actually dance wins here: 20 > 16; test that armor base (16) does NOT win over dance (20)
-    const result = resolveAc(armoredBundles, 2, { totalBase: 16, shieldBonus: 0 }, 8);
-    // armored: 16, dance: 10+2+8=20 → effective = 20
-    expect(result.effective).toBe(20);
+  it('dance unarmored: wielding a Shield turns the formula off', () => {
+    const result = resolveAc(danceBundles, 2, { totalBase: null, shieldBonus: 2 }, null, 0, 0, 3);
+    expect(result.calculations).toEqual([]);
+    expect(result.effective).toBe(14); // 10 + DEX + shield
+  });
+});
+
+describe('2024 armor-dependent rules', () => {
+  const defense: GrantBundle = {
+    source: { origin: 'class', id: 'fighter', level: 1 },
+    grants: [
+      { type: 'armor-class', calculation: { mode: 'armored' } },
+      { type: 'ac-bonus', bonus: 1, requiresArmor: true },
+    ],
+  };
+  it('Defense adds +1 AC only while body armor is worn', () => {
+    expect(resolveAc([defense], 1).effective).toBe(11);
+    expect(resolveAc([defense], 1, { totalBase: 14, shieldBonus: 0 }).effective).toBe(15);
   });
 
-  it('dance unarmored: heavy armor still wins when it provides higher AC than dance', () => {
-    // Plate (18) vs dance (10 + 2 + 6 = 18) → tie, but let's test plate(20) beats dance(18)
-    const result = resolveAc(armoredBundles, 2, { totalBase: 20, shieldBonus: 0 }, 6);
-    // armored: 20, dance: 10+2+6=18 → effective = 20
-    expect(result.effective).toBe(20);
+  const speed = (id: 'barbarian' | 'monk', condition: 'no-heavy-armor' | 'unarmored'): GrantBundle[] => [
+    {
+      source: { origin: 'class', id, level: 5 },
+      grants: [
+        { type: 'speed', mode: 'walk', value: 30 },
+        { type: 'speed', mode: 'walk', value: 10, additive: true, condition },
+      ],
+    },
+  ];
+  const gear = { bodyArmor: false, heavyArmor: false, shield: false, strengthPenalty: 0 };
+  it('additive Fast Movement / Unarmored Movement honour their armor condition', () => {
+    expect(resolveSpeed(speed('barbarian', 'no-heavy-armor'), gear).walk?.value).toBe(40);
+    expect(resolveSpeed(speed('barbarian', 'no-heavy-armor'), { ...gear, heavyArmor: true }).walk?.value).toBe(30);
+    expect(resolveSpeed(speed('monk', 'unarmored'), gear).walk?.value).toBe(40);
+    expect(resolveSpeed(speed('monk', 'unarmored'), { ...gear, shield: true }).walk?.value).toBe(30);
+  });
+  it('armor Strength requirement costs 10 ft of speed', () => {
+    expect(resolveSpeed(speed('monk', 'unarmored'), { ...gear, strengthPenalty: 10 }).walk?.value).toBe(30);
   });
 });
 

@@ -179,9 +179,9 @@ describe('Human Fighter L1 integration', () => {
     expect(result.hitPoints.max).toBe(12);
   });
 
-  it('AC = 10 + DEX modifier (1) + Defense style bonus (1) = 12', () => {
+  it('AC = 10 + DEX modifier (1) = 11 (Defense only adds +1 while armor is worn)', () => {
     const result = resolveCharacter(input);
-    expect(result.armorClass.effective).toBe(12);
+    expect(result.armorClass.effective).toBe(11);
   });
 
   it('walk speed = 30', () => {
@@ -2145,21 +2145,21 @@ describe('bardicInspiration resolver integration', () => {
     expect(result.bardicInspiration?.dieSize).toBe(8);
   });
 
-  it('College of Dance L3 unarmored: armorClass includes dieSize bonus', () => {
-    // DEX 14 → mod +2, dieSize 6 (bard L3) → dance AC = 10 + 2 + 6 = 18
+  it('College of Dance L3 unarmored: armorClass = 10 + DEX + CHA', () => {
+    // DEX 14 → +2, CHA 16 → +3: dance AC = 10 + 2 + 3 = 15 (the Bardic die no longer adds to it)
     const bundles = [...bardClassBundles(3), danceSubclassBundle];
     const result = resolveCharacter({
       ...baseInput,
-      baseAbilities: { str: 10, dex: 14, con: 10, int: 10, wis: 10, cha: 10 },
+      baseAbilities: { str: 10, dex: 14, con: 10, int: 10, wis: 10, cha: 16 },
       level: 3,
       bundles,
       hpRolls: [null, null, null],
     });
     expect(result.bardicInspiration?.dieSize).toBe(6);
-    expect(result.armorClass.effective).toBe(18);
+    expect(result.armorClass.effective).toBe(15);
   });
 
-  it('College of Dance L3 with body armor: armorClass does NOT include dieSize bonus when armor wins', () => {
+  it('College of Dance L3 with a body-armor calculation but nothing worn: dance still applies', () => {
     // DEX +2, dieSize 6 → dance = 18; plate armor (20) > dance (18) → armored wins
     const armorBundle: GrantBundle = {
       source: { origin: 'class', id: 'fighter' as ClassId, level: 1 },
@@ -2168,7 +2168,7 @@ describe('bardicInspiration resolver integration', () => {
     const bundles = [...bardClassBundles(3), danceSubclassBundle, armorBundle];
     const result = resolveCharacter({
       ...baseInput,
-      baseAbilities: { str: 10, dex: 14, con: 10, int: 10, wis: 10, cha: 10 },
+      baseAbilities: { str: 10, dex: 14, con: 10, int: 10, wis: 10, cha: 16 },
       level: 3,
       bundles,
       hpRolls: [null, null, null],
@@ -2178,7 +2178,7 @@ describe('bardicInspiration resolver integration', () => {
     // To test armor winning we pass equippedArmorAc via the resolver's equipment path;
     // instead assert effective matches max(armored, dance) using 10+dex for unequipped armored
     expect(result.armorClass.calculations.length).toBeGreaterThanOrEqual(2);
-    expect(result.armorClass.effective).toBe(18); // dance (18) > unequipped armored (12)
+    expect(result.armorClass.effective).toBe(15); // dance (15) > unequipped armored (12)
   });
 });
 

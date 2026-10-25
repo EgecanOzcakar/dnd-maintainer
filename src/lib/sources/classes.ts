@@ -72,7 +72,7 @@ const SORCERER_METAMAGIC_OPTIONS: FeatureChoiceGrant['options'] = [
   },
 ];
 
-type FullCasterId = 'sorcerer' | 'warlock' | 'wizard';
+type FullCasterId = 'rogue' | 'sorcerer' | 'warlock' | 'wizard';
 
 /** A spell-choice grant: `count` picks of exactly `spellLevel` from the class list (0 = cantrips). */
 const spellPick = (classId: FullCasterId, n: number, count: number, spellLevel: SpellChoiceGrant['spellLevel']) =>
@@ -124,8 +124,12 @@ const WARLOCK_INVOCATIONS = [
     'devouring-blade',
     'eldritch-mind',
     'eldritch-smite',
+    'eldritch-spear',
     'fiendish-vigor',
     'gaze-of-two-minds',
+    'gift-of-the-depths',
+    'gift-of-the-protectors',
+    'investment-of-the-chain-master',
     'lessons-of-the-first-ones',
     'lifedrinker',
     'mask-of-many-faces',
@@ -1832,6 +1836,14 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'feature', feature: { id: 'rogue-sneak-attack' } },
           { type: 'feature', feature: { id: 'rogue-thieves-cant' } },
+          // Thieves' Cant: you know it plus one other language of your choice.
+          {
+            type: 'proficiency-choice',
+            category: 'language',
+            key: createChoiceKey('language-choice', 'class', 'rogue', 0),
+            count: 1,
+            from: null,
+          },
           {
             type: 'weapon-mastery-choice',
             key: createChoiceKey('weapon-mastery-choice', 'class', 'rogue', 0),
@@ -1961,8 +1973,13 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'rogue-elusive' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'rogue-epic-boon' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'rogue-stroke-of-luck' } }] },
+      { grants: epicBoon('rogue', 5) },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'rogue-stroke-of-luck' } },
+          { type: 'resource-pool', poolId: 'stroke-of-luck', max: { mode: 'fixed', value: 1 }, regen: 'short-rest' },
+        ],
+      },
     ],
   },
 
@@ -2160,7 +2177,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       { grants: [invocationPick(9)] },
       { grants: [...epicBoon('warlock', 4), spellPick('warlock', 20, 1, 5)] },
-      { grants: [{ type: 'feature', feature: { id: 'warlock-eldritch-master' } }, longRestPool('eldritch-master')] },
+      { grants: [{ type: 'feature', feature: { id: 'warlock-eldritch-master' } }] },
     ],
   },
 

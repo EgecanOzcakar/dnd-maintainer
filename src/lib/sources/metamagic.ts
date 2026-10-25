@@ -15,4 +15,7 @@ export const METAMAGIC_COSTS: Readonly<Record<string, number>> = {
 /** Font of Magic: Sorcery Points to create a spell slot of each level (no slots above 5th). */
 export const SLOT_CREATION_COST: Readonly<Record<number, number>> = { 1: 2, 2: 3, 3: 5, 4: 6, 5: 7 };
 
+/** Font of Magic: minimum Sorcerer level to create a slot of each level (2024 PHB). */
+export const SLOT_CREATION_MIN_LEVEL: Readonly<Record<number, number>> = { 1: 2, 2: 3, 3: 5, 4: 7, 5: 9 };
+
 export const SORCERY_POINTS = 'sorcery-points';

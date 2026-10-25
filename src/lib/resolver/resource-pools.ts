@@ -1,6 +1,7 @@
 import type { GrantBundle } from '@/types/sources';
 import type { ResolvedResourcePool } from '@/types/resolved';
 import type { PsionicDieSize } from '@/types/grants';
+import type { AbilityKey } from '@/lib/dnd-helpers';
 import { collectGrantsByType, getClassLevel } from '@/lib/resolver/helpers';
 import { getProficiencyBonus } from '@/lib/dnd-helpers';
 import { getLogger } from '@/lib/logger';
@@ -23,13 +24,18 @@ function stepValueForLevel(
   return value;
 }
 
-export function resolveResourcePools(bundles: readonly GrantBundle[]): readonly ResolvedResourcePool[] {
+export function resolveResourcePools(
+  bundles: readonly GrantBundle[],
+  abilities?: Readonly<Record<AbilityKey, { readonly modifier: number }>>
+): readonly ResolvedResourcePool[] {
   const pools: ResolvedResourcePool[] = [];
   for (const { grant, source } of collectGrantsByType(bundles, 'resource-pool')) {
     const { max: maxSpec } = grant;
     let max: number;
     if (maxSpec.mode === 'fixed') {
       max = maxSpec.value;
+    } else if (maxSpec.mode === 'ability-mod') {
+      max = Math.max(maxSpec.min ?? 1, abilities?.[maxSpec.ability].modifier ?? 0);
     } else {
       // class-level, level-steps, and proficiency-bonus all key off the character's level in the named class.
       const level = getClassLevel(bundles, maxSpec.classId);
@@ -58,7 +64,7 @@ export function resolveResourcePools(bundles: readonly GrantBundle[]): readonly 
     // a `fixed`-max pool has no class to key on, so dieSizeSteps cannot be resolved there.
     let dieSize: PsionicDieSize | undefined;
     if (grant.dieSizeSteps) {
-      if (grant.max.mode === 'fixed') {
+      if (grant.max.mode === 'fixed' || grant.max.mode === 'ability-mod') {
         logger.warn(
           `resource-pool "${grant.poolId}" declares dieSizeSteps with a fixed max — there is no class level to key the die size on, so dieSize is dropped`
         );

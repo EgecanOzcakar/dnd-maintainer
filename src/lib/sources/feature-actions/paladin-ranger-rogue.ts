@@ -143,7 +143,7 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
   'rogue-uncanny-dodge': { activation: 'reaction' },
   // Cunning Strike: trade Sneak Attack dice for an effect; Poison/Trip/Withdraw saves use 8 + PB + Dex.
   'rogue-cunning-strike': { activation: 'special', save: { ability: 'con', dcAbility: 'dex' } },
-  'rogue-stroke-of-luck': { activation: 'special' },
+  'rogue-stroke-of-luck': { activation: 'free', poolId: 'stroke-of-luck' },
   'thief-fast-hands': { activation: 'bonus-action' },
   // Assassinate: on round 1, a hit deals extra damage equal to rogue level (weapon's type).
   'assassin-assassinate': { activation: 'special', damage: { type: 'weapon', addLevel: true } },
@@ -156,7 +156,7 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
   'assassin-death-strike': { activation: 'special', save: { ability: 'con', dcAbility: 'dex' } },
   'arcanetrickster-mage-hand-legerdemain': { activation: 'bonus-action' },
   'arcanetrickster-versatile-trickster': { activation: 'bonus-action' },
-  'arcanetrickster-spell-thief': { activation: 'reaction' },
+  'arcanetrickster-spell-thief': { activation: 'reaction', poolId: 'spell-thief' },
   // Psychic Blades: 1d6 Psychic + Dex (Attack action); the Bonus Action second blade is 1d4.
   'soulknife-psychic-blades': {
     activation: 'action',
@@ -165,7 +165,7 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
   },
   // Soul Blades: Psychic Teleportation (Bonus Action) / Homing Strikes both spend a Psionic Energy die.
   'soulknife-soul-blades': { activation: 'bonus-action', poolId: 'psionic-energy' },
-  'soulknife-psychic-veil': { activation: 'action' },
+  'soulknife-psychic-veil': { activation: 'action', poolId: 'psychic-veil' },
   // Rend Mind: on a Psychic Blade hit, Wis save or Stunned.
-  'soulknife-rend-mind': { activation: 'special', save: { ability: 'wis', dcAbility: 'dex' } },
+  'soulknife-rend-mind': { activation: 'special', save: { ability: 'wis', dcAbility: 'dex' }, poolId: 'rend-mind' },
 };

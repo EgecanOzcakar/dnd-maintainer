@@ -126,18 +126,22 @@ export default function WikiPage() {
             <p className="text-sm text-muted-foreground max-w-2xl">{tc('wiki.subtitle')}</p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder={tc('wiki.searchPlaceholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 bg-card"
-              />
+          {/* Search only filters the level progression, so only offer it there. */}
+          {activeTab === 'progression' && (
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1 md:w-64">
+                <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  aria-label={tc('wiki.searchPlaceholder')}
+                  placeholder={tc('wiki.searchPlaceholder')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 bg-card"
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -154,6 +158,7 @@ export default function WikiPage() {
               <button
                 key={cls.id}
                 onClick={() => handleSelectClass(cls.id)}
+                aria-pressed={isSelected}
                 className={`
                   flex items-center gap-3 p-3 rounded-lg border text-left transition-all duration-200
                   ${
@@ -286,6 +291,7 @@ export default function WikiPage() {
             <div className="flex gap-2">
               <Button
                 variant={activeTab === 'progression' ? 'default' : 'ghost'}
+                aria-pressed={activeTab === 'progression'}
                 onClick={() => setActiveTab('progression')}
                 className="gap-2"
               >
@@ -294,6 +300,7 @@ export default function WikiPage() {
               </Button>
               <Button
                 variant={activeTab === 'skills' ? 'default' : 'ghost'}
+                aria-pressed={activeTab === 'skills'}
                 onClick={() => setActiveTab('skills')}
                 className="gap-2"
               >
@@ -302,6 +309,7 @@ export default function WikiPage() {
               </Button>
               <Button
                 variant={activeTab === 'subclasses' ? 'default' : 'ghost'}
+                aria-pressed={activeTab === 'subclasses'}
                 onClick={() => setActiveTab('subclasses')}
                 className="gap-2"
               >

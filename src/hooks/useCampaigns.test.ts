@@ -14,7 +14,7 @@ vi.mock('@/lib/supabase', () => import('@/test/mocks/supabase'));
 import { createElement, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import { useCampaigns, useCampaign, useCampaignMutations } from '@/hooks/useCampaigns';
+import { useCampaigns, useCampaign, useCampaignMutations, useArchivedCampaigns } from '@/hooks/useCampaigns';
 import type { Campaign, CampaignSummary } from '@/types/database';
 import { CAMPAIGN_SUMMARY_COLS } from '@/lib/query-columns';
 
@@ -156,6 +156,23 @@ describe('useCampaignMutations', () => {
     });
   });
 
+  it.each([
+    ['the RPC returns false', { data: false, error: null }],
+    ['the RPC errors', { data: null, error: { message: 'boom' } }],
+  ])('create removes the new campaign and fails when %s', async (_label, rpcResult) => {
+    mockQueryResult.data = { ...baseCampaign, id: 'camp-secret', slug: 'camp-secret-slug', status: 'planning' };
+    vi.mocked(supabase.rpc).mockReturnValueOnce(Promise.resolve(rpcResult) as never);
+
+    const { result } = renderHook(() => useCampaignMutations(), { wrapper: createWrapper() });
+
+    result.current.create.mutate({ name: 'Secret Campaign', passphrase: 'mypassword' });
+
+    await waitFor(() => expect(result.current.create.isError).toBe(true));
+    expect(result.current.create.error?.name).toBe('PassphraseSetupError');
+    expect(supabase.delete).toHaveBeenCalled();
+    expect(supabase.eq).toHaveBeenCalledWith('id', 'camp-secret');
+  });
+
   it('update patches the campaign by id', async () => {
     const updated = { ...baseCampaign, name: 'Updated Name' };
     mockQueryResult.data = updated;
@@ -205,6 +222,26 @@ describe('useCampaignMutations', () => {
     // onMutate captured 'old-name' by id; onSuccess wrote the fresh row to both keys.
     expect(queryClient.getQueryData<Campaign>(['campaign', 'new-name'])!.name).toBe('New Name');
     expect(queryClient.getQueryData<Campaign>(['campaign', 'old-name'])!.name).toBe('New Name');
+  });
+
+  it('restore clears archived_at', async () => {
+    const { result } = renderHook(() => useCampaignMutations(), { wrapper: createWrapper() });
+
+    result.current.restore.mutate('camp-1');
+
+    await waitFor(() => expect(result.current.restore.isSuccess).toBe(true));
+    expect(supabase.update).toHaveBeenCalledWith({ archived_at: null });
+    expect(supabase.eq).toHaveBeenCalledWith('id', 'camp-1');
+  });
+
+  it('useArchivedCampaigns lists only archived campaigns', async () => {
+    mockQueryResult.data = [{ ...baseCampaign, archived_at: '2025-01-01T00:00:00Z' }];
+
+    const { result } = renderHook(() => useArchivedCampaigns(), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(supabase.not).toHaveBeenCalledWith('archived_at', 'is', null);
+    expect(result.current.data).toHaveLength(1);
   });
 
   it('archive sets archived_at to an ISO string', async () => {

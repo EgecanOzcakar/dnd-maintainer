@@ -21,6 +21,7 @@ export function DisplayModeToggle({ campaignId }: DisplayModeToggleProps) {
         variant={active === 'image' ? 'default' : 'ghost'}
         size="sm"
         onClick={() => setMode.mutate({ campaignId, mode: 'image' })}
+        aria-pressed={active === 'image'}
         className="rounded-none gap-1.5 text-xs"
       >
         <ImageIcon className="size-3.5" /> {t('battleMap.showImage')}
@@ -29,6 +30,7 @@ export function DisplayModeToggle({ campaignId }: DisplayModeToggleProps) {
         variant={active === 'map' ? 'default' : 'ghost'}
         size="sm"
         onClick={() => setMode.mutate({ campaignId, mode: 'map' })}
+        aria-pressed={active === 'map'}
         className="rounded-none gap-1.5 text-xs"
       >
         <Grid3x3 className="size-3.5" /> {t('battleMap.showMap')}

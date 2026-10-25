@@ -78,7 +78,15 @@
       "import": "Import JSON",
       "importSuccess": "Battle map loaded from file.",
       "importError": "Could not read that file as a valid battle map."
-    }
+    },
+    "undo": "Undo",
+    "confirmClearTitle": "Clear the battle map?",
+    "confirmClear": "This removes every object, token and terrain cell from the map. You can undo right after.",
+    "confirmImportTitle": "Replace the battle map?",
+    "confirmImport": "Importing replaces the current map with the file contents. You can undo right after.",
+    "gridLabel": "Battle map grid",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
   },
   "buttons": {
     "save": "Save",
@@ -136,7 +144,8 @@
     "unlock": "Unlock Campaign",
     "unlocking": "Unlocking...",
     "lockCampaign": "Lock Campaign",
-    "enterCampaign": "Enter Campaign"
+    "enterCampaign": "Enter Campaign",
+    "restore": "Restore"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -238,7 +247,8 @@
       "sylvan": "Sylvan",
       "arcane": "Arcane"
     },
-    "useGlobalTheme": "Use global theme"
+    "useGlobalTheme": "Use global theme",
+    "campaignLockedHint": "Unlock this campaign on this device to change its theme."
   },
   "characterBuilder": {
     "title": "Create New Character",
@@ -958,8 +968,8 @@
     "summary": "Summary (Player-Facing)",
     "placeholderSummary": "What happened in this session? This will be visible to players.",
     "xpAwarded": "XP Awarded",
-    "dmNotes": "DM Notes (Private)",
-    "placeholderDmNotes": "Your private DM notes for this session. Not visible to players.",
+    "dmNotes": "DM Notes",
+    "placeholderDmNotes": "Your notes for this session. Players do not see this on the player pages.",
     "lootTable": "Loot Table",
     "placeholderItemName": "Item name",
     "placeholderQuantity": "Quantity",
@@ -976,8 +986,10 @@
     "encounterPlanning": "Planning",
     "confirmRemoveLoot": "Remove this item from the loot table?",
     "confirmRemoveLootTitle": "Remove Loot Item",
+    "removeLootItem": "Remove {{name}}",
     "loadingSession": "Loading session...",
-    "errorLoadingSession": "Error loading session"
+    "errorLoadingSession": "Error loading session",
+    "dmNotesHint": "Left out of the player-facing pages, but stored unencrypted with the rest of the session."
   },
   "campaign": {
     "title": "Campaign",
@@ -1045,7 +1057,13 @@
       "title": "Source Books",
       "description": "Choose which rulebooks are available for character creation in this campaign.",
       "lastBookWarning": "At least one source book must be enabled."
-    }
+    },
+    "editName": "Edit campaign name",
+    "editSetting": "Edit campaign setting",
+    "editDescription": "Edit campaign description",
+    "archiveLockedHint": "Unlock this campaign on this device before archiving it.",
+    "archivedSection": "Archived campaigns ({{count}})",
+    "restored": "{{name}} restored"
   },
   "characterType": {
     "pc": "PC",
@@ -1095,7 +1113,8 @@
     "loading": "Loading notes...",
     "errors": {
       "loading": "Error loading notes"
-    }
+    },
+    "togglePin": "Pin or unpin this note"
   },
   "export": {
     "title": "Export Data",
@@ -1107,7 +1126,9 @@
     "noCampaigns": "No Campaigns",
     "noCampaignsDescription": "Create a campaign first before exporting data.",
     "selectCampaigns": "Select campaigns to export ({{selected}} of {{total}} selected)",
-    "restoreHint": "The exported file can be restored with:"
+    "restoreHint": "The exported file can be restored with:",
+    "lockedHint": "Unlock this campaign on this device to export it.",
+    "limitNote": "Each table is fetched in a single request, so very large campaigns (over about 1,000 rows in one table) may export only part of their data. Check the file before relying on it as your only backup."
   },
   "provenance": {
     "species": "Species",
@@ -1129,7 +1150,8 @@
     "errorPrefix": "Error: {{message}}",
     "saveFailed": "Save failed — your changes may not have been saved",
     "themeNotPersisted": "Theme preference could not be saved. It will reset on next visit.",
-    "missingSlug": "Created successfully but could not navigate — please refresh the page."
+    "missingSlug": "Created successfully but could not navigate — please refresh the page.",
+    "passphraseSetupFailed": "The campaign could not be protected with a passphrase, so it was not created. Please try again."
   },
   "status": {
     "healthy": "healthy",
@@ -1171,7 +1193,12 @@
     "demoOpen": "Open Demo",
     "protectedBadge": "Passphrase Protected",
     "unlockedBadge": "Unlocked",
-    "lockCampaignTooltip": "Lock this campaign on this device"
+    "lockCampaignTooltip": "Lock this campaign on this device",
+    "verifyFailed": "Could not check the passphrase right now. Check your connection and try again.",
+    "softLockNote": "This passphrase is a simple lock for your table, not account security: anyone with database access can still read campaign data.",
+    "passphraseLabel": "Campaign passphrase",
+    "showPassphrase": "Show passphrase",
+    "hidePassphrase": "Hide passphrase"
   },
   "validation": {
     "nameRequired": "Name is required",
@@ -1191,7 +1218,14 @@
     "liveRolled": "Live Rolled Order",
     "waiting": "Waiting for DM Roll",
     "you": "You",
-    "noRolls": "No rolls"
+    "noRolls": "No rolls",
+    "npc": "NPC",
+    "toggle": "Show or hide party status",
+    "initiativeScore": "Initiative",
+    "armorClass": "Armor Class",
+    "hitPoints": "Hit Points (Current / Max)",
+    "hpValue": "{{current}}/{{max}} HP",
+    "lastRoll": "Last Roll: {{formula}} = {{total}} ({{rolls}})"
   },
   "rollButtons": {
     "roll": "Roll",
@@ -1201,7 +1235,8 @@
     "nat1": "Nat 1!",
     "criticalHit": "Critical Hit",
     "criticalFail": "Critical Fail",
-    "diceRoller": "Dice Roller"
+    "diceRoller": "Dice Roller",
+    "rollNotification": "Player dice roll notification"
   },
   "spellcastingPanel": {
     "action": "Action",
@@ -1227,7 +1262,19 @@
     "remove": "Remove",
     "none": "No Image Currently Displayed",
     "hint": "Select a preset scene, paste a URL, or upload artwork from the DM console to display it here.",
-    "uploadFailed": "Image upload failed — please try again"
+    "uploadFailed": "Image upload failed — please try again",
+    "updated": "Display image updated: {{title}}",
+    "sceneArtwork": "Scene Artwork",
+    "customArtwork": "Custom Artwork",
+    "cleared": "Display image cleared",
+    "invalidFile": "Please upload a valid image file (JPEG, PNG, WebP).",
+    "closeMenu": "Close Menu",
+    "change": "Change Image",
+    "select": "Select Image",
+    "titlePlaceholder": "Title (optional)",
+    "urlPlaceholder": "https://example.com/image.png",
+    "sharedAlt": "Shared display image",
+    "closeLightbox": "Close image"
   },
   "inventory": {
     "heading": "{{section}} & Inventory",
@@ -1307,7 +1354,44 @@
     "genericHint": "Quickly roll d4, d6, d8, d10, d12, d20, or d100 with modifiers.",
     "numberOfDice": "Number of Dice",
     "modifier": "Modifier",
-    "recentRolls": "Recent DM Rolls"
+    "recentRolls": "Recent DM Rolls",
+    "classLevel": "{{class}} (lvl {{level}})",
+    "levelOnly": "Lvl {{level}}",
+    "npcFallback": "NPC",
+    "joinedParty": "{{name}} joined the party",
+    "leftParty": "{{name}} left the party",
+    "rolledGeneric": "Rolled {{formula}}: {{total}}",
+    "rolledD20For": "Rolled d20 for {{name}}: {{total}}",
+    "checkLabel": "{{name}} - {{check}} Check",
+    "checkNames": {
+      "perception": "Perception",
+      "wisdom": "Wisdom",
+      "intelligence": "Intelligence"
+    },
+    "rolledCheckFor": "Rolled {{check}} Check for {{name}}: {{total}} (d20: {{d20}}{{mod}})",
+    "rolledPartyChecks": "Rolled {{check}} checks for party: {{summary}}",
+    "noCharactersToRoll": "No characters found to roll for.",
+    "initiativesRolled": "Rolled initiative for the party (d20 + each member's initiative modifier).",
+    "initiativesReset": "Initiative rolls reset.",
+    "partyHealed": "Fully healed the party.",
+    "passivePerception": "Passive Perception",
+    "passiveWisdom": "Passive Wisdom (10 + WIS mod)",
+    "passiveIntelligence": "Passive Intelligence (10 + INT mod)",
+    "characterCount_one": "{{count}} Character",
+    "characterCount_other": "{{count}} Characters",
+    "noMaxHp": "No max HP set yet: finish this character's build to manage their HP here.",
+    "status": {
+      "healthy": "Healthy",
+      "injured": "Injured",
+      "critical": "Critical",
+      "unconscious": "Unconscious"
+    },
+    "acLabel": "AC {{ac}}",
+    "setHpFor": "Set current HP for {{name}}",
+    "confirmHealTitle": "Heal the whole party?",
+    "confirmHeal": "Every party member with a max HP is set to full HP and their death saves are cleared.",
+    "confirmResetTitle": "Reset initiatives?",
+    "confirmReset": "This clears every rolled initiative for the party."
   },
   "hitPoints": {
     "title": "Hit Points",
@@ -1655,5 +1739,9 @@
       "spell-attack": "Spell attacks",
       "spell-dc": "Spell save DC"
     }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "There is nothing at this address. It may have moved, or the link may be mistyped."
   }
 }

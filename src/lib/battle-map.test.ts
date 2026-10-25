@@ -4,6 +4,7 @@ import {
   parseCellKey,
   clampToGrid,
   createEmptyMap,
+  findFreeCell,
   isCellOccupied,
   parseBattleMapJson,
   serializeBattleMap,
@@ -45,6 +46,16 @@ describe('battle-map helpers', () => {
     map.objects.push({ id: 'o1', x: 2, y: 2, label: 'Crate', breakable: true, height: 'short', destroyed: false });
     expect(isCellOccupied(map, 2, 2)).toBe(true);
     expect(isCellOccupied(map, 5, 5)).toBe(false);
+  });
+
+  it('finds the next free cell, skipping occupied ones, and null when full', () => {
+    const map = createEmptyMap();
+    expect(findFreeCell(map)).toEqual({ x: 0, y: 0 });
+    map.tokens.push({ id: 't1', x: 0, y: 0, kind: 'enemy', name: 'Goblin' });
+    map.objects.push({ id: 'o1', x: 1, y: 0, label: 'Crate', breakable: true, height: 'short', destroyed: false });
+    expect(findFreeCell(map)).toEqual({ x: 2, y: 0 });
+    const tiny: BattleMap = { ...map, gridWidth: 1, gridHeight: 1 };
+    expect(findFreeCell(tiny)).toBeNull();
   });
 
   it('serializes and parses a valid map', () => {

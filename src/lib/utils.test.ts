@@ -1,4 +1,4 @@
-import { cn, parseIntOrDefault } from '@/lib/utils';
+import { cn, parseIntOrDefault, todayLocal } from '@/lib/utils';
 
 describe('cn', () => {
   it('merges multiple class strings', () => {
@@ -32,5 +32,14 @@ describe('parseIntOrDefault', () => {
     ['abc', 99, 99],
   ])('parseIntOrDefault(%j, %i) returns %i', (value, defaultValue, expected) => {
     expect(parseIntOrDefault(value, defaultValue)).toBe(expected);
+  });
+});
+
+describe('todayLocal', () => {
+  it('uses the local calendar date, not UTC', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(2026, 0, 5, 23, 30)); // local 23:30 — already the next day in UTC for UTC- zones
+    expect(todayLocal()).toBe('2026-01-05');
+    vi.useRealTimers();
   });
 });

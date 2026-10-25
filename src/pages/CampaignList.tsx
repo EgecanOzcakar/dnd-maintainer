@@ -13,11 +13,23 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import type { CampaignListItem } from '@/hooks/useCampaigns';
-import { useCampaigns, useCampaignMutations } from '@/hooks/useCampaigns';
+import { useArchivedCampaigns, useCampaigns, useCampaignMutations } from '@/hooks/useCampaigns';
 import { usePageTitle } from '@/hooks/usePageTitle';
-import { Archive, BookOpen, Lock, Plus, Search, ShieldCheck, Swords, Unlock, Users, Zap } from 'lucide-react';
+import {
+  Archive,
+  ArchiveRestore,
+  BookOpen,
+  Lock,
+  Plus,
+  Search,
+  ShieldCheck,
+  Swords,
+  Unlock,
+  Users,
+  Zap,
+} from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Trans, useTranslation } from 'react-i18next';
 import { ValidationError } from '@/components/ui/validation-error';
@@ -44,7 +56,12 @@ export default function CampaignList() {
   usePageTitle(t('campaign.campaigns'));
 
   const { data: campaigns = [], isLoading } = useCampaigns();
-  const { create: createCampaignMutation, archive: archiveCampaignMutation } = useCampaignMutations();
+  const { data: archivedCampaigns = [] } = useArchivedCampaigns();
+  const {
+    create: createCampaignMutation,
+    archive: archiveCampaignMutation,
+    restore: restoreCampaignMutation,
+  } = useCampaignMutations();
 
   const resetForm = () => {
     setNewCampaign({ name: '', setting: '', description: '' });
@@ -125,7 +142,7 @@ export default function CampaignList() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-muted/50 border-b sticky top-0 z-10">
+      <div className="bg-muted/50 border-b">
         <div className="max-w-7xl mx-auto px-8 py-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-3">
             <div>
@@ -208,6 +225,7 @@ export default function CampaignList() {
                   placeholder={t('campaign.passphrasePlaceholder')}
                 />
                 <p className="text-[11px] text-muted-foreground">{t('campaign.passphraseHelp')}</p>
+                <p className="text-[11px] text-muted-foreground">{t('auth.softLockNote')}</p>
                 <ValidationError message={passphraseError} />
               </div>
             </div>
@@ -310,15 +328,20 @@ export default function CampaignList() {
               return (
                 <div
                   key={campaign.id}
-                  className="group bg-card border rounded-lg p-6 transition-all hover:shadow-md hover:border-ring cursor-pointer"
-                  onClick={() => navigate(`/campaign/${campaign.slug}`)}
+                  className="group relative bg-card border rounded-lg p-6 transition-all hover:shadow-md hover:border-ring focus-within:ring-2 focus-within:ring-ring/50"
                 >
                   {/* Campaign Header */}
                   <div className="flex items-start justify-between mb-4 gap-2">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
                         <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                          {campaign.name}
+                          {/* The link stretches over the whole card; the archive button sits above it. */}
+                          <Link
+                            to={`/campaign/${campaign.slug}`}
+                            className="outline-none after:absolute after:inset-0 after:content-['']"
+                          >
+                            {campaign.name}
+                          </Link>
                         </h3>
                         {isDemo ? (
                           <Badge
@@ -349,12 +372,11 @@ export default function CampaignList() {
                       {campaign.setting && <p className="text-sm text-muted-foreground">{campaign.setting}</p>}
                     </div>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCampaignToArchive(campaign);
-                      }}
-                      className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
-                      title={t('campaign.archiveTitle')}
+                      onClick={() => setCampaignToArchive(campaign)}
+                      disabled={!isUnlocked}
+                      aria-label={t('campaign.archiveTitle')}
+                      className="relative z-10 -m-2 p-2 text-muted-foreground hover:text-foreground transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                      title={isUnlocked ? t('campaign.archiveTitle') : t('campaign.archiveLockedHint')}
                     >
                       <Archive className="size-5" />
                     </button>
@@ -412,6 +434,41 @@ export default function CampaignList() {
           </div>
         )}
       </div>
+
+      {/* Archived campaigns: archiving is soft, so offer the way back */}
+      {archivedCampaigns.length > 0 && (
+        <div className="max-w-7xl mx-auto px-8 pb-12">
+          <details className="rounded-lg border bg-card">
+            <summary className="cursor-pointer px-4 py-3 font-semibold text-foreground">
+              {t('campaign.archivedSection', { count: archivedCampaigns.length })}
+            </summary>
+            <ul className="divide-y border-t">
+              {archivedCampaigns.map((campaign) => (
+                <li key={campaign.id} className="flex items-center justify-between gap-3 px-4 py-3">
+                  <div className="min-w-0">
+                    <p className="font-medium text-foreground truncate">{campaign.name}</p>
+                    {campaign.setting && <p className="text-xs text-muted-foreground truncate">{campaign.setting}</p>}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="shrink-0 gap-1.5"
+                    disabled={restoreCampaignMutation.isPending}
+                    onClick={() =>
+                      restoreCampaignMutation.mutate(campaign.id, {
+                        onSuccess: () => toast.success(t('campaign.restored', { name: campaign.name })),
+                      })
+                    }
+                  >
+                    <ArchiveRestore className="size-4" />
+                    {t('buttons.restore')}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </details>
+        </div>
+      )}
 
       {/* Archive Confirmation Dialog */}
       <Dialog

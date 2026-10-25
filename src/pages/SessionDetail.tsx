@@ -1,16 +1,17 @@
-import { parseIntOrDefault } from '@/lib/utils';
+import { parseIntOrDefault, todayLocal } from '@/lib/utils';
 import { getLogger } from '@/lib/logger';
 import { supabase } from '@/lib/supabase';
 import { Session } from '@/types/database';
-import type { Json, TablesUpdate } from '@/types/supabase';
-import { useSession } from '@/hooks/useSessions';
+import type { Json } from '@/types/supabase';
+import { useSession, useUpdateSession } from '@/hooks/useSessions';
+import { useDebouncedSave } from '@/hooks/useDebouncedSave';
 import { useSessionEncounters } from '@/hooks/useEncounters';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { AlertCircle, ArrowLeft, BookOpen, Calendar, Link as LinkIcon, Lock, Plus, Trash2, Zap } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,6 +26,8 @@ import { ValidationError } from '@/components/ui/validation-error';
 
 const logger = getLogger('SessionDetail');
 
+type SessionEdits = Partial<Pick<Session, 'name' | 'session_number' | 'date' | 'summary' | 'experience_awarded'>>;
+
 interface LootEntry {
   id: string;
   item_name: string;
@@ -35,28 +38,14 @@ interface LootEntry {
 
 export default function SessionDetail() {
   const { t } = useTranslation('common');
-  const { campaignSlug, sessionSlug } = useParams<{
-    campaignSlug: string;
-    sessionSlug: string;
-  }>();
+  const { sessionSlug } = useParams<{ sessionSlug: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const sessionSaveTimer = useRef<NodeJS.Timeout>(null);
-  const dmNotesSaveTimer = useRef<NodeJS.Timeout>(null);
-  useEffect(() => {
-    const sessionTimer = sessionSaveTimer.current;
-    const dmNotesTimer = dmNotesSaveTimer.current;
-    return () => {
-      if (sessionTimer) clearTimeout(sessionTimer);
-      if (dmNotesTimer) clearTimeout(dmNotesTimer);
-    };
-  }, []);
-
   const [formInitialized, setFormInitialized] = useState(false);
   const [formData, setFormData] = useState<Partial<Session>>({
     name: '',
     session_number: 1,
-    date: new Date().toISOString().split('T')[0],
+    date: todayLocal(),
     summary: '',
     experience_awarded: 0,
   });
@@ -91,41 +80,19 @@ export default function SessionDetail() {
     }
   }, [error]);
 
-  // Update session mutation
-  const updateSessionMutation = useMutation({
-    mutationFn: async (updates: Partial<Session>) => {
-      if (!session?.id) throw new Error('Session ID is required');
-
-      const { error } = await supabase
-        .from('sessions')
-        .update(updates as unknown as TablesUpdate<'sessions'>)
-        .eq('id', session.id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['session', sessionSlug] });
-      toast.success(t('status.saved'), { id: 'session-save', duration: 2000 });
-    },
-  });
-
-  // Update DM notes mutation (stored on sessions.notes column)
-  const updateDmNotesMutation = useMutation({
-    mutationFn: async (content: string) => {
-      if (!session?.id) throw new Error('Session ID is required');
-
-      const { error } = await supabase
-        .from('sessions')
-        .update({ notes: content.trim() || null })
-        .eq('id', session.id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['session', sessionSlug] });
-      toast.success(t('status.saved'), { id: 'session-save', duration: 2000 });
-    },
-  });
+  // Autosave only the editable fields: never write the whole row back (it would clobber loot and notes).
+  const updateSession = useUpdateSession();
+  const saveSession = (updates: SessionEdits | { notes: string | null }) => {
+    if (!session?.id) return;
+    updateSession.mutateAsync({ id: session.id, ...updates }).then(
+      () => toast.success(t('status.saved'), { id: 'session-save', duration: 2000 }),
+      (err) => {
+        logger.error('Failed to save session:', err);
+      }
+    );
+  };
+  const fieldsSave = useDebouncedSave<SessionEdits>(saveSession);
+  const notesSave = useDebouncedSave<{ notes: string | null }>(saveSession);
 
   // Upsert loot mutation (stored on sessions.loot JSONB column)
   const upsertLootMutation = useMutation({
@@ -173,20 +140,10 @@ export default function SessionDetail() {
     setLoot(lootItems);
   }
 
-  function scheduleSave(timer: React.RefObject<NodeJS.Timeout | null>, mutateFn: () => void): void {
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(mutateFn, 3000);
-  }
-
-  // Auto-save handler
-  const handleFieldChange = useCallback(
-    (field: string, value: unknown) => {
-      const updated = { ...formData, [field]: value };
-      setFormData(updated);
-      scheduleSave(sessionSaveTimer, () => updateSessionMutation.mutate(updated));
-    },
-    [formData, updateSessionMutation]
-  );
+  const handleFieldChange = (field: keyof SessionEdits, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    fieldsSave.schedule({ [field]: value });
+  };
 
   const handleAddLoot = (e: React.FormEvent) => {
     e.preventDefault();
@@ -292,7 +249,7 @@ export default function SessionDetail() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-muted/50 border-b border-border sticky top-0 z-10">
+      <div className="bg-muted/50 border-b border-border">
         <div className="max-w-4xl mx-auto px-8 py-6">
           <button
             onClick={() => navigate(-1)}
@@ -319,10 +276,11 @@ export default function SessionDetail() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div>
-              <label className="block text-muted-foreground text-sm font-semibold mb-2">
+              <label htmlFor="session-title" className="block text-muted-foreground text-sm font-semibold mb-2">
                 {t('sessionDetail.title')}
               </label>
               <input
+                id="session-title"
                 type="text"
                 value={formData.name || ''}
                 onChange={(e) => handleFieldChange('name', e.target.value)}
@@ -332,10 +290,11 @@ export default function SessionDetail() {
             </div>
 
             <div>
-              <label className="block text-muted-foreground text-sm font-semibold mb-2">
+              <label htmlFor="session-number" className="block text-muted-foreground text-sm font-semibold mb-2">
                 {t('sessions.sessionNumber')}
               </label>
               <input
+                id="session-number"
                 type="number"
                 value={formData.session_number || 1}
                 onChange={(e) => handleFieldChange('session_number', parseIntOrDefault(e.target.value, 1))}
@@ -345,10 +304,11 @@ export default function SessionDetail() {
             </div>
 
             <div>
-              <label className="block text-muted-foreground text-sm font-semibold mb-2">
+              <label htmlFor="session-date" className="block text-muted-foreground text-sm font-semibold mb-2">
                 {t('sessionDetail.date')}
               </label>
               <input
+                id="session-date"
                 type="date"
                 value={formData.date || ''}
                 onChange={(e) => handleFieldChange('date', e.target.value)}
@@ -358,10 +318,11 @@ export default function SessionDetail() {
           </div>
 
           <div>
-            <label className="block text-muted-foreground text-sm font-semibold mb-2">
+            <label htmlFor="session-summary" className="block text-muted-foreground text-sm font-semibold mb-2">
               {t('sessionDetail.summary')}
             </label>
             <textarea
+              id="session-summary"
               value={formData.summary || ''}
               onChange={(e) => handleFieldChange('summary', e.target.value)}
               placeholder={t('sessionDetail.placeholderSummary')}
@@ -371,10 +332,11 @@ export default function SessionDetail() {
           </div>
 
           <div className="mt-6 pt-6 border-t border-border">
-            <label className="block text-muted-foreground text-sm font-semibold mb-2">
+            <label htmlFor="session-xp" className="block text-muted-foreground text-sm font-semibold mb-2">
               {t('sessionDetail.xpAwarded')}
             </label>
             <input
+              id="session-xp"
               type="number"
               value={formData.experience_awarded || 0}
               onChange={(e) => handleFieldChange('experience_awarded', parseIntOrDefault(e.target.value, 0))}
@@ -396,12 +358,14 @@ export default function SessionDetail() {
             onChange={(e) => {
               const newValue = e.target.value;
               setDmNotes(newValue);
-              scheduleSave(dmNotesSaveTimer, () => updateDmNotesMutation.mutate(newValue));
+              notesSave.schedule({ notes: newValue.trim() || null });
             }}
+            aria-label={t('sessionDetail.dmNotes')}
             placeholder={t('sessionDetail.placeholderDmNotes')}
             rows={6}
             className="w-full bg-muted border border-border rounded-lg px-4 py-2 text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 resize-none"
           />
+          <p className="text-xs text-muted-foreground mt-2">{t('sessionDetail.dmNotesHint')}</p>
         </div>
 
         {/* Loot Section */}
@@ -434,6 +398,7 @@ export default function SessionDetail() {
                       setLootNameError('');
                       setNewLoot({ ...newLoot, item_name: e.target.value });
                     }}
+                    aria-label={t('sessionDetail.placeholderItemName')}
                     placeholder={t('sessionDetail.placeholderItemName')}
                     className="bg-muted border border-input rounded px-3 py-2 text-foreground placeholder:text-muted-foreground outline-none focus:border-ring"
                     autoFocus
@@ -449,6 +414,7 @@ export default function SessionDetail() {
                       quantity: parseIntOrDefault(e.target.value, 1),
                     })
                   }
+                  aria-label={t('sessionDetail.placeholderQuantity')}
                   placeholder={t('sessionDetail.placeholderQuantity')}
                   className="bg-muted border border-input rounded px-3 py-2 text-foreground outline-none focus:border-ring"
                   min="1"
@@ -462,6 +428,7 @@ export default function SessionDetail() {
                       gold_value: parseIntOrDefault(e.target.value, 0),
                     })
                   }
+                  aria-label={t('sessionDetail.placeholderGoldValue')}
                   placeholder={t('sessionDetail.placeholderGoldValue')}
                   className="bg-muted border border-input rounded px-3 py-2 text-foreground outline-none focus:border-ring"
                   min="0"
@@ -470,6 +437,7 @@ export default function SessionDetail() {
                   type="text"
                   value={newLoot.awarded_to}
                   onChange={(e) => setNewLoot({ ...newLoot, awarded_to: e.target.value })}
+                  aria-label={t('sessionDetail.placeholderAwardedTo')}
                   placeholder={t('sessionDetail.placeholderAwardedTo')}
                   className="bg-muted border border-input rounded px-3 py-2 text-foreground placeholder:text-muted-foreground outline-none focus:border-ring"
                 />
@@ -512,7 +480,8 @@ export default function SessionDetail() {
                   </div>
                   <button
                     onClick={() => handleDeleteLoot(item.id)}
-                    className="text-muted-foreground hover:text-destructive transition-colors ml-4"
+                    aria-label={t('sessionDetail.removeLootItem', { name: item.item_name })}
+                    className="text-muted-foreground hover:text-destructive transition-colors ml-4 p-2 -m-2"
                   >
                     <Trash2 className="size-5" />
                   </button>
@@ -538,13 +507,6 @@ export default function SessionDetail() {
               <LinkIcon className="size-5 text-primary" />
               {t('sessionDetail.linkedEncounters')}
             </h2>
-            <button
-              onClick={() => navigate(`/campaign/${campaignSlug}/encounter/new?session=${session?.id}`)}
-              className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 px-4 rounded-lg transition-colors text-sm"
-            >
-              <Plus className="size-4" />
-              {t('buttons.addEncounter')}
-            </button>
           </div>
 
           {encounters.length === 0 ? (
@@ -552,11 +514,7 @@ export default function SessionDetail() {
           ) : (
             <div className="space-y-3">
               {encounters.map((encounter) => (
-                <div
-                  key={encounter.id}
-                  onClick={() => navigate(`/campaign/${campaignSlug}/encounter/${encounter.id}`)}
-                  className="bg-muted hover:bg-muted/50 rounded-lg p-4 cursor-pointer transition-colors"
-                >
+                <div key={encounter.id} className="bg-muted rounded-lg p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <p className="text-foreground font-semibold">{encounter.name}</p>

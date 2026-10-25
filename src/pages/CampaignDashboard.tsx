@@ -127,7 +127,7 @@ export default function CampaignDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-muted border-b border-border sticky top-0 z-10">
+      <div className="bg-muted border-b border-border">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <button
             onClick={() => navigate('/')}
@@ -160,7 +160,13 @@ export default function CampaignDashboard() {
                         if (e.key === 'Enter') handleUpdateName();
                       }}
                     />
-                    <Button variant="ghost" size="icon" onClick={handleUpdateName} pending={updateMutation.isPending}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label={t('buttons.save')}
+                      onClick={handleUpdateName}
+                      pending={updateMutation.isPending}
+                    >
                       <Save className="size-6" />
                     </Button>
                     <button
@@ -168,6 +174,7 @@ export default function CampaignDashboard() {
                         setIsEditingName(false);
                         setNameError('');
                       }}
+                      aria-label={t('buttons.cancel')}
                       className="text-muted-foreground hover:text-foreground p-2"
                     >
                       <X className="size-6" />
@@ -184,7 +191,8 @@ export default function CampaignDashboard() {
                       setNameError('');
                       setIsEditingName(true);
                     }}
-                    className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
+                    aria-label={t('campaign.editName')}
+                    className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2"
                   >
                     <Edit2 className="size-5" />
                   </button>
@@ -206,6 +214,7 @@ export default function CampaignDashboard() {
                   <Button
                     variant="ghost"
                     size="icon-sm"
+                    aria-label={t('buttons.save')}
                     onClick={handleUpdateSetting}
                     pending={updateMutation.isPending}
                   >
@@ -213,7 +222,8 @@ export default function CampaignDashboard() {
                   </Button>
                   <button
                     onClick={() => setIsEditingSetting(false)}
-                    className="text-muted-foreground hover:text-foreground p-1"
+                    aria-label={t('buttons.cancel')}
+                    className="text-muted-foreground hover:text-foreground p-2"
                   >
                     <X className="size-4" />
                   </button>
@@ -230,7 +240,8 @@ export default function CampaignDashboard() {
                       setEditedSetting(campaign.setting || '');
                       setIsEditingSetting(true);
                     }}
-                    className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover/setting:opacity-100"
+                    aria-label={t('campaign.editSetting')}
+                    className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2"
                   >
                     <Edit2 className="size-3.5" />
                   </button>
@@ -287,7 +298,8 @@ export default function CampaignDashboard() {
                   setEditedDescription(campaign.description || '');
                   setIsEditingDescription(true);
                 }}
-                className="text-muted-foreground hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
+                aria-label={t('campaign.editDescription')}
+                className="text-muted-foreground hover:text-primary transition-colors p-2 -m-2"
               >
                 <Edit2 className="size-4" />
               </button>
@@ -314,7 +326,11 @@ export default function CampaignDashboard() {
                     <Users className="size-5 text-primary" />
                     {t('campaign.stats.characters')}
                   </h3>
-                  <Link to={`/campaign/${campaignSlug}/characters`} className="text-primary hover:text-foreground">
+                  <Link
+                    to={`/campaign/${campaignSlug}/characters`}
+                    aria-label={t('campaign.stats.characters')}
+                    className="text-primary hover:text-foreground p-2 -m-2"
+                  >
                     <ChevronRight className="size-5" />
                   </Link>
                 </div>
@@ -345,7 +361,11 @@ export default function CampaignDashboard() {
                     <BookOpen className="size-5 text-primary" />
                     {t('campaign.stats.sessions')}
                   </h3>
-                  <Link to={`/campaign/${campaignSlug}/sessions`} className="text-primary hover:text-foreground">
+                  <Link
+                    to={`/campaign/${campaignSlug}/sessions`}
+                    aria-label={t('campaign.stats.sessions')}
+                    className="text-primary hover:text-foreground p-2 -m-2"
+                  >
                     <ChevronRight className="size-5" />
                   </Link>
                 </div>
@@ -354,7 +374,7 @@ export default function CampaignDashboard() {
                   <p className="text-muted-foreground text-sm mt-2">
                     {t('campaign.stats.lastSession', {
                       date: lastSession.date
-                        ? new Date(lastSession.date).toLocaleDateString()
+                        ? new Date(`${lastSession.date}T00:00:00`).toLocaleDateString()
                         : t('campaign.stats.noDate'),
                     })}
                   </p>
@@ -368,7 +388,11 @@ export default function CampaignDashboard() {
                     <Scroll className="size-5 text-primary" />
                     {t('campaign.stats.notes')}
                   </h3>
-                  <Link to={`/campaign/${campaignSlug}/notes`} className="text-primary hover:text-foreground">
+                  <Link
+                    to={`/campaign/${campaignSlug}/notes`}
+                    aria-label={t('campaign.stats.notes')}
+                    className="text-primary hover:text-foreground p-2 -m-2"
+                  >
                     <ChevronRight className="size-5" />
                   </Link>
                 </div>
@@ -401,7 +425,7 @@ export default function CampaignDashboard() {
                     </p>
                     <p className="text-muted-foreground text-sm mt-2">
                       {lastSession.date
-                        ? new Date(lastSession.date).toLocaleDateString(undefined, {
+                        ? new Date(`${lastSession.date}T00:00:00`).toLocaleDateString(undefined, {
                             weekday: 'long',
                             year: 'numeric',
                             month: 'long',

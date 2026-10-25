@@ -56,6 +56,7 @@ describe('usePartyCharacterStats hook', () => {
       passiveIntelligence: expect.any(Number),
       perceptionProficient: expect.any(Boolean),
       perceptionExpertise: expect.any(Boolean),
+      initiativeBonus: expect.any(Number),
     });
   });
 });

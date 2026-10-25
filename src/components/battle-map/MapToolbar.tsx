@@ -67,6 +67,7 @@ export function MapToolbar({
             variant={tool === id ? 'default' : 'outline'}
             size="sm"
             onClick={() => onToolChange(id)}
+            aria-pressed={tool === id}
             className="justify-start gap-2 text-xs"
           >
             <Icon className="size-3.5" /> {t(labelKey)}
@@ -125,6 +126,7 @@ export function MapToolbar({
             variant="outline"
             size="sm"
             onClick={() => onZoomChange(Math.max(0.5, zoom - 0.25))}
+            aria-label={t('battleMap.zoomOut')}
             className="size-8 p-0"
           >
             <ZoomOut className="size-3.5" />
@@ -134,6 +136,7 @@ export function MapToolbar({
             variant="outline"
             size="sm"
             onClick={() => onZoomChange(Math.min(2, zoom + 0.25))}
+            aria-label={t('battleMap.zoomIn')}
             className="size-8 p-0"
           >
             <ZoomIn className="size-3.5" />

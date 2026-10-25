@@ -33,13 +33,25 @@ describe('CommonImageDisplayer', () => {
 
     expect(screen.getByText('imageDisplayer.title')).toBeInTheDocument();
     expect(screen.getByText('imageDisplayer.none')).toBeInTheDocument();
-    expect(screen.getByText('Select Image')).toBeInTheDocument();
+    expect(screen.getByText('imageDisplayer.select')).toBeInTheDocument();
+  });
+
+  it('does not resurrect a stale local image once the shared state says it was cleared', () => {
+    localStorage.setItem(
+      'dnd_shared_image_camp-1',
+      JSON.stringify({ url: 'https://example.com/old.png', title: 'Old' })
+    );
+
+    render(<CommonImageDisplayer campaignId="camp-1" />);
+
+    expect(screen.getByText('imageDisplayer.none')).toBeInTheDocument();
+    expect(screen.queryByAltText('Old')).not.toBeInTheDocument();
   });
 
   it('opens image picker and allows selecting a preset image', async () => {
     render(<CommonImageDisplayer campaignId="camp-1" />);
 
-    const selectBtn = screen.getByText('Select Image');
+    const selectBtn = screen.getByText('imageDisplayer.select');
     fireEvent.click(selectBtn);
 
     expect(screen.getByText('imageDisplayer.presets')).toBeInTheDocument();
@@ -61,10 +73,10 @@ describe('CommonImageDisplayer', () => {
   it('allows loading a custom image URL', async () => {
     render(<CommonImageDisplayer campaignId="camp-1" />);
 
-    fireEvent.click(screen.getByText('Select Image'));
+    fireEvent.click(screen.getByText('imageDisplayer.select'));
 
-    const urlInput = screen.getByPlaceholderText('https://example.com/image.png');
-    const titleInput = screen.getByPlaceholderText('Title (optional)');
+    const urlInput = screen.getByPlaceholderText('imageDisplayer.urlPlaceholder');
+    const titleInput = screen.getByPlaceholderText('imageDisplayer.titlePlaceholder');
 
     fireEvent.change(urlInput, { target: { value: 'https://example.com/map.jpg' } });
     fireEvent.change(titleInput, { target: { value: 'Dungeon Map' } });

@@ -65,7 +65,7 @@ describe('PlayerDiceRollOverlay', () => {
     render(<PlayerDiceRollOverlay campaignId="camp-1" />);
 
     // Check overlay element
-    expect(screen.getByRole('region', { name: 'Player Dice Roll Notification' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'rollButtons.rollNotification' })).toBeInTheDocument();
     expect(screen.getByText('Thorin')).toBeInTheDocument();
     expect(screen.getByText('d20')).toBeInTheDocument();
     expect(screen.getByText('Attack: Unarmed Strike (+5)')).toBeInTheDocument();

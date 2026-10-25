@@ -123,6 +123,26 @@ describe('CampaignAuthGate', () => {
     expect(screen.queryByTestId('campaign-content')).not.toBeInTheDocument();
   });
 
+  it('reports a failed check as a connection problem, not a wrong passphrase', async () => {
+    mockVerify.mockRejectedValueOnce(new Error('network down'));
+
+    render(
+      <MemoryRouter>
+        <CampaignAuthGate campaign={mockProtectedCampaign} campaignSlug={mockProtectedCampaign.slug}>
+          <div data-testid="campaign-content">{'Secret Content'}</div>
+        </CampaignAuthGate>
+      </MemoryRouter>
+    );
+
+    fireEvent.change(screen.getByLabelText('auth.passphraseLabel'), { target: { value: 'whatever' } });
+    fireEvent.click(screen.getByText('buttons.unlock'));
+
+    await waitFor(() => {
+      expect(screen.getByText('auth.verifyFailed')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('auth.incorrectPassphrase')).not.toBeInTheDocument();
+  });
+
   it('unlocks and displays children when correct passphrase is submitted', async () => {
     mockVerify.mockResolvedValueOnce(true);
 

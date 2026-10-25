@@ -4,9 +4,9 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { isBackgroundId } from '@/lib/dnd-helpers';
 import { getLogger } from '@/lib/logger';
 import { Plus, Search, User, Users } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const logger = getLogger('CharacterList');
 
@@ -27,6 +27,13 @@ export default function CharacterList() {
 
   const { data: characters = [], isLoading, error } = useCharacters(campaignId!);
 
+  // Stored species/class ids ("half-orc") are matched and sorted by the names players actually see.
+  const label = useCallback(
+    (group: 'species' | 'classes', id: string | null | undefined) =>
+      id ? tg(`${group}.${id}`, { defaultValue: id }).toLowerCase() : '',
+    [tg]
+  );
+
   const filteredAndSortedCharacters = useMemo(() => {
     let result = characters;
 
@@ -44,8 +51,8 @@ export default function CharacterList() {
         (c) =>
           c.name.toLowerCase().includes(query) ||
           c.player_name?.toLowerCase().includes(query) ||
-          c.species?.toLowerCase().includes(query) ||
-          c.class?.toLowerCase().includes(query)
+          label('species', c.species).includes(query) ||
+          label('classes', c.class).includes(query)
       );
     }
 
@@ -59,7 +66,7 @@ export default function CharacterList() {
         sorted.sort((a, b) => b.level - a.level);
         break;
       case 'class':
-        sorted.sort((a, b) => (a.class ?? '').localeCompare(b.class ?? ''));
+        sorted.sort((a, b) => label('classes', a.class).localeCompare(label('classes', b.class)));
         break;
       case 'updated':
         sorted.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
@@ -67,19 +74,16 @@ export default function CharacterList() {
     }
 
     return sorted;
-  }, [characters, filterType, searchQuery, sortBy]);
+  }, [characters, filterType, searchQuery, sortBy, label]);
 
   const pcCount = characters.filter((c) => c.character_type === 'pc').length;
   const npcCount = characters.filter((c) => c.character_type === 'npc').length;
 
   // Drafts open back in the builder to be resumed; finalized characters open their sheet.
-  const openCharacter = (character: (typeof characters)[number]) => {
-    const path =
-      character.status === 'draft'
-        ? `/campaign/${campaignSlug}/character/${character.slug}/edit`
-        : `/campaign/${campaignSlug}/character/${character.slug}`;
-    navigate(path);
-  };
+  const characterPath = (character: (typeof characters)[number]) =>
+    character.status === 'draft'
+      ? `/campaign/${campaignSlug}/character/${character.slug}/edit`
+      : `/campaign/${campaignSlug}/character/${character.slug}`;
 
   useEffect(() => {
     if (error) {
@@ -137,6 +141,7 @@ export default function CharacterList() {
           <div className="flex gap-2">
             <button
               onClick={() => setFilterType('all')}
+              aria-pressed={filterType === 'all'}
               className={`px-4 py-2 rounded-lg transition-colors ${
                 filterType === 'all' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground hover:bg-muted'
               }`}
@@ -145,6 +150,7 @@ export default function CharacterList() {
             </button>
             <button
               onClick={() => setFilterType('pc')}
+              aria-pressed={filterType === 'pc'}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                 filterType === 'pc' ? 'bg-blue-600 text-primary-foreground' : 'bg-muted text-foreground hover:bg-muted'
               }`}
@@ -154,6 +160,7 @@ export default function CharacterList() {
             </button>
             <button
               onClick={() => setFilterType('npc')}
+              aria-pressed={filterType === 'npc'}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                 filterType === 'npc'
                   ? 'bg-purple-600 text-primary-foreground'
@@ -197,11 +204,11 @@ export default function CharacterList() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredAndSortedCharacters.map((character) => (
-              <div
+              <Link
                 key={character.id}
-                onClick={() => openCharacter(character)}
+                to={characterPath(character)}
                 title={character.status === 'draft' ? t('characterList.draftHint') : undefined}
-                className={`p-6 rounded-lg border cursor-pointer transition-all hover:shadow-lg ${
+                className={`block p-6 rounded-lg border transition-all hover:shadow-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
                   character.status === 'draft'
                     ? 'bg-muted/40 border-amber-500/50 hover:border-amber-400 border-dashed'
                     : character.character_type === 'pc'
@@ -284,7 +291,7 @@ export default function CharacterList() {
                     <span className="text-cyan-400 font-semibold">{character.armor_class}</span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ModalFooter } from './ModalFooter';
+import { useDirtyClose } from './useDirtyClose';
 
 export function EditPersonalityDialog({
   personality_traits,
@@ -24,12 +25,18 @@ export function EditPersonalityDialog({
 }) {
   const { t: tc } = useTranslation('common');
   const [form, setForm] = useState({ personality_traits, ideals, bonds, flaws });
+  const dirty =
+    form.personality_traits !== personality_traits ||
+    form.ideals !== ideals ||
+    form.bonds !== bonds ||
+    form.flaws !== flaws;
+  const { requestClose, prompt } = useDirtyClose(dirty, onClose);
 
   return (
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open) onClose();
+        if (!open) requestClose();
       }}
     >
       <DialogContent className="sm:max-w-lg">
@@ -74,7 +81,7 @@ export function EditPersonalityDialog({
             />
           </div>
         </div>
-        <ModalFooter onSave={() => onSave(form)} onCancel={onClose} saving={saving} />
+        {prompt ?? <ModalFooter onSave={() => onSave(form)} onCancel={requestClose} saving={saving} />}
       </DialogContent>
     </Dialog>
   );

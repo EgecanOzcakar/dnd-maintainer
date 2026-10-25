@@ -50,7 +50,7 @@ export function PoolPips({
   }
 
   return (
-    <span className="inline-flex flex-wrap gap-1" role="group" aria-label={name}>
+    <span className="inline-flex flex-wrap items-center" role="group" aria-label={name}>
       {Array.from({ length: max }, (_, i) => {
         const filled = i < spent;
         return (
@@ -62,12 +62,20 @@ export function PoolPips({
               name,
             })}
             onClick={() => onSetUsed(filled ? i : i + 1)}
-            className={`size-4 rounded-full border-2 transition-colors ${
-              filled ? 'bg-primary border-primary' : 'border-muted-foreground hover:border-primary'
-            }`}
-          />
+            className="group grid size-6 place-items-center rounded-full"
+          >
+            <span
+              aria-hidden
+              className={`size-4 rounded-full border-2 transition-colors ${
+                filled ? 'bg-primary border-primary' : 'border-muted-foreground group-hover:border-primary'
+              }`}
+            />
+          </button>
         );
       })}
+      <span className="ml-1 font-mono text-xs text-muted-foreground">
+        {tc('characterSheet.resourcePools.remaining', { left: max - spent, max })}
+      </span>
     </span>
   );
 }

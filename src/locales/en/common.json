@@ -623,7 +623,8 @@
       "useSlot": "Use level {{level}} spell slot",
       "recoverSlot": "Recover level {{level}} spell slot",
       "usePact": "Use Pact Magic slot",
-      "recoverPact": "Recover Pact Magic slot"
+      "recoverPact": "Recover Pact Magic slot",
+      "remaining": "{{left}}/{{max}} left"
     },
     "fields": {
       "class": "Class",
@@ -681,14 +682,22 @@
       "editCombatStats": "Edit Combat Stats",
       "editPersonality": "Edit Personality",
       "editBackstory": "Edit Backstory",
-      "editAppearance": "Edit Appearance"
+      "editAppearance": "Edit Appearance",
+      "discardPrompt": "Discard your unsaved changes?",
+      "keepEditing": "Keep editing",
+      "discard": "Discard"
     },
     "skillBreakdown": {
       "proficiency": "Proficiency",
       "expertise": "Expertise",
       "expandAll": "Expand All",
       "collapseAll": "Collapse All",
-      "toggle": "Show {{skill}} breakdown"
+      "toggle": "Show {{skill}} breakdown",
+      "checkLabel": "Skill Check: {{skill}} ({{bonus}})",
+      "rollSkill": "Roll {{skill}} {{bonus}}",
+      "minRoll": "min {{min}}",
+      "armorDisadvantage": "DIS",
+      "armorDisadvantageTitle": "Disadvantage on Strength and Dexterity tests while wearing armor without training"
     },
     "equipment": {
       "sourceFrom": "From {{name}}",
@@ -886,7 +895,8 @@
         "clearHistory": "Clear",
         "noHistory": "No rolls yet",
         "rollEntry": "{{count}}{{die}} {{modifier}} = {{result}}",
-        "rollEntryNoMod": "{{count}}{{die}} = {{result}}"
+        "rollEntryNoMod": "{{count}}{{die}} = {{result}}",
+        "dieGroup": "Die size"
       },
       "actions": {
         "roll": "Roll",
@@ -1310,7 +1320,35 @@
     "transferDescription": "Give an item from your inventory to another party member in this campaign.",
     "targetMember": "Target Party Member",
     "quantityToTransfer": "Quantity to Transfer (Max {{max}})",
-    "confirmTransfer": "Confirm Transfer"
+    "confirmTransfer": "Confirm Transfer",
+    "added": "Added {{name}}",
+    "removed": "Removed {{name}}",
+    "undo": "Undo",
+    "transferred": "Transferred item to {{target}}",
+    "transferFailed": "Transfer failed",
+    "partyMemberFallback": "Party Member",
+    "characterFallback": "Character",
+    "searchPlaceholder": "Search inventory items...",
+    "catalogSearchPlaceholder": "Search catalog items (weapons, armor, gear)...",
+    "customNamePlaceholder": "e.g. Ring of Protection",
+    "filter": {
+      "all": "All",
+      "weapon": "Weapons",
+      "armor": "Armor",
+      "gear": "Gear",
+      "pack": "Packs"
+    },
+    "equipItem": "Equip {{name}}",
+    "unequipItem": "Unequip {{name}}",
+    "decreaseQty": "Decrease quantity of {{name}}",
+    "increaseQty": "Increase quantity of {{name}}",
+    "transferItemAria": "Transfer {{name}} to a party member",
+    "removeItemAria": "Remove {{name}}",
+    "catalogCap": "Showing the first {{shown}} of {{total}} matches. Type to narrow the list.",
+    "noShieldBonusTitle": "No AC bonus without shield training",
+    "armorPenaltyTitle": "Disadvantage on STR/DEX tests & cannot cast spells",
+    "noShieldTraining": "No Shield Training",
+    "lacksArmorTraining": "Lacks Armor Training"
   },
   "dmControl": {
     "title": "DM Control & Initiative Console",

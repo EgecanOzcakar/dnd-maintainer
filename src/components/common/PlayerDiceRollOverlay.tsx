@@ -169,7 +169,7 @@ export function PlayerDiceRollOverlay({ campaignId }: PlayerDiceRollOverlayProps
 
       <div
         role="region"
-        aria-label="Player Dice Roll Notification"
+        aria-label={tc('rollButtons.rollNotification')}
         className={`fixed z-50 transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1) pointer-events-auto ${
           phase === 'center'
             ? 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-md scale-100'

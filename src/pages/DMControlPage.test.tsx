@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import DMControlPage from '@/pages/DMControlPage';
 
@@ -94,10 +95,17 @@ vi.mock('@/hooks/usePartyCharacterStats', () => ({
         passiveIntelligence: 11,
         perceptionProficient: true,
         perceptionExpertise: false,
+        initiativeBonus: 3,
       },
     },
   }),
 }));
+
+// The confirm button inside an open dialog shares its label with the trigger; it renders last.
+const lastByText = (text: string) => {
+  const all = screen.getAllByText(text);
+  return all[all.length - 1];
+};
 
 describe('DMControlPage', () => {
   beforeEach(() => {
@@ -146,8 +154,10 @@ describe('DMControlPage', () => {
       </MemoryRouter>
     );
 
-    const healAllBtn = screen.getByText('dmControl.healAll');
-    fireEvent.click(healAllBtn);
+    fireEvent.click(screen.getByText('dmControl.healAll'));
+    // Heal All is destructive for any tracked damage, so it asks first.
+    expect(mockMutateHP).not.toHaveBeenCalled();
+    fireEvent.click(lastByText('dmControl.healAll'));
 
     expect(mockMutateHP).toHaveBeenCalledWith({
       campaignId: 'camp-1',
@@ -174,8 +184,61 @@ describe('DMControlPage', () => {
       characterId: 'pc-1',
       roll: expect.objectContaining({
         modifier: 4,
-        label: 'Thorin Oakenshield - Perception Check',
+        label: 'dmControl.checkLabel',
       }),
     });
+  });
+
+  const renderPage = () =>
+    render(
+      <MemoryRouter initialEntries={['/campaign/test-campaign/dm']}>
+        <Routes>
+          <Route path="/campaign/:campaignSlug/dm" element={<DMControlPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+  it('commits a typed HP value on blur, not on every keystroke', async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const input = screen.getByLabelText('dmControl.setHpFor');
+    await user.clear(input);
+    await user.type(input, '12');
+    expect(mockMutateHP).not.toHaveBeenCalled();
+
+    await user.tab();
+    expect(mockMutateHP).toHaveBeenCalledTimes(1);
+    expect(mockMutateHP).toHaveBeenCalledWith({ campaignId: 'camp-1', hpMap: { 'pc-1': 12 } });
+  });
+
+  it('clamps a typed HP value to max HP', async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const input = screen.getByLabelText('dmControl.setHpFor');
+    await user.clear(input);
+    await user.type(input, '999{Enter}');
+
+    expect(mockMutateHP).toHaveBeenCalledWith({ campaignId: 'camp-1', hpMap: { 'pc-1': 44 } });
+  });
+
+  it('adds the initiative modifier to the party initiative roll', () => {
+    vi.spyOn(Math, 'random').mockReturnValue(0.5); // d20 -> 11
+    renderPage();
+
+    fireEvent.click(screen.getByText('dmControl.rollInitiative'));
+
+    expect(mockMutateInit).toHaveBeenCalledWith({ campaignId: 'camp-1', initiatives: { 'pc-1': 14 } });
+  });
+
+  it('asks before resetting initiatives', () => {
+    renderPage();
+
+    fireEvent.click(screen.getByText('dmControl.resetInitiatives'));
+    expect(mockMutateInit).not.toHaveBeenCalled();
+    fireEvent.click(lastByText('dmControl.resetInitiatives'));
+
+    expect(mockMutateInit).toHaveBeenCalledWith({ campaignId: 'camp-1', initiatives: {} });
   });
 });

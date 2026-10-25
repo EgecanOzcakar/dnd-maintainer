@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePartyState } from '@/hooks/usePartyState';
 import { usePartyInitiatives } from '@/hooks/usePartyInitiatives';
 import { usePartyNpcs } from '@/hooks/usePartyNpcs';
 import { useCharacters } from '@/hooks/useCharacters';
 import { selectPartyMembers } from '@/lib/party';
-import { Swords, Shield, Heart, Dices } from 'lucide-react';
+import { ChevronDown, Swords, Shield, Heart, Dices } from 'lucide-react';
+import { useClassLabel } from '@/hooks/useClassLabel';
 import { Badge } from '@/components/ui/badge';
 
 interface FloatingPartyBarProps {
@@ -18,6 +20,9 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
   const { data: partyInitState } = usePartyInitiatives(campaignId);
   const { data: partyNpcIds = [] } = usePartyNpcs(campaignId);
   const { data: characters = [] } = useCharacters(campaignId);
+  const classLabel = useClassLabel();
+  // On phones the bar is a one-line header until opened, so it doesn't eat the screen; desktop always shows it.
+  const [open, setOpen] = useState(false);
 
   // Player Characters plus any NPC the DM has added to the party.
   const pcs = selectPartyMembers(characters, partyNpcIds);
@@ -56,18 +61,29 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
   });
 
   return (
-    <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/80 px-4 py-2.5 shadow-sm transition-all">
+    <div className="sticky top-14 md:top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/80 px-4 py-2.5 shadow-sm transition-all">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-stretch justify-between gap-3">
         {/* Left Title Label - Fixed Width to Keep Grid Vertical Start Aligned */}
         <div className="flex items-center gap-2 shrink-0 md:w-32 md:pt-1">
-          <Swords className="size-4 text-primary animate-pulse" />
+          <Swords className="size-4 text-primary" />
           <span className="text-xs font-extrabold uppercase tracking-wider text-foreground">
             {tc('partyTracker.barTitle')}
           </span>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-label={tc('partyTracker.toggle')}
+            className="md:hidden ml-auto -my-2 p-3"
+          >
+            <ChevronDown className={`size-4 transition-transform ${open ? 'rotate-180' : ''}`} />
+          </button>
         </div>
 
         {/* Strictly Aligned 6-Column Grid Layout */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 grid-flow-row auto-cols-fr gap-2 w-full min-w-0 flex-1">
+        <div
+          className={`${open ? 'grid' : 'hidden'} md:grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 grid-flow-row auto-cols-fr gap-2 w-full min-w-0 flex-1`}
+        >
           {pcList.map(({ pc, initiative, currentHp, maxHp, lastRoll, conditions, isCurrent }) => {
             const hasConditions = conditions.length > 0;
             const isLowHp = currentHp !== null && maxHp !== null && currentHp <= maxHp * 0.25;
@@ -89,18 +105,20 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
                     </span>
                     {isCurrent ? (
                       <span className="text-[9px] font-extrabold px-1 rounded bg-primary text-primary-foreground leading-none py-0.5 shrink-0">
-                        YOU
+                        {tc('partyTracker.you').toUpperCase()}
                       </span>
                     ) : (
                       pc.character_type === 'npc' && (
                         <span className="text-[9px] font-extrabold px-1 rounded bg-purple-600 text-white leading-none py-0.5 shrink-0">
-                          NPC
+                          {tc('partyTracker.npc')}
                         </span>
                       )
                     )}
                   </div>
                   <div className="text-[10px] text-muted-foreground truncate w-full">
-                    {pc.class ? `${pc.class} (lvl ${pc.level})` : `Lvl ${pc.level}`}
+                    {pc.class
+                      ? tc('dmControl.classLevel', { class: classLabel(pc.class), level: pc.level })
+                      : tc('dmControl.levelOnly', { level: pc.level })}
                   </div>
                 </div>
 
@@ -110,21 +128,19 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
                   <div className="grid grid-cols-2 gap-1 w-full">
                     <div
                       className="flex items-center justify-center gap-1 px-1 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 w-full"
-                      title="Initiative Score"
+                      title={tc('partyTracker.initiativeScore')}
                     >
                       <span className="text-[9px] uppercase font-sans font-bold text-muted-foreground">
                         {tc('partyTracker.init')}
                       </span>
-                      <span className="font-black text-xs">
-                        {initiative !== null ? (initiative >= 0 ? `+${initiative}` : initiative) : '--'}
-                      </span>
+                      <span className="font-black text-xs">{initiative !== null ? initiative : '--'}</span>
                     </div>
 
                     <div
                       className={`flex items-center justify-center gap-1 px-1 py-0.5 rounded bg-muted/60 text-muted-foreground w-full ${
                         pc.armor_class == null ? 'opacity-0' : ''
                       }`}
-                      title="Armor Class"
+                      title={tc('partyTracker.armorClass')}
                     >
                       <Shield className="size-3 text-sky-500 shrink-0" />
                       <span className="font-bold">{pc.armor_class ?? '--'}</span>
@@ -140,13 +156,13 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
                           ? 'bg-rose-500/10 text-rose-600 border-rose-500/30'
                           : 'bg-muted/60 text-muted-foreground border-transparent'
                     }`}
-                    title="Hit Points (Current / Max)"
+                    title={tc('partyTracker.hitPoints')}
                   >
                     <Heart
                       className={`size-3 ${isLowHp ? 'text-rose-600 fill-rose-600' : 'text-rose-500 fill-rose-500/20'} shrink-0`}
                     />
                     <span className="font-bold text-[10px]">
-                      {maxHp != null ? `${currentHp ?? maxHp}/${maxHp} HP` : '--'}
+                      {maxHp != null ? tc('partyTracker.hpValue', { current: currentHp ?? maxHp, max: maxHp }) : '--'}
                     </span>
                   </div>
 
@@ -157,7 +173,11 @@ export function FloatingPartyBar({ campaignId, currentCharacterId }: FloatingPar
                     }`}
                     title={
                       lastRoll
-                        ? `Last Roll: ${lastRoll.formula} = ${lastRoll.total} (${lastRoll.rolls.join(', ')})`
+                        ? tc('partyTracker.lastRoll', {
+                            formula: lastRoll.formula,
+                            total: lastRoll.total,
+                            rolls: lastRoll.rolls.join(', '),
+                          })
                         : ''
                     }
                   >

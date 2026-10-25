@@ -1,5 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { invalidatePartySnapshot, usePartySnapshot, type PartySnapshot } from '@/hooks/usePartySnapshot';
 
 export interface PartyInitiativeEntry {
   characterId: string;
@@ -13,32 +14,11 @@ export interface PartyInitiativesState {
   updatedAt: string;
 }
 
+const selectInitiatives = ({ meta }: PartySnapshot) =>
+  (meta?.party_initiatives as PartyInitiativesState | undefined) ?? null;
+
 export function usePartyInitiatives(campaignId: string | undefined) {
-  return useQuery({
-    queryKey: ['party-initiatives', campaignId],
-    queryFn: async () => {
-      if (!campaignId) return null;
-      const { data, error } = await supabase.from('campaigns').select('dm_notes').eq('id', campaignId).single();
-
-      if (error) throw error;
-
-      // Extract initiative state from campaign dm_notes metadata
-      const rawNotes = data?.dm_notes;
-      if (!rawNotes) return null;
-
-      try {
-        const parsed = typeof rawNotes === 'string' ? JSON.parse(rawNotes) : rawNotes;
-        if (parsed?.party_initiatives) {
-          return parsed.party_initiatives as PartyInitiativesState;
-        }
-      } catch {
-        // Return null if notes field is plain text
-      }
-      return null;
-    },
-    enabled: !!campaignId,
-    refetchInterval: 2000,
-  });
+  return usePartySnapshot(campaignId, selectInitiatives);
 }
 
 export function useUpdatePartyInitiatives() {
@@ -85,9 +65,7 @@ export function useUpdatePartyInitiatives() {
       return updatedMeta;
     },
     onSuccess: (_, { campaignId }) => {
-      queryClient.invalidateQueries({ queryKey: ['party-initiatives', campaignId] });
-      queryClient.invalidateQueries({ queryKey: ['party-state', campaignId] });
-      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+      invalidatePartySnapshot(queryClient, campaignId);
     },
   });
 }

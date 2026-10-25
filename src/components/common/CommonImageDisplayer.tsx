@@ -70,7 +70,9 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
     return null;
   });
 
-  const activeImage = partyState?.displayImage ?? localImage;
+  // The shared state is the truth once it exists (so a DM clearing the image clears it for players too);
+  // the local copy only stands in while nothing has been shared yet.
+  const activeImage = partyState ? (partyState.displayImage ?? null) : localImage;
 
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -97,9 +99,9 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
     }
     setIsPickerOpen(false);
     if (img) {
-      toast.success(`Display image updated: ${img.title || 'Scene Artwork'}`);
+      toast.success(tc('imageDisplayer.updated', { title: img.title || tc('imageDisplayer.sceneArtwork') }));
     } else {
-      toast.info('Display image cleared');
+      toast.info(tc('imageDisplayer.cleared'));
     }
   };
 
@@ -108,7 +110,7 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
     if (!customUrl.trim()) return;
     handleApplyImage({
       url: customUrl.trim(),
-      title: customTitle.trim() || 'Custom Artwork',
+      title: customTitle.trim() || tc('imageDisplayer.customArtwork'),
     });
     setCustomUrl('');
     setCustomTitle('');
@@ -119,7 +121,7 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      toast.error('Please upload a valid image file (JPEG, PNG, WebP).');
+      toast.error(tc('imageDisplayer.invalidFile'));
       return;
     }
 
@@ -166,7 +168,11 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
             className="text-xs gap-1.5 h-8"
           >
             <Sparkles className="size-3.5 text-amber-500" />
-            {isPickerOpen ? 'Close Menu' : activeImage ? 'Change Image' : 'Select Image'}
+            {isPickerOpen
+              ? tc('imageDisplayer.closeMenu')
+              : activeImage
+                ? tc('imageDisplayer.change')
+                : tc('imageDisplayer.select')}
           </Button>
         </div>
       </div>
@@ -202,13 +208,15 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
             <span className="font-semibold text-muted-foreground block">{tc('imageDisplayer.customUrl')}</span>
             <form onSubmit={handleCustomSubmit} className="flex gap-2">
               <Input
-                placeholder="Title (optional)"
+                placeholder={tc('imageDisplayer.titlePlaceholder')}
+                aria-label={tc('imageDisplayer.titlePlaceholder')}
                 value={customTitle}
                 onChange={(e) => setCustomTitle(e.target.value)}
                 className="h-8 text-xs max-w-[120px]"
               />
               <Input
-                placeholder="https://example.com/image.png"
+                placeholder={tc('imageDisplayer.urlPlaceholder')}
+                aria-label={tc('imageDisplayer.customUrl')}
                 value={customUrl}
                 onChange={(e) => setCustomUrl(e.target.value)}
                 className="h-8 text-xs flex-1"
@@ -245,7 +253,7 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
           <div className="relative w-full rounded-lg overflow-hidden border bg-black/40 group flex flex-col items-center justify-center">
             <img
               src={activeImage.url}
-              alt={activeImage.title || 'Shared Display Image'}
+              alt={activeImage.title || tc('imageDisplayer.sharedAlt')}
               className="max-h-48 w-full object-cover rounded-lg group-hover:scale-102 transition-transform duration-300"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 p-3">
@@ -291,14 +299,14 @@ export function CommonImageDisplayer({ campaignId, className = '' }: CommonImage
             <button
               type="button"
               onClick={() => setIsLightboxOpen(false)}
-              className="absolute -top-10 right-0 text-white hover:text-primary transition-colors p-1"
-              aria-label="Close Lightbox"
+              className="absolute -top-12 right-0 text-white hover:text-primary transition-colors p-2"
+              aria-label={tc('imageDisplayer.closeLightbox')}
             >
               <X className="size-7" />
             </button>
             <img
               src={activeImage.url}
-              alt={activeImage.title || 'Full Display Image'}
+              alt={activeImage.title || tc('imageDisplayer.sharedAlt')}
               className="max-h-[80vh] max-w-full rounded-lg shadow-2xl object-contain border border-white/10"
             />
             {activeImage.title && (

@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { Box, Skull, Trees, Waves, Square } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { clampToGrid } from '@/lib/battle-map';
 import type { BattleMap, MapObject, MapToken, TerrainKind } from '@/types/battle-map';
 import { cn } from '@/lib/utils';
@@ -44,6 +45,7 @@ export function BattleMapGrid({
   onMoveEntity,
   onEntityClick,
 }: BattleMapGridProps) {
+  const { t } = useTranslation('common');
   const surfaceRef = useRef<HTMLDivElement>(null);
   const cell = BASE_CELL * zoom;
   const width = map.gridWidth * cell;
@@ -130,6 +132,8 @@ export function BattleMapGrid({
     <div className="overflow-auto rounded-lg border bg-muted/20 max-h-[70vh]">
       <div
         ref={surfaceRef}
+        role="group"
+        aria-label={t('battleMap.gridLabel')}
         onPointerDown={startPaintOrDrag()}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -138,6 +142,8 @@ export function BattleMapGrid({
         style={{
           width,
           height,
+          // Paint tools need the pointer stream; otherwise the browser turns drags into page scroll on touch.
+          touchAction: !readOnly && tool !== 'select' ? 'none' : undefined,
           backgroundImage:
             'linear-gradient(to right, var(--color-border) 1px, transparent 1px), linear-gradient(to bottom, var(--color-border) 1px, transparent 1px)',
           backgroundSize: `${cell}px ${cell}px`,
@@ -164,6 +170,7 @@ export function BattleMapGrid({
             <div
               key={obj.id}
               title={`${obj.label}${obj.breakable ? '' : ' (unbreakable)'} · ${obj.height}`}
+              aria-label={obj.label}
               onPointerDown={startPaintOrDrag(entity)}
               onClick={handleEntityClick(entity)}
               className={cn(
@@ -173,7 +180,13 @@ export function BattleMapGrid({
                 obj.destroyed && 'opacity-30 line-through',
                 !readOnly && tool === 'select' && 'cursor-grab active:cursor-grabbing'
               )}
-              style={{ left: x * cell + 2, top: y * cell + 2, width: cell - 4, height: cell - 4 }}
+              style={{
+                left: x * cell + 2,
+                top: y * cell + 2,
+                width: cell - 4,
+                height: cell - 4,
+                touchAction: readOnly ? undefined : 'none',
+              }}
             >
               {obj.height === 'tall' ? <Box className="size-3.5" /> : <Square className="size-3" />}
             </div>
@@ -188,6 +201,7 @@ export function BattleMapGrid({
             <div
               key={tk.id}
               title={tk.name}
+              aria-label={tk.name}
               onPointerDown={startPaintOrDrag(entity)}
               onClick={handleEntityClick(entity)}
               className={cn(
@@ -202,6 +216,7 @@ export function BattleMapGrid({
                 top: y * cell + 2,
                 width: cell - 4,
                 height: cell - 4,
+                touchAction: readOnly ? undefined : 'none',
                 borderColor: tk.color,
               }}
             >

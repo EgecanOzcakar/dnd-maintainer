@@ -17,7 +17,7 @@ import type { SpellDef } from '@/types/spells';
 
 // Supporting types
 
-export type UnarmoredFormula = 'barbarian' | 'monk' | 'dance';
+export type UnarmoredFormula = 'barbarian' | 'monk' | 'dance' | 'draconic';
 
 export type AcCalculation =
   | { readonly mode: 'armored' }
@@ -332,7 +332,13 @@ export type ResourcePoolMax =
    * single class's level (same single-class assumption as the other level-keyed
    * modes). The resolver clamps the result at 0.
    */
-  | { readonly mode: 'class-level-plus'; readonly classId: ClassId; readonly offset: number };
+  | { readonly mode: 'class-level-plus'; readonly classId: ClassId; readonly offset: number }
+  /**
+   * The max equals the character's modifier in `ability`, floored at `min` (default 1) — e.g. the
+   * Fiend Patron's Dark One's Own Luck (Charisma modifier, minimum once). Needs the resolved ability
+   * modifiers, so it only resolves where `resolveResourcePools` is given them.
+   */
+  | { readonly mode: 'ability-mod'; readonly ability: AbilityKey; readonly min?: number };
 
 /**
  * Die sizes that scale with character level — currently only the Psi Warrior /

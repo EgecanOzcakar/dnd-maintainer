@@ -581,15 +581,15 @@
     },
     "rogue-epic-boon": {
       "name": "Epic Boon",
-      "description": "You gain an Epic Boon feat or another feat of your choice."
+      "description": "You gain an Epic Boon feat or another feat of your choice for which you qualify."
     },
     "rogue-stroke-of-luck": {
       "name": "Stroke of Luck",
-      "description": "Once per rest, turn a missed attack into a hit or treat a failed d20 Test as a 20."
+      "description": "If you fail a D20 Test, you can turn the roll into a 20. Once you use this feature, you can't use it again until you finish a Short or Long Rest."
     },
     "rogue-thieves-cant": {
       "name": "Thieves' Cant",
-      "description": "You have learned thieves' cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation."
+      "description": "You have learned thieves' cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation. You also know one other language of your choice."
     },
     "rogue-cunning-action": {
       "name": "Cunning Action",
@@ -617,7 +617,7 @@
     },
     "thief-second-story-work": {
       "name": "Second-Story Work",
-      "description": "You gain a Climb Speed equal to your Speed. In addition, when you make a running jump, the distance you cover increases by a number of feet equal to your DEX modifier."
+      "description": "You gain a Climb Speed equal to your Speed. In addition, when you make a running jump, the distance you cover is determined by your Dexterity modifier instead of your Strength modifier."
     },
     "thief-supreme-sneak": {
       "name": "Supreme Sneak",
@@ -625,7 +625,7 @@
     },
     "assassin-assassinate": {
       "name": "Assassinate",
-      "description": "You are at your deadliest when you get the drop on your foes. You have Advantage on attack rolls against any creature that hasn't taken a turn yet in combat. In addition, any hit you score against a creature that is Surprised is a Critical Hit."
+      "description": "You have Advantage on Initiative rolls. In addition, during the first round of each combat, you have Advantage on attack rolls against any creature that hasn't taken a turn, and a hit against such a creature with your Sneak Attack deals extra damage of the weapon's type equal to your Rogue level."
     },
     "assassin-envenom-weapons": {
       "name": "Envenom Weapons",
@@ -641,27 +641,27 @@
     },
     "arcanetrickster-mage-hand-legerdemain": {
       "name": "Mage Hand Legerdemain",
-      "description": "When you cast mage hand, you can make it invisible and use it to stow/retrieve objects or use thieves' tools at range."
+      "description": "When you cast Mage Hand, you can cast it as a Bonus Action, make the spectral hand Invisible, and use it to stow or retrieve objects, or to use thieves' tools or make a Sleight of Hand check at range."
     },
     "arcanetrickster-versatile-trickster": {
       "name": "Versatile Trickster",
-      "description": "You can use your Mage Hand to distract a creature, giving you Advantage on attacks against it."
+      "description": "When you use the Trip option of Cunning Strike on a creature, you can also use your Mage Hand to apply the same Trip effect to a different creature within 5 feet of the spectral hand."
     },
     "arcanetrickster-spell-thief": {
       "name": "Spell Thief",
-      "description": "When a creature casts a spell at you, you can negate its effect on you and steal the spell for a time, once per Long Rest."
+      "description": "Immediately after a creature casts a spell that forces you to make a saving throw or that targets you with an attack roll, you can take a Reaction to force that creature to make a saving throw with its spellcasting ability against your spell save DC. On a failed save, the spell's effect is negated against you, and if the spell is level 1 or higher and of a level you can cast, you steal it: for 8 hours you have it prepared and can cast it using your spell slots, and the creature can't cast it. Once you use this feature, you can't use it again until you finish a Long Rest."
     },
     "arcanetrickster-magical-ambush": {
       "name": "Magical Ambush",
-      "description": "If hidden when you cast a spell, the target has disadvantage on saving throws against it this turn."
+      "description": "If you have the Invisible condition when you cast a spell on a creature, it has Disadvantage on any saving throw it makes against the spell on that turn."
     },
     "aberrantsorcery-telepathic-speech": {
       "name": "Telepathic Speech",
-      "description": "As a Bonus Action, choose one willing creature you can see within 30 feet of you. For 10 minutes, you and the chosen creature can speak telepathically with each other while you are within 30 feet of each other. To understand each other, you each must speak mentally in a language the other knows."
+      "description": "As a Bonus Action, choose a creature you can see within 30 feet. You form a telepathic connection with it for a number of minutes equal to your Sorcerer level. While connected, you can speak telepathically with it while within a number of miles equal to your Charisma modifier (minimum 1 mile); you must share a language."
     },
     "aberrantsorcery-psionic-sorcery": {
       "name": "Psionic Sorcery",
-      "description": "When you cast a spell from your Aberrant Sorcery expanded spell list, you can expend Sorcery Points equal to the spell's level to cast it without any Verbal or Material components, provided you have no Concentration on a spell."
+      "description": "When you cast a spell from your Psionic Spells list, you can cast it by expending a spell slot as normal or by spending a number of Sorcery Points equal to the spell's level. If you cast it using Sorcery Points, it requires no Verbal or Somatic components, and no Material components unless they are consumed by the spell or have a cost."
     },
     "aberrantsorcery-psychic-defenses": {
       "name": "Psychic Defenses",
@@ -681,59 +681,19 @@
     },
     "draconicsorcery-elemental-affinity": {
       "name": "Elemental Affinity",
-      "description": "When you cast a spell that deals damage of the type associated with your Dragon Ancestor, you can add your Charisma modifier to one damage roll of that spell. In addition, you can spend 1 Sorcery Point to gain Resistance to that damage type for 1 hour."
-    },
-    "draconicsorcery-dragon-ancestor-black": {
-      "name": "Dragon Ancestor: Black",
-      "description": "Your draconic ancestor is a Black dragon. Your damage type is Acid."
-    },
-    "draconicsorcery-dragon-ancestor-blue": {
-      "name": "Dragon Ancestor: Blue",
-      "description": "Your draconic ancestor is a Blue dragon. Your damage type is Lightning."
-    },
-    "draconicsorcery-dragon-ancestor-brass": {
-      "name": "Dragon Ancestor: Brass",
-      "description": "Your draconic ancestor is a Brass dragon. Your damage type is Fire."
-    },
-    "draconicsorcery-dragon-ancestor-bronze": {
-      "name": "Dragon Ancestor: Bronze",
-      "description": "Your draconic ancestor is a Bronze dragon. Your damage type is Lightning."
-    },
-    "draconicsorcery-dragon-ancestor-copper": {
-      "name": "Dragon Ancestor: Copper",
-      "description": "Your draconic ancestor is a Copper dragon. Your damage type is Acid."
-    },
-    "draconicsorcery-dragon-ancestor-gold": {
-      "name": "Dragon Ancestor: Gold",
-      "description": "Your draconic ancestor is a Gold dragon. Your damage type is Fire."
-    },
-    "draconicsorcery-dragon-ancestor-green": {
-      "name": "Dragon Ancestor: Green",
-      "description": "Your draconic ancestor is a Green dragon. Your damage type is Poison."
-    },
-    "draconicsorcery-dragon-ancestor-red": {
-      "name": "Dragon Ancestor: Red",
-      "description": "Your draconic ancestor is a Red dragon. Your damage type is Fire."
-    },
-    "draconicsorcery-dragon-ancestor-silver": {
-      "name": "Dragon Ancestor: Silver",
-      "description": "Your draconic ancestor is a Silver dragon. Your damage type is Cold."
-    },
-    "draconicsorcery-dragon-ancestor-white": {
-      "name": "Dragon Ancestor: White",
-      "description": "Your draconic ancestor is a White dragon. Your damage type is Cold."
+      "description": "Choose one damage type associated with dragons: Acid, Cold, Fire, Lightning, or Poison. You have Resistance to that damage type, and when you cast a spell that deals damage of that type, you can add your Charisma modifier to one damage roll of that spell."
     },
     "wildmagicsorcery-wild-magic-surge": {
       "name": "Wild Magic Surge",
-      "description": "Immediately after you cast a Sorcerer spell of level 1 or higher, the DM can have you roll a d20. On a 1, roll on the Wild Magic Surge table to create a random magical effect. A Wild Magic Surge can happen once per turn."
+      "description": "Immediately after you cast a Sorcerer spell using a spell slot, roll a d20. If you roll a 20, roll on the Wild Magic Surge table to create a random magical effect. This can happen once per turn."
     },
     "wildmagicsorcery-tides-of-chaos": {
       "name": "Tides of Chaos",
-      "description": "You can manipulate the forces of chance to gain Advantage on one attack roll, ability check, or saving throw. Once you do so, you must finish a Long Rest before you can use this feature again. If you use Wild Magic Surge before you regain use of this feature, you immediately regain use of it."
+      "description": "You can manipulate the forces of chance to gain Advantage on one D20 Test before you roll it. Once you do so, you can't use this feature again until you finish a Long Rest or cast a Sorcerer spell using a spell slot."
     },
     "wildmagicsorcery-bend-luck": {
       "name": "Bend Luck",
-      "description": "You have the ability to twist fate using your Wild Magic. As a Reaction when another creature you can see within 60 feet makes an attack roll, ability check, or saving throw, you can spend 2 Sorcery Points and roll 1d4. You can add or subtract the number rolled from the creature's roll (your choice)."
+      "description": "As a Reaction immediately after a creature you can see within 60 feet rolls the d20 of a D20 Test, you can spend 1 Sorcery Point and roll 1d4. You can add or subtract the number rolled from the d20's result (your choice)."
     },
     "aberrantsorcery-revelation-in-flesh": {
       "name": "Revelation in Flesh",
@@ -745,15 +705,15 @@
     },
     "clockworksorcery-clockwork-cavalcade": {
       "name": "Clockwork Cavalcade",
-      "description": "As a Magic action, you summon a parade of semicorporeal clockwork creatures that fill a 30-foot Cube you can see within 120 feet of you for 1 round; inside that Cube, each creature that has fewer than half its Hit Points regains Hit Points equal to 10d10, damaged objects are fully repaired, and each spell of level 6 or lower ends."
+      "description": "As a Magic action, you summon spirits of order in a 30-foot Cube you can see within 120 feet of you. They restore up to 100 Hit Points, divided as you choose among creatures in the Cube; repair all damaged objects there; and end spells of level 6 or lower on creatures and objects there. Once you use this feature, you can't use it again until you finish a Long Rest, unless you spend 7 Sorcery Points to use it again."
     },
     "draconicsorcery-dragon-wings": {
       "name": "Dragon Wings",
-      "description": "As a Bonus Action, you sprout dragon wings from your back, gaining a Fly Speed equal to your Speed, unless you are wearing armor not made to accommodate your wings."
+      "description": "As a Bonus Action, you can sprout dragon wings from your back, gaining a Fly Speed of 60 feet for 1 hour (unless you are wearing armor not made to accommodate wings). Once you use this feature, you can't use it again until you finish a Long Rest, unless you spend 3 Sorcery Points to restore it."
     },
     "draconicsorcery-dragon-companion": {
       "name": "Dragon Companion",
-      "description": "You can channel the draconic power within you into a concentrated magical form; as a Bonus Action, you can expend a spell slot to summon a CR-appropriate dragon of your ancestor's type that obeys your commands."
+      "description": "You can cast Summon Dragon without a Material component. You can also cast it once without a spell slot, and you regain the ability to do so when you finish a Long Rest. Whenever you start casting the spell, you can modify it so that it doesn't require Concentration; if you do, the spell's duration becomes 1 minute for that casting."
     },
     "wildmagicsorcery-controlled-chaos": {
       "name": "Controlled Chaos",
@@ -765,15 +725,15 @@
     },
     "archfeypatron-steps-of-the-fey": {
       "name": "Steps of the Fey",
-      "description": "Misty Step is always prepared for you. When you cast it, you can also choose one of two rider effects: Refreshing Step (you or an ally within 30 feet regains hit points equal to a roll of your Warlock spell slot die) or Taunting Step (one creature of your choice within 5 feet of the space you left must succeed on a Wisdom saving throw or have Disadvantage on attack rolls against creatures other than you until the start of your next turn). You can cast Misty Step a number of times equal to your Proficiency Bonus per Long Rest without expending a spell slot."
+      "description": "You can cast Misty Step without expending a spell slot a number of times equal to your Charisma modifier (minimum once), and you regain all expended uses when you finish a Long Rest. When you cast it, you can add one effect: Refreshing Step — you or a creature you can see within 10 feet gains 1d10 Temporary Hit Points; Taunting Step — creatures within 5 feet of the space you left must succeed on a Wisdom saving throw or have Disadvantage on attack rolls against creatures other than you until the start of your next turn."
     },
     "archfeypatron-misty-escape": {
       "name": "Misty Escape",
-      "description": "When you take damage, you can use your Reaction to cast Misty Step without expending a spell slot. You then have the Invisible condition until the end of your next turn. You can use this feature a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
+      "description": "When you take damage, you can use your Reaction to cast Misty Step. You also gain two new Steps of the Fey options: Disappearing Step — you have the Invisible condition until the start of your next turn or until you attack, deal damage, or cast a spell; Dreadful Step — each creature within 5 feet of the space you left or arrived in must succeed on a Wisdom saving throw or take 2d10 Psychic damage."
     },
     "archfeypatron-beguiling-defenses": {
       "name": "Beguiling Defenses",
-      "description": "Your patron teaches you how to guard your mind and turn another's charms back on them. You are immune to the Charmed condition. If a creature attempts to Charm you, you can use your Reaction to force the creature to make a Wisdom saving throw against your spell save DC. On a failed save, the creature has the Charmed condition for 1 minute or until it takes any damage."
+      "description": "You are immune to the Charmed condition. In addition, when a creature you can see hits you with an attack, you can use your Reaction to halve the damage you take (rounded down); the attacker must succeed on a Wisdom saving throw against your spell save DC or take Psychic damage equal to the damage you took. Once you use this Reaction, you can't use it again until you finish a Long Rest, unless you expend a Pact Magic spell slot (no action required) to restore your use of it."
     },
     "archfeypatron-bewitching-magic": {
       "name": "Bewitching Magic",
@@ -789,11 +749,11 @@
     },
     "celestialpatron-celestial-resilience": {
       "name": "Celestial Resilience",
-      "description": "You gain the ability to infuse yourself and your allies with the energy of the Upper Planes. When you finish a Short or Long Rest, you gain Temporary Hit Points equal to your Warlock level plus your Charisma modifier. Additionally, choose up to five creatures you can see at the end of the rest. Those creatures each gain Temporary Hit Points equal to half your Warlock level."
+      "description": "You gain the ability to infuse yourself and your allies with the energy of the Upper Planes. When you finish a Short or Long Rest (or use Magical Cunning), you gain Temporary Hit Points equal to your Warlock level plus your Charisma modifier. Additionally, choose up to five creatures you can see at the end of the rest; each gains Temporary Hit Points equal to half your Warlock level plus your Charisma modifier."
     },
     "celestialpatron-searing-vengeance": {
       "name": "Searing Vengeance",
-      "description": "The radiant power you channel allows you to resist death. When you or an ally you can see within 60 feet of you is about to drop to 0 hit points, you can use your Reaction to have radiant energy erupt from the creature: each creature of your choice within 30 feet takes Radiant damage equal to 2d8 plus your Charisma modifier and has the Blinded condition until the end of the current turn. The downed creature then regains hit points equal to half its hit point maximum and stands up if it so chooses. Once you use this feature, you can't use it again until you finish a Long Rest."
+      "description": "When you or an ally you can see within 60 feet of you is about to make a Death Saving Throw, you can use your Reaction to have radiant energy erupt from that creature: each creature of your choice within 30 feet of it takes Radiant damage equal to 2d8 plus your Charisma modifier and has the Blinded condition until the end of the current turn. The creature about to make the save regains Hit Points equal to half its Hit Point maximum and can end the Prone condition on itself. Once you use this feature, you can't use it again until you finish a Long Rest."
     },
     "fiendpatron-dark-ones-blessing": {
       "name": "Dark One's Blessing",
@@ -801,51 +761,51 @@
     },
     "fiendpatron-dark-ones-own-luck": {
       "name": "Dark One's Own Luck",
-      "description": "You can call on your patron to alter fate in your favor. When you make an ability check or a saving throw, you can use this feature to add a d10 to your roll. You can do so after seeing the initial roll but before any of the roll's effects occur. You can use this feature a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest. It also replenishes when you finish a Short Rest."
+      "description": "When you make an ability check or a saving throw, you can add a d10 to the roll after seeing the d20 but before its effects occur (once per roll). You can use this feature a number of times equal to your Charisma modifier (minimum once), and you regain all expended uses when you finish a Long Rest."
     },
     "fiendpatron-fiendish-resilience": {
       "name": "Fiendish Resilience",
-      "description": "You can choose one damage type when you finish a Short or Long Rest. You gain Resistance to that damage type until you choose a different one with this feature. Damage from magical weapons and silver weapons ignores this resistance."
+      "description": "When you finish a Short or Long Rest, you can choose one damage type other than Force. You have Resistance to that damage type until you choose a different one with this feature."
     },
     "fiendpatron-hurl-through-hell": {
       "name": "Hurl Through Hell",
-      "description": "When you hit a creature with an attack roll, you can use this feature to instantly transport the target through the Lower Planes. The creature disappears and hurtles through a nightmare landscape. At the end of your next turn, the target returns to the space it previously occupied or the nearest unoccupied space. If the target is not a Fiend, it takes 10d10 Psychic damage as it reels from its horrific experience. Once you use this feature, you can't use it again until you finish a Long Rest."
+      "description": "Once per turn when you hit a creature with an attack roll, you can force it to make a Charisma saving throw against your spell save DC. On a failed save, the target vanishes into a nightmare landscape and has the Incapacitated condition until the end of your next turn, when it returns to its previous space (or the nearest unoccupied one). If it isn't a Fiend, it takes 8d10 Psychic damage. Once you use this feature, you can't use it again until you finish a Long Rest, unless you expend a Pact Magic spell slot (no action required) to restore your use of it."
     },
     "greatoldonepatron-awakened-mind": {
       "name": "Awakened Mind",
-      "description": "Your patron's knowledge invades your very being. You can communicate telepathically with any creature you can see within 30 feet of you. You don't need to share a language with the creature for it to understand your telepathic communications, but the creature must be able to understand at least one language."
+      "description": "As a Bonus Action, choose a creature you can see within 30 feet of you. You form a telepathic connection with it for a number of minutes equal to your Warlock level (ending early if you target a different creature). While connected, you can communicate telepathically while within a number of miles equal to your Charisma modifier (minimum 1 mile); you must share a language."
     },
     "greatoldonepatron-clairvoyant-combatant": {
       "name": "Clairvoyant Combatant",
-      "description": "Your alien patron grants you the ability to read your opponents' minds. When you force a creature within 60 feet of you to make a Wisdom saving throw, you can choose to peer into its mind. On a failed save, for 1 minute your attack rolls against that creature have Advantage and it can't see you. You can use this feature a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
+      "description": "When you have a telepathic connection from Awakened Mind, you can force the connected creature to make a Wisdom saving throw against your spell save DC. On a failed save, for the duration of the connection it has Disadvantage on attack rolls against you and you have Advantage on attack rolls against it. Once you use this feature, you can't use it again until you finish a Short or Long Rest, unless you expend a Pact Magic spell slot (no action required) to restore your use of it."
     },
     "greatoldonepatron-eldritch-hex": {
       "name": "Eldritch Hex",
-      "description": "Your patron grants you a powerful hex. As a Bonus Action, you can magically hex one creature you can see within 60 feet. Until the hex ends, whenever that creature deals damage to you, you deal Psychic damage to it equal to your Proficiency Bonus. The hex ends early if you die, or after 24 hours. Once you use this feature, you can't do so again until you finish a Long Rest."
+      "description": "You always have the Hex spell prepared. When you cast Hex and choose an ability, the target also has Disadvantage on saving throws made with that ability for the spell's duration."
     },
     "greatoldonepatron-create-thrall": {
       "name": "Create Thrall",
-      "description": "You gain the ability to infect a Humanoid's mind with the alien magic of your patron. You can cast Dominate Monster on a Humanoid as an action, without expending a spell slot. When you cast it this way, the spell's duration is 1 hour, it requires no Concentration, and the target has Disadvantage on the saving throw. While a creature is affected by this casting, it has the Charmed condition immunity from sources other than you. Once you use this feature, you can't use it again until you finish a Long Rest."
+      "description": "When you cast Summon Aberration, you can modify it so that it doesn't require Concentration; the spell's duration becomes 1 minute for that casting, and the aberration gains Temporary Hit Points equal to your Warlock level plus your Charisma modifier. The first time each turn the aberration hits a creature affected by your Hex, it deals extra Psychic damage equal to the Hex's bonus damage."
     },
     "soulknife-psionic-power": {
       "name": "Psionic Power",
-      "description": "You have a pool of Psionic Energy dice that fuel your psionic abilities. The die size scales with your proficiency bonus: d6 (PB +2), d8 (PB +3), d10 (PB +4), d12 (PB +5 or +6). You start each Long Rest with 4 dice; a Short Rest replenishes 1. Two options enabled at L3: Psi-Bolstered Knack — when you fail an ability check using a skill or tool you are proficient in, you can roll one Psionic Energy die and add it to the check; if this causes the check to succeed, the die is not expended; Psychic Whispers — as an Action, choose a number of creatures equal to your Proficiency Bonus that you can see within 1 mile; those creatures can communicate telepathically with you in a language you both know for up to 1 hour; this uses 1 Psionic Energy die."
+      "description": "You have a pool of Psionic Energy dice equal to twice your Proficiency Bonus (4 at level 3). The die is a d6 at level 3, d8 at level 5, d10 at level 11, and d12 at level 17. You regain one expended die when you finish a Short Rest and all of them when you finish a Long Rest. Two options use the dice: Psi-Bolstered Knack — when you fail an ability check using a skill or tool you are proficient in, roll one Psionic Energy die and add it to the check; if this causes the check to succeed, the die is not expended. Psychic Whispers — as an Action, choose a number of creatures equal to your Proficiency Bonus that you can see; you can communicate telepathically with them for a number of hours equal to the number rolled on one expended Psionic Energy die."
     },
     "soulknife-psychic-veil": {
       "name": "Psychic Veil",
-      "description": "You can turn Invisible for a while by spending a Psionic Energy die or once per Long Rest for free."
+      "description": "You can magically become Invisible for 1 hour or until you deal damage or force a saving throw. You can do so once per Long Rest for free, or by expending a Psionic Energy die."
     },
     "soulknife-rend-mind": {
       "name": "Rend Mind",
-      "description": "When you deal Sneak Attack damage with Psychic Blades, you can force a Wisdom save or leave the target Stunned."
+      "description": "When you deal Sneak Attack damage with your Psychic Blades, you can force the target to make a Wisdom saving throw (DC 8 plus your Dexterity modifier and Proficiency Bonus). On a failed save, the target has the Stunned condition for 1 minute (it repeats the save at the end of each of its turns). Once you use this feature, you can't use it again until you finish a Long Rest, unless you expend 3 Psionic Energy dice to use it again."
     },
     "soulknife-psychic-blades": {
       "name": "Psychic Blades",
-      "description": "As part of the Attack action or as a Bonus Action, you can manifest a glowing psychic blade from your hand to make a melee attack against a creature within reach. The blade deals 1d6 Psychic damage on a hit, using your Dexterity modifier for the attack and damage rolls. If you make this attack as a Bonus Action as part of a two-weapon fighting sequence, the off-hand blade deals 1d8 Psychic damage instead. The blades vanish immediately after an attack and have the Finesse property for the purpose of qualifying for Sneak Attack. No weapon proficiency or material components are required."
+      "description": "When you take the Attack action, you can manifest a Psychic Blade from your free hand and make the attack with it. The blade has the Finesse and Thrown (range 60/120 feet) properties and deals 1d6 Psychic damage plus your ability modifier. Immediately after the attack, you can make an additional attack with a Psychic Blade as a Bonus Action; that blade deals 1d4 Psychic damage. The blades vanish after the attack and no weapon proficiency is required."
     },
     "soulknife-soul-blades": {
       "name": "Soul Blades",
-      "description": "Your Psychic Blades gain two additional options powered by Psionic Energy dice: Homing Strikes — when you make an attack roll with your Psychic Blades and miss, you can roll one Psionic Energy die and add the result to the attack roll; if this causes the attack to hit, the die is not expended; Psychic Teleportation — as a Bonus Action, you manifest a Psychic Blade and throw it up to 30 feet to an unoccupied space you can see, then teleport to a space adjacent to where the blade landed, expending 1 Psionic Energy die."
+      "description": "Your Psychic Blades gain two options powered by Psionic Energy dice: Homing Strikes — when you make an attack roll with your Psychic Blades and miss, you can roll one Psionic Energy die and add the result to the attack roll; if this causes the attack to hit, the die is not expended. Psychic Teleportation — as a Bonus Action, you manifest a Psychic Blade, expend one Psionic Energy die, and throw the blade at an unoccupied space you can see within a number of feet equal to 10 times the number rolled; you then teleport to that space."
     },
     "berserker-frenzy": {
       "name": "Frenzy",
@@ -1973,7 +1933,7 @@
     },
     "sorcerer-innate-sorcery": {
       "name": "Innate Sorcery",
-      "description": "An event in your past, or in the past of a parent or ancestor, left an indelible mark on you, infusing you with a mote of magic. This unpredictable magic is a sorcery that is part of you."
+      "description": "As a Bonus Action, you can unleash the magic within you for 1 minute. While it is active, the spell save DC of your Sorcerer spells increases by 1, and you have Advantage on the attack rolls of Sorcerer spells you cast. You can use this feature twice, and you regain all expended uses when you finish a Long Rest."
     },
     "sorcerer-epic-boon": {
       "name": "Epic Boon",
@@ -1981,7 +1941,7 @@
     },
     "sorcerer-font-of-magic": {
       "name": "Font of Magic",
-      "description": "You tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects."
+      "description": "You have a pool of Sorcery Points equal to your Sorcerer level (from level 2). As a Bonus Action, you can expend a spell slot to gain Sorcery Points equal to the slot's level. As a Bonus Action, you can spend Sorcery Points to create a spell slot: 1st level costs 2 (Sorcerer level 2+), 2nd costs 3 (level 3+), 3rd costs 5 (level 5+), 4th costs 6 (level 7+), 5th costs 7 (level 9+). You can't create slots above 5th level, and created slots vanish when you finish a Long Rest."
     },
     "sorcerer-metamagic": {
       "name": "Metamagic",
@@ -1989,7 +1949,7 @@
     },
     "sorcerer-sorcery-incarnate": {
       "name": "Sorcery Incarnate",
-      "description": "If you have no uses of Innate Sorcery left, you can use it again, and you regain all expended uses when you finish a Long Rest."
+      "description": "If you have no uses of Innate Sorcery left, you can use it by spending 2 Sorcery Points. While Innate Sorcery is active, you can use up to two of your Metamagic options on each spell you cast."
     },
     "sorcerer-metamagic-options": {
       "name": "Metamagic Options",
@@ -2077,7 +2037,7 @@
     },
     "warlock-invocation-devouring-blade": {
       "name": "Devouring Blade",
-      "description": "Your pact weapon attacks give you an extra attack when you take the Attack action."
+      "description": "The extra attack of Thirsting Blade becomes two extra attacks, instead of one."
     },
     "warlock-invocation-eldritch-mind": {
       "name": "Eldritch Mind",
@@ -2101,7 +2061,7 @@
     },
     "warlock-invocation-lifedrinker": {
       "name": "Lifedrinker",
-      "description": "Your pact weapon deals extra Necrotic, Psychic, or Radiant damage equal to your Charisma modifier."
+      "description": "When you hit a creature with your pact weapon, the creature takes extra Necrotic, Psychic, or Radiant damage (your choice) equal to 1d6."
     },
     "warlock-invocation-mask-of-many-faces": {
       "name": "Mask of Many Faces",
@@ -2117,7 +2077,7 @@
     },
     "warlock-invocation-one-with-shadows": {
       "name": "One with Shadows",
-      "description": "While in dim light or darkness you can turn Invisible until you move or take an action or Reaction."
+      "description": "While you are in an area of Dim Light or Darkness, you can cast Invisibility on yourself without expending a spell slot."
     },
     "warlock-invocation-otherworldly-leap": {
       "name": "Otherworldly Leap",
@@ -2141,7 +2101,7 @@
     },
     "warlock-invocation-witch-sight": {
       "name": "Witch Sight",
-      "description": "You can see the true form of shapechangers and creatures hidden by illusion within 30 feet."
+      "description": "You have Truesight with a range of 30 feet."
     },
     "warlock-magical-cunning": {
       "name": "Magical Cunning",
@@ -2161,11 +2121,11 @@
     },
     "warlock-pact-of-the-chain": {
       "name": "Pact of the Chain",
-      "description": "You learn the Find Familar spell and can cast it as a ritual. When you cast the spell, you can choose a special form for your familiar (Imp, Pseudodragon, Quasit, Sprite, or Slaad Tadpole)."
+      "description": "You learn the Find Familiar spell and can cast it as a Magic action without expending a spell slot. When you cast the spell, you can choose a special form for your familiar: Imp, Pseudodragon, Quasit, Skeleton, Slaad Tadpole, Sphinx of Wonder, Sprite, or Venomous Snake."
     },
     "warlock-pact-of-the-tome": {
       "name": "Pact of the Tome",
-      "description": "Your patron gives you a grimoire called a Book of Shadows. You choose three cantrips from any class's spell list and gain them as warlock cantrips."
+      "description": "Your patron gives you a grimoire called a Book of Shadows. You choose three cantrips from any class's spell list and two level 1 spells that have the Ritual tag from any class's spell list; they count as Warlock spells for you."
     },
     "warlock-mystic-arcanum-6": {
       "name": "Mystic Arcanum (6th Level)",
@@ -2185,7 +2145,7 @@
     },
     "warlock-eldritch-master": {
       "name": "Eldritch Master",
-      "description": "You can draw on your inner reserve of mystical power while entreating your patron to regain expended spell slots. You can spend 1 minute entreating your patron for aid to regain all your expended Pact Magic spell slots."
+      "description": "When you use Magical Cunning, you regain all your expended Pact Magic spell slots instead of half."
     },
     "wizard-arcane-recovery": {
       "name": "Arcane Recovery",
@@ -2201,7 +2161,7 @@
     },
     "wizard-scholar": {
       "name": "Scholar",
-      "description": "You have an exceptional understanding of magical theory. Whenever you gain a Wizard level, you can add two Wizard spells to your spellbook for free."
+      "description": "You have studied the arcane arts deeply. Choose one of your skill proficiencies among Arcana, History, Investigation, Medicine, Nature, or Religion; you gain Expertise in it."
     },
     "wizard-memorize-spell": {
       "name": "Memorize Spell",
@@ -2217,7 +2177,7 @@
     },
     "abjurer-abjuration-savant": {
       "name": "Abjuration Savant",
-      "description": "The gold and time you must spend to copy an Abjuration spell into your spellbook is halved."
+      "description": "Choose two Abjuration spells of level 2 or lower from the Wizard spell list and add them to your spellbook for free. Each time you gain access to a new level of spell slots, you can add one more Abjuration spell to your spellbook for free."
     },
     "abjurer-arcane-ward": {
       "name": "Arcane Ward",
@@ -2237,7 +2197,7 @@
     },
     "diviner-divination-savant": {
       "name": "Divination Savant",
-      "description": "The gold and time you must spend to copy a Divination spell into your spellbook is halved."
+      "description": "Choose two Divination spells of level 2 or lower from the Wizard spell list and add them to your spellbook for free. Each time you gain access to a new level of spell slots, you can add one more Divination spell to your spellbook for free."
     },
     "diviner-portent": {
       "name": "Portent",
@@ -2249,7 +2209,7 @@
     },
     "diviner-the-third-eye": {
       "name": "The Third Eye",
-      "description": "You can use a Bonus Action to increase your powers of perception. When you do so, choose one of the following benefits, which lasts until you are Incapacitated or until you use this feature again: Darkvision (60 ft. extended to 120 ft.), Ethereal Sight (see into the Ethereal Plane up to 60 ft.), Greater Comprehension (read any language), or See Invisibility (see Invisible creatures and objects within 10 ft.)."
+      "description": "As a Bonus Action, choose one benefit: Darkvision — you gain Darkvision with a range of 120 feet; Greater Comprehension — you can read any language; See Invisibility — you can cast See Invisibility without expending a spell slot. The benefit lasts until you start a Short or Long Rest."
     },
     "diviner-greater-portent": {
       "name": "Greater Portent",
@@ -2257,7 +2217,7 @@
     },
     "evoker-evocation-savant": {
       "name": "Evocation Savant",
-      "description": "The gold and time you must spend to copy an Evocation spell into your spellbook is halved."
+      "description": "Choose two Evocation spells of level 2 or lower from the Wizard spell list and add them to your spellbook for free. Each time you gain access to a new level of spell slots, you can add one more Evocation spell to your spellbook for free."
     },
     "evoker-sculpt-spells": {
       "name": "Sculpt Spells",
@@ -2277,15 +2237,15 @@
     },
     "illusionist-illusion-savant": {
       "name": "Illusion Savant",
-      "description": "The gold and time you must spend to copy an Illusion spell into your spellbook is halved."
+      "description": "Choose two Illusion spells of level 2 or lower from the Wizard spell list and add them to your spellbook for free. Each time you gain access to a new level of spell slots, you can add one more Illusion spell to your spellbook for free."
     },
     "illusionist-improved-illusions": {
       "name": "Improved Illusions",
-      "description": "When you cast an Illusion spell of 1st level or higher, you can alter one of the illusion's sensory elements as a Bonus Action on your turn, even while concentrating on the spell."
+      "description": "You can cast Illusion spells without Verbal components, and when you cast an Illusion spell with a range of 10 feet or more, its range increases by 60 feet. You also learn the Minor Illusion cantrip (or another Wizard cantrip if you already know it); when you cast it, you can create both a sound and an image with a single casting."
     },
     "illusionist-phantasmal-creatures": {
       "name": "Phantasmal Creatures",
-      "description": "You can cast Summon Beast and Summon Fey without expending a spell slot. When you cast these spells in this way, you cast them at their lowest possible levels. Once you cast either spell in this way, you can't do so again until you finish a Long Rest, unless you expend a spell slot to cast it. You can use each spell a number of times equal to your Proficiency Bonus before you must use a spell slot."
+      "description": "You always have Summon Beast and Summon Fey prepared. You can cast each of them once without expending a spell slot, and you regain the ability to do so when you finish a Long Rest. Whenever you start casting either spell, you can modify it so it doesn't require Concentration; the spell's duration becomes 1 minute for that casting, and the summoned creature has half its usual Hit Points."
     },
     "illusionist-illusory-self": {
       "name": "Illusory Self",
@@ -2446,6 +2406,50 @@
     "maneuver-trip-attack": {
       "name": "Trip Attack",
       "description": "When you hit a creature with an attack roll, you can expend one Superiority Die and add it to the damage. If the target is Large or smaller, it must succeed on a Strength saving throw or have the Prone condition."
+    },
+    "draconicsorcery-elemental-affinity-acid": {
+      "name": "Elemental Affinity: Acid",
+      "description": "Your Elemental Affinity damage type is Acid: you have Resistance to Acid damage, and you can add your Charisma modifier to one damage roll of a Acid spell you cast."
+    },
+    "draconicsorcery-elemental-affinity-cold": {
+      "name": "Elemental Affinity: Cold",
+      "description": "Your Elemental Affinity damage type is Cold: you have Resistance to Cold damage, and you can add your Charisma modifier to one damage roll of a Cold spell you cast."
+    },
+    "draconicsorcery-elemental-affinity-fire": {
+      "name": "Elemental Affinity: Fire",
+      "description": "Your Elemental Affinity damage type is Fire: you have Resistance to Fire damage, and you can add your Charisma modifier to one damage roll of a Fire spell you cast."
+    },
+    "draconicsorcery-elemental-affinity-lightning": {
+      "name": "Elemental Affinity: Lightning",
+      "description": "Your Elemental Affinity damage type is Lightning: you have Resistance to Lightning damage, and you can add your Charisma modifier to one damage roll of a Lightning spell you cast."
+    },
+    "draconicsorcery-elemental-affinity-poison": {
+      "name": "Elemental Affinity: Poison",
+      "description": "Your Elemental Affinity damage type is Poison: you have Resistance to Poison damage, and you can add your Charisma modifier to one damage roll of a Poison spell you cast."
+    },
+    "warlock-invocation-eldritch-spear": {
+      "name": "Eldritch Spear",
+      "description": "When you cast a Warlock cantrip that deals damage and has a range of 10 feet or more, its range increases by 30 feet multiplied by your Warlock level."
+    },
+    "warlock-invocation-gift-of-the-depths": {
+      "name": "Gift of the Depths",
+      "description": "You can breathe underwater, and you have a Swim Speed equal to your Speed. You can also cast Create or Destroy Water once without expending a spell slot, and you regain the ability to do so when you finish a Long Rest."
+    },
+    "warlock-invocation-gift-of-the-protectors": {
+      "name": "Gift of the Protectors",
+      "description": "A new page appears in your Book of Shadows. With your permission, a creature can use an action to write its name on the page, which can hold a number of names equal to your Charisma modifier (minimum 1). When a creature whose name is on the page is reduced to 0 Hit Points but not killed outright, it instead drops to 1 Hit Point; once this magic is triggered, it can't be used again until you finish a Long Rest. You can erase a name by touching it."
+    },
+    "warlock-invocation-investment-of-the-chain-master": {
+      "name": "Investment of the Chain Master",
+      "description": "When you cast Find Familiar, the familiar gains a Flying or Swimming Speed of 40 feet (your choice); you can command it to take the Attack action as a Bonus Action; its attacks count as magical; if it forces a creature to make a saving throw, it uses your spell save DC; and when it takes damage you can use your Reaction to grant it Resistance to that damage."
+    },
+    "greatoldonepatron-psychic-spells": {
+      "name": "Psychic Spells",
+      "description": "When you cast a Warlock spell that deals damage, you can change its damage type to Psychic. When you cast a Warlock Enchantment or Illusion spell, you can cast it without Verbal or Somatic components."
+    },
+    "greatoldonepatron-thought-shield": {
+      "name": "Thought Shield",
+      "description": "Your thoughts can't be read by telepathy or other means unless you allow it. You also have Resistance to Psychic damage, and whenever a creature deals Psychic damage to you, it takes the same amount of damage that you do."
     }
   },
   "subclasses": {
@@ -3801,25 +3805,17 @@
       "name": "Psi-Powered Leap",
       "description": "Once per Short or Long Rest, gain a Fly Speed equal to twice your Speed until the end of your turn — without spending a Psionic Energy die."
     },
-    "misty-escape": {
-      "name": "Misty Escape",
-      "description": "As a Reaction when you take damage, turn invisible and teleport up to 60 feet. Uses equal your Proficiency Bonus; regain all on a Long Rest."
-    },
     "healing-light": {
       "name": "Healing Light",
       "description": "A pool of d6s equal to 1 + your Warlock level. Spend as a Bonus Action to heal a creature within 60 feet. Regain all dice on a Long Rest."
     },
     "dark-ones-own-luck": {
       "name": "Dark One's Own Luck",
-      "description": "Add a d10 to an ability check or saving throw. Uses equal your Proficiency Bonus; regain all on a Short or Long Rest."
+      "description": "Add a d10 to an ability check or saving throw. Uses equal your Charisma modifier (minimum 1); regain all on a Long Rest."
     },
     "clairvoyant-combatant": {
       "name": "Clairvoyant Combatant",
-      "description": "Force a creature within 60 feet to make a Wisdom save or you have Advantage against it (and it can't see you) for 1 minute. Uses equal your Proficiency Bonus; regain all on a Long Rest."
-    },
-    "eldritch-hex": {
-      "name": "Eldritch Hex",
-      "description": "Hex a creature you can see; when it damages you it takes Psychic damage equal to your Proficiency Bonus. One use; regain on a Long Rest."
+      "description": "Force the Awakened Mind target to make a Wisdom save; on a failure you have Advantage against it and it has Disadvantage against you. One use; regain on a Short or Long Rest (or expend a Pact slot)."
     },
     "war-priest": {
       "name": "War Priest",
@@ -3846,9 +3842,6 @@
     },
     "dragon-wings": {
       "name": "Dragon Wings"
-    },
-    "eldritch-master": {
-      "name": "Eldritch Master"
     },
     "favored-enemy": {
       "name": "Favored Enemy"
@@ -3922,6 +3915,33 @@
     },
     "zealous-presence": {
       "name": "Zealous Presence"
+    },
+    "stroke-of-luck": {
+      "name": "Stroke of Luck"
+    },
+    "spell-thief": {
+      "name": "Spell Thief"
+    },
+    "psychic-veil": {
+      "name": "Psychic Veil"
+    },
+    "rend-mind": {
+      "name": "Rend Mind"
+    },
+    "tamed-surge": {
+      "name": "Tamed Surge"
+    },
+    "steps-of-the-fey": {
+      "name": "Steps of the Fey"
+    },
+    "beguiling-defenses": {
+      "name": "Beguiling Defenses"
+    },
+    "dragon-companion": {
+      "name": "Dragon Companion"
+    },
+    "phantasmal-creatures": {
+      "name": "Phantasmal Creatures"
     }
   },
   "spells": {

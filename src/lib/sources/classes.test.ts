@@ -1376,3 +1376,57 @@ describe('FeatureChoiceGrant i18n coverage', () => {
     expect(missing).toEqual([]);
   });
 });
+
+describe('Rogue/Warlock 2024 corrections', () => {
+  const rogue = getClassSource('rogue' as ClassId);
+  const warlock = getClassSource('warlock' as ClassId);
+
+  it("rogue L1 grants Thieves' Cant plus one language of choice", () => {
+    expect(rogue?.levels[0].grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'proficiency-choice', category: 'language', count: 1, from: null }),
+      ])
+    );
+  });
+
+  it('rogue L19 carries an Epic Boon feat pick with a key distinct from the ASI feat picks', () => {
+    const grants = rogue?.levels[18].grants ?? [];
+    expect(grants).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'feat-choice', category: 'epicBoon' }),
+        { type: 'feature', feature: { id: 'rogue-epic-boon' } },
+      ])
+    );
+    const keys = (rogue?.levels ?? []).flatMap((l) =>
+      l.grants.flatMap((g) => (g.type === 'feat-choice' ? [g.key] : []))
+    );
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it('rogue L20 Stroke of Luck is a single-use pool refreshed on a Short Rest', () => {
+    expect(rogue?.levels[19].grants).toContainEqual({
+      type: 'resource-pool',
+      poolId: 'stroke-of-luck',
+      max: { mode: 'fixed', value: 1 },
+      regen: 'short-rest',
+    });
+  });
+
+  it('warlock Eldritch Master modifies Magical Cunning and has no pool of its own', () => {
+    expect(warlock?.levels[19].grants.some((g) => g.type === 'resource-pool')).toBe(false);
+  });
+
+  it('warlock invocation list has all 28 options from the 2024 PHB', () => {
+    const pick = warlock?.levels[0].grants.find((g): g is FeatureChoiceGrant => g.type === 'feature-choice');
+    expect(pick?.options).toHaveLength(28);
+    const ids = pick?.options.map((o) => o.optionId) ?? [];
+    expect(ids).toEqual(
+      expect.arrayContaining([
+        'eldritch-spear',
+        'gift-of-the-depths',
+        'gift-of-the-protectors',
+        'investment-of-the-chain-master',
+      ])
+    );
+  });
+});

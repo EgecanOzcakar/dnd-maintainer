@@ -102,7 +102,8 @@ export function resolveAc(
   equippedArmor?: { readonly totalBase: number | null; readonly shieldBonus: number } | null,
   bardicDieSize?: 6 | 8 | 10 | 12 | null,
   conModifier: number = 0,
-  wisModifier: number = 0
+  wisModifier: number = 0,
+  chaModifier: number = 0
 ): ResolvedArmorClass {
   const acGrants = collectGrantsByType(bundles, 'armor-class');
   const acBonusGrants = collectGrantsByType(bundles, 'ac-bonus');
@@ -138,6 +139,10 @@ export function resolveAc(
           case 'monk':
             // Monk Unarmored Defense: 10 + DEX + WIS
             baseValue += wisModifier;
+            break;
+          case 'draconic':
+            // Draconic Sorcery's Draconic Resilience (2024): 10 + DEX + CHA
+            baseValue += chaModifier;
             break;
           default: {
             const _exhaustive: never = calc.formula;

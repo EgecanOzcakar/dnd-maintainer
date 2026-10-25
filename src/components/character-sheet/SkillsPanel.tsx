@@ -96,6 +96,7 @@ export function SkillsPanel({ skills, onSelectRollPreset, checkMods }: SkillsPan
       }),
       mode: mods?.mode,
       min: mods?.min,
+      extra: mods?.extra,
       breakdown: rollParts([...skill.breakdown, ...(mods?.parts ?? [])]),
     };
   };

@@ -412,4 +412,18 @@ describe('resolveAbilities', () => {
       expect(result.cha.total).toBe(10); // unaffected
     });
   });
+
+  it('an Epic Boon feat lifts the cap for its +1 to 30', () => {
+    const bundles: GrantBundle[] = [
+      {
+        source: { origin: 'feat', id: 'boon-of-fortitude' },
+        grants: [{ type: 'ability-bonus', ability: 'str', bonus: 1 }],
+      },
+    ];
+    expect(resolveAbilities({ ...BASE, str: 20 }, bundles, NO_CHOICES).str.total).toBe(21);
+    expect(
+      resolveAbilities({ ...BASE, str: 20 }, [{ ...bundles[0], source: { origin: 'feat', id: 'alert' } }], NO_CHOICES)
+        .str.total
+    ).toBe(20);
+  });
 });

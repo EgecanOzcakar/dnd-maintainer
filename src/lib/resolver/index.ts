@@ -84,7 +84,15 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
   const bardicInspiration = resolveBardicInspiration(bundles, bardLevel, chaModifier);
   const bardicDieSize = bardicInspiration?.dieSize ?? null;
   const wisModifier = abilities.wis.modifier;
-  const armorClass = resolveAc(bundles, dexModifier, equippedArmorAc, bardicDieSize, conModifier, wisModifier, chaModifier);
+  const armorClass = resolveAc(
+    bundles,
+    dexModifier,
+    equippedArmorAc,
+    bardicDieSize,
+    conModifier,
+    wisModifier,
+    chaModifier
+  );
 
   // Extract chosen fighting style IDs for attack resolver, validating against each grant's from list.
   // Stale persisted decisions containing removed style IDs are filtered out and re-prompted.

@@ -8,6 +8,7 @@ import type { ChoiceKey, ChoiceDecision } from '@/types/choices';
 import type { ResolvedAbility } from '@/types/resolved';
 
 import { collectGrantsByType } from '@/lib/resolver/helpers';
+import { getFeatSource } from '@/lib/sources';
 
 export function resolveAbilities(
   baseAbilities: AbilityScores,
@@ -79,7 +80,11 @@ export function resolveAbilities(
     const base = baseAbilities[key];
     const bonuses = [...bonusList[key]];
     const rawTotal = base + bonuses.reduce((sum, b) => sum + b.value, 0);
-    const capped = Math.min(rawTotal, 20);
+    // An Epic Boon feat raises the ceiling for the score it increased (to 30).
+    const epicBoon = bonuses.some(
+      (b) => b.source.origin === 'feat' && getFeatSource(b.source.id)?.category === 'epicBoon'
+    );
+    const capped = Math.min(rawTotal, epicBoon ? 30 : 20);
     const set = setScores[key];
     // The item raises the score past the normal cap of 20; show the difference as its own bonus.
     if (set && set.score > capped) bonuses.push({ value: set.score - capped, source: set.source });

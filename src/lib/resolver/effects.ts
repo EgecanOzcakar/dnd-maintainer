@@ -116,6 +116,8 @@ export function applyEffects(
   const attackDis = hasCondition(CONDITION_ATTACK_DIS);
   const attackAdvAll = mods.some((m) => m.attackAdvantage === 'all') || conditions.includes('invisible');
   const attackAdvStr = mods.some((m) => m.attackAdvantage === 'str-melee');
+  const attackAdvSpell = mods.some((m) => m.attackAdvantage === 'spell');
+  const spellDc = sum((m) => m.spellDcBonus);
   const barbarianLevel = classLevels.barbarian ?? 0;
   const d20Dice = mods.flatMap((m) => (m.d20Die ? [m.d20Die] : []));
   const rage = mods.some((m) => m.rageDamage) ? rageDamage(barbarianLevel) : 0;
@@ -131,9 +133,10 @@ export function applyEffects(
   );
 
   const adjusted = actions.map((a): AdjustedAction => {
+    if (a.save && spellDc && a.kind === 'spell') a = { ...a, save: { ...a.save, dc: a.save.dc + spellDc } };
     if (a.toHit === undefined && !a.damage) return a;
     const isStrMelee = strMeleeKeys.has(a.key);
-    const adv = attackAdvAll || (attackAdvStr && isStrMelee);
+    const adv = attackAdvAll || (attackAdvStr && isStrMelee) || (attackAdvSpell && a.kind === 'spell');
     const rollsAttack = a.toHit !== undefined;
     const damageExtra = mods.flatMap((m) =>
       m.damageDie && rollsAttack && a.damage && (m.damageDie.filter === 'attack' || a.kind === 'weapon')
@@ -143,9 +146,22 @@ export function applyEffects(
     return {
       ...a,
       ...(rollsAttack
-        ? { toHit: (a.toHit ?? 0) - d20Penalty, mode: combineMode(adv, attackDis), toHitExtra: d20Dice }
+        ? {
+            toHit: (a.toHit ?? 0) - d20Penalty,
+            toHitParts: [
+              ...(a.toHitParts ?? []),
+              ...(d20Penalty ? [{ type: 'exhaustion', label: 'exhaustion', value: -d20Penalty }] : []),
+            ],
+            mode: combineMode(adv, attackDis),
+            toHitExtra: d20Dice,
+          }
         : {}),
-      ...(a.damage && rage && isStrMelee ? { damage: { ...a.damage, bonus: a.damage.bonus + rage } } : {}),
+      ...(a.damage && rage && isStrMelee
+        ? {
+            damage: { ...a.damage, bonus: a.damage.bonus + rage },
+            damageParts: [...(a.damageParts ?? []), { type: 'effect', label: 'rage', value: rage }],
+          }
+        : {}),
       ...(damageExtra.length ? { damageExtra } : {}),
     };
   });

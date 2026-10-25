@@ -78,4 +78,47 @@ describe('ActionsPanel', () => {
     fireEvent.click(screen.getByText('+5'));
     expect(onSelectRollPreset).toHaveBeenCalledWith(expect.objectContaining({ die: 20, count: 1, modifier: 5 }));
   });
+
+  it('pool actions that do not roll get a Use button that spends one use', () => {
+    const onSetPoolUsed = vi.fn();
+    const pooled = [
+      {
+        key: 'feature:barbarian-rage',
+        kind: 'feature',
+        refId: 'barbarian-rage',
+        activation: 'bonus-action',
+        isAttack: false,
+        poolId: 'rage',
+      },
+    ] as ResolvedAction[];
+    const r = { ...resolved, resourcePools: [{ poolId: 'rage', max: 3 }] } as unknown as ResolvedCharacter;
+    render(
+      <ActionsPanel
+        actions={pooled}
+        attacksPerAction={1}
+        resolved={r}
+        poolsUsed={{ rage: 1 }}
+        onSetPoolUsed={onSetPoolUsed}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'use' }));
+    expect(onSetPoolUsed).toHaveBeenCalledWith('rage', 2);
+  });
+
+  it('rolling a pool action heal spends a use instead of showing a Use button', () => {
+    const onSetPoolUsed = vi.fn();
+    const r = { ...resolved, resourcePools: [{ poolId: 'second-wind', max: 2 }] } as unknown as ResolvedCharacter;
+    render(
+      <ActionsPanel
+        actions={actions.slice(1, 2)}
+        attacksPerAction={1}
+        resolved={r}
+        onSelectRollPreset={vi.fn()}
+        onSetPoolUsed={onSetPoolUsed}
+      />
+    );
+    expect(screen.queryByRole('button', { name: 'use' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('heal'));
+    expect(onSetPoolUsed).toHaveBeenCalledWith('second-wind', 1);
+  });
 });

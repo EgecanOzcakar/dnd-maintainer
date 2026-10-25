@@ -158,6 +158,14 @@ describe('HitDicePanel', () => {
     expect(onUpdate).toHaveBeenCalledWith({ hit_dice_used: { '8': 1 } });
   });
 
+  it('Spend also asks the sheet to roll that die', async () => {
+    const onRoll = vi.fn();
+    const resolved = buildMinimalResolved({ hitDie: [{ die: 8, count: 3 }] });
+    render(<HitDicePanel resolved={resolved} character={buildMinimalCharacter()} onUpdate={vi.fn()} onRoll={onRoll} />);
+    await userEvent.click(screen.getByRole('button', { name: 'spend' }));
+    expect(onRoll).toHaveBeenCalledWith(8);
+  });
+
   it('Spend button is disabled when all dice of that type are used', () => {
     const resolved = buildMinimalResolved({ hitDie: [{ die: 8, count: 2 }] });
     render(

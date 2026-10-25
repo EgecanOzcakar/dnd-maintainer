@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { SpellDetail } from '@/components/SpellDetail';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { DND_CLASSES } from '@/lib/dnd-helpers';
 import {
@@ -32,52 +33,6 @@ const SCHOOLS: readonly SpellSchool[] = [
 const SEARCH_DEBOUNCE_MS = 250;
 const SELECT_CLASS =
   'h-9 w-full rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
-
-function SpellDetail({ entry }: { entry: RuleEntry }) {
-  const { t: tc } = useTranslation('common');
-  const { t: tg } = useTranslation('gamedata');
-  const spell = entry.spell;
-  if (!spell) return null;
-  const m = entry.mechanics;
-  const comps = [
-    spell.components.verbal && tc('rules.spell.verbal'),
-    spell.components.somatic && tc('rules.spell.somatic'),
-    spell.components.material !== false && `${tc('rules.spell.material')} (${spell.components.material})`,
-  ]
-    .filter(Boolean)
-    .join(', ');
-  const rows: [string, string][] = [
-    [tc('rules.spell.castingTime'), spell.castingTime],
-    [tc('rules.spell.range'), spell.range],
-    [tc('rules.spell.components'), comps || '-'],
-    [tc('rules.spell.duration'), spell.duration],
-    [tc('rules.spell.classes'), spell.nativeClasses.map((c) => tg(`classes.${c}`)).join(', ')],
-  ];
-  if (m?.attack) rows.push([tc('rules.spell.attackRoll'), tc(`rules.spell.${m.attack}`)]);
-  if (m?.save) rows.push([tc('rules.spell.save'), tc('rules.spell.saveValue', { ability: tg(`abilities.${m.save}`) })]);
-  if (m?.damage) {
-    const flat = m.damage.flat ? ` + ${m.damage.flat}` : '';
-    const scaling = m.damage.cantripScaling ? ` (${tc('rules.spell.cantripScaling')})` : '';
-    rows.push([tc('rules.spell.damage'), `${m.damage.dice}${flat} ${tg(`damageTypes.${m.damage.type}`)}${scaling}`]);
-    if (m.damage.perSlot) rows.push([tc('rules.spell.upcast'), `+${m.damage.perSlot}`]);
-  }
-  if (m?.heal) {
-    const base = [m.heal.dice, m.heal.flat].filter(Boolean).join(' + ');
-    rows.push([tc('rules.spell.healing'), base || '-']);
-    const slot = m.heal.perSlot ? `+${m.heal.perSlot}` : m.heal.flatPerSlot ? `+${m.heal.flatPerSlot}` : '';
-    if (slot) rows.push([tc('rules.spell.upcast'), slot]);
-  }
-  return (
-    <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-1 text-sm sm:grid-cols-2">
-      {rows.map(([label, value]) => (
-        <div key={label} className="flex gap-2">
-          <dt className="shrink-0 font-medium text-muted-foreground">{label}:</dt>
-          <dd className="min-w-0 break-words">{value}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
 
 function ResultRow({ entry }: { entry: RuleEntry }) {
   const { t: tc } = useTranslation('common');
@@ -117,7 +72,7 @@ function ResultRow({ entry }: { entry: RuleEntry }) {
       {open && (
         <div className="px-3 pb-3 pl-9">
           {entry.description && <p className="text-sm">{entry.description}</p>}
-          <SpellDetail entry={entry} />
+          {spell && <SpellDetail spell={spell} mechanics={entry.mechanics} />}
         </div>
       )}
     </li>

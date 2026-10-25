@@ -24,7 +24,9 @@ export function SpellSlotsPanel({ resolved, character, onUpdate }: SpellSlotsPan
 
   function handlePipClick(key: string, i: number, isFilled: boolean): void {
     const maxCount = max[key] ?? 0;
-    const newUsed = isFilled ? Math.max(0, i) : Math.min(i + 1, maxCount);
+    const current = used[key] ?? 0;
+    // With a Font of Magic slot banked (negative spent), using a pip spends that extra slot first.
+    const newUsed = current < 0 ? current + 1 : isFilled ? Math.max(0, i) : Math.min(i + 1, maxCount);
     onUpdate({ spell_slots_used: { ...used, [key]: newUsed } });
   }
 
@@ -37,7 +39,9 @@ export function SpellSlotsPanel({ resolved, character, onUpdate }: SpellSlotsPan
           if (slotMax === 0) return null;
           const level = index + 1;
           const key = String(level);
-          const usedCount = used[key] ?? 0;
+          const usedCount = Math.max(0, used[key] ?? 0);
+          // Font of Magic slots are stored as a negative spent count: one extra, unspent pip each.
+          const extra = Math.max(0, -(used[key] ?? 0));
 
           return (
             <div key={level} className="flex items-center justify-between gap-3">
@@ -66,6 +70,15 @@ export function SpellSlotsPanel({ resolved, character, onUpdate }: SpellSlotsPan
                     />
                   );
                 })}
+                {Array.from({ length: extra }, (_, i) => (
+                  <span
+                    key={`extra-${i}`}
+                    role="img"
+                    aria-label={tc('metamagic.extraSlot')}
+                    title={tc('metamagic.extraSlot')}
+                    className="size-6 rounded-full border-2 border-dashed border-amber-500 bg-amber-500/20"
+                  />
+                ))}
               </div>
             </div>
           );

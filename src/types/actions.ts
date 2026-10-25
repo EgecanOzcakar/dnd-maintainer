@@ -71,6 +71,8 @@ export interface FeatureActionMeta {
   readonly scaleClass?: ClassId;
   /** Resource pool spent to use it (shown as the uses counter). */
   readonly poolId?: string;
+  /** Spends a spell slot when rolled; the dice grow `perSlot` per slot level above 1st (Divine Smite). */
+  readonly spendsSlot?: { readonly perSlot: DamageDice; readonly maxSlotLevel: number };
 }
 
 /**

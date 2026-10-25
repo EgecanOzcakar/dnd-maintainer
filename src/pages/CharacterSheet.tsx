@@ -17,7 +17,8 @@ import { ConditionsPanel } from '@/components/character-sheet/ConditionsPanel';
 import { EquipmentPanel } from '@/components/character-sheet/EquipmentPanel';
 import { FeaturesPanel } from '@/components/character-sheet/FeaturesPanel';
 import { HitPointsPanel } from '@/components/character-sheet/HitPointsPanel';
-import { longRestHpUpdate } from '@/lib/hit-points';
+import { applyHeal, longRestHpUpdate, resolveCurrentHp } from '@/lib/hit-points';
+import { useRollParts } from '@/hooks/useRollParts';
 import { HitDicePanel } from '@/components/character-sheet/HitDicePanel';
 import { PendingChoicesPanel } from '@/components/character-sheet/PendingChoicesPanel';
 import { PersonalityPanel } from '@/components/character-sheet/PersonalityPanel';
@@ -31,7 +32,7 @@ import { ConfirmActionDialog, type ConfirmAction } from '@/components/character-
 import { EditHeaderDialog } from '@/components/character-sheet/edit-dialogs/EditHeaderDialog';
 import { EditPersonalityDialog } from '@/components/character-sheet/edit-dialogs/EditPersonalityDialog';
 import { EditTextDialog } from '@/components/character-sheet/edit-dialogs/EditTextDialog';
-import { buildRestUpdate } from '@/lib/rest';
+import { buildRestUpdate, getSpellSlotMax } from '@/lib/rest';
 import { exportCharacterPdf, PdfTemplateError } from '@/lib/pdf-export';
 import { collectFeatSources } from '@/lib/pdf-field-map';
 import { useCharacter, useCharacterMutations } from '@/hooks/useCharacters';
@@ -48,10 +49,29 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useBuilderAutosave } from '@/hooks/useBuilderAutosave';
 import type { AutosavePayload } from '@/hooks/useBuilderAutosave';
+import { ArcaneRecoveryPanel } from '@/components/character-sheet/ArcaneRecoveryPanel';
+import { ChosenOptionsPanel } from '@/components/character-sheet/ChosenOptionsPanel';
+import { CurrencyPanel } from '@/components/character-sheet/CurrencyPanel';
+import { ManeuversPanel } from '@/components/character-sheet/ManeuversPanel';
+import { MetamagicPanel } from '@/components/character-sheet/MetamagicPanel';
+import { ACTIVE_EFFECTS } from '@/lib/sources/active-effects';
 import { InventoryTab } from '@/components/character-sheet/InventoryTab';
-import { DiceRoller } from '@/components/character-sheet/DiceRoller';
+import { DiceRoller, type DieSize } from '@/components/character-sheet/DiceRoller';
 import type { RollPreset } from '@/components/character-sheet/roll-preset';
-import { Dices, X } from 'lucide-react';
+import { checkRollMods, saveRollMods } from '@/lib/roll-mods';
+import {
+  CONCENTRATION_BREAKERS,
+  applyCast,
+  castOptions,
+  concentrationDC,
+  endConcentration,
+  getConcentration,
+  spendSlot,
+} from '@/lib/spell-casting';
+import { getSpellDef } from '@/lib/sources/spells';
+import { useRoller } from '@/hooks/useRoller';
+import type { RollKeys } from '@/lib/dice-roll';
+import { Dices, Star, X } from 'lucide-react';
 
 import { supabase } from '@/lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
@@ -96,7 +116,6 @@ function CharacterSheetInner({
   const { saveDraft } = useBuilderAutosave(characterId);
   const [saveFailed, setSaveFailed] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
-  const [rollPreset, setRollPreset] = useState<RollPreset | null>(null);
   const [isDiceRollerOpen, setIsDiceRollerOpen] = useState(false);
 
   const classLevels = useMemo(() => {
@@ -135,10 +154,16 @@ function CharacterSheetInner({
     ]
   );
 
-  const handleSelectRollPreset = useCallback((preset: RollPreset) => {
-    setRollPreset(preset);
-    setIsDiceRollerOpen(true);
-  }, []);
+  // Shift/Alt held on the click that triggered a roll (read at the capture phase, before the button's handler).
+  const rollKeys = useRef<RollKeys>({});
+  const roll = useRoller(character.id, character.campaign_id);
+  const rollParts = useRollParts();
+  const checkMods = useCallback(
+    (target: Parameters<typeof checkRollMods>[1]) =>
+      resolved ? checkRollMods(resolved, target, applied ?? undefined) : undefined,
+    [resolved, applied]
+  );
+  const handleSelectRollPreset = useCallback((preset: RollPreset) => roll(preset, rollKeys.current), [roll]);
 
   // Autosave when isDirty (level up/down, choices, etc.)
   const latestPayloadRef = useRef<AutosavePayload>({ character: ctxCharacter, rows, resolved });
@@ -211,6 +236,141 @@ function CharacterSheetInner({
     );
   };
 
+  const concentratingOn = getConcentration(character.active_effects);
+  const spellLabel = (spellId: string) =>
+    tg(`spells.${spellId}.name` as 'spells.bless.name', { defaultValue: spellId });
+
+  const handleCast = (spellId: string, slotKey: string | null) => {
+    const def = getSpellDef(spellId);
+    const level = slotKey === 'pact' ? resolved?.spellcasting?.pactMagic?.slotLevel : slotKey ? Number(slotKey) : null;
+    const replaced = def?.concentration && concentratingOn && concentratingOn !== spellId ? concentratingOn : null;
+    handleUpdate({
+      ...(slotKey ? { spell_slots_used: spendSlot(character.spell_slots_used ?? {}, slotKey) } : {}),
+      active_effects: applyCast(character.active_effects, spellId, Boolean(def?.concentration)),
+    });
+    const spell = spellLabel(spellId);
+    toast.success(
+      level && level !== def?.level
+        ? tc('spellCasting.castAtLevelToast', { spell, level })
+        : tc('spellCasting.castToast', { spell })
+    );
+    if (replaced) toast(tc('spellCasting.replacedConcentration', { spell: spellLabel(replaced) }));
+  };
+
+  // Gaining an incapacitating condition ends concentration.
+  const handleConditionsUpdate = (updates: Partial<Character>) => {
+    const gained = (updates.conditions ?? []).some(
+      (c) => CONCENTRATION_BREAKERS.has(c) && !(character.conditions ?? []).includes(c)
+    );
+    if (gained && concentratingOn) {
+      toast(tc('spellCasting.replacedConcentration', { spell: spellLabel(concentratingOn) }));
+      return handleUpdate({ ...updates, active_effects: endConcentration(character.active_effects) });
+    }
+    handleUpdate(updates);
+  };
+
+  // Damage while concentrating prompts a CON save; dropping to 0 HP ends concentration outright.
+  const handleHpUpdate = (updates: Partial<Character>) => {
+    if (concentratingOn && maxHP != null && 'current_hp' in updates) {
+      const total = (hp: number | null | undefined, temp: number | null | undefined) =>
+        resolveCurrentHp(hp, maxHP) + (temp ?? 0);
+      const damage =
+        total(character.current_hp, character.temp_hp) -
+        total(updates.current_hp, updates.temp_hp ?? character.temp_hp);
+      if (resolveCurrentHp(updates.current_hp, maxHP) === 0) {
+        updates = { ...updates, active_effects: endConcentration(character.active_effects) };
+        toast(tc('spellCasting.replacedConcentration', { spell: spellLabel(concentratingOn) }));
+      } else if (damage > 0 && resolved) {
+        const spell = spellLabel(concentratingOn);
+        const dc = concentrationDC(damage);
+        toast(tc('spellCasting.concentrationCheck', { spell, dc }), {
+          duration: 20000,
+          action: {
+            label: tc('spellCasting.rollSave'),
+            onClick: () =>
+              roll({
+                die: 20,
+                count: 1,
+                kind: 'd20',
+                contextLabel: `Concentration: ${spell} (DC ${dc})`,
+                ...saveRollMods(resolved.savingThrows.con, applied?.savingThrows.con),
+              }),
+          },
+          cancel: {
+            label: tc('spellCasting.drop'),
+            onClick: () => handleUpdate({ active_effects: endConcentration(character.active_effects) }),
+          },
+        });
+      }
+    }
+    handleUpdate(updates);
+  };
+
+  // Limited-use feature pools (rage, channel divinity, ...): uses spent, reset by rests.
+  const poolMax = Object.fromEntries((resolved?.resourcePools ?? []).map((p) => [p.poolId, p.max]));
+  const handleSetPoolUsed = (poolId: string, used: number) =>
+    handleUpdate({
+      resource_pools_used: {
+        ...character.resource_pools_used,
+        [poolId]: Math.max(0, Math.min(poolMax[poolId] ?? used, used)),
+      },
+    });
+
+  // Switching on an effect that costs a feature use (Rage) spends it; with none left it stays off.
+  const handleEffectsChange = (next: string[]) => {
+    const current = character.active_effects ?? [];
+    const costly = ACTIVE_EFFECTS.find((e) => e.poolId && next.includes(e.id) && !current.includes(e.id));
+    if (costly?.poolId && poolMax[costly.poolId] !== undefined) {
+      const used = character.resource_pools_used?.[costly.poolId] ?? 0;
+      if (used >= poolMax[costly.poolId]) return void toast.error(tc('noFeatureUses'));
+      handleUpdate({
+        active_effects: next,
+        resource_pools_used: { ...character.resource_pools_used, [costly.poolId]: used + 1 },
+      });
+      return;
+    }
+    handleUpdate({ active_effects: next });
+  };
+
+  const handleSpendSlot = (slotKey: string) =>
+    handleUpdate({ spell_slots_used: spendSlot(character.spell_slots_used ?? {}, slotKey) });
+  const levelOneSlots = resolved
+    ? castOptions(
+        getSpellSlotMax(resolved),
+        character.spell_slots_used ?? {},
+        resolved.spellcasting?.pactMagic?.slotLevel ?? null,
+        1
+      )
+    : [];
+
+  // Spending a hit die rolls it plus CON and heals that much (min 0).
+  const handleHitDieRoll = (die: number) => {
+    if (!resolved || maxHP == null) return;
+    const con = resolved.abilities.con.modifier;
+    const out = roll({
+      die: die as DieSize,
+      count: 1,
+      kind: 'd20',
+      modifier: con,
+      contextLabel: `${tc('rollBreakdown.hitDie')} d${die}`,
+      breakdown: rollParts([{ type: 'ability', label: 'con', value: con }]),
+    });
+    const healed = applyHeal(
+      {
+        current: resolveCurrentHp(character.current_hp, maxHP),
+        temp: character.temp_hp ?? 0,
+        deathSaves: character.death_saves ?? { successes: 0, failures: 0 },
+      },
+      Math.max(0, out.total),
+      maxHP
+    );
+    handleUpdate({
+      current_hp: healed.current >= maxHP ? null : healed.current,
+      death_saves: healed.deathSaves,
+    });
+    toast.success(tc('characterSheet.hitDice.healed', { hp: Math.max(0, out.total) }));
+  };
+
   const handleShortRest = () => {
     if (!resolved) return;
     handleUpdate(buildRestUpdate('short', character, resolved));
@@ -218,7 +378,13 @@ function CharacterSheetInner({
 
   const handleLongRest = () => {
     if (!resolved) return;
-    handleUpdate({ ...buildRestUpdate('long', character, resolved), ...longRestHpUpdate(), active_effects: [] });
+    handleUpdate({
+      ...buildRestUpdate('long', character, resolved),
+      ...longRestHpUpdate(),
+      active_effects: [],
+      // Human Resourceful: Heroic Inspiration after every Long Rest.
+      ...(resolved.features.some((f) => f.feature.id === 'human-resourceful') ? { heroic_inspiration: true } : {}),
+    });
   };
 
   const handleArchive = () => {
@@ -317,7 +483,12 @@ function CharacterSheetInner({
     (resolved?.features && resolved.features.length > 0);
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div
+      className="min-h-screen bg-muted/30"
+      onClickCapture={(e) => {
+        rollKeys.current = { shift: e.shiftKey, alt: e.altKey || e.ctrlKey || e.metaKey };
+      }}
+    >
       <div className="max-w-7xl mx-auto p-8">
         {buildError && (
           <div className="mb-6 p-4 bg-destructive/10 border border-destructive/50 rounded-lg text-destructive text-sm">
@@ -397,14 +568,18 @@ function CharacterSheetInner({
         </div>
 
         {activeTab === 'inventory' ? (
-          <InventoryTab
-            characterId={character.id}
-            campaignId={character.campaign_id}
-            itemsData={itemsData}
-            armorProficiencies={resolved?.armorProficiencies}
-          />
+          <>
+            <CurrencyPanel currency={character.currency} onChange={(currency) => handleUpdate({ currency })} />
+            <InventoryTab
+              characterId={character.id}
+              campaignId={character.campaign_id}
+              itemsData={itemsData}
+              armorProficiencies={resolved?.armorProficiencies}
+            />
+          </>
         ) : (
           <>
+            <p className="text-xs text-muted-foreground mb-2">{tc('diceLog.hint')}</p>
             {/* Three-column layout: stats (left) / combat (center) / roleplay & gear (right) */}
             <div className="sheet-grid mb-6">
               {/* Left Column: Abilities, Saving Throws, Skills */}
@@ -413,6 +588,7 @@ function CharacterSheetInner({
                   abilities={abilities}
                   buildError={buildError}
                   onSelectRollPreset={handleSelectRollPreset}
+                  checkMods={checkMods}
                 />
                 <SavingThrowsPanel
                   savingThrows={savingThrows}
@@ -421,7 +597,7 @@ function CharacterSheetInner({
                   effects={applied?.savingThrows}
                 />
                 {skills ? (
-                  <SkillsPanel skills={skills} onSelectRollPreset={handleSelectRollPreset} />
+                  <SkillsPanel skills={skills} onSelectRollPreset={handleSelectRollPreset} checkMods={checkMods} />
                 ) : (
                   <div className="sheet-panel text-center text-muted-foreground">
                     <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.skills')}</h2>
@@ -449,14 +625,14 @@ function CharacterSheetInner({
                   buildError={buildError}
                 />
 
-                <ConditionsPanel character={character} onUpdate={handleUpdate} />
+                <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
 
                 {resolved && applied && (
                   <ActiveEffectsPanel
                     resolved={resolved}
                     active={character.active_effects ?? []}
                     applied={applied}
-                    onChange={(active_effects) => handleUpdate({ active_effects })}
+                    onChange={handleEffectsChange}
                   />
                 )}
 
@@ -469,10 +645,49 @@ function CharacterSheetInner({
                       <Button variant="outline" size="sm" className="flex-1" onClick={handleLongRest}>
                         {tc('characterSheet.actions.longRest')}
                       </Button>
+                      <Button
+                        variant={character.heroic_inspiration ? 'default' : 'outline'}
+                        size="sm"
+                        aria-pressed={character.heroic_inspiration}
+                        title={tc('inspiration.hint')}
+                        onClick={() => handleUpdate({ heroic_inspiration: !character.heroic_inspiration })}
+                      >
+                        <Star className="size-3.5" />
+                        {tc('inspiration.label')}
+                      </Button>
                     </div>
-                    <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleUpdate} />
-                    <HitDicePanel resolved={resolved} character={character} onUpdate={handleUpdate} />
+                    <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleHpUpdate} />
+                    <HitDicePanel
+                      resolved={resolved}
+                      character={character}
+                      onUpdate={handleUpdate}
+                      onRoll={handleHitDieRoll}
+                    />
                     <SpellSlotsPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
+                    <MetamagicPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
+                    <ManeuversPanel
+                      resolved={resolved}
+                      character={character}
+                      fighterLevel={classLevels.fighter ?? 0}
+                      onUpdate={handleUpdate}
+                      onSelectRollPreset={handleSelectRollPreset}
+                    />
+                    {(classLevels.wizard ?? 0) > 0 &&
+                      resolved.features.some((f) => f.feature.id === 'wizard-arcane-recovery') && (
+                        <ArcaneRecoveryPanel
+                          wizardLevel={classLevels.wizard ?? 0}
+                          character={character}
+                          onUpdate={handleUpdate}
+                        />
+                      )}
+                    <ChosenOptionsPanel
+                      title={tc('invocations.title')}
+                      help={tc('invocations.help')}
+                      features={resolved.features.filter(
+                        (f) =>
+                          f.feature.id.startsWith('warlock-invocation-') || f.feature.id.startsWith('warlock-pact-of-')
+                      )}
+                    />
                   </>
                 )}
 
@@ -484,10 +699,20 @@ function CharacterSheetInner({
                     attacksPerAction={resolvedActions.attacksPerAction}
                     resolved={resolved}
                     onSelectRollPreset={handleSelectRollPreset}
+                    poolsUsed={character.resource_pools_used}
+                    onSetPoolUsed={handleSetPoolUsed}
+                    slotOptions={levelOneSlots}
+                    onSpendSlot={handleSpendSlot}
                   />
                 )}
                 {resolved && <ProficienciesPanel resolved={resolved} />}
-                {resolved && <ResourcePoolsPanel resolved={resolved} />}
+                {resolved && (
+                  <ResourcePoolsPanel
+                    resolved={resolved}
+                    used={character.resource_pools_used}
+                    onSetUsed={handleSetPoolUsed}
+                  />
+                )}
                 {resolved?.features && resolved.features.length > 0 && <FeaturesPanel features={resolved.features} />}
               </div>
 
@@ -502,6 +727,13 @@ function CharacterSheetInner({
                     classId={character.class}
                     preparedSpells={character.prepared_spells}
                     onChangePrepared={(prepared_spells) => handleUpdate({ prepared_spells })}
+                    actions={applied?.actions ?? resolvedActions?.actions}
+                    spellSlotsUsed={character.spell_slots_used}
+                    onCast={handleCast}
+                    concentratingOn={concentratingOn}
+                    onEndConcentration={() =>
+                      handleUpdate({ active_effects: endConcentration(character.active_effects) })
+                    }
                   />
                 )}
                 {hasPersonality && (
@@ -580,15 +812,7 @@ function CharacterSheetInner({
                 <X className="size-4" />
               </Button>
             </div>
-            <DiceRoller
-              characterId={character.id}
-              campaignId={character.campaign_id}
-              presetDie={rollPreset?.die}
-              presetCount={rollPreset?.count}
-              presetModifier={rollPreset?.modifier}
-              presetKind={rollPreset?.kind}
-              contextLabel={rollPreset?.contextLabel}
-            />
+            <DiceRoller characterId={character.id} campaignId={character.campaign_id} />
           </div>
         ) : (
           <button

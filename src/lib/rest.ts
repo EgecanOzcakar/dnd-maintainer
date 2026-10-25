@@ -5,6 +5,9 @@ import type { ResolvedCharacter } from '@/types/resolved';
 export type HitDiceUsed = Record<string, number>;
 export type SpellSlotsUsed = Record<string, number>;
 
+/** Uses spent per feature resource pool (rage, channel-divinity, ...). */
+export type PoolsUsed = Record<string, number>;
+
 export interface RestUsed {
   readonly hitDiceUsed: HitDiceUsed;
   readonly spellSlotsUsed: SpellSlotsUsed;
@@ -94,15 +97,19 @@ export function recoverSpellSlot(used: SpellSlotsUsed, level: number | 'pact'): 
  */
 export function buildRestUpdate(
   kind: 'short' | 'long',
-  character: Pick<Character, 'hit_dice_used' | 'spell_slots_used'>,
+  character: Pick<Character, 'hit_dice_used' | 'spell_slots_used' | 'resource_pools_used'>,
   resolved: ResolvedCharacter
-): { hit_dice_used: HitDiceUsed; spell_slots_used: SpellSlotsUsed } {
+): { hit_dice_used: HitDiceUsed; spell_slots_used: SpellSlotsUsed; resource_pools_used: PoolsUsed } {
   const restUsed: RestUsed = {
     hitDiceUsed: character.hit_dice_used ?? {},
     spellSlotsUsed: character.spell_slots_used ?? {},
   };
   const next = kind === 'short' ? applyShortRest(restUsed, resolved) : applyLongRest(restUsed, resolved);
-  return { hit_dice_used: next.hitDiceUsed, spell_slots_used: next.spellSlotsUsed };
+  return {
+    hit_dice_used: next.hitDiceUsed,
+    spell_slots_used: next.spellSlotsUsed,
+    resource_pools_used: applyPoolRest(character.resource_pools_used ?? {}, resolved, kind),
+  };
 }
 
 /**
@@ -156,4 +163,41 @@ export function applyLongRest(used: RestUsed, resolved: ResolvedCharacter): Rest
   }
 
   return { hitDiceUsed, spellSlotsUsed };
+}
+
+/** Uses left in a pool. */
+export function poolRemaining(used: PoolsUsed, poolId: string, max: number): number {
+  return Math.max(0, max - (used[poolId] ?? 0));
+}
+
+/** Spends (`delta` > 0) or restores (`delta` < 0) uses of a pool, clamped to 0..max. */
+export function spendPool(used: PoolsUsed, poolId: string, max: number, delta = 1): PoolsUsed {
+  return { ...used, [poolId]: Math.min(max, Math.max(0, (used[poolId] ?? 0) + delta)) };
+}
+
+/**
+ * Pool recovery: a long rest restores everything; a short rest restores `short-rest` pools fully
+ * and `compound` pools by their `shortRestAmount` (e.g. Psionic Energy regains 1 die).
+ */
+export function applyPoolRest(used: PoolsUsed, resolved: ResolvedCharacter, kind: 'short' | 'long'): PoolsUsed {
+  if (kind === 'long') return {};
+  const next = { ...used };
+  for (const { poolId, regen } of resolved.resourcePools) {
+    if (regen === 'short-rest') delete next[poolId];
+    else if (typeof regen === 'object' && next[poolId])
+      next[poolId] = Math.max(0, next[poolId] - regen.shortRestAmount);
+  }
+  // Sorcerous Restoration: regain half your level in Sorcery Points on a short rest, once per long rest.
+  const restoration = resolved.resourcePools.find((p) => p.poolId === 'sorcerous-restoration');
+  const points = resolved.resourcePools.find((p) => p.poolId === 'sorcery-points');
+  if (
+    restoration &&
+    points &&
+    (next['sorcerous-restoration'] ?? 0) < restoration.max &&
+    (next['sorcery-points'] ?? 0) > 0
+  ) {
+    next['sorcery-points'] = Math.max(0, next['sorcery-points'] - Math.floor(points.max / 2));
+    next['sorcerous-restoration'] = (next['sorcerous-restoration'] ?? 0) + 1;
+  }
+  return next;
 }

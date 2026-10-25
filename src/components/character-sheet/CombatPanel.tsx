@@ -25,6 +25,7 @@ export function CombatPanel({
   buildError: string | null;
 }) {
   const { t: tc } = useTranslation('common');
+  const { t: tg } = useTranslation('gamedata');
 
   const speedDisplay = (() => {
     if (speed && Object.keys(speed).length > 0) {
@@ -100,6 +101,15 @@ export function CombatPanel({
             <span className="font-mono font-bold text-foreground">{passivePerception}</span>
           </div>
         )}
+        {resolved &&
+          (['investigation', 'insight'] as const)
+            .filter((skill) => resolved.skills[skill])
+            .map((skill) => (
+              <div key={skill} className="flex justify-between py-1">
+                <span>{tc('characterSheet.fields.passiveSkill', { skill: tg(`skills.${skill}`) })}</span>
+                <span className="font-mono font-bold text-foreground">{10 + resolved.skills[skill].bonus}</span>
+              </div>
+            ))}
       </div>
     </div>
   );

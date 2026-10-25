@@ -30,7 +30,12 @@ export const PALADIN_RANGER_ROGUE_ACTIONS: Readonly<Record<string, FeatureAction
   // Divine Sense is a Channel Divinity option in 2024 (Bonus Action).
   'paladin-divine-sense': { activation: 'bonus-action', poolId: 'channel-divinity' },
   // Divine Smite: always-prepared spell, Bonus Action right after a melee hit; 2d8 +1d8 per slot above 1st.
-  'paladin-divine-smite': { activation: 'bonus-action', damage: { dice: '2d8', type: 'radiant' } },
+  'paladin-divine-smite': {
+    activation: 'bonus-action',
+    damage: { dice: '2d8', type: 'radiant' },
+    // Capped at 5d8: a 4th-level slot is the most that adds dice.
+    spendsSlot: { perSlot: '1d8', maxSlotLevel: 4 },
+  },
   // Abjure Foes: Magic action, Channel Divinity; targets (up to Cha mod) save or are Frightened.
   'paladin-abjure-foes': {
     activation: 'action',

@@ -5,6 +5,7 @@ import {
   cantripDice,
   resolveActions,
   scaleDice,
+  upcastRoll,
 } from '@/lib/resolver/actions';
 import type { AbilityKey } from '@/types/database';
 import type { ResolvedAbility, ResolvedCharacter, ResolvedSpellcasting } from '@/types/resolved';
@@ -158,6 +159,41 @@ describe('resolveActions', () => {
     });
   });
 
+  it('Agonizing Blast adds the casting modifier to every Eldritch Blast beam', () => {
+    const warlock = makeResolved({
+      abilities: { ...makeResolved().abilities, cha: ability(16) },
+      spellcasting: {
+        ...wizardCasting,
+        ability: 'cha',
+        cantrips: ['eldritch-blast'],
+        knownSpells: [],
+        alwaysPreparedSpells: [],
+      },
+      features: [
+        { feature: { id: 'warlock-invocation-agonizing-blast' }, source: { origin: 'class', id: 'warlock', level: 2 } },
+      ],
+    });
+    const blast = (level: number) =>
+      resolveActions(warlock, { warlock: level }).actions.find((a) => a.refId === 'eldritch-blast');
+    expect(blast(1)?.damage).toMatchObject({ dice: '1d10', bonus: 3 });
+    // Level 5: two beams, so +3 twice, listed as its own term of the bonus.
+    expect(blast(5)?.damage).toMatchObject({ dice: '2d10', bonus: 6 });
+    expect(blast(5)?.damageParts).toEqual([{ type: 'ability', label: 'cha', value: 6 }]);
+  });
+
+  it('Divine Smite spends a slot: 2d8 plus 1d8 per slot level above 1st, up to a 4th-level slot', () => {
+    const paladin = makeResolved({
+      features: [{ feature: { id: 'paladin-divine-smite' }, source: { origin: 'class', id: 'paladin', level: 2 } }],
+    });
+    const smite = resolveActions(paladin, { paladin: 5 }).actions.find((a) => a.refId === 'paladin-divine-smite');
+    expect(smite).toMatchObject({
+      damage: { dice: '2d8' },
+      upcast: '1d8',
+      spellLevel: 1,
+      spendsSlot: { maxSlotLevel: 4 },
+    });
+  });
+
   it('off-hand weapon attacks are bonus actions', () => {
     const r = makeResolved({
       attacks: [
@@ -176,5 +212,23 @@ describe('resolveActions', () => {
       ],
     });
     expect(resolveActions(r, {}).actions[0]).toMatchObject({ activation: 'bonus-action', offHand: true });
+  });
+});
+
+describe('upcastRoll', () => {
+  const base = { dice: '8d6', bonus: 0 };
+  it('merges the same die and scales per slot level', () => {
+    expect(upcastRoll(base, '1d6', 2).roll).toEqual({ dice: '10d6', bonus: 0 });
+  });
+  it('rolls a different die separately', () => {
+    expect(upcastRoll({ dice: '4d6', bonus: 0 }, '1d10', 2)).toEqual({
+      roll: { dice: '4d6', bonus: 0 },
+      extra: ['+2d10'],
+    });
+  });
+  it('adds flat per-level amounts and ignores non-upcast casts', () => {
+    expect(upcastRoll({ dice: '', bonus: 70 }, '10', 3).roll.bonus).toBe(100);
+    expect(upcastRoll(base, '1d6', 0).roll).toBe(base);
+    expect(upcastRoll(base, undefined, 2).roll).toBe(base);
   });
 });

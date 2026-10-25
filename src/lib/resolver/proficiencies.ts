@@ -176,12 +176,12 @@ export function resolveSkills(
       bonus += proficiencyBonus;
     }
 
-    // Ability-check-bonus grants (e.g., Remarkable Athlete)
+    // Ability-check-bonus grants (e.g., Bard's Jack of All Trades: half proficiency, rounded down)
     for (const { grant } of abilityCheckBonuses) {
       if (!grant.abilities.includes(ability)) continue;
       if (grant.onlyWhenNotProficient && proficient) continue;
 
-      const bonusValue = grant.value === 'half-proficiency' ? Math.ceil(proficiencyBonus / 2) : 0;
+      const bonusValue = grant.value === 'half-proficiency' ? Math.floor(proficiencyBonus / 2) : 0;
       if (bonusValue > 0) {
         breakdown.push({ type: 'ability-check-bonus', value: bonusValue, label: grant.featureId });
         bonus += bonusValue;

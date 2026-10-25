@@ -67,6 +67,8 @@ const TABLE_COLUMNS = {
     { name: 'homebrew', type: 'jsonb' },
     { name: 'active_effects', type: 'text[]' },
     { name: 'hit_dice_used', type: 'jsonb' },
+    { name: 'resource_pools_used', type: 'jsonb' },
+    { name: 'currency', type: 'jsonb' },
     { name: 'spell_slots_used', type: 'jsonb' },
     { name: 'gender', type: 'text' },
     { name: 'size', type: 'text' },

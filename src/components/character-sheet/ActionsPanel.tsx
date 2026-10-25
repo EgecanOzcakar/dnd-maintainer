@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dices, Pencil, Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { RollPreset } from '@/components/character-sheet/roll-preset';
 import { HomebrewDialog } from '@/components/character-sheet/HomebrewDialog';
 import type { HomebrewAction } from '@/lib/homebrew';
-import { parseDiceFormula } from '@/lib/dice-helpers';
-import { formatSigned } from '@/lib/format';
 import { getItemNameKey } from '@/lib/sources/items';
 import { isSpellId } from '@/lib/sources/spells';
-import { RollModeBadge } from '@/components/character-sheet/ActiveEffectsPanel';
-import type { ResolvedAction, ResolvedRoll } from '@/lib/resolver/actions';
+import { SlotAction } from '@/components/character-sheet/SlotAction';
+import type { SlotOption } from '@/lib/spell-casting';
+import { PoolPips } from '@/components/character-sheet/PoolPips';
+import { ActionRolls } from '@/components/character-sheet/ActionRolls';
+import type { ResolvedAction } from '@/lib/resolver/actions';
 import type { AdjustedAction } from '@/lib/resolver/effects';
 import type { ActivationType } from '@/types/actions';
 import type { ResolvedCharacter } from '@/types/resolved';
@@ -49,6 +50,12 @@ interface ActionsPanelProps {
   /** Custom entries behind the homebrew rows; with `onChangeHomebrew`, enables add/edit/delete. */
   readonly homebrew?: readonly HomebrewAction[];
   readonly onChangeHomebrew?: (next: HomebrewAction[]) => void;
+  /** Uses spent per resource pool; with `onSetPoolUsed`, pool actions get use pips and a Use button. */
+  readonly poolsUsed?: Readonly<Record<string, number>>;
+  readonly onSetPoolUsed?: (poolId: string, used: number) => void;
+  /** Spell slots a slot-spending action (Divine Smite) can use, and how to spend one. */
+  readonly slotOptions?: readonly SlotOption[];
+  readonly onSpendSlot?: (slotKey: string) => void;
 }
 
 export function ActionsPanel({
@@ -58,6 +65,10 @@ export function ActionsPanel({
   onSelectRollPreset,
   homebrew = [],
   onChangeHomebrew,
+  poolsUsed = {},
+  onSetPoolUsed,
+  slotOptions = [],
+  onSpendSlot,
 }: ActionsPanelProps) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
@@ -79,19 +90,6 @@ export function ActionsPanel({
     return t(`features.${a.refId}.name` as `features.${string}.name`, { defaultValue: featName });
   };
 
-  const roll = (contextLabel: string, r: ResolvedRoll | { dice: 'd20'; bonus: number }) => {
-    if (!onSelectRollPreset || !r.dice.includes('d')) return;
-    const parsed = parseDiceFormula(r.dice === 'd20' ? '1d20' : r.dice);
-    onSelectRollPreset({
-      die: parsed.die,
-      count: parsed.count,
-      modifier: r.bonus,
-      contextLabel,
-      kind: r.dice === 'd20' ? 'd20' : 'damage',
-    });
-  };
-
-  const fmt = (r: ResolvedRoll) => (r.dice ? `${r.dice}${r.bonus !== 0 ? formatSigned(r.bonus) : ''}` : `${r.bonus}`);
   const visible = actions.filter((a) => matches(filter, a));
   const showBasics = filter === 'all' || filter === 'action';
 
@@ -128,6 +126,11 @@ export function ActionsPanel({
         {visible.map((a) => {
           const name = nameOf(a);
           const uses = a.poolId ? poolMax.get(a.poolId) : undefined;
+          const spent = a.poolId ? (poolsUsed[a.poolId] ?? 0) : 0;
+          const track = a.poolId && uses !== undefined && onSetPoolUsed ? a.poolId : null;
+          const spend = track ? () => onSetPoolUsed?.(track, Math.min(uses ?? 0, spent + 1)) : undefined;
+          // Actions that roll spend a use when rolled; the rest get a Use button.
+          const rolls = Boolean(a.damage?.dice.includes('d') || a.heal?.dice.includes('d'));
           return (
             <li key={a.key} className="py-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="font-medium text-foreground mr-auto">
@@ -139,68 +142,47 @@ export function ActionsPanel({
               <Badge variant="outline" className="text-[10px] py-0">
                 {tc(`characterSheet.combatView.actions.activation.${a.activation}`)}
               </Badge>
-              {a.spellLevel !== undefined && (
+              {a.spellLevel !== undefined && !a.spendsSlot && (
                 <Badge variant="secondary" className="text-[10px] py-0">
                   {a.spellLevel === 0
                     ? tc('characterSheet.combatView.actions.cantrip')
                     : tc('characterSheet.combatView.actions.spellLevel', { level: a.spellLevel })}
                 </Badge>
               )}
-              {uses !== undefined && (
-                <span className="text-muted-foreground">
-                  {tc('characterSheet.combatView.actions.uses', { count: uses })}
-                </span>
-              )}
-              {a.toHit !== undefined && (
+              {uses !== undefined &&
+                (track ? (
+                  <PoolPips name={name} max={uses} used={spent} onSetUsed={(n) => onSetPoolUsed?.(track, n)} />
+                ) : (
+                  <span className="text-muted-foreground">
+                    {tc('characterSheet.combatView.actions.uses', { count: uses })}
+                  </span>
+                ))}
+              {track && !rolls && (
                 <Button
                   size="sm"
-                  variant="ghost"
-                  className="h-6 px-1.5 font-mono text-primary gap-0.5"
-                  onClick={() => roll(`${name} ${formatSigned(a.toHit ?? 0)}`, { dice: 'd20', bonus: a.toHit ?? 0 })}
+                  variant="outline"
+                  className="h-6 px-2 text-[11px]"
+                  disabled={spent >= (uses ?? 0)}
+                  onClick={spend}
                 >
-                  <Dices className="size-3" />
-                  {formatSigned(a.toHit)}
-                  {a.toHitExtra?.join('')}
+                  {tc('characterSheet.combatView.actions.use')}
                 </Button>
               )}
-              <RollModeBadge mode={a.mode} />
-              {a.save && (
-                <span className="font-mono">
-                  {tc('characterSheet.combatView.actions.save', {
-                    ability: t(`abilities.${a.save.ability}`),
-                    dc: a.save.dc,
-                  })}
-                </span>
-              )}
-              {a.damage && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 px-1.5 font-mono text-emerald-600"
-                  disabled={!a.damage.dice.includes('d')}
-                  onClick={() => a.damage && roll(`${name} ${fmt(a.damage)}`, a.damage)}
-                >
-                  {fmt(a.damage)}
-                  {a.damageExtra?.join('')}{' '}
-                  {a.damage.type === 'weapon'
-                    ? tc('characterSheet.combatView.actions.weaponDamage')
-                    : t(`damageTypes.${a.damage.type}` as `damageTypes.${string}`, { defaultValue: a.damage.type })}
-                </Button>
-              )}
-              {a.heal && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 px-1.5 font-mono text-sky-600"
-                  onClick={() => a.heal && roll(`${name} ${fmt(a.heal)}`, a.heal)}
-                >
-                  {tc('characterSheet.combatView.actions.heal', { roll: fmt(a.heal) })}
-                </Button>
-              )}
-              {a.versatileDice && (
-                <span className="text-muted-foreground">
-                  {tc('characterSheet.combatView.actions.twoHanded', { dice: a.versatileDice })}
-                </span>
+              {a.spendsSlot && onSpendSlot ? (
+                <SlotAction
+                  action={a}
+                  name={name}
+                  options={slotOptions}
+                  onSpendSlot={onSpendSlot}
+                  onSelectRollPreset={onSelectRollPreset}
+                />
+              ) : (
+                <ActionRolls
+                  action={a}
+                  name={name}
+                  onSelectRollPreset={onSelectRollPreset}
+                  onUse={rolls ? spend : undefined}
+                />
               )}
               {a.usesPerRest && (
                 <span className="text-muted-foreground">
@@ -228,11 +210,6 @@ export function ActionsPanel({
                   >
                     <Trash2 className="size-3" />
                   </Button>
-                </span>
-              )}
-              {a.upcast && (
-                <span className="text-muted-foreground">
-                  {tc('characterSheet.combatView.actions.upcast', { dice: a.upcast })}
                 </span>
               )}
             </li>

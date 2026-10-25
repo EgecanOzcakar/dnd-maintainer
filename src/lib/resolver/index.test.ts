@@ -275,9 +275,9 @@ describe('Human Fighter L1 integration', () => {
     expect(result.hitDie[0].count).toBe(1);
   });
 
-  it('initiative equals DEX modifier (1) — DEX 13, no 2024 human bonus', () => {
+  it('initiative is DEX modifier (1) plus the proficiency bonus (2) from the Alert feat', () => {
     const result = resolveCharacter(input);
-    expect(result.initiative).toBe(1);
+    expect(result.initiative).toBe(3);
   });
 
   it('spellcasting is null (fighter has no spellcasting at L1)', () => {

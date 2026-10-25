@@ -575,7 +575,9 @@
     "hitDice": {
       "dieLabel": "d{{die}} × {{count}}",
       "available": "{{available}} / {{max}} available",
-      "spend": "Spend"
+      "spend": "Roll",
+      "rollTitle": "Roll d{{die}} {{mod}} (CON) and regain that many HP",
+      "healed": "{{hp}} HP regained"
     },
     "spellSlots": {
       "levelLabel": "Level {{level}}",
@@ -609,6 +611,7 @@
         "swim": "Swim",
         "burrow": "Burrow"
       },
+      "passiveSkill": "Passive {{skill}}",
       "passivePerception": "Passive Perception",
       "spellcastingAbility": "Spellcasting Ability",
       "spellSaveDC": "Spell Save DC",
@@ -646,7 +649,8 @@
       "proficiency": "Proficiency",
       "expertise": "Expertise",
       "expandAll": "Expand All",
-      "collapseAll": "Collapse All"
+      "collapseAll": "Collapse All",
+      "toggle": "Show {{skill}} breakdown"
     },
     "equipment": {
       "sourceFrom": "From {{name}}",
@@ -661,6 +665,9 @@
     },
     "resourcePools": {
       "max": "Max: {{max}}",
+      "spend": "Use {{name}}",
+      "restore": "Restore {{name}}",
+      "remaining": "{{left}} / {{max}}",
       "dieSize": "Die: d{{dieSize}}",
       "source": "Granted by {{source}}",
       "regen": {
@@ -850,6 +857,7 @@
         "concentration": "Concentration",
         "ritual": "Ritual",
         "usesPerRest": "{{uses}} / {{regen}}",
+        "use": "Use",
         "attacksPerAction_one": "1 attack per Attack action",
         "attacksPerAction_other": "{{count}} attacks per Attack action",
         "filters": {
@@ -1428,12 +1436,101 @@
     },
     "showAll": "Show all {{count}}"
   },
+  "rollBreakdown": {
+    "exhaustion": "Exhaustion",
+    "level": "Class level",
+    "flat": "Flat bonus",
+    "effectDice": "Effect dice",
+    "reliableTalent": "Reliable Talent: d20 below 10 counts as 10",
+    "armorDisadvantage": "Untrained armor: disadvantage",
+    "total": "Total",
+    "hitDie": "Hit die"
+  },
+  "arcaneRecovery": {
+    "budget": "Recoverable slot levels left: {{left}}",
+    "recover": "Recover a level {{level}} slot",
+    "none": "No spent slots of 5th level or lower."
+  },
+  "invocations": {
+    "title": "Eldritch Invocations",
+    "help": "Your chosen Pact and Invocations. Their effects are listed in full; Agonizing Blast is already added to Eldritch Blast damage."
+  },
+  "currency": {
+    "title": "Coins",
+    "cp": "CP",
+    "sp": "SP",
+    "ep": "EP",
+    "gp": "GP",
+    "pp": "PP",
+    "total": "Total: {{gp}} gp",
+    "amount": "{{coin}} amount"
+  },
+  "inspiration": {
+    "label": "Heroic Inspiration",
+    "hint": "Reroll one die and use the new roll. Humans regain it on a Long Rest (Resourceful)."
+  },
+  "noFeatureUses": "No uses of that feature left",
+  "spellDrawer": {
+    "saveDC": "Your save DC {{dc}}",
+    "attack": "Your spell attack {{bonus}}",
+    "open": "Details for {{spell}}"
+  },
+  "maneuvers": {
+    "title": "Maneuvers",
+    "dice": "Superiority Dice (d{{die}})",
+    "diceName": "Superiority Dice",
+    "saveDC": "Maneuver save DC {{dc}} (8 + proficiency + {{mod}} Strength or Dexterity)",
+    "dc": "DC {{dc}}",
+    "saveBadge": "{{ability}} save DC {{dc}}",
+    "use": "Use",
+    "help": "Spend a Superiority Die and roll it as part of an attack or check. You can use only one maneuver per attack. Rules are summarised from the 2024 Player's Handbook.",
+    "none": "No maneuvers chosen yet. Pick them under Pending Choices.",
+    "relentlessHint": "next use rolls a free d8 (once per turn)"
+  },
+  "metamagic": {
+    "title": "Metamagic",
+    "sorceryPoints": "Sorcery Points",
+    "fontTitle": "Font of Magic",
+    "convertHelp": "Bonus Action: expend a spell slot to gain Sorcery Points equal to its level.",
+    "createHelp": "Bonus Action: spend Sorcery Points to create a spell slot. It vanishes when you finish a Long Rest. Cost: 1st 2, 2nd 3, 3rd 5, 4th 6, 5th 7 (no slots above 5th level).",
+    "convertButton": "Level {{level}} slot: +{{points}} SP",
+    "createButton": "Level {{level}} slot: {{cost}} SP",
+    "cost": "{{cost}} SP",
+    "use": "Use",
+    "optionsTitle": "Your Metamagic options",
+    "optionsHelp": "Spend Sorcery Points as you cast a spell. You can use only one Metamagic option per spell, except Empowered Spell and Seeking Spell, which can join another.",
+    "noOptions": "No Metamagic options chosen yet. Pick them under Pending Choices.",
+    "notEnough": "Not enough Sorcery Points",
+    "spent": "Spent {{cost}} SP on {{name}} ({{left}} left)",
+    "converted": "Converted a level {{level}} slot into {{points}} Sorcery Points",
+    "created": "Created a level {{level}} spell slot",
+    "extraSlot": "Created slot"
+  },
+  "spellCasting": {
+    "search": "Search spells",
+    "cast": "Cast",
+    "concentrating": "Concentrating",
+    "concentratingOn": "Concentrating on {{spell}}",
+    "endConcentration": "End",
+    "slotLevel": "Slot level for {{spell}}",
+    "levelOption": "Level {{level}}",
+    "pactOption": "Pact (level {{level}})",
+    "noSlots": "No spell slots left",
+    "castToast": "Cast {{spell}}",
+    "castAtLevelToast": "Cast {{spell}} at level {{level}}",
+    "replacedConcentration": "Concentration on {{spell}} ended.",
+    "concentrationCheck": "Concentration check: {{spell}} (CON save DC {{dc}})",
+    "rollSave": "Roll save",
+    "drop": "Drop"
+  },
   "diceLog": {
     "title": "Campaign Rolls",
     "empty": "No shared rolls yet",
     "advantage": "Advantage",
     "disadvantage": "Disadvantage",
     "critical": "Critical hit (double dice)",
+    "critHint": "Shift-click to roll a critical hit",
+    "hint": "Click to roll. Shift-click: advantage / critical hit. Alt-click: disadvantage.",
     "natural20": "Natural 20",
     "natural1": "Natural 1",
     "unknownRoller": "Unknown"
@@ -1514,7 +1611,8 @@
       "reckless-attack": "Reckless Attack",
       "mage-armor": "Mage Armor",
       "barkskin": "Barkskin",
-      "invisible": "Invisible"
+      "invisible": "Invisible",
+      "innate-sorcery": "Innate Sorcery"
     },
     "badge": {
       "adv": "ADV",

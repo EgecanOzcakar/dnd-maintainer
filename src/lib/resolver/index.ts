@@ -482,7 +482,8 @@ export function resolveCharacter(input: ResolverInput): ResolvedCharacter {
     hitDie,
     hitPoints,
     speed,
-    initiative: dexModifier,
+    // 2024 Alert: add Proficiency Bonus to Initiative.
+    initiative: dexModifier + (features.some((f) => f.feature.id === 'feat-alert') ? proficiencyBonus : 0),
     proficiencyBonus,
     armorClass: finalArmorClass,
     savingThrows: finalSavingThrows,

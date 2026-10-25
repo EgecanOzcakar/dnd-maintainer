@@ -147,9 +147,10 @@ export type SpeedMode = 'walk' | 'fly' | 'swim' | 'climb' | 'burrow';
  * Environment condition that gates a speed (descriptive, not runtime-evaluated).
  * The label is carried through to the resolved speed so the UI can show e.g.
  * "Fly 30 ft (while not in an enclosed space)" without modeling enclosed-space detection.
- * - `'not-enclosed'`: Circle of the Sea L10 Stormborn fly speed.
+ * - `'not-enclosed'`: legacy 2014 wording, kept for stored data.
+ * - `'wrath-of-the-sea'`: Circle of the Sea L10 Stormborn fly speed (only while Wrath of the Sea is active).
  */
-export type SpeedCondition = 'not-enclosed';
+export type SpeedCondition = 'not-enclosed' | 'wrath-of-the-sea';
 
 export interface SpeedGrant {
   readonly type: 'speed';
@@ -332,7 +333,12 @@ export type ResourcePoolMax =
    * single class's level (same single-class assumption as the other level-keyed
    * modes). The resolver clamps the result at 0.
    */
-  | { readonly mode: 'class-level-plus'; readonly classId: ClassId; readonly offset: number };
+  | { readonly mode: 'class-level-plus'; readonly classId: ClassId; readonly offset: number }
+  /**
+   * The max equals the character's `ability` modifier, at least `min` (default 1) — e.g. the War Domain's
+   * War Priest (Wisdom modifier, minimum 1). Resolved from the final ability scores.
+   */
+  | { readonly mode: 'ability-modifier'; readonly ability: AbilityKey; readonly min?: number };
 
 /**
  * Die sizes that scale with character level — currently only the Psi Warrior /

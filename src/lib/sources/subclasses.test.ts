@@ -180,7 +180,7 @@ describe('Barbarian / Bard / Cleric subclass level tables (2024 PHB)', () => {
     ['lifedomain', 5, ['mass-healing-word', 'revivify']],
     ['lifedomain', 7, ['aura-of-life', 'death-ward']],
     ['lifedomain', 9, ['greater-restoration', 'mass-cure-wounds']],
-    ['lightdomain', 3, ['light', 'burning-hands', 'faerie-fire', 'scorching-ray', 'see-invisibility']],
+    ['lightdomain', 3, ['burning-hands', 'faerie-fire', 'scorching-ray', 'see-invisibility']],
     ['lightdomain', 5, ['daylight', 'fireball']],
     ['lightdomain', 7, ['arcane-eye', 'wall-of-fire']],
     ['lightdomain', 9, ['flame-strike', 'scrying']],
@@ -192,9 +192,9 @@ describe('Barbarian / Bard / Cleric subclass level tables (2024 PHB)', () => {
     ['wardomain', 5, ['crusaders-mantle', 'spirit-guardians']],
     ['wardomain', 7, ['fire-shield', 'freedom-of-movement']],
     ['wardomain', 9, ['hold-monster', 'steel-wind-strike']],
-    ['wildheart', 3, ['speak-with-animals']],
+    ['wildheart', 3, ['beast-sense', 'speak-with-animals']],
     ['wildheart', 10, ['commune-with-nature']],
-    ['collegeglamour', 3, ['charm-person']],
+    ['collegeglamour', 3, ['charm-person', 'mirror-image']],
     ['collegeglamour', 6, ['command']],
   ];
 
@@ -207,10 +207,15 @@ describe('Barbarian / Bard / Cleric subclass level tables (2024 PHB)', () => {
     expect(grants.some((g) => g.type === 'proficiency')).toBe(false);
   });
 
-  it('War Domain grants martial weapons and heavy armor, and B/P/S resistance at L17', () => {
+  it('War Domain grants no proficiencies (2024) and B/P/S resistance at L17', () => {
     const l3 = grantsAt('wardomain', 3);
-    expect(l3).toContainEqual({ type: 'proficiency', category: 'armor', id: 'heavy' });
-    expect(l3).toContainEqual({ type: 'proficiency', category: 'weapon', id: 'martial' });
+    expect(l3.some((g) => g.type === 'proficiency')).toBe(false);
+    expect(l3).toContainEqual({
+      type: 'resource-pool',
+      poolId: 'war-priest',
+      max: { mode: 'ability-modifier', ability: 'wis' },
+      regen: 'short-rest',
+    });
     const types = grantsAt('wardomain', 17).flatMap((g) => (g.type === 'resistance' ? [g.damageType] : []));
     expect(types).toEqual(['bludgeoning', 'piercing', 'slashing']);
   });
@@ -390,7 +395,6 @@ describe('getSubclassSource — Circle of the Sea', () => {
       'fog-cloud',
       'gust-of-wind',
       'ray-of-frost',
-      'shatter',
       'thunderwave',
       'lightning-bolt',
       'water-breathing',
@@ -425,7 +429,12 @@ describe('getSubclassSource — Circle of the Sea', () => {
     expect(level10?.grants).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ type: 'feature', feature: expect.objectContaining({ id: 'circlesea-stormborn' }) }),
-        expect.objectContaining({ type: 'speed', mode: 'fly', value: 30, condition: 'not-enclosed' }),
+        expect.objectContaining({
+          type: 'speed',
+          mode: 'fly',
+          value: 'walk-equivalent',
+          condition: 'wrath-of-the-sea',
+        }),
       ])
     );
   });
@@ -3088,7 +3097,7 @@ describe('Cleric Light Domain resolver integration', () => {
     };
   }
 
-  it('Cleric L3 Light Domain: light is in spellcasting.cantrips (not alwaysPreparedSpells)', () => {
+  it('Cleric L3 Light Domain: 2024 grants no bonus Light cantrip', () => {
     const build = makeLightDomainBuild(3);
     const { bundles, expandedFeats } = collectBundles(build);
     const resolved = resolveCharacter({
@@ -3099,7 +3108,7 @@ describe('Cleric Light Domain resolver integration', () => {
       expandedFeats,
     });
     expect(resolved.spellcasting).not.toBeNull();
-    expect(resolved.spellcasting!.cantrips).toContain('light');
+    expect(resolved.spellcasting!.cantrips).not.toContain('light');
     expect(resolved.spellcasting!.alwaysPreparedSpells).not.toContain('light');
   });
 

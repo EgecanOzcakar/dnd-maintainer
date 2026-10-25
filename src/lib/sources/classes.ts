@@ -1,7 +1,7 @@
 import { makeQuickBuild, type ClassSource } from '@/types/sources';
 import type { FeatureChoiceGrant, Grant, SpellChoiceGrant } from '@/types/grants';
 import { createChoiceKey } from '@/types/choices';
-import { FIGHTING_STYLE_IDS } from '@/lib/dnd-helpers';
+import { FIGHTING_STYLE_IDS, type ClassId } from '@/lib/dnd-helpers';
 
 const EMPTY_LEVEL = { grants: [] } as const;
 
@@ -96,7 +96,7 @@ const asiOrFeat = (classId: FullCasterId, n: number): readonly Grant[] => [
 ];
 
 /** Level 19 Epic Boon: display feature plus an Epic Boon feat pick (reuses the old level-19 feat-choice key). */
-const epicBoon = (classId: FullCasterId, n: number): readonly Grant[] => [
+const epicBoon = (classId: ClassId, n: number): readonly Grant[] => [
   { type: 'feature', feature: { id: `${classId}-epic-boon` } },
   {
     type: 'feat-choice',
@@ -204,7 +204,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
                 { minLevel: 17, value: 6 },
               ],
             },
-            regen: 'long-rest',
+            regen: { mode: 'compound', shortRestAmount: 1 },
           },
           { type: 'feature', feature: { id: 'barbarian-unarmored-defense' } },
           { type: 'feature', feature: { id: 'barbarian-weapon-mastery' } },
@@ -319,7 +319,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-improved-brutal-strike-2' } }] },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-indomitable-might' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'barbarian-epic-boon' } }] },
+      { grants: [...epicBoon('barbarian', 4)] },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-primal-champion' } }] },
     ],
   },
@@ -630,16 +630,9 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         ],
       },
       {
-        // L19: ASI / Epic Boon, +1 prepared spell
+        // L19: Epic Boon, +1 prepared spell
         grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'bard', 4), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'bard', 4),
-            from: null,
-            category: 'general',
-          },
-          { type: 'feature', feature: { id: 'bard-epic-boon' } },
+          ...epicBoon('bard', 4),
           {
             type: 'spell-choice',
             key: createChoiceKey('spell-choice', 'class', 'bard', 19),
@@ -653,6 +646,8 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         // L20: Words of Creation, +1 prepared spell
         grants: [
           { type: 'feature', feature: { id: 'bard-words-of-creation' } },
+          { type: 'spell', spellId: 'power-word-heal', alwaysPrepared: true },
+          { type: 'spell', spellId: 'power-word-kill', alwaysPrepared: true },
           {
             type: 'spell-choice',
             key: createChoiceKey('spell-choice', 'class', 'bard', 20),
@@ -852,17 +847,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'cleric-channel-divinity-4' } }] },
-      {
-        grants: [
-          { type: 'asi', key: createChoiceKey('asi', 'class', 'cleric', 4), points: 2, from: null },
-          {
-            type: 'feat-choice',
-            key: createChoiceKey('feat-choice', 'class', 'cleric', 4),
-            from: null,
-            category: 'general',
-          },
-        ],
-      },
+      { grants: [...epicBoon('cleric', 4)] },
       { grants: [{ type: 'feature', feature: { id: 'cleric-greater-divine-intervention' } }] },
     ],
   },
@@ -943,12 +928,14 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'armor-class', calculation: { mode: 'armored' } },
           { type: 'feature', feature: { id: 'druid-druidic' } },
+          // Druidic: Speak with Animals is always prepared.
+          { type: 'spell', spellId: 'speak-with-animals', alwaysPrepared: true },
         ],
       },
       {
         grants: [
           { type: 'feature', feature: { id: 'druid-wild-shape' } },
-          // Wild Shape uses: 2 (L2), 3 (L6), 4 (L17). A Short Rest regains one use; modeled as long-rest only.
+          // Wild Shape uses: 2 (L2), 3 (L6), 4 (L17). A Short Rest regains one use, a Long Rest all of them.
           {
             type: 'resource-pool',
             poolId: 'wild-shape',
@@ -961,7 +948,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
                 { minLevel: 17, value: 4 },
               ],
             },
-            regen: 'long-rest',
+            regen: { mode: 'compound', shortRestAmount: 1 },
           },
           { type: 'feature', feature: { id: 'druid-wild-companion' } },
         ],
@@ -1064,7 +1051,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       EMPTY_LEVEL,
       { grants: [{ type: 'feature', feature: { id: 'druid-beast-spells' } }] },
-      { grants: [{ type: 'feature', feature: { id: 'druid-epic-boon' } }] },
+      { grants: [...epicBoon('druid', 4)] },
       { grants: [{ type: 'feature', feature: { id: 'druid-archdruid' } }] },
     ],
   },

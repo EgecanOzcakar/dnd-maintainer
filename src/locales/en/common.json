@@ -326,7 +326,10 @@
       "featureChoice": "Choose an option",
       "unsupported": "Choice not yet supported: {{type}}",
       "remaining": "remaining",
-      "fromSource": "from {{source}}"
+      "fromSource": "from {{source}}",
+      "subclassChoice": "Choose a subclass",
+      "asiChoice": "Allocate your ability score improvement",
+      "bundleChoice": "Choose your starting equipment"
     },
     "finalizeBlockers": {
       "title": "Before you can finalize:",
@@ -335,7 +338,8 @@
       "missingClass": "Class is required",
       "missingBackground": "Background is required",
       "missingAlignment": "Alignment is required",
-      "pendingChoice": "Pending {{type}} ({{key}})"
+      "pendingChoice": "{{what}} ({{source}})",
+      "goToStep": "Go to {{step}}"
     },
     "status": {
       "saving": "Saving...",
@@ -425,7 +429,13 @@
       "backgroundAsiLabel": "Background ASI",
       "backgroundAsiHelp": "Distribute 3 points across your eligible abilities (maximum +2 per ability).",
       "totalLabel": "Total",
-      "modLabel": "Mod"
+      "modLabel": "Mod",
+      "unassigned": "Assign all six scores to continue: {{count}} left.",
+      "pointsLeft": "{{count}} points left to spend.",
+      "assignScore": "Score for {{ability}}",
+      "unassignValue": "Unassign {{value}}",
+      "increaseBase": "Increase {{ability}} base score",
+      "decreaseBase": "Decrease {{ability}} base score"
     },
     "skills": {
       "selectClassFirst": "Please select a class in the Basics step before choosing skills.",
@@ -546,13 +556,41 @@
       "catalogWeapons": "Weapons",
       "catalogArmor": "Armor",
       "catalogGear": "Adventuring Gear",
-      "catalogPacks": "Packs"
+      "catalogPacks": "Packs",
+      "searchLabel": "Search items",
+      "searchPlaceholder": "Search weapons, armor, gear and packs...",
+      "addNamed": "Add {{name}}",
+      "decreaseQuantity": "Remove one {{name}}",
+      "increaseQuantity": "Add one more {{name}}",
+      "switchTitle": "Switch equipment mode?",
+      "switchToGoldConfirm": "Buying with gold replaces your class loadout picks. They will be cleared.",
+      "switchToStartingConfirm": "Switching to starting equipment empties your shopping cart.",
+      "switchAction": "Switch mode"
     },
     "errors": {
       "noCampaignId": "Campaign ID is required to create a character.",
       "failedToFinalize": "Failed to finalize character: {{message}}",
       "failedToSaveDraft": "Failed to save draft. Your recent changes may not have been saved.",
       "unknownStep": "Unknown step: {{step}}"
+    },
+    "stepIndicator": {
+      "label": "Character builder steps",
+      "stepOf": "Step {{current}} of {{total}}: {{name}}",
+      "stepAria": "Step {{number}}: {{name}}",
+      "incomplete": "incomplete",
+      "locked": "Fill in name, species, class, background and alignment on Basics to continue."
+    },
+    "fillIn": "Fill in: {{fields}}",
+    "classChange": {
+      "title": "Change class?",
+      "confirm": "Switching from {{from}} to {{to}} discards the level 1 choices you made for {{from}} (skills, spells, equipment and so on).",
+      "action": "Switch to {{class}}"
+    },
+    "search": {
+      "label": "Search this list",
+      "placeholder": "Search...",
+      "noMatches": "Nothing matches your search.",
+      "spellDetails": "Details for {{name}}"
     }
   },
   "characterSheet": {
@@ -595,7 +633,8 @@
       "useSlot": "Use level {{level}} spell slot",
       "recoverSlot": "Recover level {{level}} spell slot",
       "usePact": "Use Pact Magic slot",
-      "recoverPact": "Recover Pact Magic slot"
+      "recoverPact": "Recover Pact Magic slot",
+      "remaining": "{{left}}/{{max}} left"
     },
     "fields": {
       "class": "Class",
@@ -654,14 +693,22 @@
       "editCombatStats": "Edit Combat Stats",
       "editPersonality": "Edit Personality",
       "editBackstory": "Edit Backstory",
-      "editAppearance": "Edit Appearance"
+      "editAppearance": "Edit Appearance",
+      "discardPrompt": "Discard your unsaved changes?",
+      "keepEditing": "Keep editing",
+      "discard": "Discard"
     },
     "skillBreakdown": {
       "proficiency": "Proficiency",
       "expertise": "Expertise",
       "expandAll": "Expand All",
       "collapseAll": "Collapse All",
-      "toggle": "Show {{skill}} breakdown"
+      "toggle": "Show {{skill}} breakdown",
+      "checkLabel": "Skill Check: {{skill}} ({{bonus}})",
+      "rollSkill": "Roll {{skill}} {{bonus}}",
+      "minRoll": "min {{min}}",
+      "armorDisadvantage": "DIS",
+      "armorDisadvantageTitle": "Disadvantage on Strength and Dexterity tests while wearing armor without training"
     },
     "equipment": {
       "sourceFrom": "From {{name}}",
@@ -725,7 +772,13 @@
       "abilitiesUnavailable": "Unable to allocate ability scores. Please fix any build errors first.",
       "chooseAsi": "Ability Score Improvement",
       "chooseFeat": "Feat",
-      "asiOrFeatPrompt": "Increase ability scores or take a feat"
+      "asiOrFeatPrompt": "Increase ability scores or take a feat",
+      "hpResult": "Max HP {{from}} → {{to}} (+{{gain}}, including your CON modifier)",
+      "discardPrompt": "Discard the choices you have made for this level?",
+      "keepEditing": "Keep editing",
+      "discard": "Discard",
+      "choicesLeft": "{{count}} choice left to make",
+      "choicesLeft_other": "{{count}} choices left to make"
     },
     "levelManagement": {
       "levelUp": "Level Up",
@@ -747,7 +800,9 @@
       "bulkAdvance": "Jump to level",
       "bulkAdvanceButton": "Advance",
       "bulkAdvanceHint": "Adds levels with average HP. Resolve subclass, ASI, and feature choices in Pending Choices.",
-      "bulkAdvanceSuccess": "Advanced to {{className}} level {{level}}"
+      "bulkAdvanceSuccess": "Advanced to {{className}} level {{level}}",
+      "levelDownTitle": "Remove level {{level}}?",
+      "levelDownConfirm": "Your {{className}} level {{level}} choices (HP roll, features, spells) are set aside. You can restore the level straight afterwards with Restore Level."
     },
     "asi": {
       "asiTitle": "Ability Score Improvement",
@@ -758,7 +813,9 @@
       "lockIn": "Lock In"
     },
     "pendingChoices": {
-      "description": "{{count}} choice(s) require your attention."
+      "description": "{{count}} choice(s) require your attention.",
+      "resolve": "Make choices",
+      "allDone": "All choices made"
     },
     "classLevelLabel": "(Lv. {{level}})",
     "subclassPicker": {
@@ -849,7 +906,8 @@
         "clearHistory": "Clear",
         "noHistory": "No rolls yet",
         "rollEntry": "{{count}}{{die}} {{modifier}} = {{result}}",
-        "rollEntryNoMod": "{{count}}{{die}} = {{result}}"
+        "rollEntryNoMod": "{{count}}{{die}} = {{result}}",
+        "dieGroup": "Die size"
       },
       "actions": {
         "roll": "Roll",
@@ -1310,7 +1368,35 @@
     "transferDescription": "Give an item from your inventory to another party member in this campaign.",
     "targetMember": "Target Party Member",
     "quantityToTransfer": "Quantity to Transfer (Max {{max}})",
-    "confirmTransfer": "Confirm Transfer"
+    "confirmTransfer": "Confirm Transfer",
+    "added": "Added {{name}}",
+    "removed": "Removed {{name}}",
+    "undo": "Undo",
+    "transferred": "Transferred item to {{target}}",
+    "transferFailed": "Transfer failed",
+    "partyMemberFallback": "Party Member",
+    "characterFallback": "Character",
+    "searchPlaceholder": "Search inventory items...",
+    "catalogSearchPlaceholder": "Search catalog items (weapons, armor, gear)...",
+    "customNamePlaceholder": "e.g. Ring of Protection",
+    "filter": {
+      "all": "All",
+      "weapon": "Weapons",
+      "armor": "Armor",
+      "gear": "Gear",
+      "pack": "Packs"
+    },
+    "equipItem": "Equip {{name}}",
+    "unequipItem": "Unequip {{name}}",
+    "decreaseQty": "Decrease quantity of {{name}}",
+    "increaseQty": "Increase quantity of {{name}}",
+    "transferItemAria": "Transfer {{name}} to a party member",
+    "removeItemAria": "Remove {{name}}",
+    "catalogCap": "Showing the first {{shown}} of {{total}} matches. Type to narrow the list.",
+    "noShieldBonusTitle": "No AC bonus without shield training",
+    "armorPenaltyTitle": "Disadvantage on STR/DEX tests & cannot cast spells",
+    "noShieldTraining": "No Shield Training",
+    "lacksArmorTraining": "Lacks Armor Training"
   },
   "dmControl": {
     "title": "DM Control & Initiative Console",

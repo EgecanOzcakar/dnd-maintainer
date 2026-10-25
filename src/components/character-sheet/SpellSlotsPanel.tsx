@@ -62,12 +62,17 @@ export function SpellSlotsPanel({ resolved, character, onUpdate }: SpellSlotsPan
                       }
                       aria-pressed={isFilled}
                       onClick={() => handlePipClick(key, i, isFilled)}
-                      className={`size-6 rounded-full border-2 transition-colors cursor-pointer ${
-                        isFilled
-                          ? 'bg-primary border-primary'
-                          : 'bg-transparent border-muted-foreground hover:border-primary'
-                      }`}
-                    />
+                      className="group grid size-8 cursor-pointer place-items-center rounded-full"
+                    >
+                      <span
+                        aria-hidden
+                        className={`size-6 rounded-full border-2 transition-colors ${
+                          isFilled
+                            ? 'bg-primary border-primary'
+                            : 'bg-transparent border-muted-foreground group-hover:border-primary'
+                        }`}
+                      />
+                    </button>
                   );
                 })}
                 {Array.from({ length: extra }, (_, i) => (
@@ -80,6 +85,12 @@ export function SpellSlotsPanel({ resolved, character, onUpdate }: SpellSlotsPan
                   />
                 ))}
               </div>
+              <span className="ml-auto font-mono text-xs text-muted-foreground">
+                {tc('characterSheet.spellSlots.remaining', {
+                  left: Math.max(0, slotMax - usedCount) + extra,
+                  max: slotMax,
+                })}
+              </span>
             </div>
           );
         })}
@@ -103,15 +114,26 @@ export function SpellSlotsPanel({ resolved, character, onUpdate }: SpellSlotsPan
                     }
                     aria-pressed={isFilled}
                     onClick={() => handlePipClick('pact', i, isFilled)}
-                    className={`size-6 rounded-full border-2 transition-colors cursor-pointer ${
-                      isFilled
-                        ? 'bg-purple-600 border-purple-600'
-                        : 'bg-transparent border-muted-foreground hover:border-purple-600'
-                    }`}
-                  />
+                    className="group grid size-8 cursor-pointer place-items-center rounded-full"
+                  >
+                    <span
+                      aria-hidden
+                      className={`size-6 rounded-full border-2 transition-colors ${
+                        isFilled
+                          ? 'bg-purple-600 border-purple-600'
+                          : 'bg-transparent border-muted-foreground group-hover:border-purple-600'
+                      }`}
+                    />
+                  </button>
                 );
               })}
             </div>
+            <span className="ml-auto font-mono text-xs text-muted-foreground">
+              {tc('characterSheet.spellSlots.remaining', {
+                left: Math.max(0, spellcasting.pactMagic.count - (used['pact'] ?? 0)),
+                max: spellcasting.pactMagic.count,
+              })}
+            </span>
           </div>
         )}
       </div>

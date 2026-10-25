@@ -258,6 +258,15 @@ describe('BasicsStep', () => {
     vi.clearAllMocks();
   });
 
+  it('lists what is still missing in a status note and marks the selected alignment as checked', () => {
+    contextCharacter = buildSeedCharacter({ alignment: 'lg' });
+    render(<BasicsStep />);
+
+    expect(screen.getByRole('status').textContent).toBe('fillIn');
+    const checked = screen.getAllByRole('radio').filter((r) => r.getAttribute('aria-checked') === 'true');
+    expect(checked).toHaveLength(1);
+  });
+
   it('renders one Quick NPC button per CLASS_SOURCES entry', () => {
     render(<BasicsStep />);
 
@@ -635,9 +644,10 @@ describe('BasicsStep', () => {
 
     render(<BasicsStep />);
 
-    // No lineage radios, no loading hint
+    // No lineage radios, no loading hint — the only radios left are the nine alignment cells
     expect(screen.queryByText('loadingLineage')).toBeNull();
-    expect(screen.queryAllByRole('radio')).toHaveLength(0);
+    expect(screen.getAllByRole('radio')).toHaveLength(9);
+    expect(screen.getAllByRole('radio').every((r) => r.closest('[role="radiogroup"]'))).toBe(true);
   });
 
   it('shows legacy-species warning badge when character.species is not in SPECIES_SOURCES', () => {

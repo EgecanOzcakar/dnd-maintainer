@@ -11,6 +11,7 @@ import {
   EquipmentStep,
   OriginStep,
 } from '@/components/character-builder';
+import type { AbilitiesStepProps } from '@/components/character-builder/AbilitiesStep';
 import type { EquipmentStepEquipmentProps } from '@/components/character-builder/EquipmentStep';
 import { CharacterProvider, useCharacterContext } from '@/hooks/useCharacterContext';
 import { useBuilderAutosave } from '@/hooks/useBuilderAutosave';
@@ -21,12 +22,19 @@ import { useCampaignContext } from '@/hooks/useCampaignContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import type { Character } from '@/types/database';
 import { ChevronLeft, ChevronRight, Save, Trash2 } from 'lucide-react';
-import { useEffect, useLayoutEffect, useRef, useState, type ReactElement } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { DND_SPECIES, DND_CLASSES, isBackgroundId } from '@/lib/dnd-helpers';
-import { collectClassBundleKeys } from '@/lib/gold-equipment';
+import { collectClassBundleKeys, getStartingGold } from '@/lib/gold-equipment';
+import {
+  clearEquipmentDraft,
+  loadEquipmentDraft,
+  saveEquipmentDraft,
+  type EquipmentDraft,
+} from '@/lib/character-builder/equipment-draft';
+import { describePendingChoice, pendingChoiceStep } from '@/lib/character-builder/pending-choice-step';
 import type { StepType } from '@/types/character-builder';
 
 const logger = getLogger('character-builder');
@@ -44,7 +52,8 @@ const STEPS: { id: StepType }[] = [
 function renderStep(
   step: StepType,
   goToStep: (s: StepType) => void,
-  equipmentProps: EquipmentStepEquipmentProps
+  equipmentProps: EquipmentStepEquipmentProps,
+  abilitiesProps: AbilitiesStepProps
 ): ReactElement {
   switch (step) {
     case 'basics':
@@ -54,7 +63,7 @@ function renderStep(
     case 'origin':
       return <OriginStep />;
     case 'abilities':
-      return <AbilitiesStep />;
+      return <AbilitiesStep {...abilitiesProps} />;
     case 'details':
       return <DetailsStep />;
     case 'equipment':
@@ -140,17 +149,41 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
   const { saveStatus, saveDraft, finalize, clearStatus, abandon, markSaveError } =
     useBuilderAutosave(existingCharacterId);
 
-  // Buy-with-gold equipment state (ephemeral — not persisted in draft saves, only materialized at finalize)
+  // Buy-with-gold equipment state. Not part of the draft rows (only materialized at finalize), so a
+  // copy is kept in localStorage per draft id and restored when the draft is resumed.
   type EquipmentMode = 'starting-equipment' | 'buy-with-gold';
   type PurchasedItem = { itemId: string; quantity: number; costGp: number };
-  const [equipmentMode, setEquipmentMode] = useState<EquipmentMode>('starting-equipment');
-  const [startingGoldTotal, setStartingGoldTotal] = useState<number>(0);
-  const [purchasedItems, setPurchasedItems] = useState<readonly PurchasedItem[]>([]);
+  const [restoredEquipment] = useState(() => loadEquipmentDraft(existingCharacterId));
+  const [equipmentMode, setEquipmentMode] = useState<EquipmentMode>(restoredEquipment?.mode ?? 'starting-equipment');
+  const [startingGoldTotal, setStartingGoldTotal] = useState<number>(restoredEquipment?.startingGold ?? 0);
+  const [purchasedItems, setPurchasedItems] = useState<readonly PurchasedItem[]>(restoredEquipment?.items ?? []);
+  // Rolled ability pool survives step navigation (the assignments themselves live in the draft rows).
+  const [rolledAbilityValues, setRolledAbilityValues] = useState<readonly number[]>([]);
+  // Id of the saved draft (known after the first autosave); keys the localStorage copy of the cart.
+  const [draftId, setDraftId] = useState<string | null>(existingCharacterId ?? null);
 
   const context = useCharacterContext();
   const { character, rows, resolved, buildError, buildWarnings, isDirty, markSaved, bundles } = context;
 
   usePageTitle(t('characterBuilder.title'));
+
+  const equipmentDraft: EquipmentDraft = {
+    mode: equipmentMode,
+    startingGold: startingGoldTotal,
+    items: purchasedItems,
+  };
+  const equipmentDraftJson = JSON.stringify(equipmentDraft);
+  useEffect(() => {
+    if (draftId) saveEquipmentDraft(draftId, JSON.parse(equipmentDraftJson) as EquipmentDraft);
+  }, [draftId, equipmentDraftJson]);
+
+  // Warn before a reload/close throws away edits that have not reached the draft yet.
+  useEffect(() => {
+    if (!isDirty) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [isDirty]);
 
   useEffect(() => {
     if (saveStatus !== 'saved') return;
@@ -177,22 +210,28 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
   // Required fields before any draft can be saved
   const hasRequiredFields = REQUIRED_BASE_FIELDS.every((f) => f.present);
 
+  // saveDraft sets saveStatus='error' internally on its own failure. The .catch also covers the
+  // markSaved() path: if it fails we still need the banner so "saved" on screen isn't misleading.
+  const runSave = useCallback(
+    (payload: AutosavePayload) =>
+      saveDraft(payload)
+        .then((id) => {
+          setDraftId(id);
+          markSaved();
+        })
+        .catch((err: unknown) => {
+          logger.error('Autosave chain error:', err, { characterId: character.id, campaignId: character.campaign_id });
+          markSaveError();
+        }),
+    [saveDraft, markSaved, markSaveError, character.id, character.campaign_id]
+  );
+
   // Autosave when isDirty changes to true — debounced 500ms, only if required fields present
   useEffect(() => {
     if (!isDirty || !hasRequiredFields) return;
-    const timer = setTimeout(() => {
-      saveDraft(latestPayloadRef.current)
-        .then(() => markSaved())
-        .catch((err: unknown) => {
-          // saveDraft sets saveStatus='error' internally on its own failure. This
-          // .catch covers the markSaved() path too: if it fails, we still need
-          // the banner so the user knows "saved" on screen is misleading.
-          logger.error('Autosave chain error:', err, { characterId: character.id, campaignId: character.campaign_id });
-          markSaveError();
-        });
-    }, 500);
+    const timer = setTimeout(() => void runSave(latestPayloadRef.current), 500);
     return () => clearTimeout(timer);
-  }, [isDirty, hasRequiredFields, saveDraft, markSaved, markSaveError, character.id, character.campaign_id]);
+  }, [isDirty, hasRequiredFields, runSave]);
 
   const currentStepIndex = STEPS.findIndex((s) => s.id === currentStep);
 
@@ -201,16 +240,15 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
 
   const isReadyToFinalize = hasRequiredFields && (resolved?.pendingChoices.length ?? 0) === 0;
 
-  // Surface exactly what's blocking finalize so the user can find and fix it.
-  const finalizeBlockers: readonly string[] = [
-    ...REQUIRED_BASE_FIELDS.filter((f) => !f.present).map((f) => t(f.blocker)),
-    ...(resolved?.pendingChoices ?? []).map((pending) =>
-      t('characterBuilder.finalizeBlockers.pendingChoice', {
-        type: pending.type,
-        key: pending.choiceKey,
-      })
-    ),
+  // Surface exactly what's blocking finalize, and which step fixes it, so the user can jump there.
+  const finalizeBlockers: readonly { readonly text: string; readonly step: StepType }[] = [
+    ...REQUIRED_BASE_FIELDS.filter((f) => !f.present).map((f) => ({ text: t(f.blocker), step: 'basics' as const })),
+    ...(resolved?.pendingChoices ?? []).map((pending) => ({
+      text: describePendingChoice(pending, t, tg),
+      step: pendingChoiceStep(pending),
+    })),
   ];
+  const incompleteSteps = new Set<StepType>(finalizeBlockers.map((b) => b.step));
 
   // Can only leave Basics step once required fields are filled
   const canLeaveBasics = hasRequiredFields;
@@ -218,18 +256,7 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
   const goToStep = (targetStep: StepType) => {
     const targetIndex = STEPS.findIndex((s) => s.id === targetStep);
     if (targetIndex > 0 && !canLeaveBasics) return;
-    if (hasRequiredFields) {
-      const payload: AutosavePayload = { character, rows, resolved };
-      saveDraft(payload)
-        .then(() => markSaved())
-        .catch((err: unknown) => {
-          // saveDraft sets saveStatus='error' internally on its own failure. This
-          // .catch covers the markSaved() path too: if it fails, we still need
-          // the banner so the user knows "saved" on screen is misleading.
-          logger.error('Autosave chain error:', err, { characterId: character.id, campaignId: character.campaign_id });
-          markSaveError();
-        });
-    }
+    if (hasRequiredFields) void runSave({ character, rows, resolved });
     setCurrentStep(targetStep);
     setFurthestStepIndex((prev) => Math.max(prev, targetIndex));
   };
@@ -246,6 +273,7 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
     setIsAbandoning(true);
     try {
       await abandon(campaignId);
+      clearEquipmentDraft(draftId ?? undefined);
       toast.success(t('characterBuilder.abandon.success'));
       navigate(`/campaign/${campaignSlug}/characters`);
     } catch (err) {
@@ -266,6 +294,8 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
       for (const key of collectClassBundleKeys(bundles)) {
         context.clearChoice(key);
       }
+      // Pre-fill the class's Option B gold so the budget isn't an unexplained 0.
+      if (startingGoldTotal === 0) setStartingGoldTotal(getStartingGold(character.class));
     }
   };
 
@@ -287,6 +317,12 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
     setPurchasedItems((prev) => prev.filter((p) => p.itemId !== itemId));
   };
 
+  const handleDecrementPurchase = (itemId: string) => {
+    setPurchasedItems((prev) =>
+      prev.flatMap((p) => (p.itemId !== itemId ? [p] : p.quantity > 1 ? [{ ...p, quantity: p.quantity - 1 }] : []))
+    );
+  };
+
   const equipmentProps: EquipmentStepEquipmentProps = {
     equipmentMode,
     startingGoldTotal,
@@ -296,6 +332,12 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
     onGoldChange: handleGoldChange,
     onPurchase: handlePurchase,
     onRemovePurchase: handleRemovePurchase,
+    onDecrementPurchase: handleDecrementPurchase,
+  };
+
+  const abilitiesProps: AbilitiesStepProps = {
+    initialRolledValues: rolledAbilityValues,
+    onRolledValuesChange: setRolledAbilityValues,
   };
 
   const handleFinalize = async () => {
@@ -310,6 +352,7 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
         purchasedItems: equipmentMode === 'buy-with-gold' ? purchasedItems : [],
       };
       const slug = await finalize(payload);
+      clearEquipmentDraft(draftId ?? undefined);
       navigate(`/campaign/${campaignSlug}/character/${slug}`);
     } catch (err) {
       logger.error('Character finalization failed:', err);
@@ -333,41 +376,66 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
         <h1 className="page-title mb-8 hidden md:block">{t('characterBuilder.title')}</h1>
 
         {/* Step Indicator */}
-        <div className="mb-8">
-          <div className="flex items-start">
-            {STEPS.map((step, index) => (
-              <div key={step.id} className="flex items-center flex-1">
-                <div className="flex flex-col items-center">
-                  <button
-                    onClick={() => goToStep(step.id)}
-                    disabled={index > 0 && !canLeaveBasics}
-                    className={`size-10 rounded-full flex items-center justify-center font-bold transition-colors ${
-                      index === currentStepIndex
-                        ? 'bg-primary text-primary-foreground'
-                        : index < currentStepIndex
-                          ? 'bg-green-600 text-white'
-                          : index > 0 && !canLeaveBasics
-                            ? 'bg-muted text-muted-foreground opacity-50 cursor-not-allowed'
-                            : 'bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {index + 1}
-                  </button>
-                  {/* Labels are hidden on the narrowest viewports so all 7 steps fit (#243.1);
-                      the numbered circles + the step content heading convey position there. */}
-                  <span className="hidden text-xs text-muted-foreground mt-2 sm:block">
-                    {t(`characterBuilder.steps.${step.id}`)}
-                  </span>
-                </div>
-                {index < STEPS.length - 1 && (
-                  <div
-                    className={`flex-1 h-1 mx-2 self-start mt-5 ${index < currentStepIndex ? 'bg-green-600' : 'bg-muted'}`}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        <nav className="mb-8" aria-label={t('characterBuilder.stepIndicator.label')}>
+          {/* Labels are hidden under sm so all 7 circles fit at 320px; this line names the step instead. */}
+          <p className="mb-3 text-center text-sm font-medium text-muted-foreground sm:hidden">
+            {t('characterBuilder.stepIndicator.stepOf', {
+              current: currentStepIndex + 1,
+              total: STEPS.length,
+              name: t(`characterBuilder.steps.${STEPS[currentStepIndex].id}`),
+            })}
+          </p>
+          <ol className="flex items-start">
+            {STEPS.map((step, index) => {
+              const locked = index > 0 && !canLeaveBasics;
+              const stepName = t(`characterBuilder.steps.${step.id}`);
+              // Only flag steps the user has already reached, to avoid a wall of expected-missing markers.
+              const incomplete =
+                index <= furthestStepIndex && index !== currentStepIndex && incompleteSteps.has(step.id);
+              return (
+                <li key={step.id} className="flex items-center flex-1">
+                  <div className="flex flex-col items-center">
+                    <button
+                      type="button"
+                      onClick={() => goToStep(step.id)}
+                      disabled={locked}
+                      aria-current={index === currentStepIndex ? 'step' : undefined}
+                      aria-label={t('characterBuilder.stepIndicator.stepAria', { number: index + 1, name: stepName })}
+                      title={locked ? t('characterBuilder.stepIndicator.locked') : stepName}
+                      className={`relative size-8 sm:size-10 rounded-full flex items-center justify-center text-sm sm:text-base font-bold transition-colors ${
+                        index === currentStepIndex
+                          ? 'bg-primary text-primary-foreground'
+                          : index < currentStepIndex
+                            ? 'bg-green-600 text-white'
+                            : locked
+                              ? 'bg-muted text-muted-foreground opacity-50 cursor-not-allowed'
+                              : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      {index + 1}
+                      {incomplete && (
+                        <>
+                          <span
+                            aria-hidden
+                            className="absolute -right-0.5 -top-0.5 size-3 rounded-full border-2 border-background bg-amber-500"
+                          />
+                          <span className="sr-only">{t('characterBuilder.stepIndicator.incomplete')}</span>
+                        </>
+                      )}
+                    </button>
+                    <span className="hidden text-xs text-muted-foreground mt-2 sm:block">{stepName}</span>
+                  </div>
+                  {index < STEPS.length - 1 && (
+                    <div
+                      aria-hidden
+                      className={`flex-1 h-1 mx-1 sm:mx-2 self-start mt-3.5 sm:mt-5 ${index < currentStepIndex ? 'bg-green-600' : 'bg-muted'}`}
+                    />
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
 
         {/* Character Summary */}
         <div className="mb-4 text-center text-lg text-muted-foreground h-7">
@@ -387,9 +455,11 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
 
         {/* Step Content */}
         <Card className="mb-8">
-          <CardContent className="p-8">
-            <h2 className="text-2xl font-bold mb-6">{t(`characterBuilder.steps.${STEPS[currentStepIndex].id}`)}</h2>
-            {renderStep(currentStep, goToStep, equipmentProps)}
+          <CardContent className="p-4 sm:p-8">
+            <h2 className="text-xl sm:text-2xl font-bold mb-6">
+              {t(`characterBuilder.steps.${STEPS[currentStepIndex].id}`)}
+            </h2>
+            {renderStep(currentStep, goToStep, equipmentProps, abilitiesProps)}
           </CardContent>
         </Card>
 
@@ -413,22 +483,7 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
                 : t('characterBuilder.errors.failedToSaveDraft')}
             </span>
             {saveStatus === 'error' && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const payload: AutosavePayload = { character, rows, resolved };
-                  saveDraft(payload)
-                    .then(() => markSaved())
-                    .catch((err: unknown) => {
-                      logger.error('Autosave chain error:', err, {
-                        characterId: character.id,
-                        campaignId: character.campaign_id,
-                      });
-                      markSaveError();
-                    });
-                }}
-              >
+              <Button variant="outline" size="sm" onClick={() => void runSave({ character, rows, resolved })}>
                 {t('buttons.retrySave')}
               </Button>
             )}
@@ -441,9 +496,22 @@ function CharacterBuilderInner({ existingCharacterId }: { existingCharacterId?: 
         {furthestStepIndex >= STEPS.length - 1 && !isReadyToFinalize && finalizeBlockers.length > 0 && (
           <div className="mb-3 rounded-md border border-dashed border-amber-500/50 bg-amber-500/5 px-3 py-2 text-xs text-amber-900 dark:text-amber-200">
             <p className="font-semibold mb-1">{t('characterBuilder.finalizeBlockers.title')}</p>
-            <ul className="space-y-0.5">
-              {finalizeBlockers.map((reason, i) => (
-                <li key={i}>• {reason}</li>
+            <ul className="space-y-1">
+              {finalizeBlockers.map((blocker, i) => (
+                <li key={i} className="flex flex-wrap items-center gap-x-2">
+                  <span>• {blocker.text}</span>
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="xs"
+                    className="h-auto p-0 text-xs"
+                    onClick={() => goToStep(blocker.step)}
+                  >
+                    {t('characterBuilder.finalizeBlockers.goToStep', {
+                      step: t(`characterBuilder.steps.${blocker.step}`),
+                    })}
+                  </Button>
+                </li>
               ))}
             </ul>
           </div>

@@ -1,6 +1,9 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Minus, Plus } from 'lucide-react';
+import { useState } from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useCharacterContext } from '@/hooks/useCharacterContext';
 import { computePurchaseTotal, getStartingGold } from '@/lib/gold-equipment';
@@ -40,6 +43,7 @@ export interface EquipmentStepEquipmentProps {
   readonly onGoldChange: (n: number) => void;
   readonly onPurchase: (itemId: string, costGp: number) => void;
   readonly onRemovePurchase: (itemId: string) => void;
+  readonly onDecrementPurchase?: (itemId: string) => void;
 }
 
 export function EquipmentStep({
@@ -51,6 +55,7 @@ export function EquipmentStep({
   onGoldChange,
   onPurchase,
   onRemovePurchase,
+  onDecrementPurchase,
 }: EquipmentStepEquipmentProps) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
@@ -148,6 +153,25 @@ export function EquipmentStep({
     return fromResolved?.masteryId ?? null;
   }
 
+  // Switching modes throws away what the other mode built, so ask first when something would be lost.
+  const [pendingMode, setPendingMode] = useState<EquipmentMode | null>(null);
+  const [catalogQuery, setCatalogQuery] = useState('');
+  const requestModeChange = (mode: EquipmentMode) => {
+    if (mode === equipmentMode) return;
+    const hasClassPicks = classBundleChoiceGrants.some(({ grant }) => build?.choices[grant.key] !== undefined);
+    const wouldLose = mode === 'buy-with-gold' ? hasClassPicks : purchasedItems.length > 0;
+    if (wouldLose) setPendingMode(mode);
+    else onModeChange(mode);
+  };
+
+  const catalogSections = [
+    { type: 'weapon', heading: 'catalogWeapons', items: WEAPON_CATALOG },
+    { type: 'armor', heading: 'catalogArmor', items: ARMOR_CATALOG },
+    { type: 'gear', heading: 'catalogGear', items: ALL_GEAR_CATALOG },
+    { type: 'pack', heading: 'catalogPacks', items: ALL_PACK_CATALOG },
+  ] as const;
+  const query = catalogQuery.trim().toLowerCase();
+
   const spentGp = computePurchaseTotal(purchasedItems);
   const isOverBudget = startingGoldTotal > 0 && spentGp > startingGoldTotal;
   const classStartingGold = getStartingGold(classId);
@@ -164,7 +188,7 @@ export function EquipmentStep({
             onValueChange={(values) => {
               const selected = values[0];
               if (selected === 'starting-equipment' || selected === 'buy-with-gold') {
-                onModeChange(selected);
+                requestModeChange(selected);
               }
             }}
           >
@@ -285,7 +309,29 @@ export function EquipmentStep({
                 <ul className="space-y-1 text-sm">
                   {purchasedItems.map((item) => (
                     <li key={item.itemId} className="flex items-center gap-2">
-                      <span className="text-muted-foreground">{item.quantity}×</span>
+                      <span className="flex items-center gap-1">
+                        <Button
+                          variant="outline"
+                          size="icon-xs"
+                          onClick={() => (onDecrementPurchase ?? onRemovePurchase)(item.itemId)}
+                          aria-label={tc('characterBuilder.equipment.decreaseQuantity', {
+                            name: renderItemName(item.itemId),
+                          })}
+                        >
+                          <Minus />
+                        </Button>
+                        <span className="w-6 text-center tabular-nums">{item.quantity}</span>
+                        <Button
+                          variant="outline"
+                          size="icon-xs"
+                          onClick={() => onPurchase(item.itemId, item.costGp)}
+                          aria-label={tc('characterBuilder.equipment.increaseQuantity', {
+                            name: renderItemName(item.itemId),
+                          })}
+                        >
+                          <Plus />
+                        </Button>
+                      </span>
                       <span className="flex-1">{renderItemName(item.itemId)}</span>
                       <span className="text-muted-foreground text-xs">
                         {tc('characterBuilder.equipment.itemCost', { gp: (item.costGp * item.quantity).toFixed(2) })}
@@ -309,89 +355,86 @@ export function EquipmentStep({
 
             {/* Catalog sections */}
             <section className="space-y-6 border-t pt-6">
-              {/* Weapons */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  {tc('characterBuilder.equipment.catalogWeapons')}
-                </h3>
-                <div className="grid gap-1">
-                  {WEAPON_CATALOG.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2 text-sm">
-                      <span className="flex-1">{t(getItemNameKey('weapon', item.id), { defaultValue: item.id })}</span>
-                      <span className="text-muted-foreground w-16 text-right">
-                        {tc('characterBuilder.equipment.itemCost', { gp: item.costGp })}
-                      </span>
-                      <Button variant="outline" size="sm" onClick={() => onPurchase(item.id, item.costGp)}>
-                        {tc('characterBuilder.equipment.addItem')}
-                      </Button>
+              <Input
+                type="search"
+                value={catalogQuery}
+                onChange={(e) => setCatalogQuery(e.target.value)}
+                placeholder={tc('characterBuilder.equipment.searchPlaceholder')}
+                aria-label={tc('characterBuilder.equipment.searchLabel')}
+              />
+              {catalogSections.map(({ type, heading, items }) => {
+                const rows = (items as readonly { id: string; costGp: number }[]).filter(
+                  (item) =>
+                    !query || t(getItemNameKey(type, item.id), { defaultValue: item.id }).toLowerCase().includes(query)
+                );
+                if (rows.length === 0) return null;
+                return (
+                  <div key={type} className="space-y-2">
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                      {tc(`characterBuilder.equipment.${heading}`)}
+                    </h3>
+                    <div className="grid gap-1">
+                      {rows.map((item) => {
+                        const name = t(getItemNameKey(type, item.id), { defaultValue: item.id });
+                        return (
+                          <div key={item.id} className="flex items-center gap-2 text-sm">
+                            <span className="flex-1">{name}</span>
+                            <span className="text-muted-foreground w-16 text-right">
+                              {tc('characterBuilder.equipment.itemCost', { gp: item.costGp })}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => onPurchase(item.id, item.costGp)}
+                              aria-label={tc('characterBuilder.equipment.addNamed', { name })}
+                            >
+                              {tc('characterBuilder.equipment.addItem')}
+                            </Button>
+                          </div>
+                        );
+                      })}
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Armor */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  {tc('characterBuilder.equipment.catalogArmor')}
-                </h3>
-                <div className="grid gap-1">
-                  {ARMOR_CATALOG.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2 text-sm">
-                      <span className="flex-1">{t(getItemNameKey('armor', item.id), { defaultValue: item.id })}</span>
-                      <span className="text-muted-foreground w-16 text-right">
-                        {tc('characterBuilder.equipment.itemCost', { gp: item.costGp })}
-                      </span>
-                      <Button variant="outline" size="sm" onClick={() => onPurchase(item.id, item.costGp)}>
-                        {tc('characterBuilder.equipment.addItem')}
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Gear */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  {tc('characterBuilder.equipment.catalogGear')}
-                </h3>
-                <div className="grid gap-1">
-                  {ALL_GEAR_CATALOG.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2 text-sm">
-                      <span className="flex-1">{t(getItemNameKey('gear', item.id), { defaultValue: item.id })}</span>
-                      <span className="text-muted-foreground w-16 text-right">
-                        {tc('characterBuilder.equipment.itemCost', { gp: item.costGp })}
-                      </span>
-                      <Button variant="outline" size="sm" onClick={() => onPurchase(item.id, item.costGp)}>
-                        {tc('characterBuilder.equipment.addItem')}
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Packs */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  {tc('characterBuilder.equipment.catalogPacks')}
-                </h3>
-                <div className="grid gap-1">
-                  {ALL_PACK_CATALOG.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2 text-sm">
-                      <span className="flex-1">{t(getItemNameKey('pack', item.id), { defaultValue: item.id })}</span>
-                      <span className="text-muted-foreground w-16 text-right">
-                        {tc('characterBuilder.equipment.itemCost', { gp: item.costGp })}
-                      </span>
-                      <Button variant="outline" size="sm" onClick={() => onPurchase(item.id, item.costGp)}>
-                        {tc('characterBuilder.equipment.addItem')}
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                );
+              })}
             </section>
           </>
         )}
       </div>
+
+      {pendingMode && (
+        <Dialog
+          open
+          onOpenChange={(open) => {
+            if (!open) setPendingMode(null);
+          }}
+        >
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{tc('characterBuilder.equipment.switchTitle')}</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              {pendingMode === 'buy-with-gold'
+                ? tc('characterBuilder.equipment.switchToGoldConfirm')
+                : tc('characterBuilder.equipment.switchToStartingConfirm')}
+            </p>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setPendingMode(null)}>
+                {tc('buttons.cancel')}
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  onModeChange(pendingMode);
+                  setPendingMode(null);
+                }}
+              >
+                {tc('characterBuilder.equipment.switchAction')}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {showSummary && (
         <aside className="lg:sticky lg:top-4 lg:self-start">

@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,9 +13,17 @@ interface FightingStylePickerProps {
   readonly currentDecision?: ChoiceDecision | undefined;
   readonly onDecide: (choiceKey: ChoiceKey, decision: ChoiceDecision) => void;
   readonly onClear?: (key: ChoiceKey) => void;
+  /** When true, calls onDecide immediately on selection and hides the confirm button. */
+  readonly autoCommit?: boolean;
 }
 
-export function FightingStylePicker({ choice, currentDecision, onDecide, onClear }: FightingStylePickerProps) {
+export function FightingStylePicker({
+  choice,
+  currentDecision,
+  onDecide,
+  onClear,
+  autoCommit,
+}: FightingStylePickerProps) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
 
@@ -28,6 +37,11 @@ export function FightingStylePicker({ choice, currentDecision, onDecide, onClear
   const availableStyles = FIGHTING_STYLE_SOURCES.filter(
     (s) => choice.from.includes(s.id) && (s.id === existingStyleId || !choice.alreadyChosen.includes(s.id))
   );
+
+  const handleSelect = (id: FightingStyleId) => {
+    setSelected(id);
+    if (autoCommit) onDecide(choice.choiceKey, { type: 'fighting-style-choice', styles: [id] });
+  };
 
   const handleConfirm = () => {
     if (!selected) return;
@@ -53,29 +67,35 @@ export function FightingStylePicker({ choice, currentDecision, onDecide, onClear
             <button
               key={style.id}
               type="button"
-              onClick={() => setSelected(style.id)}
+              onClick={() => handleSelect(style.id)}
+              aria-pressed={isSelected}
               className={`w-full rounded-lg border p-4 text-left transition-colors hover:bg-muted/50 ${
                 isSelected ? 'border-primary bg-primary/5' : 'border-border bg-muted/20'
               }`}
             >
-              <div className={`text-sm text-foreground ${isSelected ? 'font-semibold' : ''}`}>
+              <div
+                className={`flex items-center justify-between gap-2 text-sm text-foreground ${isSelected ? 'font-semibold' : ''}`}
+              >
                 {t(`fightingStyles.${style.id}.name`)}
+                {isSelected && <Check aria-hidden className="size-4 shrink-0 text-primary" />}
               </div>
               <p className="text-xs text-muted-foreground mt-1">{t(`fightingStyles.${style.id}.description`)}</p>
             </button>
           );
         })}
 
-        <div className="flex gap-2 mt-4">
-          {hasExistingDecision && (
-            <Button variant="ghost" size="sm" onClick={handleClear} className="flex-1">
-              {tc('buttons.clearSelection')}
+        {!autoCommit && (
+          <div className="flex gap-2 mt-4">
+            {hasExistingDecision && (
+              <Button variant="ghost" size="sm" onClick={handleClear} className="flex-1">
+                {tc('buttons.clearSelection')}
+              </Button>
+            )}
+            <Button className="flex-1" disabled={!selected} onClick={handleConfirm}>
+              {tc('buttons.confirm')}
             </Button>
-          )}
-          <Button className="flex-1" disabled={!selected} onClick={handleConfirm}>
-            {tc('buttons.confirm')}
-          </Button>
-        </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

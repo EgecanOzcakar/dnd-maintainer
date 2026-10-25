@@ -349,8 +349,55 @@ describe('EquipmentStep — buy-with-gold mode', () => {
     );
 
     expect(screen.getByText('purchasedItemsTitle')).toBeTruthy();
-    // quantity × rendered
-    expect(screen.getByText('2×')).toBeTruthy();
+    // quantity rendered between the stepper buttons
+    expect(screen.getByText('2')).toBeTruthy();
+  });
+
+  it('steps the quantity of a purchased item up and down', () => {
+    const onPurchase = vi.fn();
+    const onDecrementPurchase = vi.fn();
+    render(
+      <EquipmentStep
+        {...makeEquipmentProps({
+          equipmentMode: 'buy-with-gold',
+          purchasedItems: [{ itemId: 'dagger', quantity: 2, costGp: 2 }],
+          onPurchase,
+          onDecrementPurchase,
+        })}
+      />
+    );
+
+    fireEvent.click(screen.getByLabelText('increaseQuantity'));
+    expect(onPurchase).toHaveBeenCalledWith('dagger', 2);
+    fireEvent.click(screen.getByLabelText('decreaseQuantity'));
+    expect(onDecrementPurchase).toHaveBeenCalledWith('dagger');
+  });
+
+  it('filters the catalog with the search box', () => {
+    render(<EquipmentStep {...makeEquipmentProps({ equipmentMode: 'buy-with-gold' })} />);
+
+    const before = screen.getAllByLabelText('addNamed').length;
+    fireEvent.change(screen.getByLabelText('searchLabel'), { target: { value: 'zzzz-no-such-item' } });
+    expect(screen.queryAllByLabelText('addNamed')).toHaveLength(0);
+    expect(before).toBeGreaterThan(0);
+  });
+
+  it('asks before leaving buy-with-gold mode with items in the cart', () => {
+    const onModeChange = vi.fn();
+    render(
+      <EquipmentStep
+        {...makeEquipmentProps({
+          equipmentMode: 'buy-with-gold',
+          purchasedItems: [{ itemId: 'dagger', quantity: 1, costGp: 2 }],
+          onModeChange,
+        })}
+      />
+    );
+
+    fireEvent.click(screen.getByText('modeStartingEquipment'));
+    expect(onModeChange).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByText('switchAction'));
+    expect(onModeChange).toHaveBeenCalledWith('starting-equipment');
   });
 
   it('calls onRemovePurchase when remove button is clicked', () => {
@@ -384,8 +431,8 @@ describe('EquipmentStep — buy-with-gold mode', () => {
 
     // The currency tracker label renders via i18n
     expect(screen.getByText('currencyTracker')).toBeTruthy();
-    // quantity× renders as a real number — confirms the purchased item row is present
-    expect(screen.getByText('1×')).toBeTruthy();
+    // the purchased item row is present
+    expect(screen.getByText('1')).toBeTruthy();
     // spentGp (15) is less than startingGoldTotal (175) — overBudget warning must NOT appear
     expect(screen.queryByText('overBudgetWarning')).toBeNull();
   });

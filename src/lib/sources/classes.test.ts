@@ -249,9 +249,9 @@ describe('Rogue class grant structures', () => {
     }
   });
 
-  it('level 1 has 4 bundle-choice grants', () => {
+  it('level 1 has a single starting-equipment bundle-choice (2024 Option A; B is buy-with-gold)', () => {
     const bundleChoices = source?.levels[0].grants.filter((g) => g.type === 'bundle-choice');
-    expect(bundleChoices).toHaveLength(4);
+    expect(bundleChoices).toHaveLength(1);
   });
 
   it('level 1 bundle-choice 0 is loadout with rogue-loadout', () => {
@@ -264,38 +264,21 @@ describe('Rogue class grant structures', () => {
       expect(grant.bundleIds).toEqual(['rogue-loadout']);
     }
   });
+});
 
-  it('level 1 bundle-choice 1 is melee-weapon with rapier and shortsword options', () => {
-    const grant = source?.levels[0].grants.find(
-      (g) => g.type === 'bundle-choice' && g.key === createChoiceKey('bundle-choice', 'class', 'rogue', 1)
-    );
-    expect(grant?.type).toBe('bundle-choice');
-    if (grant?.type === 'bundle-choice') {
-      expect(grant.category).toBe('melee-weapon');
-      expect(grant.bundleIds).toEqual(['rogue-rapier', 'rogue-shortsword-melee']);
-    }
-  });
+describe('Fighter starting equipment (2024 PHB)', () => {
+  const source = getClassSource('fighter' as ClassId);
 
-  it('level 1 bundle-choice 2 is ranged-weapon with shortbow-kit and shortsword options', () => {
-    const grant = source?.levels[0].grants.find(
-      (g) => g.type === 'bundle-choice' && g.key === createChoiceKey('bundle-choice', 'class', 'rogue', 2)
-    );
-    expect(grant?.type).toBe('bundle-choice');
-    if (grant?.type === 'bundle-choice') {
-      expect(grant.category).toBe('ranged-weapon');
-      expect(grant.bundleIds).toEqual(['rogue-shortbow-kit', 'rogue-shortsword-ranged']);
-    }
-  });
-
-  it('level 1 bundle-choice 3 is pack with burglar, dungeoneer, and explorer options', () => {
-    const grant = source?.levels[0].grants.find(
-      (g) => g.type === 'bundle-choice' && g.key === createChoiceKey('bundle-choice', 'class', 'rogue', 3)
-    );
-    expect(grant?.type).toBe('bundle-choice');
-    if (grant?.type === 'bundle-choice') {
-      expect(grant.category).toBe('pack');
-      expect(grant.bundleIds).toEqual(['burglars-pack', 'dungeoneers-pack', 'explorers-pack']);
-    }
+  it('level 1 offers Option A or B as a single loadout choice', () => {
+    const grants = source?.levels[0].grants.filter((g) => g.type === 'bundle-choice');
+    expect(grants).toEqual([
+      {
+        type: 'bundle-choice',
+        key: createChoiceKey('bundle-choice', 'class', 'fighter', 0),
+        category: 'loadout',
+        bundleIds: ['fighter-loadout-a', 'fighter-loadout-b'],
+      },
+    ]);
   });
 });
 

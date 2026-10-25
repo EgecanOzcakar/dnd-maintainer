@@ -348,7 +348,7 @@ export const DND_LANGUAGE_DATA = [
   { id: 'orc', category: 'standard', typicalSpeakers: ['orcs'], script: 'dwarvish' },
   { id: 'abyssal', category: 'exotic', typicalSpeakers: ['demons'], script: 'infernal' },
   { id: 'celestial', category: 'exotic', typicalSpeakers: ['celestials'], script: 'celestial' },
-  { id: 'draconic', category: 'exotic', typicalSpeakers: ['dragons', 'dragonborn'], script: 'draconic' },
+  { id: 'draconic', category: 'standard', typicalSpeakers: ['dragons', 'dragonborn'], script: 'draconic' },
   { id: 'deepspeech', category: 'exotic', typicalSpeakers: ['aboleths', 'cloakers'], script: null },
   { id: 'infernal', category: 'exotic', typicalSpeakers: ['devils'], script: 'infernal' },
   { id: 'primordial', category: 'exotic', typicalSpeakers: ['elementals'], script: 'dwarvish' },

@@ -80,8 +80,8 @@ describe('getClassSource', () => {
 
   it('fighter level 1 has correct grant count', () => {
     const source = getClassSource('fighter' as Parameters<typeof getClassSource>[0]);
-    // 1 hit-die + 4 armor + 2 weapon + 2 saving-throw + 1 skill-choice + 1 armor-class + 1 fighting-style-choice + 1 weapon-mastery-choice + 1 feature + 1 resource-pool (second-wind) + 4 bundle-choice = 19
-    expect(source?.levels[0].grants).toHaveLength(19);
+    // 1 hit-die + 4 armor + 2 weapon + 2 saving-throw + 1 skill-choice + 1 armor-class + 1 fighting-style-choice + 1 weapon-mastery-choice + 1 feature + 1 resource-pool (second-wind) + 1 bundle-choice = 16
+    expect(source?.levels[0].grants).toHaveLength(16);
   });
 });
 
@@ -100,8 +100,8 @@ describe('getBackgroundSource', () => {
     const source = getBackgroundSource('soldier' as BackgroundId);
     expect(source).toBeDefined();
     expect(source?.id).toBe('soldier');
-    // 1 asi + 2 skill + 1 tool-choice + 1 language-choice + 1 feat = 6
-    expect(source?.grants).toHaveLength(6);
+    // 1 asi + 2 skill + 1 tool-choice + 1 feat = 5 (2024 backgrounds grant no languages)
+    expect(source?.grants).toHaveLength(5);
   });
 });
 
@@ -140,7 +140,7 @@ describe('all 2024 backgrounds have correct structure', () => {
     { id: 'merchant', fromPool: ['con', 'int', 'cha'] },
     { id: 'noble', fromPool: ['str', 'int', 'cha'] },
     { id: 'sage', fromPool: ['con', 'int', 'wis'] },
-    { id: 'sailor', fromPool: ['str', 'dex', 'con'] },
+    { id: 'sailor', fromPool: ['str', 'dex', 'wis'] },
     { id: 'scribe', fromPool: ['dex', 'int', 'wis'] },
     { id: 'soldier', fromPool: ['str', 'dex', 'con'] },
     { id: 'wayfarer', fromPool: ['dex', 'wis', 'cha'] },
@@ -1379,5 +1379,61 @@ describe('gateGrantsByMinClassLevel (issue #189)', () => {
       ])
     );
     expect(out[0].grants).toHaveLength(0);
+  });
+});
+
+describe('minCharacterLevel gate on species lineage spells', () => {
+  const tieflingBuild = (levels: number): CharacterBuild => ({
+    speciesId: 'tiefling' as SpeciesId,
+    backgroundId: 'soldier' as BackgroundId,
+    baseAbilities: { str: 15, dex: 13, con: 14, int: 8, wis: 12, cha: 10 },
+    abilityMethod: 'standard-array',
+    levels: Array.from({ length: levels }, (_, i) => ({
+      classId: 'fighter' as ClassId,
+      classLevel: i + 1,
+      hpRoll: null,
+    })),
+    choices: {
+      'lineage-choice:species:tiefling:0': { type: 'lineage-choice', lineageId: 'infernal' },
+    },
+    feats: [],
+    activeItems: [],
+  });
+  const lineageSpells = (levels: number) =>
+    collectBundles(tieflingBuild(levels))
+      .bundles.flatMap((b) => b.grants)
+      .filter((g) => g.type === 'spell')
+      .map((g) => g.spellId);
+
+  it('Infernal Tiefling gets the cantrips at level 1, the 3rd-level spell at 3 and the 5th-level spell at 5', () => {
+    expect(lineageSpells(1)).toEqual(expect.arrayContaining(['thaumaturgy', 'fire-bolt']));
+    expect(lineageSpells(1)).not.toContain('hellish-rebuke');
+    expect(lineageSpells(2)).not.toContain('hellish-rebuke');
+    expect(lineageSpells(3)).toContain('hellish-rebuke');
+    expect(lineageSpells(4)).not.toContain('darkness');
+    expect(lineageSpells(5)).toContain('darkness');
+  });
+
+  it('gates on total character level across classes', () => {
+    const bundles: GrantBundle[] = [
+      {
+        source: { origin: 'species', id: 'tiefling' },
+        grants: [{ type: 'spell', spellId: 'darkness', alwaysPrepared: true, minCharacterLevel: 5 }],
+      },
+    ];
+    const kept = (counts: [ClassId, number][]) =>
+      gateGrantsByMinClassLevel(bundles, new Map(counts)).bundles[0].grants.length;
+    expect(
+      kept([
+        ['fighter' as ClassId, 3],
+        ['wizard' as ClassId, 1],
+      ])
+    ).toBe(0);
+    expect(
+      kept([
+        ['fighter' as ClassId, 3],
+        ['wizard' as ClassId, 2],
+      ])
+    ).toBe(1);
   });
 });

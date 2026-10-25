@@ -1258,7 +1258,7 @@ describe('CharacterProvider', () => {
     expect(result.current.rows).toEqual(rowsBefore);
   });
 
-  it('initialEquippedItems wiring: chain-mail + longsword produce AC 16 and a longsword attack', () => {
+  it('initialEquippedItems wiring: chain-mail + greatsword produce AC 16 and a greatsword attack', () => {
     const character = buildSeedCharacter({
       base_abilities: { str: 15, dex: 13, con: 14, int: 8, wis: 10, cha: 12 },
     } as Partial<Character>);
@@ -1273,21 +1273,13 @@ describe('CharacterProvider', () => {
       asi_allocation: null,
       feat_id: null,
       hp_roll: null,
-      // Resolved choices include bundle picks: chain-mail and longsword+shield
+      // Resolved choices include the Option A loadout (chain mail, greatsword, ...)
       choices: {
-        'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-chainmail', slotPicks: {} },
-        'bundle-choice:class:fighter:1': {
-          type: 'bundle-choice',
-          bundleId: 'martial-weapon-and-shield',
-          slotPicks: { weapon: 'longsword', shield: 'shield' },
-        },
-        'bundle-choice:class:fighter:2': { type: 'bundle-choice', bundleId: 'light-crossbow-kit', slotPicks: {} },
-        'bundle-choice:class:fighter:3': { type: 'bundle-choice', bundleId: 'dungeoneers-pack', slotPicks: {} },
+        'bundle-choice:class:fighter:0': { type: 'bundle-choice', bundleId: 'fighter-loadout-a', slotPicks: {} },
         'skill-choice:class:fighter:0': { type: 'skill-choice', skills: ['athletics', 'perception'] },
         'fighting-style-choice:class:fighter:0': { type: 'fighting-style-choice', styles: ['dueling'] },
         'language-choice:species:human:0': { type: 'language-choice', languages: ['elvish'] },
         'tool-choice:background:soldier:0': { type: 'tool-choice', tools: ['gaming-set-dice'] },
-        'language-choice:background:soldier:0': { type: 'language-choice', languages: ['dwarvish'] },
       },
       deleted_at: null,
     };
@@ -1307,15 +1299,15 @@ describe('CharacterProvider', () => {
     };
 
     const { result } = renderHook(() => useCharacterContext(), {
-      wrapper: createWrapper(character, [creationRowWithAbilities, fighterRow], ['chain-mail', 'longsword']),
+      wrapper: createWrapper(character, [creationRowWithAbilities, fighterRow], ['chain-mail', 'greatsword']),
     });
 
     const resolved = result.current.resolved;
     expect(resolved).not.toBeNull();
     // chain-mail + armored fighter: AC 16 (no DEX bonus, heavy armor)
     expect(resolved!.armorClass.effective).toBe(16);
-    // longsword should appear in attacks
+    // greatsword should appear in attacks
     expect(resolved!.attacks.length).toBeGreaterThan(0);
-    expect(resolved!.attacks.some((a) => a.weaponId === 'longsword')).toBe(true);
+    expect(resolved!.attacks.some((a) => a.weaponId === 'greatsword')).toBe(true);
   });
 });

@@ -26,6 +26,8 @@ export interface BundleDef {
   readonly id: string;
   readonly category: BundleCategory;
   readonly contents: readonly { readonly itemId: string; readonly quantity: number }[];
+  /** Leftover gold that comes with a class starting-equipment package (2024 Option A/B). */
+  readonly gp?: number;
   /** Required (empty array when bundle has no pickable slots). */
   readonly slots: readonly BundleSlot[];
 }

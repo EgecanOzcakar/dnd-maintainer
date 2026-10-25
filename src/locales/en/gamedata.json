@@ -151,7 +151,7 @@
   },
   "languageCategories": {
     "standard": "Standard Languages",
-    "exotic": "Exotic Languages"
+    "exotic": "Rare Languages"
   },
   "languageScripts": {
     "common": "Common",
@@ -409,7 +409,7 @@
     },
     "fighting-style-defense": {
       "name": "Fighting Style: Defense",
-      "description": "While you are wearing armor, you gain a +1 bonus to AC."
+      "description": "While you are wearing Light, Medium, or Heavy armor, you gain a +1 bonus to Armor Class."
     },
     "fighting-style-dueling": {
       "name": "Fighting Style: Dueling",
@@ -417,7 +417,7 @@
     },
     "fighting-style-great-weapon-fighting": {
       "name": "Fighting Style: Great Weapon Fighting",
-      "description": "When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll."
+      "description": "When you roll damage for an attack you make with a Melee weapon that you are holding with two hands, you can treat any 1 or 2 on a damage die as a 3. The weapon must have the Two-Handed or Versatile property to gain this benefit."
     },
     "fighting-style-protection": {
       "name": "Fighting Style: Protection",
@@ -525,27 +525,23 @@
     },
     "dwarf-dwarven-resilience": {
       "name": "Dwarven Resilience",
-      "description": "You have advantage on saving throws against poison, and you have resistance against poison damage."
+      "description": "You have Resistance to Poison damage. You also have Advantage on saving throws you make to avoid or end the Poisoned condition."
     },
     "dwarf-stonecunning": {
       "name": "Stonecunning",
-      "description": "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus."
+      "description": "As a Bonus Action, you gain Tremorsense with a range of 60 feet for 10 minutes. You must be on a stone surface or touching one to use it; the stone can be natural or worked. You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "halfling-lucky": {
-      "name": "Lucky",
-      "description": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."
+      "name": "Luck",
+      "description": "When you roll a 1 on the d20 of a D20 Test, you can reroll the die, and you must use the new roll."
     },
     "halfling-brave": {
       "name": "Brave",
-      "description": "You have advantage on saving throws against being frightened."
+      "description": "You have Advantage on saving throws you make to avoid or end the Frightened condition."
     },
     "halfling-naturally-stealthy": {
       "name": "Naturally Stealthy",
-      "description": "You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you."
-    },
-    "halfling-stout-resilience": {
-      "name": "Stout Resilience",
-      "description": "You have advantage on saving throws against poison, and you have resistance against poison damage."
+      "description": "You can take the Hide action even when you are obscured only by a creature that is at least one size larger than you."
     },
     "rogue-sneak-attack": {
       "name": "Sneak Attack",
@@ -1025,7 +1021,7 @@
     },
     "halfling-halfling-nimbleness": {
       "name": "Halfling Nimbleness",
-      "description": "You can move through the space of any creature of a size larger than yours."
+      "description": "You can move through the space of any creature that is a size larger than you, but you can't stop in the same space."
     },
     "aasimar-darkvision": {
       "name": "Darkvision (60 ft.)",
@@ -1037,7 +1033,7 @@
     },
     "aasimar-healing-hands": {
       "name": "Healing Hands",
-      "description": "As a Magic action, you touch a creature and roll a number of d4s equal to your Proficiency Bonus. The creature regains a number of Hit Points equal to the total rolled."
+      "description": "As a Magic action, you touch a creature and roll a number of d4s equal to your Proficiency Bonus. The creature regains a number of Hit Points equal to the total rolled. Once you use this trait, you cannot use it again until you finish a Long Rest."
     },
     "aasimar-light-bearer": {
       "name": "Light Bearer",
@@ -1045,7 +1041,7 @@
     },
     "aasimar-celestial-revelation": {
       "name": "Celestial Revelation",
-      "description": "When you reach character level 3, you can transform as a Bonus Action. Your transformation lasts for 1 minute or until you end it as a Bonus Action."
+      "description": "When you reach character level 3, you can transform as a Bonus Action, choosing Heavenly Wings (a Fly Speed equal to your Speed), Inner Radiance (you shed Bright Light in 10 feet and Dim Light for 10 more, and each creature within 10 feet of you at the end of your turns takes Radiant damage equal to your Proficiency Bonus), or Necrotic Shroud (creatures within 10 feet of you, other than your allies, must succeed on a Charisma saving throw or be Frightened until the end of your next turn). The transformation lasts 1 minute or until you end it (no action required). Once on each of your turns while transformed, you can deal extra damage equal to your Proficiency Bonus to one target when you hit it with an attack or spell; it is Necrotic for Necrotic Shroud and Radiant otherwise. Once you transform, you can't do so again until you finish a Long Rest."
     },
     "dragonborn-darkvision": {
       "name": "Darkvision (60 ft.)",
@@ -1057,87 +1053,83 @@
     },
     "dragonborn-breath-chromatic-black": {
       "name": "Breath Weapon (Acid)",
-      "description": "You exhale destructive energy. When you use your Breath Weapon, each creature in the area must make a saving throw. The type of saving throw and the damage type are determined by your Draconic Lineage."
+      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 + your Constitution modifier + your Proficiency Bonus). On a failed save, a creature takes 1d10 Acid damage; on a successful save, half as much. The damage increases by 1d10 at character levels 5 (2d10), 11 (3d10), and 17 (4d10). You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "dragonborn-breath-chromatic-blue": {
       "name": "Breath Weapon (Lightning)",
-      "description": "You exhale destructive energy. When you use your Breath Weapon, each creature in the area must make a saving throw. The type of saving throw and the damage type are determined by your Draconic Lineage."
+      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 + your Constitution modifier + your Proficiency Bonus). On a failed save, a creature takes 1d10 Lightning damage; on a successful save, half as much. The damage increases by 1d10 at character levels 5 (2d10), 11 (3d10), and 17 (4d10). You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "dragonborn-breath-chromatic-green": {
       "name": "Breath Weapon (Poison)",
-      "description": "You exhale destructive energy. When you use your Breath Weapon, each creature in the area must make a saving throw. The type of saving throw and the damage type are determined by your Draconic Lineage."
+      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 + your Constitution modifier + your Proficiency Bonus). On a failed save, a creature takes 1d10 Poison damage; on a successful save, half as much. The damage increases by 1d10 at character levels 5 (2d10), 11 (3d10), and 17 (4d10). You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "dragonborn-breath-chromatic-red": {
       "name": "Breath Weapon (Fire)",
-      "description": "You exhale destructive energy. When you use your Breath Weapon, each creature in the area must make a saving throw. The type of saving throw and the damage type are determined by your Draconic Lineage."
+      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 + your Constitution modifier + your Proficiency Bonus). On a failed save, a creature takes 1d10 Fire damage; on a successful save, half as much. The damage increases by 1d10 at character levels 5 (2d10), 11 (3d10), and 17 (4d10). You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "dragonborn-breath-chromatic-white": {
       "name": "Breath Weapon (Cold)",
-      "description": "You exhale destructive energy. When you use your Breath Weapon, each creature in the area must make a saving throw. The type of saving throw and the damage type are determined by your Draconic Lineage."
+      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 + your Constitution modifier + your Proficiency Bonus). On a failed save, a creature takes 1d10 Cold damage; on a successful save, half as much. The damage increases by 1d10 at character levels 5 (2d10), 11 (3d10), and 17 (4d10). You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "dragonborn-breath-metallic-brass": {
       "name": "Breath Weapon (Fire)",
-      "description": "You exhale destructive energy. When you use your Breath Weapon, each creature in the area must make a saving throw. The type of saving throw and the damage type are determined by your Draconic Lineage."
+      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 + your Constitution modifier + your Proficiency Bonus). On a failed save, a creature takes 1d10 Fire damage; on a successful save, half as much. The damage increases by 1d10 at character levels 5 (2d10), 11 (3d10), and 17 (4d10). You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "dragonborn-breath-metallic-bronze": {
       "name": "Breath Weapon (Lightning)",
-      "description": "You exhale destructive energy. When you use your Breath Weapon, each creature in the area must make a saving throw. The type of saving throw and the damage type are determined by your Draconic Lineage."
+      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 + your Constitution modifier + your Proficiency Bonus). On a failed save, a creature takes 1d10 Lightning damage; on a successful save, half as much. The damage increases by 1d10 at character levels 5 (2d10), 11 (3d10), and 17 (4d10). You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "dragonborn-breath-metallic-copper": {
       "name": "Breath Weapon (Acid)",
-      "description": "You exhale destructive energy. When you use your Breath Weapon, each creature in the area must make a saving throw. The type of saving throw and the damage type are determined by your Draconic Lineage."
+      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 + your Constitution modifier + your Proficiency Bonus). On a failed save, a creature takes 1d10 Acid damage; on a successful save, half as much. The damage increases by 1d10 at character levels 5 (2d10), 11 (3d10), and 17 (4d10). You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "dragonborn-breath-metallic-gold": {
       "name": "Breath Weapon (Fire)",
-      "description": "You exhale destructive energy. When you use your Breath Weapon, each creature in the area must make a saving throw. The type of saving throw and the damage type are determined by your Draconic Lineage."
+      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 + your Constitution modifier + your Proficiency Bonus). On a failed save, a creature takes 1d10 Fire damage; on a successful save, half as much. The damage increases by 1d10 at character levels 5 (2d10), 11 (3d10), and 17 (4d10). You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "dragonborn-breath-metallic-silver": {
       "name": "Breath Weapon (Cold)",
-      "description": "You exhale destructive energy. When you use your Breath Weapon, each creature in the area must make a saving throw. The type of saving throw and the damage type are determined by your Draconic Lineage."
+      "description": "When you take the Attack action on your turn, you can replace one of your attacks with an exhalation of magical energy in either a 15-foot Cone or a 30-foot Line that is 5 feet wide (choose the shape each time). Each creature in that area must make a Dexterity saving throw (DC 8 + your Constitution modifier + your Proficiency Bonus). On a failed save, a creature takes 1d10 Cold damage; on a successful save, half as much. The damage increases by 1d10 at character levels 5 (2d10), 11 (3d10), and 17 (4d10). You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "goliath-large-form": {
       "name": "Large Form",
-      "description": "Starting at character level 5, you can change your size to Large as a Bonus Action if you're in a big enough space. This transformation lasts until you end it as a Bonus Action or until you die."
+      "description": "Starting at character level 5, you can change your size to Large as a Bonus Action if you're in a big enough space. This lasts 10 minutes or until you end it (no action required). For the duration you have Advantage on Strength checks and your Speed increases by 10 feet. Once you use this trait, you can't use it again until you finish a Long Rest."
     },
     "goliath-powerful-build": {
       "name": "Powerful Build",
-      "description": "You have Advantage on any saving throw you make to end the Grappled condition. You also count as one size larger when determining your carrying capacity."
+      "description": "You have Advantage on any ability check you make to end the Grappled condition. You also count as one size larger when determining your carrying capacity."
     },
     "goliath-giant-ancestry-cloud": {
-      "name": "Giant Ancestry (Cloud)",
-      "description": "You are descended from Cloud Giants. You can cast Fog Cloud with this trait. Starting at 3rd level, you can cast Misty Step with it. Starting at 5th level, you can also cast Cloud of Daggers with it."
+      "name": "Cloud's Jaunt (Cloud Giant)",
+      "description": "You descend from Cloud Giants. As a Bonus Action, you magically teleport up to 30 feet to an unoccupied space you can see. You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "goliath-giant-ancestry-fire": {
-      "name": "Giant Ancestry (Fire)",
-      "description": "You are descended from Fire Giants. You can cast Burning Hands with this trait. Starting at 3rd level, you can cast Flame Blade with it. Starting at 5th level, you can also cast Fireball with it."
+      "name": "Fire's Burn (Fire Giant)",
+      "description": "You descend from Fire Giants. When you hit a target with an attack roll and deal damage to it, you can also deal 1d10 Fire damage to that target. You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "goliath-giant-ancestry-frost": {
-      "name": "Giant Ancestry (Frost)",
-      "description": "You are descended from Frost Giants. You can cast Armor of Agathys with this trait. Starting at 3rd level, you can cast Hold Person with it. Starting at 5th level, you can also cast Sleet Storm with it."
+      "name": "Frost's Chill (Frost Giant)",
+      "description": "You descend from Frost Giants. When you hit a target with an attack roll and deal damage to it, you can also deal 1d6 Cold damage to that target and reduce its Speed by 10 feet until the start of your next turn. You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "goliath-giant-ancestry-hill": {
-      "name": "Giant Ancestry (Hill)",
-      "description": "You are descended from Hill Giants. You can cast Speak with Animals with this trait. Starting at 3rd level, you can cast Entangle with it. Starting at 5th level, you can also cast Erupting Earth with it."
+      "name": "Hill's Tumble (Hill Giant)",
+      "description": "You descend from Hill Giants. When you hit a Large or smaller creature with an attack roll and deal damage to it, you can give that target the Prone condition. You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "goliath-giant-ancestry-stone": {
-      "name": "Giant Ancestry (Stone)",
-      "description": "You are descended from Stone Giants. You can cast Entangle with this trait. Starting at 3rd level, you can cast Spike Growth with it. Starting at 5th level, you can also cast Meld into Stone with it."
+      "name": "Stone's Endurance (Stone Giant)",
+      "description": "You descend from Stone Giants. When you take damage, you can take a Reaction to roll 1d12, add your Constitution modifier, and reduce the damage by that total. You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "goliath-giant-ancestry-storm": {
-      "name": "Giant Ancestry (Storm)",
-      "description": "You are descended from Storm Giants. You can cast Thunderwave with this trait. Starting at 3rd level, you can cast Levitate with it. Starting at 5th level, you can also cast Call Lightning with it."
+      "name": "Storm's Thunder (Storm Giant)",
+      "description": "You descend from Storm Giants. When you take damage from a creature within 60 feet of you, you can take a Reaction to deal 1d8 Thunder damage to that creature. You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "orc-adrenaline-rush": {
       "name": "Adrenaline Rush",
-      "description": "You can take the Dash action as a Bonus Action. When you do, you gain a number of Temporary Hit Points equal to your Proficiency Bonus."
+      "description": "You can take the Dash action as a Bonus Action. When you do so, you gain a number of Temporary Hit Points equal to your Proficiency Bonus. You can use this trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
     },
     "orc-darkvision": {
       "name": "Darkvision (120 ft.)",
       "description": "You can see in dim light within 120 feet of you as if it were bright light, and in darkness as if it were dim light."
-    },
-    "orc-powerful-build": {
-      "name": "Powerful Build",
-      "description": "You have Advantage on any saving throw you make to end the Grappled condition. You also count as one size larger when determining your carrying capacity."
     },
     "orc-relentless-endurance": {
       "name": "Relentless Endurance",
@@ -1177,7 +1169,7 @@
     },
     "elf-high-elf-cantrip": {
       "name": "High Elf Cantrip",
-      "description": "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it."
+      "description": "You know the Prestidigitation cantrip. Whenever you finish a Long Rest, you can replace it with a different cantrip from the Wizard spell list. Intelligence is your spellcasting ability for it."
     },
     "elf-high-elf-detect-magic": {
       "name": "Detect Magic",
@@ -1205,11 +1197,7 @@
     },
     "gnome-forest-speak-with-animals": {
       "name": "Speak with Animals",
-      "description": "Starting at 3rd level, you can cast Speak with Animals using this trait. Intelligence is your spellcasting ability for it."
-    },
-    "gnome-forest-misty-step": {
-      "name": "Misty Step",
-      "description": "Starting at 5th level, you can cast Misty Step using this trait. Intelligence is your spellcasting ability for it."
+      "description": "You always have the Speak with Animals spell prepared. You can cast it without a spell slot a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest. Intelligence is your spellcasting ability for it."
     },
     "gnome-rock-mending": {
       "name": "Mending",
@@ -1217,11 +1205,7 @@
     },
     "gnome-rock-prestidigitation": {
       "name": "Prestidigitation",
-      "description": "Starting at 3rd level, you can cast Prestidigitation using this trait. Intelligence is your spellcasting ability for it."
-    },
-    "gnome-rock-animate-objects": {
-      "name": "Animate Objects",
-      "description": "Starting at 5th level, you can cast Animate Objects using this trait. Intelligence is your spellcasting ability for it."
+      "description": "You know the Prestidigitation cantrip. Intelligence is your spellcasting ability for it."
     },
     "barbarian-rage": {
       "name": "Rage",
@@ -2446,6 +2430,18 @@
     "maneuver-trip-attack": {
       "name": "Trip Attack",
       "description": "When you hit a creature with an attack roll, you can expend one Superiority Die and add it to the damage. If the target is Large or smaller, it must succeed on a Strength saving throw or have the Prone condition."
+    },
+    "dragonborn-draconic-flight": {
+      "name": "Draconic Flight",
+      "description": "When you reach character level 5, you can channel draconic magic as a Bonus Action to sprout spectral wings that last 10 minutes or until you retract them (no action required) or have the Incapacitated condition. While they last, you have a Fly Speed equal to your Speed. Once you use this trait, you can't use it again until you finish a Long Rest."
+    },
+    "tiefling-otherworldly-presence": {
+      "name": "Otherworldly Presence",
+      "description": "You know the Thaumaturgy cantrip. When you cast it with this trait, the spell uses the same spellcasting ability you use for your Fiendish Legacy trait."
+    },
+    "gnome-rock-tinker": {
+      "name": "Tinker",
+      "description": "You have proficiency with Tinker's Tools. Using them, you can spend 10 minutes to create a Tiny clockwork device (AC 5, 1 HP). The device stops working after 8 hours, when you use this trait again to make another, or when you dismantle it as a Utilize action; you can have up to three such devices at a time."
     }
   },
   "subclasses": {
@@ -2649,7 +2645,7 @@
     },
     "defense": {
       "name": "Defense",
-      "description": "While you are wearing armor, you gain a +1 bonus to AC."
+      "description": "While you are wearing Light, Medium, or Heavy armor, you gain a +1 bonus to Armor Class."
     },
     "dueling": {
       "name": "Dueling",
@@ -2657,7 +2653,7 @@
     },
     "great-weapon-fighting": {
       "name": "Great Weapon Fighting",
-      "description": "When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll. The weapon must have the two-handed or versatile property."
+      "description": "When you roll damage for an attack you make with a Melee weapon that you are holding with two hands, you can treat any 1 or 2 on a damage die as a 3. The weapon must have the Two-Handed or Versatile property to gain this benefit."
     },
     "protection": {
       "name": "Protection",
@@ -2831,9 +2827,6 @@
       "longbow": {
         "name": "Longbow"
       },
-      "net": {
-        "name": "Net"
-      },
       "unarmed-strike": {
         "name": "Unarmed Strike"
       },
@@ -2902,7 +2895,7 @@
         "name": "Insignia of Rank"
       },
       "common-clothes": {
-        "name": "Common Clothes"
+        "name": "Traveler's Clothes"
       },
       "pouch": {
         "name": "Pouch"
@@ -3263,6 +3256,15 @@
       },
       "yew-wand": {
         "name": "Yew Wand"
+      },
+      "ration": {
+        "name": "Ration (1 day)"
+      },
+      "oil-flask": {
+        "name": "Oil (flask)"
+      },
+      "net": {
+        "name": "Net"
       }
     },
     "packs": {
@@ -3291,22 +3293,10 @@
   },
   "bundles": {
     "barbarian-loadout": {
-      "name": "Greataxe + 4 Handaxes + Explorer's Pack"
+      "name": "Greataxe, 4 Handaxes, Explorer's Pack + 15 GP"
     },
     "rogue-loadout": {
-      "name": "Leather Armor + 2 Daggers + Thieves' Tools"
-    },
-    "rogue-rapier": {
-      "name": "Rapier"
-    },
-    "rogue-shortsword-melee": {
-      "name": "Shortsword"
-    },
-    "rogue-shortbow-kit": {
-      "name": "Shortbow + Arrows (20)"
-    },
-    "rogue-shortsword-ranged": {
-      "name": "Shortsword"
+      "name": "Leather Armor, 2 Daggers, Shortsword, Shortbow, 20 Arrows, Quiver, Thieves' Tools, Burglar's Pack + 8 GP"
     },
     "fighter-chainmail": {
       "name": "Chain Mail"
@@ -3323,8 +3313,11 @@
     "light-crossbow-kit": {
       "name": "Light Crossbow + Bolts (20)"
     },
-    "two-handaxes": {
-      "name": "Two Handaxes"
+    "fighter-loadout-a": {
+      "name": "Chain Mail, Greatsword, Flail, 8 Javelins, Dungeoneer's Pack + 4 GP"
+    },
+    "fighter-loadout-b": {
+      "name": "Studded Leather, Scimitar, Shortsword, Longbow, 20 Arrows, Quiver, Dungeoneer's Pack + 11 GP"
     }
   },
   "bundleCategories": {
@@ -3387,19 +3380,19 @@
   "feats": {
     "alert": {
       "name": "Alert",
-      "description": "Gain a bonus to Initiative rolls equal to your Proficiency Bonus. You can also swap Initiative with a willing ally if neither of you has the Incapacitated condition."
+      "description": "Initiative Proficiency: when you roll Initiative, you can add your Proficiency Bonus to the roll. Initiative Swap: immediately after you roll Initiative, you can swap your Initiative with that of one willing ally in the same combat. You can't do this if you or the ally has the Incapacitated condition."
     },
     "crafter": {
       "name": "Crafter",
-      "description": "Gain proficiency with three Artisan's Tools of your choice. When you buy nonmagical equipment, you get a 20 percent discount. You can craft mundane items faster during Long Rests with these tools."
+      "description": "Gain proficiency with three Artisan's Tools of your choice. Whenever you buy a nonmagical item, you get a 20 percent discount. When you finish a Long Rest, you can craft one piece of simple Adventuring Gear (such as a Ladder, Rope, or Torch) if you have the matching Artisan's Tools; it lasts until your next Long Rest."
     },
     "healer": {
       "name": "Healer",
-      "description": "Gain proficiency with the Healer's Kit. As a Utilize action, you can expend one use of a Healer's Kit to restore Hit Points to a creature equal to 1d6 + 4 + its character level. A creature can benefit only once per Short Rest."
+      "description": "Battle Medic: if you have a Healer's Kit, you can take a Utilize action to tend a creature within 5 feet and expend one use of the kit. That creature can spend one of its Hit Point Dice, and you roll it; the creature regains Hit Points equal to the roll plus your Proficiency Bonus. Healing Rerolls: when you roll a die to determine the Hit Points you restore with a spell or with Battle Medic, you can reroll it if it shows a 1 and must use the new roll."
     },
     "lucky": {
       "name": "Lucky",
-      "description": "You have a number of Luck Points equal to your Proficiency Bonus, regained on a Long Rest. Spend a Luck Point to roll a d20 and replace your attack roll, ability check, or saving throw — or to force an attacker to reroll an attack against you."
+      "description": "Luck Points: you have a number of Luck Points equal to your Proficiency Bonus and regain all expended points when you finish a Long Rest. Advantage: when you roll a d20 for a D20 Test, you can spend 1 Luck Point to give yourself Advantage on the roll. Disadvantage: when a creature rolls a d20 for an attack roll against you, you can spend 1 Luck Point to impose Disadvantage on that roll."
     },
     "magic-initiate": {
       "name": "Magic Initiate",
@@ -3419,7 +3412,7 @@
     },
     "tavern-brawler": {
       "name": "Tavern Brawler",
-      "description": "Your Unarmed Strike's damage die becomes 1d4. Once per turn, when you hit with an Unarmed Strike or an Improvised Weapon, you can reroll the damage die and use either result. You also gain proficiency with Improvised Weapons."
+      "description": "Enhanced Unarmed Strike: when you hit with an Unarmed Strike and deal damage, you can deal Bludgeoning damage equal to 1d4 plus your Strength modifier instead of the normal damage. Damage Rerolls: when you roll a damage die for your Unarmed Strike, you can reroll it if it shows a 1 and must use the new roll. Improvised Weaponry: you have proficiency with improvised weapons. Push: when you hit a creature with an Unarmed Strike as part of the Attack action on your turn, you can deal damage and also push the target 10 feet away (once per turn)."
     },
     "tough": {
       "name": "Tough",
@@ -3461,7 +3454,7 @@
     },
     "athlete": {
       "name": "Athlete",
-      "description": "Increase your Strength or Dexterity score by 1. Rising from prone costs only 5 feet of movement, climbing doesn't cost extra movement, and you can make a running jump after moving only 5 feet."
+      "description": "Increase your Strength or Dexterity score by 1. Climb Speed: you gain a Climb Speed equal to your Speed. Hop Up: when you have the Prone condition, standing up costs you only 5 feet of movement. Jumping: you can make a running Long or High Jump after moving only 5 feet."
     },
     "charger": {
       "name": "Charger",
@@ -3473,7 +3466,7 @@
     },
     "crossbow-expert": {
       "name": "Crossbow Expert",
-      "description": "Increase your Dexterity score by 1. You ignore the loading property of crossbows, being within 5 feet of an enemy doesn't impose disadvantage on your ranged attack rolls, and when you attack with a one-handed weapon you can use a Bonus Action to attack with a Hand Crossbow."
+      "description": "Increase your Dexterity score by 1. Ignore Loading: you ignore the Loading property of crossbows you are proficient with. Firing in Melee: being within 5 feet of an enemy doesn't impose Disadvantage on your ranged attack rolls. Dual Wielding: when you make the extra attack of the Light property, you can make it with a loaded one-handed weapon that has the Ammunition property, such as a Hand Crossbow."
     },
     "crusher": {
       "name": "Crusher",
@@ -3481,11 +3474,11 @@
     },
     "defensive-duelist": {
       "name": "Defensive Duelist",
-      "description": "Increase your Dexterity score by 1. When you are wielding a Finesse weapon with which you are proficient and another creature hits you with a melee attack, you can use your reaction to add your Proficiency Bonus to your AC for that attack."
+      "description": "Prerequisite: Dexterity 13+. Increase your Dexterity score by 1. Parry: when you are holding a Finesse weapon and another creature hits you with a melee attack, you can use your Reaction to add your Proficiency Bonus to your AC for that attack, potentially causing it to miss."
     },
     "dual-wielder": {
       "name": "Dual Wielder",
-      "description": "Increase your Strength or Dexterity score by 1. You gain a +1 bonus to AC while wielding separate melee weapons in each hand. You can use two-weapon fighting even when your one-handed melee weapons aren't Light, and you can draw or stow two weapons at once."
+      "description": "Increase your Strength or Dexterity score by 1. Enhanced Dual Wielding: when you take the Attack action and attack with a Light weapon, you can make the extra Bonus Action attack with a different Melee weapon that lacks the Two-Handed property; it doesn't need to be Light. Quick Draw: you can draw or stow two weapons that lack the Two-Handed property when you would normally be able to draw or stow only one."
     },
     "durable": {
       "name": "Durable",
@@ -3493,7 +3486,7 @@
     },
     "elemental-adept": {
       "name": "Elemental Adept",
-      "description": "Increase your Intelligence, Wisdom, or Charisma score by 1. Spells you cast ignore resistance to damage of the chosen damage type (Acid, Cold, Fire, Lightning, or Thunder). In addition, when you roll damage for a spell of that type, you can treat any 1 on a damage die as a 2."
+      "description": "Prerequisite: Spellcasting or Pact Magic feature. Increase your Intelligence, Wisdom, or Charisma score by 1. Spells you cast ignore Resistance to damage of the chosen type (Acid, Cold, Fire, Lightning, or Thunder). In addition, when you roll damage for a spell of that type, you can treat any 1 on a damage die as a 2."
     },
     "fey-touched": {
       "name": "Fey Touched",
@@ -3501,27 +3494,27 @@
     },
     "grappler": {
       "name": "Grappler",
-      "description": "Increase your Strength or Dexterity score by 1. You have advantage on attack rolls against a creature grappled by you. When you hit a creature with an Unarmed Strike on your turn, you can deal damage and also grapple the target as part of the same action."
+      "description": "Prerequisite: Strength or Dexterity 13+. Increase your Strength or Dexterity score by 1. Punch and Grab: when you hit a creature with an Unarmed Strike as part of the Attack action on your turn, you can use both the Damage and the Grapple option (once per turn). Attack Advantage: you have Advantage on attack rolls against a creature Grappled by you. Fast Wrestler: you spend no extra movement to move a creature Grappled by you if it is your size or smaller."
     },
     "great-weapon-master": {
       "name": "Great Weapon Master",
-      "description": "Increase your Strength score by 1. On your turn, when you score a critical hit with a melee weapon or reduce a creature to 0 HP, you can make one melee weapon attack as a Bonus Action. Heavy weapons add your Proficiency Bonus to damage rolls on your turn."
+      "description": "Prerequisite: Strength 13+. Increase your Strength score by 1. Heavy Weapon Mastery: when you hit a creature with a weapon that has the Heavy property as part of the Attack action on your turn, you deal extra damage equal to your Proficiency Bonus. Hew: immediately after you score a Critical Hit with a Melee weapon or reduce a creature to 0 Hit Points with one, you can make one attack with the same weapon as a Bonus Action."
     },
     "heavily-armored": {
       "name": "Heavily Armored",
-      "description": "Increase your Strength or Constitution score by 1. You gain proficiency with Heavy Armor."
+      "description": "Prerequisite: Medium Armor Training. Increase your Strength or Constitution score by 1. Armor Training: you gain training with Heavy armor."
     },
     "heavy-armor-master": {
       "name": "Heavy Armor Master",
-      "description": "Increase your Strength or Constitution score by 1. While wearing Heavy Armor, nonmagical Slashing, Piercing, and Bludgeoning damage you take is reduced by an amount equal to your Proficiency Bonus."
+      "description": "Prerequisite: Heavy Armor Training. Increase your Strength or Constitution score by 1. Damage Reduction: while you are wearing Heavy armor, Bludgeoning, Piercing, and Slashing damage that you take from nonmagical attacks is reduced by an amount equal to your Proficiency Bonus."
     },
     "inspiring-leader": {
       "name": "Inspiring Leader",
-      "description": "Increase your Wisdom or Charisma score by 1. At the end of a Short or Long Rest, you can give a speech to grant up to six allies Temporary Hit Points equal to your character level plus your Wisdom or Charisma modifier."
+      "description": "Prerequisite: Wisdom or Charisma 13+. Increase your Wisdom or Charisma score by 1. Bolstering Performance: when you finish a Short or Long Rest, you can give a 10-minute performance that inspires up to six allies (yourself included) within 30 feet; each gains Temporary Hit Points equal to your character level plus the modifier of the ability increased by this feat."
     },
     "keen-mind": {
       "name": "Keen Mind",
-      "description": "Increase your Intelligence score by 1. You gain proficiency in Arcana, History, Investigation, Nature, or Religion. You can take the Study action as a Bonus Action."
+      "description": "Increase your Intelligence score by 1. Lore Knowledge: choose one of Arcana, History, Investigation, Nature, or Religion; you gain proficiency in it, or Expertise if you are already proficient. Quick Study: you can take the Study action as a Bonus Action."
     },
     "lightly-armored": {
       "name": "Lightly Armored",
@@ -3529,15 +3522,15 @@
     },
     "mage-slayer": {
       "name": "Mage Slayer",
-      "description": "Increase your Strength or Dexterity score by 1. When a creature within 5 feet casts a spell, you can use your reaction to make a melee attack. Creatures damaged by you have disadvantage on concentration saves. Once per Long Rest, you can automatically succeed on a save against a spell."
+      "description": "Increase your Strength or Dexterity score by 1. Concentration Breaker: when you damage a creature that is concentrating, it has Disadvantage on the saving throw it makes to maintain Concentration. Guarded Mind: if you fail an Intelligence, Wisdom, or Charisma saving throw, you can cause yourself to succeed instead. Once you use this benefit, you can't use it again until you finish a Short or Long Rest."
     },
     "medium-armor-master": {
       "name": "Medium Armor Master",
-      "description": "Increase your Strength or Dexterity score by 1. Wearing Medium Armor doesn't impose disadvantage on your Stealth checks, and you can add up to +3 (instead of +2) from Dexterity to your AC when wearing Medium Armor."
+      "description": "Prerequisite: Medium Armor Training. Increase your Strength or Dexterity score by 1. Dexterous Wearer: while you are wearing Medium armor, you can add 3 (rather than 2) to your AC from Dexterity if you have a Dexterity score of 16 or higher."
     },
     "moderately-armored": {
       "name": "Moderately Armored",
-      "description": "Increase your Strength or Dexterity score by 1. You gain proficiency with Medium Armor and Shields."
+      "description": "Prerequisite: Light Armor Training. Increase your Strength or Dexterity score by 1. Armor Training: you gain training with Medium armor and Shields."
     },
     "mounted-combatant": {
       "name": "Mounted Combatant",
@@ -3553,11 +3546,11 @@
     },
     "poisoner": {
       "name": "Poisoner",
-      "description": "Increase Dexterity or Intelligence by 1. You gain proficiency with Poisoner's Kit. Weapons ignore Poison resistance. You can apply poison to a weapon as a Bonus Action (DC 14 CON save or take 2d8 Poison damage and become Poisoned)."
+      "description": "Increase your Dexterity or Intelligence score by 1. Potent Poison: when you make a damage roll that deals Poison damage, it ignores Resistance to Poison damage. Brew Poison: you gain proficiency with the Poisoner's Kit. As part of a Long Rest, you can create a number of poison doses equal to your Proficiency Bonus. As a Bonus Action, you can apply a dose to a weapon or ammunition; it stays potent for 1 minute or until it hits. A creature damaged by it must succeed on a Constitution saving throw (DC 8 + the modifier of the ability increased by this feat + your Proficiency Bonus) or take 2d8 Poison damage and have the Poisoned condition until the end of your next turn."
     },
     "polearm-master": {
       "name": "Polearm Master",
-      "description": "Increase Strength or Dexterity by 1. When you attack with a Glaive, Halberd, Quarterstaff, or Spear, you can use a Bonus Action to make a melee strike with the butt end (1d4 damage). You provoke opportunity attacks when enemies enter your reach."
+      "description": "Increase your Strength or Dexterity score by 1. Pole Strike: immediately after you take the Attack action and attack with a Quarterstaff, a Spear, or a weapon that has the Heavy and Reach properties, you can use a Bonus Action to make a melee attack with the opposite end of the weapon (1d4 Bludgeoning). Reactive Strike: when a creature you can see enters your reach, you can use your Reaction to make one melee attack against it with such a weapon."
     },
     "resilient": {
       "name": "Resilient",
@@ -3565,11 +3558,11 @@
     },
     "ritual-caster": {
       "name": "Ritual Caster",
-      "description": "Increase Intelligence, Wisdom, or Charisma by 1. You can cast any ritual spell from your class spell list or ritual spells you know as rituals without extending the casting time."
+      "description": "Prerequisite: Intelligence, Wisdom, or Charisma 13+. Increase your Intelligence, Wisdom, or Charisma score by 1. Ritual Spells: choose a spell list (Cleric, Druid, or Wizard) and learn two level 1 spells with the Ritual tag from it; you can cast them as Rituals. Quick Ritual: when you cast a Ritual spell, it takes only 1 minute longer than its normal casting time instead of 10."
     },
     "sentinel": {
       "name": "Sentinel",
-      "description": "Increase Strength or Dexterity by 1. When you hit a creature with an opportunity attack, its speed becomes 0. Creatures provoke opportunity attacks even if they Disengage, and you can strike enemies that attack allies within 5 feet."
+      "description": "Increase your Strength or Dexterity score by 1. Guardian: immediately after a creature within 5 feet of you takes the Disengage action or hits a target other than you with an attack, you can make an Opportunity Attack against that creature. Halt: when you hit a creature with an Opportunity Attack, its Speed becomes 0 for the rest of the current turn."
     },
     "shadow-touched": {
       "name": "Shadow Touched",
@@ -3581,7 +3574,7 @@
     },
     "shield-master": {
       "name": "Shield Master",
-      "description": "Increase Strength by 1. While wielding a Shield, if you hit a creature with a melee attack on your turn, you can push the target 5 feet or knock it Prone as part of the attack. You can also add your Shield's AC bonus to DEX saves against single-target effects."
+      "description": "Prerequisite: Shield Training. Increase your Strength score by 1. Shield Bash: if you attack a creature within 5 feet with a melee weapon as part of the Attack action on your turn, you can use a Bonus Action to try to shove it with your Shield. Interpose Shield: if you are subjected to an effect that lets you make a Dexterity saving throw to take only half damage, you can use your Reaction to take no damage if you succeed."
     },
     "skill-expert": {
       "name": "Skill Expert",
@@ -3589,7 +3582,7 @@
     },
     "skulker": {
       "name": "Skulker",
-      "description": "Increase Dexterity by 1. You gain Blindsight out to 10 feet. You can hide when lightly obscured, and missing a ranged attack while hidden does not reveal your position."
+      "description": "Prerequisite: Dexterity 13+. Increase your Dexterity score by 1. Blindsight: you have Blindsight with a range of 10 feet. Fog of War: you have Advantage on Initiative rolls. Sniper: if you make an attack roll while Hidden and miss, making the attack roll doesn't reveal your location."
     },
     "slasher": {
       "name": "Slasher",
@@ -3597,11 +3590,11 @@
     },
     "speedy": {
       "name": "Speedy",
-      "description": "Increase Dexterity or Constitution by 1. Your speed increases by 10 feet, moving through difficult terrain doesn't cost extra movement, and opportunity attacks against you have disadvantage."
+      "description": "Prerequisite: Dexterity or Constitution 13+. Increase your Dexterity or Constitution score by 1. Speed Increase: your Speed increases by 10 feet while you aren't wearing Heavy armor. Dash Over Difficult Terrain: when you take the Dash action, difficult terrain doesn't cost you extra movement for that action."
     },
     "spell-sniper": {
       "name": "Spell Sniper",
-      "description": "Increase Intelligence, Wisdom, or Charisma by 1. Ranged spell attacks ignore half cover and three-quarters cover, casting ranged spells within 5 feet doesn't impose disadvantage, and your ranged spells have their range doubled (if at least 10 feet)."
+      "description": "Prerequisite: Spellcasting or Pact Magic feature. Increase your Intelligence, Wisdom, or Charisma score by 1. Bypass Cover: your attack rolls with spells ignore Half Cover and Three-Quarters Cover. Casting in Melee: being within 5 feet of an enemy doesn't impose Disadvantage on your attack rolls with spells. Increased Range: when you cast a spell that has a range of at least 10 feet and requires an attack roll, you can increase its range by 60 feet."
     },
     "telekinetic": {
       "name": "Telekinetic",
@@ -3613,7 +3606,7 @@
     },
     "war-caster": {
       "name": "War Caster",
-      "description": "Increase Intelligence, Wisdom, or Charisma by 1. You have advantage on CON saves to maintain concentration. You can perform somatic components while holding weapons or shields, and you can cast a single-target spell as an opportunity attack."
+      "description": "Prerequisite: Spellcasting or Pact Magic feature. Increase your Intelligence, Wisdom, or Charisma score by 1. Concentration: you have Advantage on Constitution saving throws to maintain Concentration. Reactive Spell: when a creature provokes an Opportunity Attack from you by leaving your reach, you can use your Reaction to cast a spell at it instead (casting time of one action, targeting only that creature). Somatic Components: you can perform the Somatic components of spells even when you have weapons or a Shield in one or both hands."
     },
     "weapon-master": {
       "name": "Weapon Master",
@@ -3625,51 +3618,51 @@
     },
     "boon-of-combat-prowess": {
       "name": "Boon of Combat Prowess",
-      "description": "When you miss with an attack roll, you can hit instead. Once per turn."
+      "description": "Increase one ability score of your choice by 1 (maximum 30). Peerless Aim: when you miss with an attack roll, you can hit instead. Once you use this benefit, you can't use it again until the start of your next turn."
     },
     "boon-of-dimensional-travel": {
       "name": "Boon of Dimensional Travel",
-      "description": "Immediately after you take the Attack action or cast a spell, you can teleport up to 30 feet to an unoccupied space."
+      "description": "Increase one ability score of your choice by 1 (maximum 30). Blink Steps: immediately after you take the Attack action or the Magic action, you can teleport up to 30 feet to an unoccupied space you can see."
     },
     "boon-of-energy-resistance": {
       "name": "Boon of Energy Resistance",
-      "description": "Gain resistance to two damage types of your choice: Acid, Cold, Fire, Lightning, Necrotic, Poison, Psychic, Radiant, or Thunder."
+      "description": "Increase one ability score of your choice by 1 (maximum 30). Resistances: choose two of Acid, Cold, Fire, Lightning, Necrotic, Poison, Radiant, or Thunder; you have Resistance to them, and you can change the choice when you finish a Long Rest. Energy Redirection: when you take damage of one of those types, you can use your Reaction to direct damage at a creature you can see within 60 feet; it must succeed on a Dexterity saving throw (DC 8 + your Constitution modifier + your Proficiency Bonus) or take 2d12 + your Constitution modifier damage of that type."
     },
     "boon-of-fate": {
       "name": "Boon of Fate",
-      "description": "When you or another creature within 60 feet makes a d20 test, you can roll a d10 and add or subtract it from the result. Once per rest."
+      "description": "Increase one ability score of your choice by 1 (maximum 30). Improve Fate: when you or another creature within 60 feet of you succeeds on or fails a D20 Test, you can roll 2d4 and apply the total as a bonus or penalty to the d20 roll. Once you use this benefit, you can't use it again until you roll Initiative or finish a Short or Long Rest."
     },
     "boon-of-fortitude": {
       "name": "Boon of Fortitude",
-      "description": "Your Hit Point maximum increases by 40. When you regain Hit Points, you regain an additional 2d20 Hit Points once per turn."
+      "description": "Increase one ability score of your choice by 1 (maximum 30). Fortified Health: your Hit Point maximum increases by 40."
     },
     "boon-of-irresistible-offense": {
       "name": "Boon of Irresistible Offense",
-      "description": "Your bludgeoning, piercing, and slashing damage ignores resistances. Critical hits deal additional damage equal to your ability modifier."
+      "description": "Increase your Strength or Dexterity score by 1 (maximum 30). Overcome Defenses: the Bludgeoning, Piercing, and Slashing damage you deal always ignores Resistance. Overwhelming Strike: when you roll a 20 on the d20 of an attack roll, you can deal extra damage to the target equal to the ability score increased by this feat, of the same type as the attack."
     },
     "boon-of-night-spirit": {
       "name": "Boon of Night Spirit",
-      "description": "While in Dim Light or Darkness, you can become Invisible as a Bonus Action, and you gain resistance to all damage except Force and Radiant."
+      "description": "Increase one ability score of your choice by 1 (maximum 30). Merge with Shadows: while within Dim Light or Darkness, you can give yourself the Invisible condition as a Bonus Action; it ends immediately after you take an action, a Bonus Action, or a Reaction. Shadowy Form: while within Dim Light or Darkness, you have Resistance to all damage except Psychic and Radiant."
     },
     "boon-of-recovery": {
       "name": "Boon of Recovery",
-      "description": "When you drop to 0 Hit Points, you can instantly regain half your Hit Point maximum instead. Once per Long Rest."
+      "description": "Increase one ability score of your choice by 1 (maximum 30). Last Stand: when you would be reduced to 0 Hit Points, you can drop to half your Hit Point maximum instead; once you use this benefit, you can't use it again until you finish a Long Rest. Recover Vitality: you have a pool of ten d10s regained on a Long Rest; as a Bonus Action, you can spend dice from the pool and regain Hit Points equal to the roll."
     },
     "boon-of-skill": {
       "name": "Boon of Skill",
-      "description": "Gain proficiency in all skills, and gain Expertise in one skill of your choice."
+      "description": "Increase one ability score of your choice by 1 (maximum 30). All-Around Adept: you gain proficiency in all skills. Expertise: choose one skill in which you lack Expertise to gain Expertise in it."
     },
     "boon-of-speed": {
       "name": "Boon of Speed",
-      "description": "Your speed increases by 30 feet. As a Bonus Action, you can take the Disengage action."
+      "description": "Increase one ability score of your choice by 1 (maximum 30). Escape Artist: as a Bonus Action, you can take the Disengage action, which also ends any effect on you that is reducing your Speed. Speed Increase: your Speed increases by 30 feet."
     },
     "boon-of-spell-recall": {
       "name": "Boon of Spell Recall",
-      "description": "Whenever you cast a spell using a 1st through 4th-level spell slot, roll 1d4. On a 1, the spell slot is not expended."
+      "description": "Prerequisite: Spellcasting or Pact Magic feature. Increase your Intelligence, Wisdom, or Charisma score by 1 (maximum 30). Free Casting: whenever you cast a spell with a level 1-4 spell slot, roll 1d4. If the roll equals the slot's level, the slot isn't expended."
     },
     "boon-of-truesight": {
       "name": "Boon of Truesight",
-      "description": "You gain Truesight out to a range of 60 feet."
+      "description": "Increase one ability score of your choice by 1 (maximum 30). Truesight: you have Truesight out to a range of 60 feet."
     }
   },
   "weaponMasteries": {
@@ -3761,7 +3754,7 @@
     },
     "stunned": {
       "name": "Stunned",
-      "description": "You are Incapacitated and can't move; you automatically fail Strength and Dexterity saving throws, and attacks against you have advantage."
+      "description": "You have the Incapacitated condition, you automatically fail Strength and Dexterity saving throws, and attack rolls against you have Advantage."
     },
     "unconscious": {
       "name": "Unconscious",

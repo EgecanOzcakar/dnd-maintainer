@@ -265,3 +265,57 @@ describe('FEAT_SOURCES', () => {
     });
   });
 });
+
+describe('2024 feat accuracy', () => {
+  const feat = (id: string) => {
+    const f = FEAT_SOURCES.find((s) => s.id === id);
+    if (!f) throw new Error(`missing feat ${id}`);
+    return f;
+  };
+
+  it('Speedy and Boon of Speed add to the walking speed instead of replacing it', () => {
+    expect(feat('speedy').grants).toContainEqual({ type: 'speed', mode: 'walk', value: 10, additive: true });
+    expect(feat('boon-of-speed').grants).toContainEqual({ type: 'speed', mode: 'walk', value: 30, additive: true });
+  });
+
+  it('Boon of Fortitude grants a flat +40 Hit Point maximum', () => {
+    expect(feat('boon-of-fortitude').grants).toContainEqual({ type: 'hp-bonus', perLevel: 0, flat: 40 });
+  });
+
+  it('Healer grants no tool proficiency', () => {
+    expect(feat('healer').grants.some((g) => g.type === 'proficiency')).toBe(false);
+  });
+
+  it('every Epic Boon grants one +1 ability increase', () => {
+    for (const boon of FEAT_SOURCES.filter((f) => f.category === 'epicBoon')) {
+      const choices = boon.grants.filter((g) => g.type === 'ability-choice');
+      expect(choices, boon.id).toHaveLength(1);
+      expect(choices[0]).toMatchObject({ count: 1, bonus: 1 });
+    }
+    expect(feat('boon-of-irresistible-offense').grants).toContainEqual(
+      expect.objectContaining({ type: 'ability-choice', from: ['str', 'dex'] })
+    );
+    expect(feat('boon-of-spell-recall').grants).toContainEqual(
+      expect.objectContaining({ type: 'ability-choice', from: ['int', 'wis', 'cha'] })
+    );
+  });
+
+  it.each([
+    ['defensive-duelist', { type: 'ability-minimum', ability: 'dex', minimum: 13 }],
+    ['great-weapon-master', { type: 'ability-minimum', ability: 'str', minimum: 13 }],
+    ['grappler', { type: 'ability-minimum-any', abilities: ['str', 'dex'], minimum: 13 }],
+    ['speedy', { type: 'ability-minimum-any', abilities: ['dex', 'con'], minimum: 13 }],
+    ['war-caster', { type: 'spellcasting' }],
+    ['spell-sniper', { type: 'spellcasting' }],
+    ['elemental-adept', { type: 'spellcasting' }],
+    ['heavily-armored', { type: 'proficiency', category: 'armor', id: 'medium' }],
+    ['heavy-armor-master', { type: 'proficiency', category: 'armor', id: 'heavy' }],
+    ['medium-armor-master', { type: 'proficiency', category: 'armor', id: 'medium' }],
+    ['moderately-armored', { type: 'proficiency', category: 'armor', id: 'light' }],
+    ['shield-master', { type: 'proficiency', category: 'armor', id: 'shields' }],
+  ] as const)('%s carries its 2024 prerequisite alongside level 4', (id, prerequisite) => {
+    const prerequisites = feat(id).prerequisites;
+    expect(prerequisites).toContainEqual({ type: 'level-minimum', level: 4 });
+    expect(prerequisites).toContainEqual(prerequisite);
+  });
+});

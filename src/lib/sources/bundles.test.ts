@@ -93,48 +93,49 @@ describe('requireBundleDef', () => {
   });
 });
 
-describe('rogue bundles', () => {
-  it('rogue-loadout contains leather, dagger x2, thieves-tools', () => {
-    const result = resolveBundleRef('rogue-loadout');
-    expect(result.kind).toBe('bundle');
-    const contents = result.contents;
-    expect(contents.find((c) => c.itemId === 'leather')?.quantity).toBe(1);
-    expect(contents.find((c) => c.itemId === 'dagger')?.quantity).toBe(2);
-    expect(contents.find((c) => c.itemId === 'thieves-tools')?.quantity).toBe(1);
+describe('starting-equipment loadouts (2024 PHB)', () => {
+  const contents = (id: string) => Object.fromEntries(resolveBundleRef(id).contents.map((c) => [c.itemId, c.quantity]));
+
+  it('rogue-loadout is Option A with 8 GP left over', () => {
+    expect(contents('rogue-loadout')).toEqual({
+      leather: 1,
+      dagger: 2,
+      shortsword: 1,
+      shortbow: 1,
+      'arrows-20': 1,
+      quiver: 1,
+      'thieves-tools': 1,
+      'burglars-pack': 1,
+    });
+    expect(getBundleDef('rogue-loadout')?.gp).toBe(8);
   });
 
-  it('rogue-rapier contains rapier x1', () => {
-    const result = resolveBundleRef('rogue-rapier');
-    expect(result.kind).toBe('bundle');
-    expect(result.contents).toHaveLength(1);
-    expect(result.contents[0].itemId).toBe('rapier');
-    expect(result.contents[0].quantity).toBe(1);
+  it("fighter-loadout-a is chain mail, greatsword, flail, 8 javelins and a Dungeoneer's Pack (+4 GP)", () => {
+    expect(contents('fighter-loadout-a')).toEqual({
+      'chain-mail': 1,
+      greatsword: 1,
+      flail: 1,
+      javelin: 8,
+      'dungeoneers-pack': 1,
+    });
+    expect(getBundleDef('fighter-loadout-a')?.gp).toBe(4);
   });
 
-  it('rogue-shortsword-melee contains shortsword x1', () => {
-    const result = resolveBundleRef('rogue-shortsword-melee');
-    expect(result.kind).toBe('bundle');
-    expect(result.contents).toHaveLength(1);
-    expect(result.contents[0].itemId).toBe('shortsword');
-    expect(result.contents[0].quantity).toBe(1);
+  it('fighter-loadout-b is the archer kit with studded leather (+11 GP)', () => {
+    expect(contents('fighter-loadout-b')).toEqual({
+      'studded-leather': 1,
+      scimitar: 1,
+      shortsword: 1,
+      longbow: 1,
+      'arrows-20': 1,
+      quiver: 1,
+      'dungeoneers-pack': 1,
+    });
+    expect(getBundleDef('fighter-loadout-b')?.gp).toBe(11);
   });
 
-  it('rogue-shortbow-kit contains shortbow x1 and arrows-20 x1', () => {
-    const result = resolveBundleRef('rogue-shortbow-kit');
-    expect(result.kind).toBe('bundle');
-    const ids = result.contents.map((c) => c.itemId);
-    expect(ids).toContain('shortbow');
-    expect(ids).toContain('arrows-20');
-    expect(result.contents.find((c) => c.itemId === 'shortbow')?.quantity).toBe(1);
-    expect(result.contents.find((c) => c.itemId === 'arrows-20')?.quantity).toBe(1);
-  });
-
-  it('rogue-shortsword-ranged contains shortsword x1', () => {
-    const result = resolveBundleRef('rogue-shortsword-ranged');
-    expect(result.kind).toBe('bundle');
-    expect(result.contents).toHaveLength(1);
-    expect(result.contents[0].itemId).toBe('shortsword');
-    expect(result.contents[0].quantity).toBe(1);
+  it('barbarian-loadout keeps 15 GP', () => {
+    expect(getBundleDef('barbarian-loadout')?.gp).toBe(15);
   });
 });
 
@@ -201,11 +202,5 @@ describe('resolveBundleRef', () => {
     const ids = result.contents.map((c) => c.itemId);
     expect(ids).toContain('light-crossbow');
     expect(ids).toContain('bolts-20');
-  });
-
-  it('two-handaxes contains handaxe with quantity 2', () => {
-    const result = resolveBundleRef('two-handaxes');
-    expect(result.contents[0].itemId).toBe('handaxe');
-    expect(result.contents[0].quantity).toBe(2);
   });
 });

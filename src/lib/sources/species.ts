@@ -1,7 +1,15 @@
 import type { SpeciesSource } from '@/types/sources';
 import type { Grant } from '@/types/grants';
-import type { SpeciesId } from '@/lib/dnd-helpers';
+import { DND_LANGUAGE_DATA, type LanguageId, type SpeciesId } from '@/lib/dnd-helpers';
 import { createChoiceKey } from '@/types/choices';
+
+/**
+ * 2024 PHB step 3 ("Choose Languages"): a character knows Common plus two Standard languages of
+ * their choice. The choice lives on the species (every character has one); backgrounds grant none.
+ */
+const STANDARD_LANGUAGES: readonly LanguageId[] = DND_LANGUAGE_DATA.filter(
+  (l) => l.category === 'standard' && l.id !== 'common'
+).map((l) => l.id);
 
 // Per-lineage sub-grants for Dragonborn. Keyed by lineage ID.
 // Chromatic/metallic get 60 ft darkvision. (2024 PHB: 10 lineages only)
@@ -73,23 +81,23 @@ export const TIEFLING_LINEAGE_GRANTS: Readonly<Partial<Record<string, readonly G
   abyssal: [
     { type: 'resistance', damageType: 'poison' },
     { type: 'feature', feature: { id: 'tiefling-fiendish-legacy-abyssal' } },
-    { type: 'spell', spellId: 'hold-person', alwaysPrepared: true },
-    { type: 'spell', spellId: 'ray-of-sickness', alwaysPrepared: true },
     { type: 'spell', spellId: 'poison-spray', alwaysPrepared: true },
+    { type: 'spell', spellId: 'ray-of-sickness', alwaysPrepared: true, minCharacterLevel: 3 },
+    { type: 'spell', spellId: 'hold-person', alwaysPrepared: true, minCharacterLevel: 5 },
   ],
   chthonic: [
     { type: 'resistance', damageType: 'necrotic' },
     { type: 'feature', feature: { id: 'tiefling-fiendish-legacy-chthonic' } },
-    { type: 'spell', spellId: 'ray-of-enfeeblement', alwaysPrepared: true },
-    { type: 'spell', spellId: 'false-life', alwaysPrepared: true },
     { type: 'spell', spellId: 'chill-touch', alwaysPrepared: true },
+    { type: 'spell', spellId: 'false-life', alwaysPrepared: true, minCharacterLevel: 3 },
+    { type: 'spell', spellId: 'ray-of-enfeeblement', alwaysPrepared: true, minCharacterLevel: 5 },
   ],
   infernal: [
     { type: 'resistance', damageType: 'fire' },
     { type: 'feature', feature: { id: 'tiefling-fiendish-legacy-infernal' } },
-    { type: 'spell', spellId: 'darkness', alwaysPrepared: true },
-    { type: 'spell', spellId: 'hellish-rebuke', alwaysPrepared: true },
     { type: 'spell', spellId: 'fire-bolt', alwaysPrepared: true },
+    { type: 'spell', spellId: 'hellish-rebuke', alwaysPrepared: true, minCharacterLevel: 3 },
+    { type: 'spell', spellId: 'darkness', alwaysPrepared: true, minCharacterLevel: 5 },
   ],
 } as const;
 
@@ -100,32 +108,26 @@ export const ELF_LINEAGE_GRANTS: Readonly<Partial<Record<string, readonly Grant[
     { type: 'feature', feature: { id: 'elf-drow-dancing-lights' } },
     { type: 'spell', spellId: 'dancing-lights', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'elf-drow-faerie-fire' } },
-    { type: 'spell', spellId: 'faerie-fire', alwaysPrepared: true },
+    { type: 'spell', spellId: 'faerie-fire', alwaysPrepared: true, minCharacterLevel: 3 },
     { type: 'feature', feature: { id: 'elf-drow-darkness' } },
-    { type: 'spell', spellId: 'darkness', alwaysPrepared: true },
+    { type: 'spell', spellId: 'darkness', alwaysPrepared: true, minCharacterLevel: 5 },
   ],
   'high-elf': [
     { type: 'feature', feature: { id: 'elf-high-elf-cantrip' } },
-    {
-      type: 'spell-choice',
-      key: createChoiceKey('spell-choice', 'species', 'elf', 0),
-      count: 1,
-      spellList: 'wizard',
-      spellLevel: 0,
-    },
+    { type: 'spell', spellId: 'prestidigitation', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'elf-high-elf-detect-magic' } },
-    { type: 'spell', spellId: 'detect-magic', alwaysPrepared: true },
+    { type: 'spell', spellId: 'detect-magic', alwaysPrepared: true, minCharacterLevel: 3 },
     { type: 'feature', feature: { id: 'elf-high-elf-misty-step' } },
-    { type: 'spell', spellId: 'misty-step', alwaysPrepared: true },
+    { type: 'spell', spellId: 'misty-step', alwaysPrepared: true, minCharacterLevel: 5 },
   ],
   'wood-elf': [
     { type: 'speed', mode: 'walk', value: 35 },
     { type: 'feature', feature: { id: 'elf-wood-elf-druidcraft' } },
     { type: 'spell', spellId: 'druidcraft', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'elf-wood-elf-longstrider' } },
-    { type: 'spell', spellId: 'longstrider', alwaysPrepared: true },
+    { type: 'spell', spellId: 'longstrider', alwaysPrepared: true, minCharacterLevel: 3 },
     { type: 'feature', feature: { id: 'elf-wood-elf-pass-without-trace' } },
-    { type: 'spell', spellId: 'pass-without-trace', alwaysPrepared: true },
+    { type: 'spell', spellId: 'pass-without-trace', alwaysPrepared: true, minCharacterLevel: 5 },
   ],
 } as const;
 
@@ -136,16 +138,14 @@ export const GNOME_LINEAGE_GRANTS: Readonly<Partial<Record<string, readonly Gran
     { type: 'spell', spellId: 'minor-illusion', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'gnome-forest-speak-with-animals' } },
     { type: 'spell', spellId: 'speak-with-animals', alwaysPrepared: true },
-    { type: 'feature', feature: { id: 'gnome-forest-misty-step' } },
-    { type: 'spell', spellId: 'misty-step', alwaysPrepared: true },
   ],
   rock: [
     { type: 'feature', feature: { id: 'gnome-rock-mending' } },
     { type: 'spell', spellId: 'mending', alwaysPrepared: true },
     { type: 'feature', feature: { id: 'gnome-rock-prestidigitation' } },
     { type: 'spell', spellId: 'prestidigitation', alwaysPrepared: true },
-    { type: 'feature', feature: { id: 'gnome-rock-animate-objects' } },
-    { type: 'spell', spellId: 'animate-objects', alwaysPrepared: true },
+    { type: 'feature', feature: { id: 'gnome-rock-tinker' } },
+    { type: 'proficiency', category: 'tool', id: 'tinkerstools' },
   ],
 } as const;
 
@@ -173,7 +173,7 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
         category: 'language',
         key: createChoiceKey('language-choice', 'species', 'human', 0),
         count: 2,
-        from: null,
+        from: STANDARD_LANGUAGES,
       },
       {
         type: 'proficiency-choice',
@@ -204,7 +204,7 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
         category: 'language',
         key: createChoiceKey('language-choice', 'species', 'dwarf', 0),
         count: 2,
-        from: null,
+        from: STANDARD_LANGUAGES,
       },
       { type: 'feature', feature: { id: 'dwarf-darkvision' } },
       { type: 'feature', feature: { id: 'dwarf-dwarven-resilience' } },
@@ -227,7 +227,7 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
         category: 'language',
         key: createChoiceKey('language-choice', 'species', 'elf', 0),
         count: 2,
-        from: null,
+        from: STANDARD_LANGUAGES,
       },
       { type: 'feature', feature: { id: 'elf-darkvision' } },
       { type: 'feature', feature: { id: 'elf-fey-ancestry' } },
@@ -260,7 +260,7 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
         category: 'language',
         key: createChoiceKey('language-choice', 'species', 'gnome', 0),
         count: 2,
-        from: null,
+        from: STANDARD_LANGUAGES,
       },
       { type: 'feature', feature: { id: 'gnome-darkvision' } },
       { type: 'feature', feature: { id: 'gnome-gnomish-cunning' } },
@@ -285,7 +285,7 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
         category: 'language',
         key: createChoiceKey('language-choice', 'species', 'halfling', 0),
         count: 2,
-        from: null,
+        from: STANDARD_LANGUAGES,
       },
       { type: 'feature', feature: { id: 'halfling-brave' } },
       { type: 'feature', feature: { id: 'halfling-halfling-nimbleness' } },
@@ -306,7 +306,7 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
         category: 'language',
         key: createChoiceKey('language-choice', 'species', 'aasimar', 0),
         count: 2,
-        from: null,
+        from: STANDARD_LANGUAGES,
       },
       { type: 'feature', feature: { id: 'aasimar-darkvision' } },
       { type: 'feature', feature: { id: 'aasimar-celestial-resistance' } },
@@ -331,8 +331,9 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
         category: 'language',
         key: createChoiceKey('language-choice', 'species', 'dragonborn', 0),
         count: 2,
-        from: null,
+        from: STANDARD_LANGUAGES,
       },
+      { type: 'feature', feature: { id: 'dragonborn-draconic-flight' } },
       {
         type: 'lineage-choice',
         key: createChoiceKey('lineage-choice', 'species', 'dragonborn', 0),
@@ -365,7 +366,7 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
         category: 'language',
         key: createChoiceKey('language-choice', 'species', 'goliath', 0),
         count: 2,
-        from: null,
+        from: STANDARD_LANGUAGES,
       },
       { type: 'feature', feature: { id: 'goliath-large-form' } },
       { type: 'feature', feature: { id: 'goliath-powerful-build' } },
@@ -377,7 +378,7 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
       },
     ],
   },
-  // Orc (2024 PHB) — 120 ft darkvision, Powerful Build, Relentless Endurance
+  // Orc (2024 PHB) — 120 ft darkvision, Adrenaline Rush, Relentless Endurance
   {
     id: 'orc',
     defaultSize: 'medium',
@@ -390,11 +391,10 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
         category: 'language',
         key: createChoiceKey('language-choice', 'species', 'orc', 0),
         count: 2,
-        from: null,
+        from: STANDARD_LANGUAGES,
       },
       { type: 'feature', feature: { id: 'orc-adrenaline-rush' } },
       { type: 'feature', feature: { id: 'orc-darkvision' } },
-      { type: 'feature', feature: { id: 'orc-powerful-build' } },
       { type: 'feature', feature: { id: 'orc-relentless-endurance' } },
     ],
   },
@@ -411,9 +411,11 @@ export const SPECIES_SOURCES: readonly SpeciesSource[] = [
         category: 'language',
         key: createChoiceKey('language-choice', 'species', 'tiefling', 0),
         count: 2,
-        from: null,
+        from: STANDARD_LANGUAGES,
       },
       { type: 'feature', feature: { id: 'tiefling-darkvision' } },
+      { type: 'feature', feature: { id: 'tiefling-otherworldly-presence' } },
+      { type: 'spell', spellId: 'thaumaturgy', alwaysPrepared: true },
       {
         type: 'lineage-choice',
         key: createChoiceKey('lineage-choice', 'species', 'tiefling', 0),

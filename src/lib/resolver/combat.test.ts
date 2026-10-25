@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { resolveHp, resolveSpeed, resolveAc, resolveBardicInspiration } from '@/lib/resolver/combat';
+import type { Grant } from '@/types/grants';
 import type { GrantBundle } from '@/types/sources';
 
 const NO_BUNDLES: readonly GrantBundle[] = [];
@@ -541,5 +542,23 @@ describe('resolveAc with dance formula', () => {
     const result = resolveAc(armoredBundles, 2, { totalBase: 20, shieldBonus: 0 }, 6);
     // armored: 20, dance: 10+2+6=18 → effective = 20
     expect(result.effective).toBe(20);
+  });
+});
+
+describe('additive speed and flat HP grants', () => {
+  const bundle = (grants: Grant[]): GrantBundle[] => [{ source: { origin: 'feat', id: 'speedy' } as never, grants }];
+
+  it('adds additive speed on top of the base walking speed', () => {
+    const bundles = [
+      ...bundle([{ type: 'speed', mode: 'walk', value: 30 }]),
+      ...bundle([{ type: 'speed', mode: 'walk', value: 10, additive: true }]),
+    ];
+    expect(resolveSpeed(bundles).walk?.value).toBe(40);
+  });
+
+  it('adds a flat hp-bonus once, not per level', () => {
+    const die: Grant = { type: 'hit-die', die: 8 };
+    const base = resolveHp(bundle([die]), [], 0, 5).max;
+    expect(resolveHp(bundle([die, { type: 'hp-bonus', perLevel: 0, flat: 40 }]), [], 0, 5).max).toBe(base + 40);
   });
 });

@@ -33,7 +33,7 @@ export function resolveHp(
   // Apply flat per-level HP bonuses (e.g. Tough feat grants +2 per level)
   const hpBonusGrants = collectGrantsByType(bundles, 'hp-bonus');
   for (const { grant } of hpBonusGrants) {
-    max += grant.perLevel * level;
+    max += grant.perLevel * level + (grant.flat ?? 0);
   }
 
   return { max };
@@ -49,7 +49,13 @@ export function resolveSpeed(bundles: readonly GrantBundle[]): Readonly<Partial<
   const bestPerMode = new Map<SpeedMode, { value: number; sources: SourceTag[]; condition?: SpeedCondition }>();
   const walkEquivalent = new Map<SpeedMode, SourceTag[]>();
 
+  const additive: { mode: SpeedMode; value: number; source: SourceTag }[] = [];
+
   for (const { grant, source } of speedGrants) {
+    if (grant.additive && typeof grant.value === 'number') {
+      additive.push({ mode: grant.mode, value: grant.value, source });
+      continue;
+    }
     if (grant.value === 'walk-equivalent') {
       const existing = walkEquivalent.get(grant.mode);
       if (existing) {
@@ -69,6 +75,12 @@ export function resolveSpeed(bundles: readonly GrantBundle[]): Readonly<Partial<
       // Stormborn is the only conditional speed and no two fly grants tie.
       existing.sources.push(source);
     }
+  }
+
+  // Additive grants (Speedy, Boon of Speed) raise the speed the mode already has, before walk-equivalent copies it.
+  for (const { mode, value, source } of additive) {
+    const base = bestPerMode.get(mode);
+    if (base) bestPerMode.set(mode, { ...base, value: base.value + value, sources: [...base.sources, source] });
   }
 
   // Second pass: resolve walk-equivalent grants against the resolved walk speed.

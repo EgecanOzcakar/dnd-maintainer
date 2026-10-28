@@ -39,17 +39,15 @@ vi.mock('@/hooks/useCharacters', () => ({
 
 const queryClient = new QueryClient();
 
-function renderTab() {
+const DEFAULT_ITEMS = [
+  { id: 'item-1', item_id: 'longsword', quantity: 1, equipped: true },
+  { id: 'item-2', item_id: 'dagger', quantity: 2, equipped: false },
+];
+
+function renderTab(itemsData: Parameters<typeof InventoryTab>[0]['itemsData'] = DEFAULT_ITEMS) {
   return render(
     <QueryClientProvider client={queryClient}>
-      <InventoryTab
-        characterId="c1"
-        campaignId="camp1"
-        itemsData={[
-          { id: 'item-1', item_id: 'longsword', quantity: 1, equipped: true },
-          { id: 'item-2', item_id: 'dagger', quantity: 2, equipped: false },
-        ]}
-      />
+      <InventoryTab characterId="c1" campaignId="camp1" itemsData={itemsData} />
     </QueryClientProvider>
   );
 }
@@ -95,6 +93,50 @@ describe('InventoryTab', () => {
     options.action.onClick();
     expect(mocks.addMutate).toHaveBeenCalledWith(
       expect.objectContaining({ characterId: 'c1', itemId: 'dagger', quantity: 2, equipped: false })
+    );
+  });
+
+  it('edits a catalog item in place instead of delete + re-add', () => {
+    renderTab();
+
+    fireEvent.click(screen.getAllByLabelText('inventory.editItemAria')[1]);
+    expect(screen.getByText('inventory.editTitle')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('inventory.quantity'), { target: { value: '5' } });
+    fireEvent.click(screen.getByText('inventory.saveItem'));
+
+    expect(mocks.updateMutate).toHaveBeenCalledWith(
+      { characterId: 'c1', id: 'item-2', itemId: 'dagger', quantity: 5 },
+      expect.anything()
+    );
+    expect(mocks.removeMutate).not.toHaveBeenCalled();
+    expect(mocks.addMutate).not.toHaveBeenCalled();
+  });
+
+  it('prefills a custom item and saves its new stats', () => {
+    renderTab([
+      {
+        id: 'item-3',
+        item_id: 'custom-lucky-coin',
+        quantity: 1,
+        source: { origin: 'loot', description: 'Custom Item (gear, 0.5 lbs)' },
+      },
+    ]);
+
+    fireEvent.click(screen.getByLabelText('inventory.editItemAria'));
+    expect(screen.getByLabelText('inventory.itemName')).toHaveValue('Lucky Coin');
+    expect(screen.getByLabelText('inventory.weightLbs')).toHaveValue(0.5);
+    fireEvent.change(screen.getByLabelText('inventory.itemName'), { target: { value: 'Cursed Coin' } });
+    fireEvent.click(screen.getByText('inventory.saveItem'));
+
+    expect(mocks.updateMutate).toHaveBeenCalledWith(
+      {
+        characterId: 'c1',
+        id: 'item-3',
+        itemId: 'custom-cursed-coin',
+        quantity: 1,
+        source: { origin: 'loot', description: 'Custom Item (gear, 0.5 lbs)' },
+      },
+      expect.anything()
     );
   });
 });

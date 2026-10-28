@@ -1399,7 +1399,13 @@
     "noShieldBonusTitle": "No AC bonus without shield training",
     "armorPenaltyTitle": "Disadvantage on STR/DEX tests & cannot cast spells",
     "noShieldTraining": "No Shield Training",
-    "lacksArmorTraining": "Lacks Armor Training"
+    "lacksArmorTraining": "Lacks Armor Training",
+    "editTitle": "Edit Item",
+    "editDescription": "Change the item, its quantity or its custom stats.",
+    "saveItem": "Save",
+    "editItemAria": "Edit {{name}}",
+    "updated": "Updated {{name}}",
+    "updateFailed": "Could not update the item."
   },
   "dmControl": {
     "title": "DM Control & Initiative Console",

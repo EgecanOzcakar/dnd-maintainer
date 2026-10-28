@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Package, Plus, ArrowRightLeft, Trash2, CheckCircle2, Circle, Search } from 'lucide-react';
+import { Package, Plus, ArrowRightLeft, Trash2, CheckCircle2, Circle, Search, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -68,6 +68,8 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
   const [customArmorCategory, setCustomArmorCategory] = useState<ArmorCategory>('light');
   const [customAc, setCustomAc] = useState(11);
   const [customWeight, setCustomWeight] = useState(0);
+  /** Row being edited in the add dialog; null = adding a new item. */
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Transfer Dialog State
   const [transferingItem, setTransferingItem] = useState<{
@@ -121,56 +123,99 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
     return name.toLowerCase().includes(catalogSearch.toLowerCase());
   });
 
-  const handleCreateOrAddItem = () => {
-    if (isCustom) {
-      if (!customName.trim()) return;
-      const customId = `custom-${customName.toLowerCase().replace(/\s+/g, '-')}`;
-      const sourceDesc =
+  const customPayload = () => ({
+    itemId: `custom-${customName.trim().toLowerCase().replace(/\s+/g, '-')}`,
+    source: {
+      origin: 'loot' as const,
+      description:
         customType === 'armor'
           ? `Custom Armor (${customArmorCategory}, AC ${customAc}, ${customWeight} lbs)`
-          : `Custom Item (${customType}, ${customWeight} lbs)`;
-      addItem.mutate(
-        {
-          characterId,
-          itemId: customId,
-          quantity: addQty,
-          equipped: false,
-          source: { origin: 'loot', description: sourceDesc },
-        },
-        {
-          onSuccess: () => {
-            toast.success(tc('inventory.added', { name: customName }));
-            setIsAddItemOpen(false);
-            setCustomName('');
-            setAddQty(1);
-          },
-        }
-      );
+          : `Custom Item (${customType}, ${customWeight} lbs)`,
+    },
+  });
+
+  const closeItemDialog = () => {
+    setIsAddItemOpen(false);
+    setEditingId(null);
+    setSelectedCatalogItem(null);
+    setCustomName('');
+    setAddQty(1);
+  };
+
+  const openAdd = () => {
+    closeItemDialog();
+    setIsCustom(false);
+    setCustomType('gear');
+    setCustomArmorCategory('light');
+    setCustomAc(11);
+    setCustomWeight(0);
+    setIsAddItemOpen(true);
+  };
+
+  // Prefill the add dialog from a row so it can be changed in place (no delete + re-add).
+  const openEdit = (item: (typeof itemRows)[number]) => {
+    setEditingId(item.id);
+    setAddQty(item.quantity);
+    const catalogDef = getItemDef(item.item_id);
+    setIsCustom(!catalogDef);
+    if (catalogDef) {
+      setSelectedCatalogItem(catalogDef);
+      setCatalogSearch('');
+      setCatalogFilterType('all');
     } else {
-      if (!selectedCatalogItem) return;
-      addItem.mutate(
-        {
-          characterId,
-          itemId: selectedCatalogItem.id,
-          quantity: addQty,
-          equipped: false,
-        },
+      const desc =
+        typeof item.source === 'object' && item.source !== null && 'description' in item.source
+          ? String(item.source.description)
+          : '';
+      setCustomName(
+        item.item_id.startsWith('custom-')
+          ? item.item_id
+              .slice('custom-'.length)
+              .replace(/-/g, ' ')
+              .replace(/\b\w/g, (c) => c.toUpperCase())
+          : item.itemName
+      );
+      setCustomWeight(parseFloat(/(\d+(?:\.\d+)?) lbs/i.exec(desc)?.[1] ?? '0'));
+      if (item.def?.type === 'armor') {
+        setCustomType('armor');
+        setCustomArmorCategory(item.def.category);
+        setCustomAc(item.def.baseAc);
+      } else {
+        setCustomType(/\(weapon\b/i.test(desc) ? 'weapon' : 'gear');
+      }
+    }
+    setIsAddItemOpen(true);
+  };
+
+  const handleCreateOrAddItem = () => {
+    const catalogItem = isCustom ? null : selectedCatalogItem;
+    if (isCustom ? !customName.trim() : !catalogItem) return;
+    const payload: { itemId: string; source?: SourceTag } = catalogItem ? { itemId: catalogItem.id } : customPayload();
+    const name = catalogItem
+      ? t(getItemNameKey(catalogItem.type, catalogItem.id), { defaultValue: catalogItem.id })
+      : customName;
+    if (editingId) {
+      updateItem.mutate(
+        { characterId, id: editingId, quantity: addQty, ...payload },
         {
           onSuccess: () => {
-            toast.success(
-              tc('inventory.added', {
-                name: t(getItemNameKey(selectedCatalogItem.type, selectedCatalogItem.id), {
-                  defaultValue: selectedCatalogItem.id,
-                }),
-              })
-            );
-            setIsAddItemOpen(false);
-            setSelectedCatalogItem(null);
-            setAddQty(1);
+            toast.success(tc('inventory.updated', { name }));
+            closeItemDialog();
           },
+          onError: () => toast.error(tc('inventory.updateFailed')),
         }
       );
+      return;
     }
+    addItem.mutate(
+      { characterId, quantity: addQty, equipped: false, ...payload },
+      {
+        onSuccess: () => {
+          toast.success(tc('inventory.added', { name }));
+          closeItemDialog();
+        },
+      }
+    );
   };
 
   // Removing is immediate, but the toast offers to put the row back (same qty, equipped state and source).
@@ -250,7 +295,7 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
           </div>
         </div>
 
-        <Button onClick={() => setIsAddItemOpen(true)} className="gap-1.5 shrink-0">
+        <Button onClick={openAdd} className="gap-1.5 shrink-0">
           <Plus className="size-4" /> {tc('inventory.addOrCreate')}
         </Button>
       </div>
@@ -336,7 +381,13 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm text-foreground truncate">{item.itemName}</span>
+                    <button
+                      type="button"
+                      onClick={() => openEdit(item)}
+                      className="font-semibold text-sm text-foreground truncate hover:text-primary hover:underline text-left"
+                    >
+                      {item.itemName}
+                    </button>
                     {item.equipped && (
                       <Badge
                         variant="secondary"
@@ -401,6 +452,17 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                   </button>
                 </div>
 
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8 text-muted-foreground hover:text-primary"
+                  title={tc('inventory.editItemAria', { name: item.itemName })}
+                  aria-label={tc('inventory.editItemAria', { name: item.itemName })}
+                  onClick={() => openEdit(item)}
+                >
+                  <Pencil className="size-4" />
+                </Button>
+
                 {/* Transfer Button */}
                 {partyMembers.length > 0 && (
                   <Button
@@ -437,11 +499,13 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
       )}
 
       {/* ── Add / Create Item Dialog ────────────────────────────────────────── */}
-      <Dialog open={isAddItemOpen} onOpenChange={setIsAddItemOpen}>
+      <Dialog open={isAddItemOpen} onOpenChange={(open) => !open && closeItemDialog()}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{tc('inventory.addTitle')}</DialogTitle>
-            <DialogDescription>{tc('inventory.addDescription')}</DialogDescription>
+            <DialogTitle>{editingId ? tc('inventory.editTitle') : tc('inventory.addTitle')}</DialogTitle>
+            <DialogDescription>
+              {editingId ? tc('inventory.editDescription') : tc('inventory.addDescription')}
+            </DialogDescription>
           </DialogHeader>
 
           {/* Toggle Catalog / Custom */}
@@ -629,10 +693,12 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddItemOpen(false)}>
+            <Button variant="outline" onClick={closeItemDialog}>
               {tc('inventory.cancel')}
             </Button>
-            <Button onClick={handleCreateOrAddItem}>{tc('inventory.addItem')}</Button>
+            <Button onClick={handleCreateOrAddItem}>
+              {editingId ? tc('inventory.saveItem') : tc('inventory.addItem')}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

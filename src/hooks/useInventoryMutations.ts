@@ -15,9 +15,12 @@ interface AddItemParams {
 interface UpdateItemParams {
   characterId: string;
   id: string;
+  /** Swap the row to a different item (catalog id or `custom-*`). */
+  itemId?: string;
   quantity?: number;
   equipped?: boolean;
   attuned?: boolean;
+  source?: SourceTag;
 }
 
 interface RemoveItemParams {
@@ -92,10 +95,14 @@ export function useInventoryMutations() {
   });
 
   const updateItem = useMutation({
-    mutationFn: async ({ characterId: _characterId, id, ...updates }: UpdateItemParams) => {
+    mutationFn: async ({ characterId: _characterId, id, itemId, ...updates }: UpdateItemParams) => {
       const { data, error } = await supabase
         .from('character_items')
-        .update({ ...updates, updated_at: new Date().toISOString() })
+        .update({
+          ...updates,
+          ...(itemId !== undefined ? { item_id: itemId } : {}),
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', id)
         .select()
         .single();

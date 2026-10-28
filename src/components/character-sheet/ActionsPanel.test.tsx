@@ -121,4 +121,11 @@ describe('ActionsPanel', () => {
     fireEvent.click(screen.getByText('heal'));
     expect(onSetPoolUsed).toHaveBeenCalledWith('second-wind', 1);
   });
+
+  it('shows the weapon mastery badge with its rule text', () => {
+    const [longsword] = actions;
+    render(<ActionsPanel actions={[{ ...longsword!, mastery: 'sap' }]} attacksPerAction={1} resolved={resolved} />);
+    expect(screen.getByText('mastery')).toBeInTheDocument();
+    expect(screen.getByText('description')).toBeInTheDocument();
+  });
 });

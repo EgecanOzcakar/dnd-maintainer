@@ -951,6 +951,7 @@
         "save": "{{ability}} save DC {{dc}}",
         "heal": "Heal {{roll}}",
         "weaponDamage": "(weapon type)",
+        "mastery": "Mastery: {{name}}",
         "offHand": "off-hand",
         "twoHanded": "{{dice}} two-handed",
         "upcast": "+{{dice}} per slot level",

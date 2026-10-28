@@ -184,7 +184,7 @@ body,
   /* Character sheet grid: stats (left) / combat (center, wider) / roleplay & gear (right).
      Collapses to a single column on mobile, matching the flow of the official 5e sheet. */
   .sheet-grid {
-    @apply grid gap-6;
+    @apply grid gap-4 md:gap-6;
     grid-template-columns: 1fr;
     grid-template-areas:
       'left'
@@ -217,7 +217,7 @@ body,
 
   /* Card shell shared by every character-sheet panel. */
   .sheet-panel {
-    @apply bg-card border rounded-lg p-6;
+    @apply bg-card border rounded-lg p-4 md:p-6;
   }
 
   /* Ability "shield" box — large modifier, small score pill below, echoing the official sheet. */

@@ -877,7 +877,8 @@
       "tabs": {
         "sheet": "Sheet",
         "inventory": "Inventory",
-        "combat": "Combat"
+        "combat": "Combat",
+        "spells": "Spells"
       },
       "sections": {
         "combatStats": "Combat Stats",

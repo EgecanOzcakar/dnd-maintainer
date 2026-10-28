@@ -1836,8 +1836,13 @@
       "attack": "Attack rolls",
       "damage": "Damage rolls",
       "spell-attack": "Spell attacks",
-      "spell-dc": "Spell save DC"
-    }
+      "spell-dc": "Spell save DC",
+      "ac": "Armor Class"
+    },
+    "ability": "Ability",
+    "anyAbility": "Any ability",
+    "skill": "Skill",
+    "anySkill": "Any skill"
   },
   "notFound": {
     "title": "Page not found",

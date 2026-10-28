@@ -6,7 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { describeGrant, suggestModifiers, type ModifierSuggestion } from '@/lib/modifier-suggestions';
 import { MAGIC_ITEM_CATALOG } from '@/lib/sources/magic-items';
-import { ROLL_TARGETS, type RollModifierGrant } from '@/types/grants';
+import { ROLL_TARGETS, type Grant, type RollModifierGrant } from '@/types/grants';
+import { ABILITY_KEYS, DND_SKILLS, type SkillId } from '@/lib/dnd-helpers';
+import type { AbilityKey } from '@/types/database';
 import type { CustomModifier } from '@/types/database';
 
 interface Props {
@@ -22,11 +24,15 @@ const newId = () => crypto.randomUUID();
  */
 export function CustomModifiersPanel({ modifiers = [], onChange }: Props) {
   const { t: tc } = useTranslation('common');
+  const { t: tg } = useTranslation('gamedata');
   const [source, setSource] = useState('');
   const [text, setText] = useState('');
   const [found, setFound] = useState<readonly ModifierSuggestion[] | null>(null);
   const [picked, setPicked] = useState<ReadonlySet<number>>(new Set());
-  const [manual, setManual] = useState({ target: 'save', value: '', mode: '' });
+  const [manual, setManual] = useState({ target: 'save', value: '', mode: '', ability: '', skill: '' });
+  const isAc = manual.target === 'ac';
+  // Ability/skill narrowing only reaches saves and checks (see applyEffects).
+  const narrowable = manual.target === 'save' || manual.target === 'check';
 
   const pickItem = (name: string) => {
     setSource(name);
@@ -56,20 +62,29 @@ export function CustomModifiersPanel({ modifiers = [], onChange }: Props) {
   };
   const addManual = () => {
     const value = manual.value.trim();
-    if (!value && !manual.mode) return;
-    const grant: RollModifierGrant = {
-      type: 'roll-modifier',
-      target: manual.target as RollModifierGrant['target'],
-      ...(manual.mode ? { mode: manual.mode as 'adv' | 'dis' } : {}),
-      ...(/d/i.test(value) ? { dice: value.startsWith('-') ? value : `+${value.replace(/^\+/, '')}` } : {}),
-      ...(value && !/d/i.test(value) ? { bonus: Number(value) || 0 } : {}),
-      ...(source ? { label: source } : {}),
-    };
+    let grant: Grant;
+    if (isAc) {
+      const bonus = Number(value.replace(/^\+/, ''));
+      if (!bonus) return;
+      grant = { type: 'ac-bonus', bonus };
+    } else {
+      if (!value && !manual.mode) return;
+      grant = {
+        type: 'roll-modifier',
+        target: manual.target as RollModifierGrant['target'],
+        ...(narrowable && manual.ability ? { abilities: [manual.ability as AbilityKey] } : {}),
+        ...(manual.target === 'check' && manual.skill ? { skills: [manual.skill as SkillId] } : {}),
+        ...(manual.mode ? { mode: manual.mode as 'adv' | 'dis' } : {}),
+        ...(/d/i.test(value) ? { dice: value.startsWith('-') ? value : `+${value.replace(/^\+/, '')}` } : {}),
+        ...(value && !/d/i.test(value) ? { bonus: Number(value) || 0 } : {}),
+        ...(source ? { label: source } : {}),
+      };
+    }
     onChange([
       ...modifiers,
       { id: newId(), label: describeGrant(grant), source: source || undefined, enabled: true, grants: [grant] },
     ]);
-    setManual({ target: manual.target, value: '', mode: '' });
+    setManual({ ...manual, value: '', mode: '' });
   };
   const update = (id: string, patch: Partial<CustomModifier>) =>
     onChange(modifiers.map((m) => (m.id === id ? { ...m, ...patch } : m)));
@@ -174,16 +189,48 @@ export function CustomModifiersPanel({ modifiers = [], onChange }: Props) {
                 {tc(`customModifiers.targets.${target}`)}
               </option>
             ))}
+            <option value="ac">{tc('customModifiers.targets.ac')}</option>
           </select>
+          {narrowable && (
+            <select
+              className="h-9 rounded-md border bg-background px-2 text-sm"
+              aria-label={tc('customModifiers.ability')}
+              value={manual.ability}
+              onChange={(e) => setManual({ ...manual, ability: e.target.value })}
+            >
+              <option value="">{tc('customModifiers.anyAbility')}</option>
+              {ABILITY_KEYS.map((a) => (
+                <option key={a} value={a}>
+                  {tg(`abilities.${a}`)}
+                </option>
+              ))}
+            </select>
+          )}
+          {manual.target === 'check' && (
+            <select
+              className="h-9 rounded-md border bg-background px-2 text-sm"
+              aria-label={tc('customModifiers.skill')}
+              value={manual.skill}
+              onChange={(e) => setManual({ ...manual, skill: e.target.value })}
+            >
+              <option value="">{tc('customModifiers.anySkill')}</option>
+              {DND_SKILLS.map((sk) => (
+                <option key={sk.id} value={sk.id}>
+                  {tg(`skills.${sk.id}`)}
+                </option>
+              ))}
+            </select>
+          )}
           <Input
             className="w-24"
             value={manual.value}
-            placeholder="+1 / 1d4"
+            placeholder={isAc ? '+1' : '+1 / 1d4'}
             aria-label={tc('customModifiers.value')}
             onChange={(e) => setManual({ ...manual, value: e.target.value })}
           />
           <select
-            className="h-9 rounded-md border bg-background px-2 text-sm"
+            className="h-9 rounded-md border bg-background px-2 text-sm disabled:opacity-50"
+            disabled={isAc}
             aria-label={tc('customModifiers.mode')}
             value={manual.mode}
             onChange={(e) => setManual({ ...manual, mode: e.target.value })}

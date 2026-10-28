@@ -584,6 +584,46 @@ function CharacterSheetInner({
               armorProficiencies={resolved?.armorProficiencies}
             />
           </>
+        ) : activeTab === 'combat' ? (
+          <div className="space-y-6 mb-6">
+            <p className="text-xs text-muted-foreground mb-2">{tc('diceLog.hint')}</p>
+            <CombatPanel
+              resolved={resolved}
+              abilities={abilities}
+              armorClass={armorClass}
+              speedValue={speedValue}
+              speed={applied?.speed}
+              maxHP={maxHP}
+              profBonus={profBonus}
+              passivePerception={resolved ? 10 + resolved.skills.perception.bonus : null}
+              isStale={isStale}
+              buildError={buildError}
+            />
+
+            {resolved && <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleHpUpdate} />}
+            <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
+            {resolvedActions && resolved && (
+              <ActionsPanel
+                actions={applied?.actions ?? resolvedActions.actions}
+                homebrew={homebrew}
+                onChangeHomebrew={(next) => handleUpdate({ homebrew: next })}
+                attacksPerAction={resolvedActions.attacksPerAction}
+                resolved={resolved}
+                onSelectRollPreset={handleSelectRollPreset}
+                poolsUsed={character.resource_pools_used}
+                onSetPoolUsed={handleSetPoolUsed}
+                slotOptions={levelOneSlots}
+                onSpendSlot={handleSpendSlot}
+              />
+            )}
+            {resolved && (
+              <ResourcePoolsPanel
+                resolved={resolved}
+                used={character.resource_pools_used}
+                onSetUsed={handleSetPoolUsed}
+              />
+            )}
+          </div>
         ) : (
           <>
             <p className="text-xs text-muted-foreground mb-2">{tc('diceLog.hint')}</p>
@@ -698,20 +738,6 @@ function CharacterSheetInner({
                   </>
                 )}
 
-                {resolvedActions && resolved && (
-                  <ActionsPanel
-                    actions={applied?.actions ?? resolvedActions.actions}
-                    homebrew={homebrew}
-                    onChangeHomebrew={(next) => handleUpdate({ homebrew: next })}
-                    attacksPerAction={resolvedActions.attacksPerAction}
-                    resolved={resolved}
-                    onSelectRollPreset={handleSelectRollPreset}
-                    poolsUsed={character.resource_pools_used}
-                    onSetPoolUsed={handleSetPoolUsed}
-                    slotOptions={levelOneSlots}
-                    onSpendSlot={handleSpendSlot}
-                  />
-                )}
                 {resolved && <ProficienciesPanel resolved={resolved} />}
                 {resolved && (
                   <ResourcePoolsPanel

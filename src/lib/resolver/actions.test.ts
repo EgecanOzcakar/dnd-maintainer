@@ -213,6 +213,29 @@ describe('resolveActions', () => {
     });
     expect(resolveActions(r, {}).actions[0]).toMatchObject({ activation: 'bonus-action', offHand: true });
   });
+
+  it('tags a weapon attack with its mastery only when the character has mastered that weapon', () => {
+    const attack = {
+      attackBonus: 5,
+      attackBreakdown: [],
+      damageDice: '1d8',
+      damageBonus: 3,
+      damageBreakdown: [],
+      damageType: 'slashing',
+      properties: [],
+      range: 'melee',
+    } as const;
+    const r = makeResolved({
+      attacks: [
+        { ...attack, weaponId: 'longsword' },
+        { ...attack, weaponId: 'mace' },
+      ],
+      weaponMasteries: [{ weaponId: 'longsword', masteryId: 'sap' }],
+    });
+    const [longsword, mace] = resolveActions(r, {}).actions;
+    expect(longsword?.mastery).toBe('sap');
+    expect(mace?.mastery).toBeUndefined();
+  });
 });
 
 describe('upcastRoll', () => {

@@ -142,6 +142,20 @@ export function ActionsPanel({
               <Badge variant="outline" className="text-[10px] py-0">
                 {tc(`characterSheet.combatView.actions.activation.${a.activation}`)}
               </Badge>
+              {a.mastery && (
+                <details className="group open:basis-full order-last">
+                  <summary className="cursor-pointer list-none inline-flex">
+                    <Badge className="text-[10px] py-0 bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/40">
+                      {tc('characterSheet.combatView.actions.mastery', {
+                        name: t(`weaponMasteries.${a.mastery}.name`),
+                      })}
+                    </Badge>
+                  </summary>
+                  <p className="mt-1 text-muted-foreground leading-relaxed">
+                    {t(`weaponMasteries.${a.mastery}.description`)}
+                  </p>
+                </details>
+              )}
               {a.spellLevel !== undefined && !a.spendsSlot && (
                 <Badge variant="secondary" className="text-[10px] py-0">
                   {a.spellLevel === 0

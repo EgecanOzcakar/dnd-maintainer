@@ -13,7 +13,7 @@ import type {
   SpellMechanics,
 } from '@/types/actions';
 import type { AbilityKey } from '@/types/database';
-import type { DamageDice } from '@/types/items';
+import type { DamageDice, WeaponMasteryId } from '@/types/items';
 import type { ResolvedCharacter, SpellLevel } from '@/types/resolved';
 
 export interface ResolvedRoll {
@@ -54,6 +54,8 @@ export interface ResolvedAction {
   readonly offHand?: boolean;
   /** Two-handed damage dice for a Versatile weapon. */
   readonly versatileDice?: DamageDice;
+  /** Weapon Mastery property the character can use with this weapon. */
+  readonly mastery?: WeaponMasteryId;
   /** Homebrew rows: literal display name (instead of an i18n lookup) and the source entry id. */
   readonly name?: string;
   readonly homebrewId?: string;
@@ -135,6 +137,7 @@ export function resolveActions(
 
   // Weapons (already resolved with full to-hit/damage breakdowns).
   for (const attack of resolved.attacks) {
+    const mastery = resolved.weaponMasteries.find((m) => m.weaponId === attack.weaponId)?.masteryId;
     actions.push({
       key: `weapon:${attack.weaponId}${attack.offHand ? ':off-hand' : ''}`,
       kind: 'weapon',
@@ -147,6 +150,7 @@ export function resolveActions(
       damage: { dice: attack.damageDice, bonus: attack.damageBonus, type: attack.damageType },
       ...(attack.offHand ? { offHand: true } : {}),
       ...(attack.versatileDice ? { versatileDice: attack.versatileDice } : {}),
+      ...(mastery ? { mastery } : {}),
     });
   }
 

@@ -1,13 +1,15 @@
 import type { ResolvedCharacter } from '@/types/resolved';
 import { useTranslation } from 'react-i18next';
 
-export function FeaturesPanel({ features }: { features: ResolvedCharacter['features'] }) {
+export function FeaturesPanel({ features, title }: { features: ResolvedCharacter['features']; title?: string }) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
 
   return (
     <div className="sheet-panel">
-      <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.featuresAndTraits')}</h2>
+      <h2 className="text-lg font-bold text-foreground mb-4">
+        {title ?? tc('characterSheet.sections.featuresAndTraits')}
+      </h2>
       <div className="space-y-3">
         {features.map((resolvedFeature, i) => (
           <div key={i} className="bg-muted/50 p-3 rounded border">

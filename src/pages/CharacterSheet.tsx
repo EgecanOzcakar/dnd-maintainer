@@ -6,6 +6,7 @@ import { homebrewToActions, parseHomebrew } from '@/lib/homebrew';
 import { ActionsPanel } from '@/components/character-sheet/ActionsPanel';
 import { ActiveEffectsPanel } from '@/components/character-sheet/ActiveEffectsPanel';
 import { resolveActions } from '@/lib/resolver/actions';
+import { combatFeatures } from '@/lib/combat-features';
 import { applyEffects } from '@/lib/resolver/effects';
 import { canPrepareSpells, getEffectivePrepared } from '@/lib/spell-preparation';
 import type { ClassId, ExhaustionLevel } from '@/lib/dnd-helpers';
@@ -79,6 +80,9 @@ import { useQueryClient } from '@tanstack/react-query';
 
 const logger = getLogger('CharacterSheet');
 
+const SHEET_TABS = ['sheet', 'combat', 'spells', 'inventory'] as const;
+type SheetTab = (typeof SHEET_TABS)[number];
+
 type EditSection = 'header' | 'personality' | 'backstory' | 'appearance' | null;
 
 function CharacterSheetInner({
@@ -93,7 +97,7 @@ function CharacterSheetInner({
   const { t: tc } = useTranslation('common');
   const { t: tg } = useTranslation('gamedata');
   const [editSection, setEditSection] = useState<EditSection>(null);
-  const [activeTab, setActiveTab] = useState<'sheet' | 'combat' | 'inventory'>('sheet');
+  const [activeTab, setActiveTab] = useState<SheetTab>('sheet');
 
   const navigate = useNavigate();
   const { campaignSlug } = useParams<{ campaignSlug: string }>();
@@ -485,6 +489,8 @@ function CharacterSheetInner({
         resolved.spellcasting.spellSaveDC != null)) ||
     (resolved?.features && resolved.features.length > 0);
 
+  const combatFeatureList = resolved ? combatFeatures(resolved.features) : [];
+
   return (
     <div
       className="min-h-screen bg-muted/30"
@@ -492,7 +498,7 @@ function CharacterSheetInner({
         rollKeys.current = { shift: e.shiftKey, alt: e.altKey || e.ctrlKey || e.metaKey };
       }}
     >
-      <div className="max-w-7xl mx-auto p-8">
+      <div className="max-w-7xl mx-auto p-4 md:p-8">
         {buildError && (
           <div className="mb-6 p-4 bg-destructive/10 border border-destructive/50 rounded-lg text-destructive text-sm">
             {tc('characterSheet.errors.buildFailed', { message: buildError })}
@@ -533,41 +539,23 @@ function CharacterSheetInner({
           <PendingChoicesPanel />
         </div>
 
-        {/* Sheet / Inventory / Combat tab toggle */}
-        <div className="flex gap-1 mb-6 p-1 bg-muted/60 rounded-xl border border-border w-fit">
-          <button
-            type="button"
-            onClick={() => setActiveTab('sheet')}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-              activeTab === 'sheet'
-                ? 'bg-card text-foreground shadow-sm border border-border'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {tc('characterSheet.combatView.tabs.sheet')}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('inventory')}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-              activeTab === 'inventory'
-                ? 'bg-card text-foreground shadow-sm border border-border'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {tc('characterSheet.combatView.tabs.inventory', { defaultValue: 'Inventory' })}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('combat')}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-              activeTab === 'combat'
-                ? 'bg-card text-foreground shadow-sm border border-border'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {tc('characterSheet.combatView.tabs.combat')}
-          </button>
+        {/* Tab bar: sticks below the mobile top bar (h-14) / to the top on desktop */}
+        <div className="sticky top-14 md:top-0 z-20 flex gap-1 mb-4 md:mb-6 p-1 bg-muted/95 backdrop-blur rounded-xl border border-border w-fit max-w-full overflow-x-auto">
+          {SHEET_TABS.filter((tab) => tab !== 'spells' || hasSpells).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              aria-pressed={activeTab === tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 md:px-5 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
+                activeTab === tab
+                  ? 'bg-card text-foreground shadow-sm border border-border'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {tc(`characterSheet.combatView.tabs.${tab}`)}
+            </button>
+          ))}
         </div>
 
         {activeTab === 'inventory' ? (
@@ -584,6 +572,107 @@ function CharacterSheetInner({
               armorProficiencies={resolved?.armorProficiencies}
             />
           </>
+        ) : activeTab === 'combat' ? (
+          <div className="mb-6">
+            <p className="text-xs text-muted-foreground mb-2">{tc('diceLog.hint')}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] gap-4 md:gap-6 items-start">
+              <div className="space-y-4 md:space-y-6">
+                <CombatPanel
+                  resolved={resolved}
+                  abilities={abilities}
+                  armorClass={armorClass}
+                  speedValue={speedValue}
+                  speed={applied?.speed}
+                  maxHP={maxHP}
+                  profBonus={profBonus}
+                  passivePerception={resolved ? 10 + resolved.skills.perception.bonus : null}
+                  isStale={isStale}
+                  buildError={buildError}
+                />
+
+                {resolved && <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleHpUpdate} />}
+                <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
+                {resolved && applied && (
+                  <ActiveEffectsPanel
+                    resolved={resolved}
+                    active={character.active_effects ?? []}
+                    applied={applied}
+                    onChange={handleEffectsChange}
+                  />
+                )}
+                {resolved && (
+                  <ResourcePoolsPanel
+                    resolved={resolved}
+                    used={character.resource_pools_used}
+                    onSetUsed={handleSetPoolUsed}
+                  />
+                )}
+                {resolved && (
+                  <ManeuversPanel
+                    resolved={resolved}
+                    character={character}
+                    fighterLevel={classLevels.fighter ?? 0}
+                    onUpdate={handleUpdate}
+                    onSelectRollPreset={handleSelectRollPreset}
+                  />
+                )}
+              </div>
+              <div className="space-y-4 md:space-y-6">
+                {resolvedActions && resolved && (
+                  <ActionsPanel
+                    actions={applied?.actions ?? resolvedActions.actions}
+                    homebrew={homebrew}
+                    onChangeHomebrew={(next) => handleUpdate({ homebrew: next })}
+                    attacksPerAction={resolvedActions.attacksPerAction}
+                    resolved={resolved}
+                    onSelectRollPreset={handleSelectRollPreset}
+                    poolsUsed={character.resource_pools_used}
+                    onSetPoolUsed={handleSetPoolUsed}
+                    slotOptions={levelOneSlots}
+                    onSpendSlot={handleSpendSlot}
+                  />
+                )}
+                {combatFeatureList.length > 0 && (
+                  <FeaturesPanel
+                    features={combatFeatureList}
+                    title={tc('characterSheet.combatView.sections.combatFeatures')}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        ) : activeTab === 'spells' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-4 md:gap-6 mb-6 items-start">
+            {resolved && (
+              <div className="space-y-4 md:space-y-6 lg:sticky lg:top-20">
+                <SpellSlotsPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
+                <MetamagicPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
+                {(classLevels.wizard ?? 0) > 0 &&
+                  resolved.features.some((f) => f.feature.id === 'wizard-arcane-recovery') && (
+                    <ArcaneRecoveryPanel
+                      wizardLevel={classLevels.wizard ?? 0}
+                      character={character}
+                      onUpdate={handleUpdate}
+                    />
+                  )}
+              </div>
+            )}
+            {hasSpells && (
+              <SpellcastingPanel
+                spellcasting={resolved?.spellcasting}
+                resolved={resolved}
+                onSelectRollPreset={handleSelectRollPreset}
+                classId={character.class}
+                preparedSpells={character.prepared_spells}
+                onChangePrepared={(prepared_spells) => handleUpdate({ prepared_spells })}
+                actions={applied?.actions ?? resolvedActions?.actions}
+                spellSlotsUsed={character.spell_slots_used}
+                onCast={handleCast}
+                concentratingOn={concentratingOn}
+                onEndConcentration={() => handleUpdate({ active_effects: endConcentration(character.active_effects) })}
+              />
+            )}
+          </div>
         ) : (
           <>
             <p className="text-xs text-muted-foreground mb-2">{tc('diceLog.hint')}</p>
@@ -670,23 +759,6 @@ function CharacterSheetInner({
                       onUpdate={handleUpdate}
                       onRoll={handleHitDieRoll}
                     />
-                    <SpellSlotsPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
-                    <MetamagicPanel resolved={resolved} character={character} onUpdate={handleUpdate} />
-                    <ManeuversPanel
-                      resolved={resolved}
-                      character={character}
-                      fighterLevel={classLevels.fighter ?? 0}
-                      onUpdate={handleUpdate}
-                      onSelectRollPreset={handleSelectRollPreset}
-                    />
-                    {(classLevels.wizard ?? 0) > 0 &&
-                      resolved.features.some((f) => f.feature.id === 'wizard-arcane-recovery') && (
-                        <ArcaneRecoveryPanel
-                          wizardLevel={classLevels.wizard ?? 0}
-                          character={character}
-                          onUpdate={handleUpdate}
-                        />
-                      )}
                     <ChosenOptionsPanel
                       title={tc('invocations.title')}
                       help={tc('invocations.help')}
@@ -698,20 +770,6 @@ function CharacterSheetInner({
                   </>
                 )}
 
-                {resolvedActions && resolved && (
-                  <ActionsPanel
-                    actions={applied?.actions ?? resolvedActions.actions}
-                    homebrew={homebrew}
-                    onChangeHomebrew={(next) => handleUpdate({ homebrew: next })}
-                    attacksPerAction={resolvedActions.attacksPerAction}
-                    resolved={resolved}
-                    onSelectRollPreset={handleSelectRollPreset}
-                    poolsUsed={character.resource_pools_used}
-                    onSetPoolUsed={handleSetPoolUsed}
-                    slotOptions={levelOneSlots}
-                    onSpendSlot={handleSpendSlot}
-                  />
-                )}
                 {resolved && <ProficienciesPanel resolved={resolved} />}
                 {resolved && (
                   <ResourcePoolsPanel
@@ -726,23 +784,6 @@ function CharacterSheetInner({
               {/* Right Column: Equipment, Spells & Personality */}
               <div className="sheet-area-right">
                 {itemsData.length > 0 && <EquipmentPanel itemsData={itemsData} />}
-                {hasSpells && (
-                  <SpellcastingPanel
-                    spellcasting={resolved?.spellcasting}
-                    resolved={resolved}
-                    onSelectRollPreset={handleSelectRollPreset}
-                    classId={character.class}
-                    preparedSpells={character.prepared_spells}
-                    onChangePrepared={(prepared_spells) => handleUpdate({ prepared_spells })}
-                    actions={applied?.actions ?? resolvedActions?.actions}
-                    spellSlotsUsed={character.spell_slots_used}
-                    onCast={handleCast}
-                    concentratingOn={concentratingOn}
-                    onEndConcentration={() =>
-                      handleUpdate({ active_effects: endConcentration(character.active_effects) })
-                    }
-                  />
-                )}
                 {hasPersonality && (
                   <PersonalityPanel character={character} onEdit={() => setEditSection('personality')} />
                 )}
@@ -826,7 +867,7 @@ function CharacterSheetInner({
             type="button"
             onClick={() => setIsDiceRollerOpen(true)}
             className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 border border-indigo-400/40"
-            title="Open Dice Roller"
+            title={tc('rollButtons.diceRoller')}
           >
             <Dices className="size-5" />
             <span>{tc('rollButtons.diceRoller')}</span>

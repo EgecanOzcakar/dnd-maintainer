@@ -356,6 +356,8 @@ export function SpellcastingPanel({
   const { t: tc } = useTranslation('common');
   const [prepDialogOpen, setPrepDialogOpen] = useState(false);
   const [query, setQuery] = useState('');
+  /** Spell level shown; null = all levels, 0 = cantrips. */
+  const [levelFilter, setLevelFilter] = useState<number | null>(null);
   const prepSc = spellcasting && canPrepareSpells(spellcasting) ? spellcasting : null;
   const prepared = prepSc ? getEffectivePrepared(preparedSpells, prepSc) : [];
 
@@ -389,7 +391,19 @@ export function SpellcastingPanel({
     }, {}) ?? {};
   const needle = query.trim().toLowerCase();
   const matches = (id: string) =>
-    !needle || (isSpellId(id) ? t(`spells.${id}.name`) : id).toLowerCase().includes(needle);
+    (levelFilter === null || getSpellDef(id)?.level === levelFilter) &&
+    (!needle || (isSpellId(id) ? t(`spells.${id}.name`) : id).toLowerCase().includes(needle));
+  const spellLevels = [
+    ...new Set(
+      [
+        ...(spellcasting?.cantrips ?? []),
+        ...(spellcasting?.alwaysPreparedSpells ?? []),
+        ...listedSpells.map((s) => s.spellId),
+      ]
+        .map((id) => getSpellDef(id)?.level)
+        .filter((lvl) => lvl !== undefined)
+    ),
+  ].sort((a, b) => a - b);
   const spellTotal =
     listedSpells.length + (spellcasting?.cantrips.length ?? 0) + (spellcasting?.alwaysPreparedSpells.length ?? 0);
   const sortedLevels = Object.keys(spellsByLevel)
@@ -653,13 +667,35 @@ export function SpellcastingPanel({
           />
         )}
 
+        {spellLevels.length > 1 && (
+          <div role="tablist" aria-label={tc('spellCasting.levelFilter')} className="flex flex-wrap gap-1">
+            {[null, ...spellLevels].map((lvl) => (
+              <Button
+                key={lvl ?? 'all'}
+                role="tab"
+                aria-selected={levelFilter === lvl}
+                size="sm"
+                variant={levelFilter === lvl ? 'default' : 'outline'}
+                className="h-7 px-2 text-xs"
+                onClick={() => setLevelFilter(lvl)}
+              >
+                {lvl === null
+                  ? tc('spellCasting.levelAll')
+                  : lvl === 0
+                    ? tc('spellCasting.levelCantrips')
+                    : tc('spellCasting.levelChip', { level: lvl })}
+              </Button>
+            ))}
+          </div>
+        )}
+
         {spellcasting && spellcasting.knownSpells.length > 0 && (
           <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
             {tc('characterSheet.sections.knownSpells')}
           </div>
         )}
 
-        {spellcasting && spellcasting.cantrips.length > 0 && (
+        {spellcasting && spellcasting.cantrips.some(matches) && (
           <div>
             <div className="text-xs font-bold text-muted-foreground mb-2">{cantripsHeader}</div>
             <div className="space-y-1">
@@ -670,7 +706,7 @@ export function SpellcastingPanel({
           </div>
         )}
 
-        {spellcasting && spellcasting.alwaysPreparedSpells.length > 0 && (
+        {spellcasting && spellcasting.alwaysPreparedSpells.some(matches) && (
           <div>
             <div className="text-xs font-bold text-muted-foreground mb-2">
               {tc('characterSheet.sections.alwaysPrepared')}

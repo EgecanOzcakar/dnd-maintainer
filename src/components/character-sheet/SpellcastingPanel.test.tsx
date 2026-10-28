@@ -23,7 +23,7 @@ vi.mock('@/lib/sources/spells', () => ({
     id.startsWith('spell-')
       ? {
           id,
-          level: 1,
+          level: id.startsWith('spell-cantrip-') ? 0 : 1,
           school: 'evocation',
           castingTime: 'Action',
           range: '60 ft',
@@ -310,6 +310,28 @@ describe('SpellcastingPanel', () => {
     it('offers no preparation to known-spell casters', () => {
       render(<SpellcastingPanel spellcasting={{ ...prepCaster(), preparedCount: 0 }} onChangePrepared={vi.fn()} />);
       expect(screen.queryByText('button')).toBeNull();
+    });
+  });
+
+  describe('level chips', () => {
+    const sc = makeSpellcasting({
+      cantrips: ['spell-cantrip-light'],
+      knownSpells: [{ spellId: 'spell-charm-person', spellLevel: 1 }],
+    });
+
+    it('filters the list to the chosen level', async () => {
+      render(<SpellcastingPanel spellcasting={sc} />);
+      expect(screen.getAllByText('name')).toHaveLength(2);
+      await userEvent.click(screen.getByRole('tab', { name: 'levelCantrips' }));
+      expect(screen.getAllByText('name')).toHaveLength(1);
+      expect(screen.queryByText('spellLevelLabel')).toBeNull();
+      await userEvent.click(screen.getByRole('tab', { name: 'levelAll' }));
+      expect(screen.getAllByText('name')).toHaveLength(2);
+    });
+
+    it('hides the chips when only one level is present', () => {
+      render(<SpellcastingPanel spellcasting={makeSpellcasting({ cantrips: ['spell-cantrip-light'] })} />);
+      expect(screen.queryByRole('tab', { name: 'levelAll' })).toBeNull();
     });
   });
 });

@@ -1681,6 +1681,10 @@
   },
   "spellCasting": {
     "search": "Search spells",
+    "levelFilter": "Filter by spell level",
+    "levelAll": "All",
+    "levelCantrips": "Cantrips",
+    "levelChip": "Lv {{level}}",
     "cast": "Cast",
     "concentrating": "Concentrating",
     "concentratingOn": "Concentrating on {{spell}}",

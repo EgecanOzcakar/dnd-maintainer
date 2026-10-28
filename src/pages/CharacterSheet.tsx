@@ -6,6 +6,7 @@ import { homebrewToActions, parseHomebrew } from '@/lib/homebrew';
 import { ActionsPanel } from '@/components/character-sheet/ActionsPanel';
 import { ActiveEffectsPanel } from '@/components/character-sheet/ActiveEffectsPanel';
 import { resolveActions } from '@/lib/resolver/actions';
+import { combatFeatures } from '@/lib/combat-features';
 import { applyEffects } from '@/lib/resolver/effects';
 import { canPrepareSpells, getEffectivePrepared } from '@/lib/spell-preparation';
 import type { ClassId, ExhaustionLevel } from '@/lib/dnd-helpers';
@@ -485,6 +486,8 @@ function CharacterSheetInner({
         resolved.spellcasting.spellSaveDC != null)) ||
     (resolved?.features && resolved.features.length > 0);
 
+  const combatFeatureList = resolved ? combatFeatures(resolved.features) : [];
+
   return (
     <div
       className="min-h-screen bg-muted/30"
@@ -602,6 +605,14 @@ function CharacterSheetInner({
 
             {resolved && <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleHpUpdate} />}
             <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
+            {resolved && applied && (
+              <ActiveEffectsPanel
+                resolved={resolved}
+                active={character.active_effects ?? []}
+                applied={applied}
+                onChange={handleEffectsChange}
+              />
+            )}
             {resolvedActions && resolved && (
               <ActionsPanel
                 actions={applied?.actions ?? resolvedActions.actions}
@@ -621,6 +632,21 @@ function CharacterSheetInner({
                 resolved={resolved}
                 used={character.resource_pools_used}
                 onSetUsed={handleSetPoolUsed}
+              />
+            )}
+            {resolved && (
+              <ManeuversPanel
+                resolved={resolved}
+                character={character}
+                fighterLevel={classLevels.fighter ?? 0}
+                onUpdate={handleUpdate}
+                onSelectRollPreset={handleSelectRollPreset}
+              />
+            )}
+            {combatFeatureList.length > 0 && (
+              <FeaturesPanel
+                features={combatFeatureList}
+                title={tc('characterSheet.combatView.sections.combatFeatures')}
               />
             )}
           </div>

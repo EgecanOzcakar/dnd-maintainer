@@ -887,6 +887,7 @@
         "reactions": "Reactions",
         "other": "Other",
         "features": "Class Features",
+        "combatFeatures": "Combat Features & Feats",
         "diceRoller": "Dice Roller"
       },
       "abilityBreakdown": {

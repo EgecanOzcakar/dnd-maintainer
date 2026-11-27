@@ -216,6 +216,15 @@ describe('collectBundles', () => {
     expect(warnings[0]).toContain('nonexistent-feat');
   });
 
+  it('warns only for unknown item IDs, not catalog, magic or custom items', () => {
+    const build: CharacterBuild = {
+      ...humanFighterL1Build,
+      activeItems: ['longbow', 'common-clothes', 'bag-of-holding', 'custom-kara-avuc', 'nonexistent-item'],
+    };
+    const { warnings } = collectBundles(build);
+    expect(warnings.filter((w) => w.includes('item'))).toEqual([expect.stringContaining('nonexistent-item')]);
+  });
+
   it('includes a feat bundle when a valid feat is in build.feats', () => {
     const build: CharacterBuild = { ...humanFighterL1Build, feats: ['alert' as FeatId] };
     const { bundles, warnings } = collectBundles(build);

@@ -28,7 +28,8 @@ import { CLASS_SOURCES } from '@/lib/sources/classes';
 import { SUBCLASS_SOURCES, SUBCLASS_IDS, SUBCLASS_IDS_BY_CLASS, isSubclassId } from '@/lib/sources/subclasses';
 import { BACKGROUND_SOURCES } from '@/lib/sources/backgrounds';
 import { FEAT_SOURCES } from '@/lib/sources/feats';
-import { ITEM_SOURCES } from '@/lib/sources/items';
+import { ITEM_SOURCES, getItemDef } from '@/lib/sources/items';
+import { getMagicItemDef } from '@/lib/sources/magic-items';
 import { FIGHTING_STYLE_SOURCES, getFightingStyleSource } from '@/lib/sources/fighting-styles';
 import { getSpellsForList } from '@/lib/sources/spells';
 import type { FightingStyleId } from '@/lib/dnd-helpers';
@@ -374,7 +375,8 @@ export function collectBundles(build: CharacterBuild): CollectBundlesResult {
     if (itemSource) {
       const tag: SourceTag = { origin: 'item', id: itemId };
       bundles.push({ source: tag, grants: itemSource.grants });
-    } else {
+    } else if (!itemId.startsWith('custom-') && !getItemDef(itemId) && !getMagicItemDef(itemId)) {
+      // Known catalog items and user-authored custom items legitimately carry no grants.
       const msg = `No source data found for item "${itemId}" — item grants will be empty`;
       warnings.push(msg);
       logger.warn(msg);

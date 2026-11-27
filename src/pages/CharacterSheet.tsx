@@ -14,6 +14,7 @@ import { BackstoryPanel } from '@/components/character-sheet/BackstoryPanel';
 import { CharacterSheetHeader } from '@/components/character-sheet/CharacterSheetHeader';
 import { PlayerSceneViewer } from '@/components/battle-map/PlayerSceneViewer';
 import { CombatPanel } from '@/components/character-sheet/CombatPanel';
+import { ItemRemindersPanel } from '@/components/character-sheet/ItemRemindersPanel';
 import { ConditionsPanel } from '@/components/character-sheet/ConditionsPanel';
 import { EquipmentPanel } from '@/components/character-sheet/EquipmentPanel';
 import { FeaturesPanel } from '@/components/character-sheet/FeaturesPanel';
@@ -589,6 +590,7 @@ function CharacterSheetInner({
                   isStale={isStale}
                   buildError={buildError}
                 />
+                <ItemRemindersPanel itemsData={itemsData} />
 
                 {resolved && <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleHpUpdate} />}
                 <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
@@ -720,6 +722,7 @@ function CharacterSheetInner({
                   isStale={isStale}
                   buildError={buildError}
                 />
+                <ItemRemindersPanel itemsData={itemsData} />
 
                 <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
 

@@ -601,6 +601,7 @@
       "savingThrows": "Saving Throws",
       "skills": "Skills",
       "combat": "Combat",
+      "itemReminders": "Item Reminders",
       "featuresAndTraits": "Features & Traits",
       "features": "Features & Traits",
       "equipment": "Equipment",
@@ -1382,6 +1383,8 @@
     "searchPlaceholder": "Search inventory items...",
     "catalogSearchPlaceholder": "Search catalog items (weapons, armor, gear)...",
     "customNamePlaceholder": "e.g. Ring of Protection",
+    "customNotes": "Effect / reminder",
+    "customNotesPlaceholder": "e.g. Once per short rest: advantage on one attack. Shown in combat.",
     "filter": {
       "all": "All",
       "weapon": "Weapons",

@@ -1,3 +1,5 @@
+import type { CustomModifier } from '@/types/database';
+
 /**
  * Display name for a user-authored custom item id (`custom-kara-avuc` → `Kara Avuc`).
  * Ids are built by replacing spaces with `-`, so `--` was ` -` (e.g. "-1") and `---` was ` - `.
@@ -15,4 +17,12 @@ export function getItemNotes(source: unknown): string {
   return typeof source === 'object' && source !== null && 'notes' in source && typeof source.notes === 'string'
     ? source.notes
     : '';
+}
+
+/** Modifiers that apply now: ticked, and (when tied to an item) that item is equipped. */
+export function activeCustomModifiers(
+  modifiers: readonly CustomModifier[],
+  equippedItemIds: readonly string[]
+): CustomModifier[] {
+  return modifiers.filter((m) => m.enabled && (!m.itemId || equippedItemIds.includes(m.itemId)));
 }

@@ -115,6 +115,8 @@ export interface CustomModifier {
   readonly label: string;
   /** Where it came from, e.g. the magic item's name. */
   readonly source?: string;
+  /** Inventory item id (`character_items.item_id`); when set, the modifier only applies while that item is equipped. */
+  readonly itemId?: string;
   readonly enabled: boolean;
   readonly grants: readonly Grant[];
 }

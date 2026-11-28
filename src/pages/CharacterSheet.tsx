@@ -564,6 +564,7 @@ function CharacterSheetInner({
             <CurrencyPanel currency={character.currency} onChange={(currency) => handleUpdate({ currency })} />
             <CustomModifiersPanel
               modifiers={character.custom_modifiers}
+              items={itemsData}
               onChange={(custom_modifiers) => handleUpdate({ custom_modifiers })}
             />
             <InventoryTab
@@ -590,7 +591,7 @@ function CharacterSheetInner({
                   isStale={isStale}
                   buildError={buildError}
                 />
-                <ItemRemindersPanel itemsData={itemsData} />
+                <ItemRemindersPanel itemsData={itemsData} modifiers={character.custom_modifiers} />
 
                 {resolved && <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleHpUpdate} />}
                 <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
@@ -722,7 +723,7 @@ function CharacterSheetInner({
                   isStale={isStale}
                   buildError={buildError}
                 />
-                <ItemRemindersPanel itemsData={itemsData} />
+                <ItemRemindersPanel itemsData={itemsData} modifiers={character.custom_modifiers} />
 
                 <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
 

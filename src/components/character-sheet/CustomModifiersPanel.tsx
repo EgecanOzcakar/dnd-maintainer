@@ -10,10 +10,15 @@ import { ROLL_TARGETS, type Grant, type RollModifierGrant } from '@/types/grants
 import { ABILITY_KEYS, DND_SKILLS, type SkillId } from '@/lib/dnd-helpers';
 import type { AbilityKey } from '@/types/database';
 import type { CustomModifier } from '@/types/database';
+import { customItemName, getItemNotes } from '@/lib/custom-items';
+import { getItemDef, getItemNameKey } from '@/lib/sources/items';
+import { getMagicItemDef } from '@/lib/sources/magic-items';
 
 interface Props {
   readonly modifiers?: readonly CustomModifier[];
   readonly onChange: (next: readonly CustomModifier[]) => void;
+  /** The character's inventory, so a modifier can be tied to an item and follow its equipped state. */
+  readonly items?: ReadonlyArray<{ readonly item_id: string; readonly equipped?: boolean; readonly source?: unknown }>;
 }
 
 const newId = () => crypto.randomUUID();
@@ -22,17 +27,34 @@ const newId = () => crypto.randomUUID();
  * Item and custom bonuses (saves, checks, attacks, damage, AC, ...). Add one by hand, or paste an item
  * description and approve the modifiers detected in it — nothing applies until the player ticks it.
  */
-export function CustomModifiersPanel({ modifiers = [], onChange }: Props) {
+export function CustomModifiersPanel({ modifiers = [], onChange, items = [] }: Props) {
   const { t: tc } = useTranslation('common');
   const { t: tg } = useTranslation('gamedata');
+  const itemName = (id: string) => {
+    const def = getItemDef(id);
+    if (def) return tg(getItemNameKey(def.type, id), { defaultValue: id });
+    return getMagicItemDef(id)?.name ?? customItemName(id);
+  };
+  const itemIds = [...new Set(items.map((i) => i.item_id))];
+  const isEquipped = (id: string) => items.some((i) => i.item_id === id && i.equipped);
+  const [itemId, setItemId] = useState('');
   const [source, setSource] = useState('');
   const [text, setText] = useState('');
   const [found, setFound] = useState<readonly ModifierSuggestion[] | null>(null);
   const [picked, setPicked] = useState<ReadonlySet<number>>(new Set());
   const [manual, setManual] = useState({ target: 'save', value: '', mode: '', ability: '', skill: '' });
   const isAc = manual.target === 'ac';
+  const isAbility = manual.target === 'ability';
   // Ability/skill narrowing only reaches saves and checks (see applyEffects).
   const narrowable = manual.target === 'save' || manual.target === 'check';
+  const link = itemId ? { itemId } : {};
+  const pickLinkedItem = (id: string) => {
+    setItemId(id);
+    if (!id) return;
+    pickItem(getMagicItemDef(id)?.name ?? itemName(id));
+    const notes = getItemNotes(items.find((i) => i.item_id === id)?.source);
+    if (notes) setText(notes);
+  };
 
   const pickItem = (name: string) => {
     setSource(name);
@@ -52,6 +74,7 @@ export function CustomModifiersPanel({ modifiers = [], onChange }: Props) {
         id: newId(),
         label: s.label,
         source: source || undefined,
+        ...link,
         enabled: true,
         grants: s.grants,
       })),
@@ -63,10 +86,15 @@ export function CustomModifiersPanel({ modifiers = [], onChange }: Props) {
   const addManual = () => {
     const value = manual.value.trim();
     let grant: Grant;
-    if (isAc) {
+    if (isAc || isAbility) {
       const bonus = Number(value.replace(/^\+/, ''));
       if (!bonus) return;
-      grant = { type: 'ac-bonus', bonus };
+      if (isAbility) {
+        if (!manual.ability) return;
+        grant = { type: 'ability-bonus', ability: manual.ability as AbilityKey, bonus };
+      } else {
+        grant = { type: 'ac-bonus', bonus };
+      }
     } else {
       if (!value && !manual.mode) return;
       grant = {
@@ -82,7 +110,14 @@ export function CustomModifiersPanel({ modifiers = [], onChange }: Props) {
     }
     onChange([
       ...modifiers,
-      { id: newId(), label: describeGrant(grant), source: source || undefined, enabled: true, grants: [grant] },
+      {
+        id: newId(),
+        label: describeGrant(grant),
+        source: source || undefined,
+        ...link,
+        enabled: true,
+        grants: [grant],
+      },
     ]);
     setManual({ ...manual, value: '', mode: '' });
   };
@@ -107,6 +142,9 @@ export function CustomModifiersPanel({ modifiers = [], onChange }: Props) {
             <span className="flex-1">
               {m.label}
               {m.source && <span className="text-muted-foreground"> — {m.source}</span>}
+              {m.itemId && !isEquipped(m.itemId) && (
+                <span className="text-xs text-muted-foreground"> ({tc('customModifiers.notEquipped')})</span>
+              )}
             </span>
             <Button
               type="button"
@@ -122,6 +160,21 @@ export function CustomModifiersPanel({ modifiers = [], onChange }: Props) {
       </ul>
 
       <div className="space-y-2">
+        {itemIds.length > 0 && (
+          <select
+            className="h-9 w-full rounded-md border bg-background px-2 text-sm"
+            aria-label={tc('customModifiers.linkedItem')}
+            value={itemId}
+            onChange={(e) => pickLinkedItem(e.target.value)}
+          >
+            <option value="">{tc('customModifiers.noLinkedItem')}</option>
+            {itemIds.map((id) => (
+              <option key={id} value={id}>
+                {itemName(id)}
+              </option>
+            ))}
+          </select>
+        )}
         <Input
           list="custom-modifier-items"
           value={source}
@@ -190,15 +243,16 @@ export function CustomModifiersPanel({ modifiers = [], onChange }: Props) {
               </option>
             ))}
             <option value="ac">{tc('customModifiers.targets.ac')}</option>
+            <option value="ability">{tc('customModifiers.targets.ability')}</option>
           </select>
-          {narrowable && (
+          {(narrowable || isAbility) && (
             <select
               className="h-9 rounded-md border bg-background px-2 text-sm"
               aria-label={tc('customModifiers.ability')}
               value={manual.ability}
               onChange={(e) => setManual({ ...manual, ability: e.target.value })}
             >
-              <option value="">{tc('customModifiers.anyAbility')}</option>
+              <option value="">{tc(isAbility ? 'customModifiers.pickAbility' : 'customModifiers.anyAbility')}</option>
               {ABILITY_KEYS.map((a) => (
                 <option key={a} value={a}>
                   {tg(`abilities.${a}`)}
@@ -224,13 +278,13 @@ export function CustomModifiersPanel({ modifiers = [], onChange }: Props) {
           <Input
             className="w-24"
             value={manual.value}
-            placeholder={isAc ? '+1' : '+1 / 1d4'}
+            placeholder={isAc || isAbility ? '+1' : '+1 / 1d4'}
             aria-label={tc('customModifiers.value')}
             onChange={(e) => setManual({ ...manual, value: e.target.value })}
           />
           <select
             className="h-9 rounded-md border bg-background px-2 text-sm disabled:opacity-50"
-            disabled={isAc}
+            disabled={isAc || isAbility}
             aria-label={tc('customModifiers.mode')}
             value={manual.mode}
             onChange={(e) => setManual({ ...manual, mode: e.target.value })}

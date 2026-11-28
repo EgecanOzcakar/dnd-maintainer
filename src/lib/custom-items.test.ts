@@ -1,4 +1,4 @@
-import { customItemName, getItemNotes } from '@/lib/custom-items';
+import { activeCustomModifiers, customItemName, getItemNotes } from '@/lib/custom-items';
 
 describe('customItemName', () => {
   it.each([
@@ -15,4 +15,17 @@ describe('getItemNotes', () => {
     [{ origin: 'loot', description: 'x' }, ''],
     [null, ''],
   ])('%j → %j', (source, notes) => expect(getItemNotes(source)).toBe(notes));
+});
+
+describe('activeCustomModifiers', () => {
+  const mod = (id: string, enabled: boolean, itemId?: string) => ({ id, label: id, enabled, itemId, grants: [] });
+  it('keeps enabled modifiers, dropping those whose item is not equipped', () => {
+    const mods = [
+      mod('free', true),
+      mod('off', false),
+      mod('worn', true, 'custom-belt'),
+      mod('stowed', true, 'custom-ring'),
+    ];
+    expect(activeCustomModifiers(mods, ['custom-belt']).map((m) => m.id)).toEqual(['free', 'worn']);
+  });
 });

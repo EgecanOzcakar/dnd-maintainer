@@ -1815,7 +1815,7 @@
   },
   "customModifiers": {
     "title": "Item & custom modifiers",
-    "hint": "Bonuses from magic items or table rulings. Paste an item description and approve what the parser finds, or add one by hand.",
+    "hint": "Bonuses from magic, homebrew or custom items and table rulings. Link a modifier to an inventory item so it only applies while equipped. Paste a description and approve what the parser finds, or add one by hand.",
     "empty": "No modifiers yet.",
     "toggle": "Apply {{name}}",
     "remove": "Remove {{name}}",
@@ -1840,10 +1840,15 @@
       "damage": "Damage rolls",
       "spell-attack": "Spell attacks",
       "spell-dc": "Spell save DC",
-      "ac": "Armor Class"
+      "ac": "Armor Class",
+      "ability": "Ability score"
     },
     "ability": "Ability",
     "anyAbility": "Any ability",
+    "pickAbility": "Pick ability",
+    "linkedItem": "Linked item",
+    "noLinkedItem": "Not tied to an item (always on when ticked)",
+    "notEquipped": "item not equipped",
     "skill": "Skill",
     "anySkill": "Any skill"
   },

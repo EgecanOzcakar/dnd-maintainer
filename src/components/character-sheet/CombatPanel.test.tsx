@@ -50,10 +50,7 @@ function buildMinimalResolved(overrides: Partial<ResolvedCharacter> = {}): Resol
 
 const BASE_PROPS = {
   resolved: null,
-  abilities: undefined,
-  armorClass: 15,
   speedValue: 30,
-  maxHP: 40,
   profBonus: 3,
   isStale: false,
   buildError: null,

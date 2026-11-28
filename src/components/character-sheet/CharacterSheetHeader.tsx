@@ -54,21 +54,55 @@ export function CharacterSheetHeader({
     return deriveOriginFeatInfo(bg.grants);
   })();
 
+  const speciesName = character.species ? t(`species.${character.species}`, { defaultValue: character.species }) : '';
+  const lineageName =
+    lineageId && character.species ? t(`lineages.${character.species}.${lineageId}`, { defaultValue: lineageId }) : '';
+  const className = character.class ? t(`classes.${character.class}`, { defaultValue: character.class }) : '';
+  const subclassName = character.subclass
+    ? t(`subclasses.${character.subclass}.name`, { defaultValue: character.subclass })
+    : '';
+  const backgroundName = character.background
+    ? isBackgroundId(character.background)
+      ? t(`backgrounds.${character.background}`)
+      : character.background
+    : '';
+  const originFeatName = originFeatInfo
+    ? originFeatInfo.namespace === 'features'
+      ? t(`features.${originFeatInfo.id}.name` as `features.${string}.name`, { defaultValue: originFeatInfo.id })
+      : t(`feats.${originFeatInfo.id}.name` as `feats.${string}.name`, { defaultValue: originFeatInfo.id })
+    : '';
+  const withNote = (name: string, note: string) => (name && note ? `${name} (${note})` : name);
+
+  // One line of who the character is, one of where they come from — the D&D Beyond header shape.
+  const identity = [
+    tc('characterSheet.fields.levelValue', { level: resolvedLevel }),
+    withNote(speciesName, lineageName),
+    withNote(className, subclassName),
+  ].filter(Boolean);
+  const details = [
+    withNote(backgroundName, originFeatName),
+    alignmentName,
+    character.player_name ? `${tc('characterSheet.fields.player')}: ${character.player_name}` : '',
+    tc(`characterType.${character.character_type}`).toUpperCase(),
+    character.gender ? t(`gender.${character.gender}`, { defaultValue: character.gender }) : '',
+  ].filter(Boolean);
+
   return (
-    <div className="bg-card border rounded-lg p-6 h-full flex flex-col justify-between">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-start gap-4">
+    <div className="sheet-panel">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="flex min-w-0 items-start gap-4">
           <PortraitUpload
             characterId={character.id}
             portraitUrl={character.portrait_url}
             characterName={character.name}
           />
           <div>
-            <div className="text-sm text-muted-foreground mb-1">{tc('characterSheet.title')}</div>
             <h1 className="hidden md:block text-3xl font-bold text-foreground">{character.name}</h1>
+            <p className="text-sm font-semibold text-foreground">{identity.join(' · ')}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{details.join(' · ')}</p>
           </div>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon-sm"
@@ -106,80 +140,15 @@ export function CharacterSheetHeader({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-        <div>
-          <span className="text-muted-foreground">{tc('characterSheet.fields.class')}</span>
-          <p className="text-foreground font-semibold">
-            {character.class ? t(`classes.${character.class}`, { defaultValue: character.class }) : ''}
-            {character.subclass
-              ? ` (${t(`subclasses.${character.subclass}.name`, { defaultValue: character.subclass })})`
-              : ''}
-          </p>
-        </div>
-        <div>
-          <span className="text-muted-foreground">{tc('characterSheet.fields.level')}</span>
-          <p className="text-foreground font-semibold">{resolvedLevel}</p>
-        </div>
-        <div>
-          <span className="text-muted-foreground">{tc('characterSheet.fields.species')}</span>
-          <p className="text-foreground font-semibold">
-            {character.species ? t(`species.${character.species}`, { defaultValue: character.species }) : ''}
-          </p>
-          {lineageId && character.species && (
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {t(`lineages.${character.species}.${lineageId}`, { defaultValue: lineageId })}
-            </p>
-          )}
-        </div>
-        <div>
-          <span className="text-muted-foreground">{tc('characterSheet.fields.background')}</span>
-          <p className="text-foreground font-semibold">
-            {character.background
-              ? isBackgroundId(character.background)
-                ? t(`backgrounds.${character.background}`)
-                : character.background
-              : ''}
-          </p>
-          {originFeatInfo && (
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {originFeatInfo.namespace === 'features'
-                ? t(`features.${originFeatInfo.id}.name` as `features.${string}.name`, {
-                    defaultValue: originFeatInfo.id,
-                  })
-                : t(`feats.${originFeatInfo.id}.name` as `feats.${string}.name`, {
-                    defaultValue: originFeatInfo.id,
-                  })}
-            </p>
-          )}
-        </div>
-        <div>
-          <span className="text-muted-foreground">{tc('characterSheet.fields.alignment')}</span>
-          <p className="text-foreground font-semibold">{alignmentName}</p>
-        </div>
-        {character.player_name && (
-          <div>
-            <span className="text-muted-foreground">{tc('characterSheet.fields.player')}</span>
-            <p className="text-foreground font-semibold">{character.player_name}</p>
-          </div>
-        )}
-        <div>
-          <span className="text-muted-foreground">{tc('characterSheet.fields.type')}</span>
-          <p className="text-foreground font-semibold uppercase">{tc(`characterType.${character.character_type}`)}</p>
-        </div>
-        {character.gender && (
-          <div>
-            <span className="text-muted-foreground">{tc('characterSheet.fields.gender')}</span>
-            <p className="text-foreground font-semibold">
-              {t(`gender.${character.gender}`, { defaultValue: character.gender })}
-            </p>
-          </div>
-        )}
-      </div>
-
       {character.class && DND_CLASSES.some((c) => c.id === character.class) && (
-        <div className="mt-4 pt-4 border-t">
-          <LevelControls classId={character.class as ClassId} />
-        </div>
+        <details className="mt-3 border-t pt-3">
+          <summary className="cursor-pointer text-sm font-semibold text-muted-foreground hover:text-foreground">
+            {tc('characterSheet.levelManagement.manage')}
+          </summary>
+          <div className="mt-3">
+            <LevelControls classId={character.class as ClassId} />
+          </div>
+        </details>
       )}
     </div>
   );

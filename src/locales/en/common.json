@@ -678,7 +678,8 @@
       "speedFt": "{{value}} ft",
       "qtyAndWeight": "Qty: {{qty}} | Wt: {{weight}}",
       "size": "Size",
-      "saveDC": "DC {{dc}} ({{ability}})"
+      "saveDC": "DC {{dc}} ({{ability}})",
+      "levelValue": "Level {{level}}"
     },
     "personality": {
       "traits": "Traits",
@@ -802,7 +803,8 @@
       "bulkAdvanceHint": "Adds levels with average HP. Resolve subclass, ASI, and feature choices in Pending Choices.",
       "bulkAdvanceSuccess": "Advanced to {{className}} level {{level}}",
       "levelDownTitle": "Remove level {{level}}?",
-      "levelDownConfirm": "Your {{className}} level {{level}} choices (HP roll, features, spells) are set aside. You can restore the level straight afterwards with Restore Level."
+      "levelDownConfirm": "Your {{className}} level {{level}} choices (HP roll, features, spells) are set aside. You can restore the level straight afterwards with Restore Level.",
+      "manage": "Manage level"
     },
     "asi": {
       "asiTitle": "Ability Score Improvement",
@@ -878,7 +880,8 @@
         "sheet": "Sheet",
         "inventory": "Inventory",
         "combat": "Combat",
-        "spells": "Spells"
+        "spells": "Spells",
+        "scene": "Scene"
       },
       "sections": {
         "combatStats": "Combat Stats",

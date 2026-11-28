@@ -25,6 +25,7 @@ import { PendingChoicesPanel } from '@/components/character-sheet/PendingChoices
 import { PersonalityPanel } from '@/components/character-sheet/PersonalityPanel';
 import { ProficienciesPanel } from '@/components/character-sheet/ProficienciesPanel';
 import { ResourcePoolsPanel } from '@/components/character-sheet/ResourcePoolsPanel';
+import { VitalsBar } from '@/components/character-sheet/VitalsBar';
 import { SavingThrowsPanel } from '@/components/character-sheet/SavingThrowsPanel';
 import { SkillsPanel } from '@/components/character-sheet/SkillsPanel';
 import { SpellcastingPanel } from '@/components/character-sheet/SpellcastingPanel';
@@ -73,14 +74,14 @@ import {
 import { getSpellDef } from '@/lib/sources/spells';
 import { useRoller } from '@/hooks/useRoller';
 import type { RollKeys } from '@/lib/dice-roll';
-import { Dices, Star, X } from 'lucide-react';
+import { Dices, X } from 'lucide-react';
 
 import { supabase } from '@/lib/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 
 const logger = getLogger('CharacterSheet');
 
-const SHEET_TABS = ['sheet', 'combat', 'spells', 'inventory'] as const;
+const SHEET_TABS = ['sheet', 'combat', 'spells', 'inventory', 'scene'] as const;
 type SheetTab = (typeof SHEET_TABS)[number];
 
 type EditSection = 'header' | 'personality' | 'backstory' | 'appearance' | null;
@@ -518,7 +519,7 @@ function CharacterSheetInner({
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="space-y-4 mb-4 md:mb-6">
           <CharacterSheetHeader
             character={character}
             onEdit={() => setEditSection('header')}
@@ -531,7 +532,39 @@ function CharacterSheetInner({
             onExportPdf={handleExportPdf}
             exportingPdf={exportingPdf}
           />
-          <PlayerSceneViewer campaignId={character.campaign_id} />
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-4 items-start">
+            <div className="space-y-4">
+              {abilities && (
+                <AbilityScoresPanel
+                  strip
+                  abilities={abilities}
+                  buildError={buildError}
+                  onSelectRollPreset={handleSelectRollPreset}
+                  checkMods={checkMods}
+                />
+              )}
+              <VitalsBar
+                armorClass={armorClass}
+                initiative={resolved?.initiative ?? abilities?.dex.modifier ?? null}
+                speed={speedValue}
+                profBonus={profBonus}
+                passivePerception={resolved ? 10 + resolved.skills.perception.bonus : null}
+                isStale={isStale}
+                inspiration={character.heroic_inspiration}
+                onToggleInspiration={() => handleUpdate({ heroic_inspiration: !character.heroic_inspiration })}
+                onShortRest={resolved ? handleShortRest : undefined}
+                onLongRest={resolved ? handleLongRest : undefined}
+              />
+            </div>
+            {resolved && <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleHpUpdate} />}
+          </div>
+          {resolved && (
+            <ResourcePoolsPanel
+              resolved={resolved}
+              used={character.resource_pools_used}
+              onSetUsed={handleSetPoolUsed}
+            />
+          )}
         </div>
 
         {/* Pending Choices Panel */}
@@ -577,20 +610,6 @@ function CharacterSheetInner({
             <p className="text-xs text-muted-foreground mb-2">{tc('diceLog.hint')}</p>
             <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] gap-4 md:gap-6 items-start">
               <div className="space-y-4 md:space-y-6">
-                <CombatPanel
-                  resolved={resolved}
-                  abilities={abilities}
-                  armorClass={armorClass}
-                  speedValue={speedValue}
-                  speed={applied?.speed}
-                  maxHP={maxHP}
-                  profBonus={profBonus}
-                  passivePerception={resolved ? 10 + resolved.skills.perception.bonus : null}
-                  isStale={isStale}
-                  buildError={buildError}
-                />
-
-                {resolved && <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleHpUpdate} />}
                 <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
                 {resolved && applied && (
                   <ActiveEffectsPanel
@@ -598,13 +617,6 @@ function CharacterSheetInner({
                     active={character.active_effects ?? []}
                     applied={applied}
                     onChange={handleEffectsChange}
-                  />
-                )}
-                {resolved && (
-                  <ResourcePoolsPanel
-                    resolved={resolved}
-                    used={character.resource_pools_used}
-                    onSetUsed={handleSetPoolUsed}
                   />
                 )}
                 {resolved && (
@@ -640,6 +652,10 @@ function CharacterSheetInner({
                 )}
               </div>
             </div>
+          </div>
+        ) : activeTab === 'scene' ? (
+          <div className="mb-6">
+            <PlayerSceneViewer campaignId={character.campaign_id} />
           </div>
         ) : activeTab === 'spells' ? (
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-4 md:gap-6 mb-6 items-start">
@@ -680,12 +696,6 @@ function CharacterSheetInner({
             <div className="sheet-grid mb-6">
               {/* Left Column: Abilities, Saving Throws, Skills */}
               <div className="sheet-area-left">
-                <AbilityScoresPanel
-                  abilities={abilities}
-                  buildError={buildError}
-                  onSelectRollPreset={handleSelectRollPreset}
-                  checkMods={checkMods}
-                />
                 <SavingThrowsPanel
                   savingThrows={savingThrows}
                   buildError={buildError}
@@ -710,11 +720,8 @@ function CharacterSheetInner({
               <div className="sheet-area-center">
                 <CombatPanel
                   resolved={resolved}
-                  abilities={abilities}
-                  armorClass={armorClass}
                   speedValue={speedValue}
                   speed={applied?.speed}
-                  maxHP={maxHP}
                   profBonus={profBonus}
                   passivePerception={resolved ? 10 + resolved.skills.perception.bonus : null}
                   isStale={isStale}
@@ -734,25 +741,6 @@ function CharacterSheetInner({
 
                 {resolved && (
                   <>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="flex-1" onClick={handleShortRest}>
-                        {tc('characterSheet.actions.shortRest')}
-                      </Button>
-                      <Button variant="outline" size="sm" className="flex-1" onClick={handleLongRest}>
-                        {tc('characterSheet.actions.longRest')}
-                      </Button>
-                      <Button
-                        variant={character.heroic_inspiration ? 'default' : 'outline'}
-                        size="sm"
-                        aria-pressed={character.heroic_inspiration}
-                        title={tc('inspiration.hint')}
-                        onClick={() => handleUpdate({ heroic_inspiration: !character.heroic_inspiration })}
-                      >
-                        <Star className="size-3.5" />
-                        {tc('inspiration.label')}
-                      </Button>
-                    </div>
-                    <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleHpUpdate} />
                     <HitDicePanel
                       resolved={resolved}
                       character={character}
@@ -771,13 +759,6 @@ function CharacterSheetInner({
                 )}
 
                 {resolved && <ProficienciesPanel resolved={resolved} />}
-                {resolved && (
-                  <ResourcePoolsPanel
-                    resolved={resolved}
-                    used={character.resource_pools_used}
-                    onSetUsed={handleSetPoolUsed}
-                  />
-                )}
                 {resolved?.features && resolved.features.length > 0 && <FeaturesPanel features={resolved.features} />}
               </div>
 

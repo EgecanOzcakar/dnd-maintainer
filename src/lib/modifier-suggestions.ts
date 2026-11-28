@@ -29,14 +29,6 @@ const ABILITY_WORD = `(${Object.keys(ABILITY_NAMES).join('|')})`;
 
 const squash = (s: string) => s.toLowerCase().replace(/[^a-z]/g, '');
 const SKILL_IDS = DND_SKILLS.map((s) => s.id);
-/** Table shorthand seen on homebrew items ("sth +1", "pasif perc +2", "inv/perception +2"). */
-const SKILL_ALIASES: Record<string, SkillId> = {
-  sth: 'stealth',
-  perc: 'perception',
-  inv: 'investigation',
-  ath: 'athletics',
-  acro: 'acrobatics',
-};
 
 /** Roll kinds, abilities and skills named in a phrase such as "Strength checks" or "attack and damage rolls". */
 function parsePhrase(phrase: string): {
@@ -47,11 +39,11 @@ function parsePhrase(phrase: string): {
 } {
   const p = phrase.toLowerCase();
   const targets: RollTarget[] = [];
-  if (/saving|savng|\bsaves?\b/.test(p)) targets.push('save');
+  if (/saving throw|\bsaves?\b/.test(p)) targets.push('save');
   if (/\bchecks?\b/.test(p)) targets.push('check');
   if (/spell attack/.test(p)) targets.push('spell-attack');
   if (/spell save dc/.test(p)) targets.push('spell-dc');
-  if (/attack|\batk\b/.test(p) && !/spell attack/.test(p)) targets.push('attack');
+  if (/attack/.test(p) && !/spell attack/.test(p)) targets.push('attack');
   if (/damage roll/.test(p)) targets.push('damage');
   const abilities = [
     ...new Set(
@@ -61,16 +53,7 @@ function parsePhrase(phrase: string): {
     ),
   ];
   const squashed = squash(p);
-  const skills = [
-    ...new Set([
-      ...SKILL_IDS.filter((id) => squashed.includes(id)),
-      ...Object.entries(SKILL_ALIASES)
-        .filter(([alias]) => new RegExp(`\\b${alias}\\b`).test(p))
-        .map(([, id]) => id),
-    ]),
-  ];
-  // A bare skill name ("stealth +1") means a check with that skill.
-  if (targets.length === 0 && skills.length > 0) targets.push('check');
+  const skills = SKILL_IDS.filter((id) => squashed.includes(id));
   // "Strength checks" names an ability; "Athletics checks" names a skill (which already fixes the ability).
   return {
     targets,
@@ -86,20 +69,11 @@ const FLAT_OR_DICE =
   /(?:(?<!\w)([+-])|\badd\s+(?:a\s+|an\s+)?)(\d+d\d+|\d+)\s+(?:bonus\s+)?(?:(?:to|on)\s+)?(?:your\s+|all\s+|any\s+)?([^.;,]*)/gi;
 // "+2 Strength", "+1 to your DEX score" — a stat bump, not a roll modifier.
 const STAT_BONUS = new RegExp(
-  `(?<!\\w)([+-]\\d+)\\s+(?:bonus\\s+)?(?:to\\s+)?(?:your\\s+)?${ABILITY_WORD}\\b(?:\\s+score)?(?!\\s+(?:checks?|saves?|saving|savng))`,
+  `(?<!\\w)([+-]\\d+)\\s+(?:bonus\\s+)?(?:to\\s+)?(?:your\\s+)?${ABILITY_WORD}\\b(?:\\s+score)?(?!\\s+(?:checks?|saves?|saving))`,
   'gi'
 );
-// Amount after the rolls, as homebrew notes are often written ("sth +1", "athletics ve acrobatics +1").
-const DAMAGE_WORD = `(?:slash|pierc|bludgeon|${DAMAGE_TYPES.join('|')})\\w*`;
-const POSTFIX = new RegExp(`([^.;,()+:]+?)\\s*(?<!\\w)([+-])(\\d+d\\d+|\\d+)(?!\\w)(?!\\s+${DAMAGE_WORD})`, 'gi');
-// "+1d4 slash", "+1d6 piercing": extra damage of a type.
-const TYPED_DAMAGE = new RegExp(`(?<!\\w)([+-]\\d+d\\d+|[+-]\\d+)\\s+${DAMAGE_WORD}`, 'gi');
 const ADV_DIS = /\b(advantage|disadvantage)\s+on\s+([^.;]*)/gi;
-// Turkish word order: "dex stealth str athletics avantaj", "stealth dezavantaj". Only the bare word, so
-// "avantajlı" / "dezavantajlarını yok sayar" (ignores disadvantage) don't match.
-const ADV_DIS_TR = /([^.;,()]+?)\s+(avantaj|dezavantaj)(?![\wçğıöşü])/gi;
 const RESISTANCE = /\bresistance\s+to\s+([a-z, ]+?)\s+damage/gi;
-const TYPE_RESISTANCE = new RegExp(`\\b(${DAMAGE_TYPES.join('|')})\\s+resistance\\b`, 'gi');
 const SCORE =
   /\b(strength|dexterity|constitution|intelligence|wisdom|charisma)\s+score\s+(?:is|changes to|becomes)\s+(\d+)/gi;
 
@@ -118,6 +92,10 @@ export function describeGrant(g: Grant): string {
       return `Resistance: ${g.damageType}`;
     case 'ability-bonus':
       return `${g.bonus >= 0 ? '+' : ''}${g.bonus} ${g.ability.toUpperCase()}`;
+    case 'speed':
+      return `${typeof g.value === 'number' && g.value >= 0 ? '+' : ''}${g.value} ft speed`;
+    case 'hp-bonus':
+      return `${(g.flat ?? 0) >= 0 ? '+' : ''}${g.flat ?? 0} max HP`;
     case 'ability-set':
       return `${g.ability.toUpperCase()} score ${g.score}`;
     default:
@@ -163,26 +141,12 @@ export function suggestModifiers(text: string, label?: string): ModifierSuggesti
       const grants = rollGrants(phrase, isDice ? { dice: `${sign}${amount}` } : { bonus }, isDice ? 0 : bonus);
       add(sentence, grants);
     }
-    for (const [, phrase, sign, amount] of sentence.matchAll(POSTFIX)) {
-      const isDice = amount.includes('d');
-      add(sentence, rollGrants(phrase, isDice ? { dice: `${sign}${amount}` } : { bonus: Number(`${sign}${amount}`) }));
-    }
-    for (const [, amount] of sentence.matchAll(TYPED_DAMAGE)) {
-      const extra = amount.includes('d') ? { dice: amount } : { bonus: Number(amount) };
-      add(sentence, [{ type: 'roll-modifier', target: 'damage', ...extra, ...(label ? { label } : {}) }]);
-    }
     for (const [, amount, name] of sentence.matchAll(STAT_BONUS)) {
       add(sentence, [{ type: 'ability-bonus', ability: ABILITY_NAMES[name.toLowerCase()], bonus: Number(amount) }]);
     }
     for (const [, kind, phrase] of sentence.matchAll(ADV_DIS)) {
       const grants = rollGrants(phrase, { mode: kind.toLowerCase() === 'advantage' ? 'adv' : 'dis' });
       add(sentence, grants);
-    }
-    for (const [, phrase, kind] of sentence.matchAll(ADV_DIS_TR)) {
-      add(sentence, rollGrants(phrase, { mode: kind.toLowerCase() === 'avantaj' ? 'adv' : 'dis' }));
-    }
-    for (const [, damageType] of sentence.matchAll(TYPE_RESISTANCE)) {
-      add(sentence, [{ type: 'resistance', damageType: damageType.toLowerCase() as (typeof DAMAGE_TYPES)[number] }]);
     }
     for (const [, types] of sentence.matchAll(RESISTANCE)) {
       const grants: Grant[] = types

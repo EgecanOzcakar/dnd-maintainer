@@ -1385,6 +1385,10 @@
     "customNamePlaceholder": "e.g. Ring of Protection",
     "customNotes": "Effect / reminder",
     "customNotesPlaceholder": "e.g. Once per short rest: advantage on one attack. Shown in combat.",
+    "customEffects": "Effects (rules, applied while equipped)",
+    "customEffectsPlaceholder": "check stealth +1\nsave str,dex +1d4\n? check athletics adv # in swamps",
+    "customEffectsHelp": "One rule per line: check|save [ability/skill,...] +1 / -1 / +1d4 / adv / dis · attack, damage, spell-attack, spell-dc +1 / +1d4 · ac +1 · str +2 · str =19 · resist fire,cold · speed +10 · hp +5\n# note labels the rule · start with ? for situational rules (shown, not applied)",
+    "effectsSituational": "situational",
     "filter": {
       "all": "All",
       "weapon": "Weapons",

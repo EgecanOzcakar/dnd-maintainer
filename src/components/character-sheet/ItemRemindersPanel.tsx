@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { customItemName, getItemNotes } from '@/lib/custom-items';
 import type { CustomModifier } from '@/types/database';
+import { getItemEffects } from '@/lib/item-effects';
+import { ItemEffectsPreview } from '@/components/character-sheet/ItemEffectsPreview';
 
 /** Equipped custom items and their effect notes, shown in combat so homebrew effects aren't forgotten. */
 export function ItemRemindersPanel({
@@ -25,6 +27,7 @@ export function ItemRemindersPanel({
             <li key={item.id}>
               <span className="font-semibold text-foreground">{customItemName(item.item_id)}</span>
               {applied.length > 0 && <span className="text-primary"> — {applied.map((m) => m.label).join(', ')}</span>}
+              <ItemEffectsPreview text={getItemEffects(item.source)} />
               {notes && <p className="text-muted-foreground whitespace-pre-line">{notes}</p>}
             </li>
           );

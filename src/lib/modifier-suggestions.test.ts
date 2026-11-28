@@ -56,25 +56,4 @@ describe('suggestModifiers', () => {
   ])('homebrew shorthand: %s', (text, expected) => {
     expect(suggestModifiers(text).flatMap((s) => s.grants)).toEqual(expected);
   });
-
-  // Real homebrew item names from a campaign (Turkish table shorthand).
-  it.each([
-    ['Sessiz Adım Zırhı (sth +1)', ['+1 to check (stealth)']],
-    ['Orta Hat Dövmesi (-1 Persuasion)', ['-1 to check (persuasion)']],
-    ['Fısıltı Küpesi: insan sesi ve konuşmaları algıda pasif perc +2', ['+2 to check (perception)']],
-    ['Usta Gözü: tuzak ve mekanik kusur incelemesinde inv/perception +2', ['+2 to check (perception/investigation)']],
-    ['Yukcu Kemeri: pitonla tirmaninca athletics ve acrobatics +1', ['+1 to check (acrobatics/athletics)']],
-    ['Yaban Derisi Eldiven: +1d4 str saving, +1d4 dex savng throw', ['+1d4 to save (str)', '+1d4 to save (dex)']],
-    ['Bataklık Botları (burda dex stealth str athletics avantaj)', ['Advantage on check (str/dex/athletics/stealth)']],
-    ['Yarım Sur Armour: ac 16 + dex, stealth dezavantaj', ['Disadvantage on check (stealth)']],
-    ['Slutter: menzilli arbalet, 1d10 piercing, >30ft hedefe +1d6 piercing', ['+1d6 to damage']],
-    ['Ivory (1d10 piercing 10ft +1 atk, 5ft disadv)', ['+1 to attack']],
-    ['Ring Of Thunder Resistance', ['Resistance: thunder']],
-    // Negated or limited-use effects must not become always-on modifiers.
-    ['Bataklık Botları (çamur, sığ suda no dezavantaj)', []],
-    ['Karabasan Gözlük (parlak güneş dezavantajlarini yok sayar)', []],
-    ['Baba Yadigari Short Rest 1 Sefer Advantage', []],
-  ])('real item: %s', (text, labels) => {
-    expect(suggestModifiers(text).map((s) => s.label)).toEqual(labels);
-  });
 });

@@ -52,9 +52,8 @@ export function CustomModifiersPanel({ modifiers = [], onChange, items = [] }: P
     setItemId(id);
     if (!id) return;
     pickItem(getMagicItemDef(id)?.name ?? itemName(id));
-    // Homebrew effects usually live in the item's notes, or else in its name ("Sessiz Adım Zırhı (sth +1)").
     const notes = getItemNotes(items.find((i) => i.item_id === id)?.source);
-    if (notes || id.startsWith('custom-')) setText([itemName(id), notes].filter(Boolean).join('\n'));
+    if (notes) setText(notes);
   };
 
   const pickItem = (name: string) => {

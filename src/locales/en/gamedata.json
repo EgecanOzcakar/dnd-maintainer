@@ -3963,6 +3963,70 @@
     "avenging-angel": {
       "name": "Avenging Angel",
       "description": "Once per Long Rest, or expend a level 5 spell slot to restore the use."
+    },
+    "bardic-inspiration": {
+      "name": "Bardic Inspiration",
+      "description": "Uses equal to your Charisma modifier (minimum 1). Regained on a Long Rest, and on a Short Rest from Bard level 5 (Font of Inspiration)."
+    },
+    "persistent-rage": {
+      "name": "Persistent Rage",
+      "description": "When you roll Initiative, regain all expended uses of Rage. Once per Long Rest."
+    },
+    "intimidating-presence": {
+      "name": "Intimidating Presence",
+      "description": "Once per Long Rest; you can also restore it by expending a use of Rage."
+    },
+    "divine-intervention": {
+      "name": "Divine Intervention",
+      "description": "Once per Long Rest."
+    },
+    "warding-flare": {
+      "name": "Warding Flare",
+      "description": "Uses equal to your Wisdom modifier (minimum 1). Regained on a Long Rest, and on a Short Rest from Cleric level 6 (Improved Warding Flare)."
+    },
+    "corona-of-light": {
+      "name": "Corona of Light",
+      "description": "Uses equal to your Wisdom modifier (minimum 1); regained on a Long Rest."
+    },
+    "wild-resurgence": {
+      "name": "Wild Resurgence",
+      "description": "Expend a use of Wild Shape to regain a level 1 spell slot. Once per Long Rest."
+    },
+    "natural-recovery": {
+      "name": "Natural Recovery",
+      "description": "Cast one of your Circle Spells without a slot. Once per Long Rest."
+    },
+    "beguiling-magic": {
+      "name": "Beguiling Magic",
+      "description": "Once per Long Rest; you can also restore it by expending a use of Bardic Inspiration."
+    },
+    "mantle-of-majesty": {
+      "name": "Mantle of Majesty",
+      "description": "Once per Long Rest; you can also restore it by expending a level 3+ spell slot."
+    },
+    "unbreakable-majesty": {
+      "name": "Unbreakable Majesty",
+      "description": "Once per Short or Long Rest."
+    },
+    "the-third-eye": {
+      "name": "The Third Eye",
+      "description": "Once per Short or Long Rest."
+    },
+    "mystic-arcanum-6": {
+      "name": "Mystic Arcanum (level 6)",
+      "description": "Cast your level 6 arcanum once without a spell slot. Regained on a Long Rest."
+    },
+    "mystic-arcanum-7": {
+      "name": "Mystic Arcanum (level 7)",
+      "description": "Cast your level 7 arcanum once without a spell slot. Regained on a Long Rest."
+    },
+    "mystic-arcanum-8": {
+      "name": "Mystic Arcanum (level 8)",
+      "description": "Cast your level 8 arcanum once without a spell slot. Regained on a Long Rest."
+    },
+    "mystic-arcanum-9": {
+      "name": "Mystic Arcanum (level 9)",
+      "description": "Cast your level 9 arcanum once without a spell slot. Regained on a Long Rest."
     }
   },
   "spells": {

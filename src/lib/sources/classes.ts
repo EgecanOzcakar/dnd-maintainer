@@ -324,7 +324,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       },
       { grants: [{ type: 'feature', feature: { id: 'barbarian-improved-brutal-strike' } }] },
       EMPTY_LEVEL,
-      { grants: [{ type: 'feature', feature: { id: 'barbarian-persistent-rage' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'barbarian-persistent-rage' } },
+          { type: 'resource-pool', poolId: 'persistent-rage', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+        ],
+      },
       {
         grants: [
           { type: 'asi', key: createChoiceKey('asi', 'class', 'barbarian', 3), points: 2, from: null },
@@ -377,6 +382,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
           { type: 'spellcasting', ability: 'cha', source: 'class' },
           { type: 'feature', feature: { id: 'bard-bardic-inspiration' } },
+          {
+            type: 'resource-pool',
+            poolId: 'bardic-inspiration',
+            max: { mode: 'ability-mod', ability: 'cha' },
+            regen: 'long-rest',
+          },
           { type: 'armor-class', calculation: { mode: 'armored' } },
           // Cantrips: +2 at L1 (index 0)
           {
@@ -466,6 +477,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
         // L5: Font of Inspiration, +2 prepared spells (highest: 3)
         grants: [
           { type: 'feature', feature: { id: 'bard-font-of-inspiration' } },
+          {
+            type: 'resource-pool',
+            poolId: 'bardic-inspiration',
+            max: { mode: 'ability-mod', ability: 'cha' },
+            regen: 'short-rest',
+          },
           {
             type: 'spell-choice',
             key: createChoiceKey('spell-choice', 'class', 'bard', 7),
@@ -824,6 +841,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'feature', feature: { id: 'cleric-divine-intervention' } },
+          {
+            type: 'resource-pool',
+            poolId: 'divine-intervention',
+            max: { mode: 'fixed', value: 1 },
+            regen: 'long-rest',
+          },
           // L10: +1 cantrip (index 3)
           {
             type: 'spell-choice',
@@ -979,7 +1002,12 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
           },
         ],
       },
-      { grants: [{ type: 'feature', feature: { id: 'druid-wild-resurgence' } }] },
+      {
+        grants: [
+          { type: 'feature', feature: { id: 'druid-wild-resurgence' } },
+          { type: 'resource-pool', poolId: 'wild-resurgence', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+        ],
+      },
       EMPTY_LEVEL,
       {
         grants: [
@@ -2133,6 +2161,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'feature', feature: { id: 'warlock-mystic-arcanum-6' } },
+          { type: 'resource-pool', poolId: 'mystic-arcanum-6', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
           spellPick('warlock', 13, 1, 6),
           spellPick('warlock', 12, 1, 5),
         ],
@@ -2141,6 +2170,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'feature', feature: { id: 'warlock-mystic-arcanum-7' } },
+          { type: 'resource-pool', poolId: 'mystic-arcanum-7', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
           spellPick('warlock', 15, 1, 7),
           spellPick('warlock', 14, 1, 5),
         ],
@@ -2149,6 +2179,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'feature', feature: { id: 'warlock-mystic-arcanum-8' } },
+          { type: 'resource-pool', poolId: 'mystic-arcanum-8', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
           spellPick('warlock', 17, 1, 8),
           spellPick('warlock', 16, 1, 5),
           invocationPick(8),
@@ -2158,6 +2189,7 @@ export const CLASS_SOURCES: readonly ClassSource[] = [
       {
         grants: [
           { type: 'feature', feature: { id: 'warlock-mystic-arcanum-9' } },
+          { type: 'resource-pool', poolId: 'mystic-arcanum-9', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
           spellPick('warlock', 19, 1, 9),
           spellPick('warlock', 18, 1, 5),
         ],

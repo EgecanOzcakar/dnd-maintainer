@@ -51,7 +51,15 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       },
       {
         classLevel: 14,
-        grants: [{ type: 'feature', feature: { id: 'berserker-intimidating-presence' } }],
+        grants: [
+          { type: 'feature', feature: { id: 'berserker-intimidating-presence' } },
+          {
+            type: 'resource-pool',
+            poolId: 'intimidating-presence',
+            max: { mode: 'fixed', value: 1 },
+            regen: 'long-rest',
+          },
+        ],
       },
     ] satisfies readonly SubclassFeature[],
   },
@@ -212,6 +220,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         classLevel: 3,
         grants: [
           { type: 'feature', feature: { id: 'collegeglamour-beguiling-magic' } },
+          { type: 'resource-pool', poolId: 'beguiling-magic', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
           { type: 'spell', spellId: 'charm-person', alwaysPrepared: true },
           { type: 'spell', spellId: 'mirror-image', alwaysPrepared: true },
           { type: 'feature', feature: { id: 'collegeglamour-mantle-of-inspiration' } },
@@ -221,12 +230,21 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         classLevel: 6,
         grants: [
           { type: 'feature', feature: { id: 'collegeglamour-mantle-of-majesty' } },
+          { type: 'resource-pool', poolId: 'mantle-of-majesty', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
           { type: 'spell', spellId: 'command', alwaysPrepared: true },
         ],
       },
       {
         classLevel: 14,
-        grants: [{ type: 'feature', feature: { id: 'collegeglamour-unbreakable-majesty' } }],
+        grants: [
+          { type: 'feature', feature: { id: 'collegeglamour-unbreakable-majesty' } },
+          {
+            type: 'resource-pool',
+            poolId: 'unbreakable-majesty',
+            max: { mode: 'fixed', value: 1 },
+            regen: 'short-rest',
+          },
+        ],
       },
     ] satisfies readonly SubclassFeature[],
   },
@@ -332,6 +350,12 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
         classLevel: 3,
         grants: [
           { type: 'feature', feature: { id: 'lightdomain-warding-flare' } },
+          {
+            type: 'resource-pool',
+            poolId: 'warding-flare',
+            max: { mode: 'ability-mod', ability: 'wis' },
+            regen: 'long-rest',
+          },
           { type: 'feature', feature: { id: 'lightdomain-radiance-of-the-dawn' } },
           { type: 'spell', spellId: 'burning-hands', alwaysPrepared: true },
           { type: 'spell', spellId: 'faerie-fire', alwaysPrepared: true },
@@ -348,7 +372,15 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       },
       {
         classLevel: 6,
-        grants: [{ type: 'feature', feature: { id: 'lightdomain-improved-warding-flare' } }],
+        grants: [
+          { type: 'feature', feature: { id: 'lightdomain-improved-warding-flare' } },
+          {
+            type: 'resource-pool',
+            poolId: 'warding-flare',
+            max: { mode: 'ability-mod', ability: 'wis' },
+            regen: 'short-rest',
+          },
+        ],
       },
       {
         classLevel: 7,
@@ -366,7 +398,15 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       },
       {
         classLevel: 17,
-        grants: [{ type: 'feature', feature: { id: 'lightdomain-corona-of-light' } }],
+        grants: [
+          { type: 'feature', feature: { id: 'lightdomain-corona-of-light' } },
+          {
+            type: 'resource-pool',
+            poolId: 'corona-of-light',
+            max: { mode: 'ability-mod', ability: 'wis' },
+            regen: 'long-rest',
+          },
+        ],
       },
     ] satisfies readonly SubclassFeature[],
   },
@@ -560,7 +600,10 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
       },
       {
         classLevel: 6,
-        grants: [{ type: 'feature', feature: { id: 'circleland-natural-recovery' } }],
+        grants: [
+          { type: 'feature', feature: { id: 'circleland-natural-recovery' } },
+          { type: 'resource-pool', poolId: 'natural-recovery', max: { mode: 'fixed', value: 1 }, regen: 'long-rest' },
+        ],
       },
       {
         classLevel: 10,
@@ -2334,6 +2377,7 @@ export const SUBCLASS_SOURCES: Record<SubclassId, SubclassSource> = {
           // The Third Eye (2024): Bonus Action — gain Darkvision 120 ft, Greater Comprehension or See Invisibility
           // (cast without a slot); lasts until you start a Short or Long Rest
           { type: 'feature', feature: { id: 'diviner-the-third-eye' } },
+          { type: 'resource-pool', poolId: 'the-third-eye', max: { mode: 'fixed', value: 1 }, regen: 'short-rest' },
         ],
       },
       {

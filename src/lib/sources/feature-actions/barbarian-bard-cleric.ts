@@ -59,6 +59,7 @@ export const BARBARIAN_BARD_CLERIC_ACTIONS: Readonly<Record<string, FeatureActio
   // Free once per Long Rest, otherwise spend a Rage use (no dedicated pool).
   'berserker-intimidating-presence': {
     activation: 'bonus-action',
+    poolId: 'intimidating-presence',
     save: { ability: 'wis', dcAbility: 'str' },
   },
 
@@ -94,7 +95,7 @@ export const BARBARIAN_BARD_CLERIC_ACTIONS: Readonly<Record<string, FeatureActio
 
   // ─── Bard ────────────────────────────────────────────────────────────────────
   // The die is given away, not rolled by the bard (no roll here); uses = CHA mod, no pool is granted yet.
-  'bard-bardic-inspiration': { activation: 'bonus-action' },
+  'bard-bardic-inspiration': { activation: 'bonus-action', poolId: 'bardic-inspiration' },
   'bard-countercharm': { activation: 'reaction' },
 
   // ─── College of Dance ────────────────────────────────────────────────────────
@@ -105,28 +106,30 @@ export const BARBARIAN_BARD_CLERIC_ACTIONS: Readonly<Record<string, FeatureActio
     damage: { dice: BARDIC_DIE, type: 'bludgeoning', addMod: 'dex' },
     scaleClass: 'bard',
   },
-  'collegedance-inspiring-movement': { activation: 'reaction' },
+  'collegedance-inspiring-movement': { activation: 'reaction', poolId: 'bardic-inspiration' },
 
   // ─── College of Glamour ──────────────────────────────────────────────────────
   // Gives Temp HP (two Bardic Inspiration die rolls) to up to CHA-mod creatures; Temp HP is not modeled.
-  'collegeglamour-mantle-of-inspiration': { activation: 'bonus-action' },
+  'collegeglamour-mantle-of-inspiration': { activation: 'bonus-action', poolId: 'bardic-inspiration' },
   // After casting an Enchantment or Illusion spell; WIS save against your spell save DC.
   'collegeglamour-beguiling-magic': {
     activation: 'free',
+    poolId: 'beguiling-magic',
     save: { ability: 'wis', dcAbility: 'spellcasting' },
   },
   // Casts Command on yourself as a Bonus Action; free once per Long Rest, else a 3rd-level+ slot.
-  'collegeglamour-mantle-of-majesty': { activation: 'bonus-action' },
+  'collegeglamour-mantle-of-majesty': { activation: 'bonus-action', poolId: 'mantle-of-majesty' },
   // CHA save against your spell save DC.
   'collegeglamour-unbreakable-majesty': {
     activation: 'bonus-action',
+    poolId: 'unbreakable-majesty',
     save: { ability: 'cha', dcAbility: 'spellcasting' },
   },
 
   // ─── College of Lore ─────────────────────────────────────────────────────────
   // Subtracts a Bardic Inspiration die from the roll (a penalty, not damage).
-  'collegelore-cutting-words': { activation: 'reaction' },
-  'collegelore-peerless-skill': { activation: 'free' },
+  'collegelore-cutting-words': { activation: 'reaction', poolId: 'bardic-inspiration' },
+  'collegelore-peerless-skill': { activation: 'free', poolId: 'bardic-inspiration' },
 
   // ─── College of Valor ────────────────────────────────────────────────────────
   // Offense: an inspired creature adds the die to weapon damage (its Defense use is a Reaction to AC).
@@ -165,8 +168,8 @@ export const BARBARIAN_BARD_CLERIC_ACTIONS: Readonly<Record<string, FeatureActio
       type: 'radiant',
     },
   },
-  'cleric-divine-intervention': { activation: 'action' },
-  'cleric-greater-divine-intervention': { activation: 'action' },
+  'cleric-divine-intervention': { activation: 'action', poolId: 'divine-intervention' },
+  'cleric-greater-divine-intervention': { activation: 'action', poolId: 'divine-intervention' },
 
   // ─── Life Domain ─────────────────────────────────────────────────────────────
   // Magic action: restores 5 × Cleric level HP, divided among creatures within 30 ft.
@@ -174,7 +177,7 @@ export const BARBARIAN_BARD_CLERIC_ACTIONS: Readonly<Record<string, FeatureActio
 
   // ─── Light Domain ────────────────────────────────────────────────────────────
   // Reaction, WIS-mod uses per Long Rest (no pool granted).
-  'lightdomain-warding-flare': { activation: 'reaction' },
+  'lightdomain-warding-flare': { activation: 'reaction', poolId: 'warding-flare' },
   // Magic action, CON save: 2d10 + Cleric level Radiant, half on success.
   'lightdomain-radiance-of-the-dawn': {
     activation: 'action',
@@ -182,7 +185,7 @@ export const BARBARIAN_BARD_CLERIC_ACTIONS: Readonly<Record<string, FeatureActio
     damage: { dice: '2d10', type: 'radiant', addLevel: true },
     poolId: 'channel-divinity',
   },
-  'lightdomain-corona-of-light': { activation: 'action' },
+  'lightdomain-corona-of-light': { activation: 'action', poolId: 'corona-of-light' },
 
   // ─── Trickery Domain ─────────────────────────────────────────────────────────
   'trickerydomain-blessing-of-the-trickster': { activation: 'action' },

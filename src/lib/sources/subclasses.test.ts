@@ -302,7 +302,7 @@ describe('getSubclassSource — Circle of the Land', () => {
     const source = getSubclassSource('circleland');
     const level6 = source?.features.find((f) => f.classLevel === 6);
     expect(level6).toBeDefined();
-    expect(level6?.grants).toHaveLength(1);
+    expect(level6?.grants).toHaveLength(2);
     expect(level6?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'circleland-natural-recovery' },
@@ -2710,7 +2710,7 @@ describe('getSubclassSource — Diviner', () => {
     const source = getSubclassSource('diviner');
     const level10 = source?.features.find((f) => f.classLevel === 10);
     expect(level10).toBeDefined();
-    expect(level10?.grants).toHaveLength(1);
+    expect(level10?.grants).toHaveLength(2);
     expect(level10?.grants[0]).toMatchObject({
       type: 'feature',
       feature: { id: 'diviner-the-third-eye' },

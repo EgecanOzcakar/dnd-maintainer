@@ -100,7 +100,7 @@ export const SORCERER_WARLOCK_WIZARD_ACTIONS: Readonly<Record<string, FeatureAct
 
   // Diviner
   'diviner-portent': { activation: 'special', poolId: 'portent' },
-  'diviner-the-third-eye': { activation: 'bonus-action' },
+  'diviner-the-third-eye': { activation: 'bonus-action', poolId: 'the-third-eye' },
 
   // Evoker
   'evoker-sculpt-spells': { activation: 'special' },

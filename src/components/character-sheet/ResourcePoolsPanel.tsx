@@ -21,16 +21,20 @@ export function ResourcePoolsPanel({
   if (resolved.resourcePools.length === 0) return null;
 
   return (
-    <div className="bg-card border rounded-lg p-6">
-      <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.resourcePools')}</h2>
-      <div className="space-y-3">
+    <div className="sheet-panel">
+      <h2 className="text-lg font-bold text-foreground mb-3">{tc('characterSheet.sections.resourcePools')}</h2>
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
         {resolved.resourcePools.map((pool) => {
           const regenLabel =
             typeof pool.regen === 'string'
               ? tc(`characterSheet.resourcePools.regen.${pool.regen}`)
               : tc('characterSheet.resourcePools.regen.compound', { shortRestAmount: pool.regen.shortRestAmount });
           return (
-            <div key={pool.poolId} className="bg-muted/50 p-3 rounded border">
+            <div
+              key={pool.poolId}
+              className="bg-muted/50 px-3 py-2 rounded border"
+              title={t(`resourcePools.${pool.poolId}.description`, { defaultValue: '' })}
+            >
               <div className="flex items-center justify-between gap-2 mb-1">
                 <span className="font-semibold text-foreground text-sm">
                   {t(`resourcePools.${pool.poolId}.name`, { defaultValue: pool.poolId })}
@@ -55,7 +59,7 @@ export function ResourcePoolsPanel({
                 {' · '}
                 {regenLabel}
               </div>
-              <div className="text-xs text-muted-foreground/70 mt-1">
+              <div className="text-xs text-muted-foreground/70">
                 {tc('characterSheet.resourcePools.source', { source: getSourceDisplayName(pool.source, t) })}
               </div>
             </div>

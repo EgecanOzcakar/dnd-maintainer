@@ -36,7 +36,7 @@ export const DRUID_FIGHTER_MONK_ACTIONS: Readonly<Record<string, FeatureActionMe
   'druid-wild-shape': { activation: 'bonus-action', poolId: 'wild-shape' },
   'druid-wild-companion': { activation: 'action' },
   // Once per turn, with no Wild Shape uses left, spend a spell slot to regain one.
-  'druid-wild-resurgence': { activation: 'free' },
+  'druid-wild-resurgence': { activation: 'free', poolId: 'wild-resurgence' },
 
   // Circle of the Land
   // Land's Aid: expend a Wild Shape use; allies regain the dice, others take them as necrotic (CON save halves).
@@ -101,7 +101,7 @@ export const DRUID_FIGHTER_MONK_ACTIONS: Readonly<Record<string, FeatureActionMe
   // Reroll a failed save, adding Fighter level.
   'fighter-indomitable': { activation: 'free', poolId: 'indomitable' },
   // Add 1d10 to a failed ability check (spends a Second Wind use only if the check still fails).
-  'fighter-tactical-mind': { activation: 'free' },
+  'fighter-tactical-mind': { activation: 'free', poolId: 'second-wind' },
 
   // Champion
   'champion-heroic-warrior': { activation: 'free' },

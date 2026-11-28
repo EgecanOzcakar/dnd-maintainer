@@ -3,22 +3,16 @@ import { useTranslation } from 'react-i18next';
 
 export function CombatPanel({
   resolved,
-  abilities,
-  armorClass,
   speedValue,
   speed,
-  maxHP,
   profBonus,
   passivePerception,
   isStale,
   buildError,
 }: {
   resolved: ResolvedCharacter | null;
-  abilities: ResolvedCharacter['abilities'] | undefined;
-  armorClass: number | null;
   speedValue: number | null | undefined;
   speed?: ResolvedCharacter['speed'];
-  maxHP: number | null | undefined;
   profBonus: number;
   passivePerception?: number | null;
   isStale: boolean;
@@ -51,7 +45,7 @@ export function CombatPanel({
   })();
 
   return (
-    <div className="bg-card border-2 border-destructive/30 rounded-lg p-6">
+    <div className="sheet-panel">
       <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.combat')}</h2>
 
       {!resolved && (
@@ -61,30 +55,6 @@ export function CombatPanel({
             : tc('characterSheet.emptyState.combat')}
         </p>
       )}
-
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className={`bg-muted/50 p-4 rounded border text-center ${isStale ? 'opacity-50' : ''}`}>
-          <div className="text-xs text-muted-foreground mb-2">{tc('characterSheet.fields.armorClass')}</div>
-          <div className="text-4xl font-bold text-foreground">{armorClass}</div>
-        </div>
-
-        <div className="bg-muted/50 p-4 rounded border text-center">
-          <div className="text-xs text-muted-foreground mb-2">{tc('characterSheet.fields.initiative')}</div>
-          <div className="text-4xl font-bold text-foreground">
-            {resolved
-              ? (resolved.initiative >= 0 ? '+' : '') + resolved.initiative
-              : abilities
-                ? (abilities.dex.modifier >= 0 ? '+' : '') + abilities.dex.modifier
-                : '—'}
-          </div>
-        </div>
-      </div>
-
-      {/* HP Display (read-only) */}
-      <div className={`bg-muted/50 p-4 rounded border mb-4 ${isStale ? 'opacity-50' : ''}`}>
-        <div className="text-xs text-muted-foreground mb-2">{tc('characterSheet.fields.hitPoints')}</div>
-        <div className="text-2xl font-bold text-red-600">{maxHP ?? '—'}</div>
-      </div>
 
       <div className={`text-xs text-muted-foreground ${isStale ? 'opacity-50' : ''}`}>
         <div className="flex justify-between py-1">

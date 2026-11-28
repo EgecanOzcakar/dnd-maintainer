@@ -11,11 +11,14 @@ export function AbilityScoresPanel({
   buildError,
   onSelectRollPreset,
   checkMods,
+  strip = false,
 }: {
   abilities: ResolvedCharacter['abilities'] | undefined;
   buildError: string | null;
   onSelectRollPreset?: (preset: RollPreset) => void;
   checkMods?: (target: { ability: keyof ResolvedCharacter['abilities'] }) => CheckRollMods | undefined;
+  /** One row of six, without the heading — the vitals strip above the sheet tabs. */
+  strip?: boolean;
 }) {
   const { t } = useTranslation('gamedata');
   const { t: tc } = useTranslation('common');
@@ -51,8 +54,14 @@ export function AbilityScoresPanel({
 
   return (
     <div className="sheet-panel">
-      <h2 className="text-lg font-bold text-foreground mb-4">{tc('characterSheet.sections.abilities')}</h2>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2">
+      <h2 className={strip ? 'sr-only' : 'text-lg font-bold text-foreground mb-4'}>
+        {tc('characterSheet.sections.abilities')}
+      </h2>
+      <div
+        className={
+          strip ? 'grid grid-cols-3 gap-2 sm:grid-cols-6' : 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2'
+        }
+      >
         {(Object.keys(abilities) as Array<keyof typeof abilities>).map((ability) => {
           const resolvedAbility = abilities[ability];
           const modifier = resolvedAbility.modifier;
@@ -67,7 +76,7 @@ export function AbilityScoresPanel({
               className="ability-shield hover:border-primary hover:bg-primary/5 transition-all cursor-pointer text-left"
               title={`${abilityName} ${formatSigned(preset.modifier)} = ${partsText(preset.breakdown ?? [])}`}
             >
-              <div className="flex items-center gap-1 text-xs uppercase tracking-wide text-muted-foreground">
+              <div className="flex max-w-full items-center gap-1 text-[0.65rem] uppercase tracking-wide text-muted-foreground sm:text-xs">
                 {abilityName}
                 <RollModeBadge mode={preset.mode} />
               </div>

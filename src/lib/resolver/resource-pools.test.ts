@@ -36,6 +36,17 @@ describe('resolveResourcePools', () => {
     expect(pools[0]).toMatchObject({ poolId: 'focus-points', max: 5, regen: 'short-rest' });
   });
 
+  it('lets a later grant of the same pool replace the earlier one', () => {
+    const grant = (regen: 'long-rest' | 'short-rest') =>
+      ({ type: 'resource-pool', poolId: 'bardic-inspiration', max: { mode: 'fixed', value: 3 }, regen }) as const;
+    const pools = resolveResourcePools([
+      { source: { origin: 'class', id: 'bard', level: 1 }, grants: [grant('long-rest')] },
+      { source: { origin: 'class', id: 'bard', level: 5 }, grants: [grant('short-rest')] },
+    ]);
+    expect(pools).toHaveLength(1);
+    expect(pools[0].regen).toBe('short-rest');
+  });
+
   it('uses fixed value when max mode is fixed', () => {
     const bundles: GrantBundle[] = [
       {

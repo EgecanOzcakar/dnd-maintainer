@@ -78,13 +78,17 @@ export function resolveResourcePools(
       }
     }
 
-    pools.push({
+    const pool = {
       poolId: grant.poolId,
       max,
       regen: grant.regen,
       source,
       ...(dieSize !== undefined ? { dieSize } : {}),
-    });
+    };
+    // A later grant of the same pool upgrades it in place (Font of Inspiration: Bardic Inspiration → Short Rest).
+    const existing = pools.findIndex((p) => p.poolId === grant.poolId);
+    if (existing >= 0) pools[existing] = pool;
+    else pools.push(pool);
   }
   return pools;
 }

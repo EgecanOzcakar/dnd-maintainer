@@ -44,6 +44,16 @@ describe('suggestModifiers', () => {
   });
 
   it('ignores unrelated numbers', () => {
-    expect(suggestModifiers('You gain a +2 bonus to your Strength score. It weighs 5 pounds.')).toEqual([]);
+    expect(suggestModifiers('It weighs 5 pounds and costs 50 gp. Spell slot level-1 only.')).toEqual([]);
+  });
+
+  it.each([
+    ['You gain a +2 bonus to your Strength score.', [{ type: 'ability-bonus', ability: 'str', bonus: 2 }]],
+    ['+1 CON', [{ type: 'ability-bonus', ability: 'con', bonus: 1 }]],
+    ['-1 dex check', [{ type: 'roll-modifier', target: 'check', abilities: ['dex'], bonus: -1 }]],
+    ['-1d4 to attack rolls', [{ type: 'roll-modifier', target: 'attack', dice: '-1d4' }]],
+    ['+1 Wisdom saving throws', [{ type: 'roll-modifier', target: 'save', abilities: ['wis'], bonus: 1 }]],
+  ])('homebrew shorthand: %s', (text, expected) => {
+    expect(suggestModifiers(text).flatMap((s) => s.grants)).toEqual(expected);
   });
 });

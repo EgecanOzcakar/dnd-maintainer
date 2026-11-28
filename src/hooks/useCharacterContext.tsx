@@ -1,4 +1,6 @@
 import { getLogger } from '@/lib/logger';
+import { activeCustomModifiers } from '@/lib/custom-items';
+import { itemEffectBundles } from '@/lib/item-effects';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 
@@ -302,12 +304,14 @@ function tryDeriveAndResolve(
 
   const collected = collectBundles(build);
   const { warnings: bundleWarnings, expandedFeats } = collected;
-  // Approved custom modifiers ride along as one extra bundle per enabled modifier.
+  // Approved custom modifiers and equipped homebrew items' effect rules ride along as extra bundles.
   const bundles = [
     ...collected.bundles,
-    ...(character.custom_modifiers ?? [])
-      .filter((m) => m.enabled)
-      .map((m) => ({ source: { origin: 'item' as const, id: m.source ?? m.label }, grants: m.grants })),
+    ...itemEffectBundles(persistedItems ?? []),
+    ...activeCustomModifiers(character.custom_modifiers ?? [], equippedItems).map((m) => ({
+      source: { origin: 'item' as const, id: m.source ?? m.label },
+      grants: m.grants,
+    })),
   ];
   if (bundleWarnings.length > 0) {
     logger.warn('collectBundles warnings:', bundleWarnings);

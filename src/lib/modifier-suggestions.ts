@@ -18,7 +18,14 @@ const ABILITY_NAMES: Record<string, AbilityKey> = {
   intelligence: 'int',
   wisdom: 'wis',
   charisma: 'cha',
+  str: 'str',
+  dex: 'dex',
+  con: 'con',
+  int: 'int',
+  wis: 'wis',
+  cha: 'cha',
 };
+const ABILITY_WORD = `(${Object.keys(ABILITY_NAMES).join('|')})`;
 
 const squash = (s: string) => s.toLowerCase().replace(/[^a-z]/g, '');
 const SKILL_IDS = DND_SKILLS.map((s) => s.id);
@@ -38,9 +45,13 @@ function parsePhrase(phrase: string): {
   if (/spell save dc/.test(p)) targets.push('spell-dc');
   if (/attack/.test(p) && !/spell attack/.test(p)) targets.push('attack');
   if (/damage roll/.test(p)) targets.push('damage');
-  const abilities = Object.entries(ABILITY_NAMES)
-    .filter(([name]) => p.includes(name))
-    .map(([, key]) => key);
+  const abilities = [
+    ...new Set(
+      Object.entries(ABILITY_NAMES)
+        .filter(([name]) => new RegExp(`\\b${name}\\b`).test(p))
+        .map(([, key]) => key)
+    ),
+  ];
   const squashed = squash(p);
   const skills = SKILL_IDS.filter((id) => squashed.includes(id));
   // "Strength checks" names an ability; "Athletics checks" names a skill (which already fixes the ability).
@@ -52,8 +63,15 @@ function parsePhrase(phrase: string): {
   };
 }
 
+// Signed amount ("+1", "-1", "+1d4", "add 1d4") then the rolls it applies to; "to"/"on" is optional so
+// homebrew shorthand like "-1 dex check" parses. A phrase naming no roll yields no grant.
 const FLAT_OR_DICE =
-  /(?:\+|\badd\s+(?:a\s+|an\s+)?)(\d+d\d+|\d+)\s+(?:bonus\s+)?(?:to|on)\s+(?:your\s+|all\s+|any\s+)?([^.;,]*)/gi;
+  /(?:(?<!\w)([+-])|\badd\s+(?:a\s+|an\s+)?)(\d+d\d+|\d+)\s+(?:bonus\s+)?(?:(?:to|on)\s+)?(?:your\s+|all\s+|any\s+)?([^.;,]*)/gi;
+// "+2 Strength", "+1 to your DEX score" — a stat bump, not a roll modifier.
+const STAT_BONUS = new RegExp(
+  `(?<!\\w)([+-]\\d+)\\s+(?:bonus\\s+)?(?:to\\s+)?(?:your\\s+)?${ABILITY_WORD}\\b(?:\\s+score)?(?!\\s+(?:checks?|saves?|saving))`,
+  'gi'
+);
 const ADV_DIS = /\b(advantage|disadvantage)\s+on\s+([^.;]*)/gi;
 const RESISTANCE = /\bresistance\s+to\s+([a-z, ]+?)\s+damage/gi;
 const SCORE =
@@ -63,14 +81,21 @@ const SCORE =
 export function describeGrant(g: Grant): string {
   switch (g.type) {
     case 'roll-modifier': {
-      const what = g.mode ? (g.mode === 'adv' ? 'Advantage on' : 'Disadvantage on') : `${g.dice ?? `+${g.bonus}`} to`;
+      const signed = g.dice ?? `${(g.bonus ?? 0) >= 0 ? '+' : ''}${g.bonus}`;
+      const what = g.mode ? (g.mode === 'adv' ? 'Advantage on' : 'Disadvantage on') : `${signed} to`;
       const narrow = [...(g.abilities ?? []), ...(g.skills ?? [])].join('/');
       return `${what} ${g.target}${narrow ? ` (${narrow})` : ''}`;
     }
     case 'ac-bonus':
-      return `+${g.bonus} AC`;
+      return `${g.bonus >= 0 ? '+' : ''}${g.bonus} AC`;
     case 'resistance':
       return `Resistance: ${g.damageType}`;
+    case 'ability-bonus':
+      return `${g.bonus >= 0 ? '+' : ''}${g.bonus} ${g.ability.toUpperCase()}`;
+    case 'speed':
+      return `${typeof g.value === 'number' && g.value >= 0 ? '+' : ''}${g.value} ft speed`;
+    case 'hp-bonus':
+      return `${(g.flat ?? 0) >= 0 ? '+' : ''}${g.flat ?? 0} max HP`;
     case 'ability-set':
       return `${g.ability.toUpperCase()} score ${g.score}`;
     default:
@@ -110,14 +135,14 @@ export function suggestModifiers(text: string, label?: string): ModifierSuggesti
     return grants;
   };
   for (const sentence of text.split(/(?<=[.!?])\s+|\n+/)) {
-    for (const [, amount, phrase] of sentence.matchAll(FLAT_OR_DICE)) {
+    for (const [, sign = '+', amount, phrase] of sentence.matchAll(FLAT_OR_DICE)) {
       const isDice = amount.includes('d');
-      const grants = rollGrants(
-        phrase,
-        isDice ? { dice: `+${amount}` } : { bonus: Number(amount) },
-        isDice ? 0 : Number(amount)
-      );
+      const bonus = Number(`${sign}${amount}`);
+      const grants = rollGrants(phrase, isDice ? { dice: `${sign}${amount}` } : { bonus }, isDice ? 0 : bonus);
       add(sentence, grants);
+    }
+    for (const [, amount, name] of sentence.matchAll(STAT_BONUS)) {
+      add(sentence, [{ type: 'ability-bonus', ability: ABILITY_NAMES[name.toLowerCase()], bonus: Number(amount) }]);
     }
     for (const [, kind, phrase] of sentence.matchAll(ADV_DIS)) {
       const grants = rollGrants(phrase, { mode: kind.toLowerCase() === 'advantage' ? 'adv' : 'dis' });

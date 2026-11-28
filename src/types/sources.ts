@@ -15,7 +15,13 @@ export type SourceTag =
   | { readonly origin: 'item'; readonly id: string }
   | { readonly origin: 'bundle'; readonly id: string }
   | { readonly origin: 'pack'; readonly id: string }
-  | { readonly origin: 'loot'; readonly description: string };
+  | {
+      readonly origin: 'loot';
+      readonly description: string;
+      readonly notes?: string;
+      /** Homebrew effect rules (see `parseEffects` in `@/lib/item-effects`), applied while equipped. */
+      readonly effects?: string;
+    };
 
 export interface GrantBundle {
   readonly source: SourceTag;

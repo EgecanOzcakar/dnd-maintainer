@@ -19,6 +19,10 @@ import type { ArmorProficiencyId } from '@/lib/dnd-helpers';
 import type { Sourced } from '@/types/resolved';
 import type { SourceTag } from '@/types/sources';
 import { isProficientWithArmor } from '@/lib/resolver/equipment';
+import { customItemName, getItemNotes } from '@/lib/custom-items';
+import { getItemEffects } from '@/lib/item-effects';
+import { ItemEffectsPreview } from '@/components/character-sheet/ItemEffectsPreview';
+import { Textarea } from '@/components/ui/textarea';
 import { useInventoryMutations } from '@/hooks/useInventoryMutations';
 import { useCharacters } from '@/hooks/useCharacters';
 import { toast } from 'sonner';
@@ -68,6 +72,8 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
   const [customArmorCategory, setCustomArmorCategory] = useState<ArmorCategory>('light');
   const [customAc, setCustomAc] = useState(11);
   const [customWeight, setCustomWeight] = useState(0);
+  const [customNotes, setCustomNotes] = useState('');
+  const [customEffects, setCustomEffects] = useState('');
   /** Row being edited in the add dialog; null = adding a new item. */
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -94,7 +100,7 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
         ? t(getItemNameKey(def.type, def.id), {
             defaultValue: def.id.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
           })
-        : itemIdStr.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+        : customItemName(itemIdStr);
 
       return {
         ...row,
@@ -131,6 +137,8 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
         customType === 'armor'
           ? `Custom Armor (${customArmorCategory}, AC ${customAc}, ${customWeight} lbs)`
           : `Custom Item (${customType}, ${customWeight} lbs)`,
+      ...(customNotes.trim() ? { notes: customNotes.trim() } : {}),
+      ...(customEffects.trim() ? { effects: customEffects.trim() } : {}),
     },
   });
 
@@ -139,6 +147,8 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
     setEditingId(null);
     setSelectedCatalogItem(null);
     setCustomName('');
+    setCustomNotes('');
+    setCustomEffects('');
     setAddQty(1);
   };
 
@@ -167,15 +177,10 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
         typeof item.source === 'object' && item.source !== null && 'description' in item.source
           ? String(item.source.description)
           : '';
-      setCustomName(
-        item.item_id.startsWith('custom-')
-          ? item.item_id
-              .slice('custom-'.length)
-              .replace(/-/g, ' ')
-              .replace(/\b\w/g, (c) => c.toUpperCase())
-          : item.itemName
-      );
+      setCustomName(item.item_id.startsWith('custom-') ? customItemName(item.item_id) : item.itemName);
       setCustomWeight(parseFloat(/(\d+(?:\.\d+)?) lbs/i.exec(desc)?.[1] ?? '0'));
+      setCustomNotes(getItemNotes(item.source));
+      setCustomEffects(getItemEffects(item.source));
       if (item.def?.type === 'armor') {
         setCustomType('armor');
         setCustomArmorCategory(item.def.category);
@@ -640,6 +645,35 @@ export function InventoryTab({ characterId, campaignId, itemsData, armorProficie
                     onChange={(e) => setCustomWeight(parseFloat(e.target.value) || 0)}
                   />
                 </div>
+              </div>
+              <div>
+                <label htmlFor="custom-item-notes" className="text-xs font-semibold text-muted-foreground block mb-1">
+                  {tc('inventory.customNotes')}
+                </label>
+                <Textarea
+                  id="custom-item-notes"
+                  placeholder={tc('inventory.customNotesPlaceholder')}
+                  value={customNotes}
+                  onChange={(e) => setCustomNotes(e.target.value)}
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label htmlFor="custom-item-effects" className="text-xs font-semibold text-muted-foreground block mb-1">
+                  {tc('inventory.customEffects')}
+                </label>
+                <Textarea
+                  id="custom-item-effects"
+                  className="font-mono text-xs"
+                  placeholder={tc('inventory.customEffectsPlaceholder')}
+                  value={customEffects}
+                  onChange={(e) => setCustomEffects(e.target.value)}
+                  rows={3}
+                />
+                <p className="text-[11px] text-muted-foreground mt-1 whitespace-pre-line">
+                  {tc('inventory.customEffectsHelp')}
+                </p>
+                <ItemEffectsPreview text={customEffects} />
               </div>
               {customType === 'armor' && (
                 <div className="grid grid-cols-2 gap-3 pt-1">

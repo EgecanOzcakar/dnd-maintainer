@@ -14,6 +14,7 @@ import { BackstoryPanel } from '@/components/character-sheet/BackstoryPanel';
 import { CharacterSheetHeader } from '@/components/character-sheet/CharacterSheetHeader';
 import { PlayerSceneViewer } from '@/components/battle-map/PlayerSceneViewer';
 import { CombatPanel } from '@/components/character-sheet/CombatPanel';
+import { ItemRemindersPanel } from '@/components/character-sheet/ItemRemindersPanel';
 import { ConditionsPanel } from '@/components/character-sheet/ConditionsPanel';
 import { EquipmentPanel } from '@/components/character-sheet/EquipmentPanel';
 import { FeaturesPanel } from '@/components/character-sheet/FeaturesPanel';
@@ -563,6 +564,7 @@ function CharacterSheetInner({
             <CurrencyPanel currency={character.currency} onChange={(currency) => handleUpdate({ currency })} />
             <CustomModifiersPanel
               modifiers={character.custom_modifiers}
+              items={itemsData}
               onChange={(custom_modifiers) => handleUpdate({ custom_modifiers })}
             />
             <InventoryTab
@@ -589,6 +591,7 @@ function CharacterSheetInner({
                   isStale={isStale}
                   buildError={buildError}
                 />
+                <ItemRemindersPanel itemsData={itemsData} modifiers={character.custom_modifiers} />
 
                 {resolved && <HitPointsPanel character={character} maxHp={maxHP ?? null} onUpdate={handleHpUpdate} />}
                 <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
@@ -720,6 +723,7 @@ function CharacterSheetInner({
                   isStale={isStale}
                   buildError={buildError}
                 />
+                <ItemRemindersPanel itemsData={itemsData} modifiers={character.custom_modifiers} />
 
                 <ConditionsPanel character={character} onUpdate={handleConditionsUpdate} />
 

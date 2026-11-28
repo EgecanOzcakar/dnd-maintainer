@@ -6,6 +6,8 @@ describe('customItemName', () => {
     ['custom-nasirsiniz-eldiven--1-dex-check', 'Nasirsiniz Eldiven -1 Dex Check'],
     ['custom-cepli-bandolier-+-no-action-potion', 'Cepli Bandolier + No Action Potion'],
     ['custom-hp-spell---level-slot,-ve', 'Hp Spell - Level Slot, Ve'],
+    ['custom-orta-hat-dövmesi-(-1-persuasion)', 'Orta Hat Dövmesi (-1 Persuasion)'],
+    ['custom-bataklık-botları', 'Bataklık Botları'],
   ])('%s → %s', (id, name) => expect(customItemName(id)).toBe(name));
 });
 
